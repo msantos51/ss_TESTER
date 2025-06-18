@@ -11,10 +11,8 @@
       "installCommand": "npm install"
     },
     "preview": {
+      "developmentClient": true,
       "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
       "node": "18.18.0",
       "installCommand": "npm install"
     },
