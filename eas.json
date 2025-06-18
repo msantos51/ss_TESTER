@@ -11,8 +11,7 @@
         "buildType": "apk"
       },
       "node": "18.18.0",
-      "installCommand": "npm install",
-      "appRoot": "mobile"
+      "installCommand": "npm install"
     },
     "preview": {
       "distribution": "internal",
@@ -20,8 +19,7 @@
         "buildType": "apk"
       },
       "node": "18.18.0",
-      "installCommand": "npm install",
-      "appRoot": "mobile"
+      "installCommand": "npm install"
     },
     "production": {
       "developmentClient": false,
@@ -30,8 +28,7 @@
         "buildType": "apk"
       },
       "node": "18.18.0",
-      "installCommand": "npm install",
-      "appRoot": "mobile"
+      "installCommand": "npm install"
     }
   }
 }

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { Text } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { BarChart, Grid, XAxis, YAxis } from 'react-native-svg-charts';
-import * as scale from 'd3-scale';
+import { BarChart } from 'react-native-chart-kit';
 import { BASE_URL } from '../config';
 import { theme } from '../theme';
 import t from '../i18n';
@@ -42,39 +41,39 @@ export default function StatsScreen({ navigation }) {
   }, [navigation]);
 
   return (
-    <View style={styles.container} accessible accessibilityLabel={t('statsTitle')}>
+    <ScrollView contentContainerStyle={styles.container} accessible accessibilityLabel={t('statsTitle')}>
       {data.length > 0 ? (
-        <View style={{ flexDirection: 'row', height: 200 }}>
-          <YAxis
-            data={data}
-            contentInset={{ top: 10, bottom: 10 }}
-            svg={{ fontSize: 10 }}
-            style={{ marginRight: 8 }}
+        <>
+          <Text style={styles.title}>{t('statsTitle')}</Text>
+          <BarChart
+            data={{
+              labels: labels,
+              datasets: [{ data: data }]
+            }}
+            width={Dimensions.get('window').width - 32}
+            height={300}
+            yAxisSuffix="km"
+            chartConfig={{
+              backgroundColor: theme.colors.primary,
+              backgroundGradientFrom: theme.colors.primary,
+              backgroundGradientTo: theme.colors.accent,
+              decimalPlaces: 1,
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              style: { borderRadius: 16 },
+              propsForDots: { r: '6', strokeWidth: '2', stroke: '#ffa726' },
+            }}
+            style={{ marginVertical: 8, borderRadius: 16 }}
           />
-          <View style={{ flex: 1 }}>
-            <BarChart
-              style={{ flex: 1 }}
-              data={data}
-              contentInset={{ top: 10, bottom: 10 }}
-              svg={{ fill: theme.colors.primary }}
-            >
-              <Grid />
-            </BarChart>
-            <XAxis
-              style={{ marginTop: 8 }}
-              data={data}
-              formatLabel={(value, index) => labels[index]}
-              scale={scale.scaleBand}
-            />
-          </View>
-        </View>
+        </>
       ) : (
         <Text>{t('noRoutes')}</Text>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: theme.colors.background },
+  container: { flexGrow: 1, padding: 16, backgroundColor: theme.colors.background, alignItems: 'center' },
+  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
 });

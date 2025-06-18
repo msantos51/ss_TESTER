@@ -25,11 +25,14 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "owner": "msantos51",
+    "plugins": [
+      "expo-localization"
+    ],
     "extra": {
       "eas": {
-        "projectId": "a1f3112c-44f1-4a4e-a845-78bc52229daa"
+        "projectId": "d47b7aba-f68f-4e24-88ae-7f8e6b1f8814"
       }
-    },
-    "owner": "msantos51"
+    }
   }
 }
