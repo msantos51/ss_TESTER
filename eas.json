@@ -14,6 +14,10 @@
     "preview": {
       "developmentClient": true,
       "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "withoutCredentials": true,
       "node": "18.18.0",
       "installCommand": "npm install"
     },
@@ -28,3 +32,4 @@
     }
   }
 }
+
