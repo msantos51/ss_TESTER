@@ -15,6 +15,7 @@ import shutil
 from uuid import uuid4
 from secrets import token_urlsafe
 from email.message import EmailMessage
+from email import policy
 import smtplib
 import time
 import json
@@ -88,7 +89,7 @@ def send_email(to: str, subject: str, body: str):
         print("❌ Credenciais de email não definidas")
         return
 
-    msg = EmailMessage()
+    msg = EmailMessage(policy=policy.SMTP.clone(max_line_length=1000))
     msg["From"] = SMTP_USER
     msg["To"] = to
     msg["Subject"] = subject
@@ -251,7 +252,7 @@ async def create_vendor(
     send_email(
         new_vendor.email,
         "Confirme o seu registro",
-        f"Clique no link para confirmar sua conta: {confirm_link}",
+        f"Clique no link para confirmar sua conta:\n{confirm_link}",
     )
     return new_vendor
 
@@ -279,7 +280,7 @@ def password_reset_request(email: str = Form(...), db: Session = Depends(get_db)
     send_email(
         vendor.email,
         "Redefinição de senha",
-        f"Clique no link para alterar sua senha: {reset_link}",
+        f"Clique no link para alterar sua senha:\n{reset_link}",
     )
     return {"message": "E-mail de recuperação enviado"}
 
