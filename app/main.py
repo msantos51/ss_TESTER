@@ -84,18 +84,25 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 
 def send_email(to: str, subject: str, body: str):
     if not SMTP_USER or not SMTP_PASSWORD:
-        # Silenciosamente ignore se as credenciais nao foram definidas
+        print("❌ Credenciais de email não definidas")
         return
+
     msg = EmailMessage()
     msg["From"] = SMTP_USER
     msg["To"] = to
     msg["Subject"] = subject
     msg.set_content(body)
 
-    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-        server.starttls()
-        server.login(SMTP_USER, SMTP_PASSWORD)
-        server.send_message(msg)
+    try:
+        print(f"📤 Enviando email para: {to}")
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.send_message(msg)
+        print("✅ Email enviado com sucesso para", to)
+    except Exception as e:
+        print("❌ Erro ao enviar email:", str(e))
+
 
 # Gerenciador de WebSockets
 class ConnectionManager:
