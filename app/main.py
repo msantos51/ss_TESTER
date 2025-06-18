@@ -32,6 +32,11 @@ os.makedirs(PROFILE_PHOTO_DIR, exist_ok=True)
 # Inicializar app
 app = FastAPI()
 
+# Endpoint raiz simples para verificação de funcionamento
+@app.get("/")
+def read_root():
+    return {"status": "ok"}
+
 # Habilitar CORS (permitir acesso do frontend)
 origins = ["*"]  # Em produção, usar domínios específicos
 app.add_middleware(
@@ -269,7 +274,19 @@ def confirm_email(token: str, db: Session = Depends(get_db)):
 
 
 @app.post("/password-reset-request")
-def password_reset_request(email: str = Form(...), db: Session = Depends(get_db)):
+async def password_reset_request(
+    request: Request,
+    email: str = Form(None),
+    db: Session = Depends(get_db),
+):
+    if email is None:
+        try:
+            data = await request.json()
+            email = data.get("email")
+        except Exception:
+            email = None
+    if not email:
+        raise HTTPException(status_code=422, detail="Email is required")
     vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found")
