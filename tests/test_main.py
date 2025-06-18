@@ -280,3 +280,15 @@ def test_routes_flow(client):
     routes = resp.json()
     assert len(routes) == 1
 
+
+def test_password_reset_form(client):
+    register_vendor(client)
+    confirm_latest_email(client)
+    client.post("/password-reset-request", data={"email": "vendor@example.com"})
+    body = client.sent_emails[-1]["body"]
+    token = body.split("/password-reset/")[1]
+
+    resp = client.get(f"/password-reset/{token}")
+    assert resp.status_code == 200
+    assert "<form" in resp.text and token in resp.text
+
