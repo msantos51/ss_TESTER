@@ -22,6 +22,7 @@ import base64
 import hmac
 import hashlib
 from math import radians, sin, cos, sqrt, atan2
+from fastapi.responses import HTMLResponse
 
 # Diretório para guardar fotos de perfil
 PROFILE_PHOTO_DIR = "profile_photos"
@@ -479,6 +480,25 @@ def list_routes(
             }
         )
     return result
+
+
+@app.get("/password-reset/{token}", response_class=HTMLResponse)
+async def show_password_reset_form(token: str):
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Redefinir Senha</title>
+    </head>
+    <body style="font-family: Arial; background: #f0f0f0; padding: 30px;">
+        <h2>Redefinir Senha</h2>
+        <form action="/password-reset/{token}" method="post">
+            <input type="password" name="new_password" placeholder="Nova senha" required style="padding: 8px; width: 200px;"><br><br>
+            <button type="submit" style="padding: 10px 20px;">Redefinir</button>
+        </form>
+    </body>
+    </html>"""
 
 # --------------------------
 # Criar sessão de pagamento no Stripe
