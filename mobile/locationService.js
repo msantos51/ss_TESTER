@@ -39,7 +39,7 @@ export const startLocationSharing = async (vendorId) => {
       {
         accuracy: Location.Accuracy.High,
         timeInterval: 1000,        // Atualiza a cada 1 segundo
-        distanceInterval: 10,      // Ou quando se move 10 metros
+        distanceInterval: 1,       // Ou quando se move 1 metro
       },
       async ({ coords }) => {
         try {
