@@ -113,7 +113,10 @@ export default function MapScreen({ navigation }) {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status === 'granted') {
-        const loc = await Location.getCurrentPositionAsync({});
+        const loc = await Location.getCurrentPositionAsync({
+          // Utiliza a maior precisão disponível para centrar o mapa
+          accuracy: Location.Accuracy.Highest,
+        });
         setInitialPosition({
           latitude: loc.coords.latitude,
           longitude: loc.coords.longitude,

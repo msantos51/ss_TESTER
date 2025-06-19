@@ -30,7 +30,11 @@ export default function useProximityNotifications(
       if (notif.status !== 'granted') return;
 
       sub = await Location.watchPositionAsync(
-        { accuracy: Location.Accuracy.Balanced, distanceInterval: 50 },
+        {
+          // Maior precisão para detectar proximidade com exatidão
+          accuracy: Location.Accuracy.Highest,
+          distanceInterval: 50,
+        },
         (loc) => {
           vendors.forEach((v) => {
             if (favoriteIds.length && !favoriteIds.includes(v.id)) return;
