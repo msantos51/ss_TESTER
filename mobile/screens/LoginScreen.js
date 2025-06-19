@@ -18,23 +18,46 @@ export default function LoginScreen({ navigation }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // # Função para decodificar o token e obter o vendorId
+  const getVendorIdFromToken = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.sub;
+    } catch (e) {
+      console.error('Erro ao decodificar o token:', e);
+      return null;
+    }
+  };
+
   const login = async () => {
     if (!email || !password) return;
     setLoading(true);
     setError(null);
     try {
+      // # Obter o token
       const tokenRes = await axios.post(`${BASE_URL}/token`, {
         email,
         password,
       });
-      await AsyncStorage.setItem('token', tokenRes.data.access_token);
+      const token = tokenRes.data.access_token;
 
+      // # Guardar o token
+      await AsyncStorage.setItem('token', token);
+
+      // # Extrair e guardar o vendorId do token
+      const vendorId = getVendorIdFromToken(token);
+      if (vendorId) {
+        await AsyncStorage.setItem('vendorId', vendorId.toString());
+      }
+
+      // # Obter dados do utilizador (nome, produto, etc.)
       const userRes = await axios.post(`${BASE_URL}/login`, {
         email,
         password,
       });
-
       await AsyncStorage.setItem('user', JSON.stringify(userRes.data));
+
+      // # Navegar para o dashboard
       navigation.navigate('Dashboard');
     } catch (err) {
       console.error(err);
