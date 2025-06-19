@@ -38,7 +38,7 @@ export const startLocationSharing = async (vendorId) => {
     locationSubscription = await Location.watchPositionAsync(
       {
         accuracy: Location.Accuracy.High,
-        timeInterval: 10000,       // Atualiza a cada 10 segundos
+        timeInterval: 1000,        // Atualiza a cada 1 segundo
         distanceInterval: 10,      // Ou quando se move 10 metros
       },
       async ({ coords }) => {
