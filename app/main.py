@@ -145,7 +145,7 @@ def _b64decode(segment: str) -> bytes:
     padded = segment + "=" * (-len(segment) % 4)
     return base64.urlsafe_b64decode(padded)
 
-def create_access_token(payload: dict, expires_sec: int = 3600) -> str:
+def create_access_token(payload: dict, expires_sec: int = 604800) -> str:
     data = payload.copy()
     data["exp"] = int(time.time()) + expires_sec
     header = {"alg": "HS256", "typ": "JWT"}
