@@ -139,12 +139,8 @@ export default function MapScreen({ navigation }) {
     return unsubscribe;
   }, []);
 
-// Atualiza a chave do mapa se for a primeira localização
-useEffect(() => {
-  if (userPosition && !initialPosition) {
-    setMapKey((k) => k + 1);
-  }
-}, [userPosition, initialPosition]);
+// Remove previous effect. The map will be remounted when the first
+// location is obtained inside `locateUser`.
 
 // Inicia o tracking da localização quando o componente monta
 useEffect(() => {
@@ -175,6 +171,10 @@ useEffect(() => {
       setInitialPosition(coords);
       setUserPosition(coords);
       startWatch();
+      
+// Remount the map so the user pin becomes visible
+setMapKey((k) => k + 1);
+
 
       setTimeout(
         () => mapRef.current?.setView(loc.coords.latitude, loc.coords.longitude, zoom),
