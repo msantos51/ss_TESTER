@@ -431,6 +431,21 @@ def start_route(
 ):
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
+
+    # close any previously active routes to avoid duplicates
+    active_routes = (
+        db.query(models.Route)
+        .filter(models.Route.vendor_id == vendor_id, models.Route.end_time == None)
+        .all()
+    )
+    for r in active_routes:
+        pts = json.loads(r.points or "[]")
+        dist = 0.0
+        for p1, p2 in zip(pts, pts[1:]):
+            dist += haversine(p1["lat"], p1["lng"], p2["lat"], p2["lng"])
+        r.distance_m = dist
+        r.end_time = datetime.utcnow()
+
     route = models.Route(vendor_id=vendor_id, points="[]")
     db.add(route)
     db.commit()
@@ -452,25 +467,30 @@ async def stop_route(
 ):
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
-    route = (
+    routes = (
         db.query(models.Route)
         .filter(models.Route.vendor_id == vendor_id, models.Route.end_time == None)
         .order_by(models.Route.start_time.desc())
-        .first()
+        .all()
     )
-    if not route:
+    if not routes:
         raise HTTPException(status_code=404, detail="Route not found")
-    points = json.loads(route.points or "[]")
-    distance = 0.0
-    for p1, p2 in zip(points, points[1:]):
-        distance += haversine(p1["lat"], p1["lng"], p2["lat"], p2["lng"])
-    route.distance_m = distance
-    route.end_time = datetime.utcnow()
+
+    latest = routes[0]
+    for r in routes:
+        pts = json.loads(r.points or "[]")
+        dist = 0.0
+        for p1, p2 in zip(pts, pts[1:]):
+            dist += haversine(p1["lat"], p1["lng"], p2["lat"], p2["lng"])
+        r.distance_m = dist
+        r.end_time = datetime.utcnow()
+
     # Clear vendor's current location so clients remove it from the map
     current_vendor.current_lat = None
     current_vendor.current_lng = None
     db.commit()
-    db.refresh(route)
+    for r in routes:
+        db.refresh(r)
     db.refresh(current_vendor)
     # Notify via websocket that the vendor stopped sharing location
     await manager.broadcast({
@@ -481,11 +501,11 @@ async def stop_route(
 })
 
     return {
-        "id": route.id,
-        "start_time": route.start_time.isoformat(),
-        "end_time": route.end_time.isoformat(),
-        "distance_m": route.distance_m,
-        "points": points,
+        "id": latest.id,
+        "start_time": latest.start_time.isoformat(),
+        "end_time": latest.end_time.isoformat(),
+        "distance_m": latest.distance_m,
+        "points": json.loads(latest.points or "[]"),
     }
 
 
