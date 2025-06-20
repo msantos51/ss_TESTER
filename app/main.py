@@ -441,7 +441,7 @@ def start_route(
 
 
 @app.post("/vendors/{vendor_id}/routes/stop", response_model=schemas.RouteOut)
-def stop_route(
+async def stop_route(
     vendor_id: int,
     db: Session = Depends(get_db),
     current_vendor: models.Vendor = Depends(get_current_vendor),
@@ -469,9 +469,7 @@ def stop_route(
     db.refresh(route)
     db.refresh(current_vendor)
     # Notify via websocket that the vendor stopped sharing location
-    asyncio.create_task(
-        manager.broadcast({"vendor_id": vendor_id, "lat": None, "lng": None})
-    )
+    await manager.broadcast({"vendor_id": vendor_id, "lat": None, "lng": None})
     return {
         "id": route.id,
         "start_time": route.start_time.isoformat(),
