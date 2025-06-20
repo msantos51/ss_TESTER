@@ -49,6 +49,26 @@ export default function MapScreen({ navigation }) {
   const [userPosition, setUserPosition] = useState(null);
   const [mapKey, setMapKey] = useState(0);
   const mapRef = useRef(null);
+  const watchRef = useRef(null);
+
+  const startWatch = async () => {
+    if (watchRef.current) return;
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') return;
+    watchRef.current = await Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.Highest,
+        distanceInterval: 5,
+      },
+      (loc) => {
+        const coords = {
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude,
+        };
+        setUserPosition(coords);
+      }
+    );
+  };
 
   const fetchVendors = async () => {
     try {
@@ -120,10 +140,21 @@ export default function MapScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
-    if (userPosition) {
-      setMapKey((k) => k + 1);
-    }
-  }, [userPosition]);
+// # Atualiza a chave do mapa apenas uma vez, quando a primeira posição é obtida
+useEffect(() => {
+  if (userPosition && !initialPosition) {
+    setMapKey((k) => k + 1);
+  }
+}, [userPosition, initialPosition]);
+
+// # Inicia o tracking de localização ao montar o componente
+useEffect(() => {
+  startWatch();
+  return () => {
+    watchRef.current && watchRef.current.remove();
+  };
+}, []);
+
 
   const locateUser = async (zoom = 18) => {
     try {
@@ -138,7 +169,17 @@ export default function MapScreen({ navigation }) {
         };
         setInitialPosition(coords);
         setUserPosition(coords);
-        mapRef.current?.setView(loc.coords.latitude, loc.coords.longitude, zoom);
+        startWatch();
+        // Center the map after updating state
+        setTimeout(
+          () =>
+            mapRef.current?.setView(
+              loc.coords.latitude,
+              loc.coords.longitude,
+              zoom
+            ),
+          100
+        );
       }
     } catch (err) {
       console.log('Erro ao obter localização:', err);
