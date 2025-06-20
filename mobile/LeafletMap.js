@@ -41,6 +41,15 @@ const LeafletMap = forwardRef((props, ref) => {
             border-radius: 50%;
             transform: rotate(45deg);
           }
+          /* Novo estilo para pins simples (ex: cliente) */
+          .gm-pin {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #0077FF;
+            border: 2px solid white;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+          }
         </style>
       </head>
       <body>
