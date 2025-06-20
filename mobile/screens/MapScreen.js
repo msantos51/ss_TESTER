@@ -233,7 +233,8 @@ setMapKey((k) => k + 1);
                     longitude: userPosition.longitude,
                     title: 'Você',
                     iconHtml:
-                      '<div class="gm-pin" style="background-color: white; border: 2px solid #0077FF;"></div>',
+  '<div class="gm-pin" style="background-color: white; border: 2px solid #0077FF;"></div>',
+
                   },
                 ]
               : []),
