@@ -271,6 +271,12 @@ def test_routes_flow(client):
     assert route["distance_m"] >= 0
     assert len(route["points"]) >= 2
 
+    # vendor location should be cleared after stopping route
+    resp = client.get("/vendors/")
+    assert resp.status_code == 200
+    vendor = next(v for v in resp.json() if v["id"] == vendor_id)
+    assert vendor["current_lat"] is None and vendor["current_lng"] is None
+
     # list routes
     resp = client.get(
         f"/vendors/{vendor_id}/routes",
