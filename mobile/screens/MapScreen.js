@@ -140,18 +140,21 @@ export default function MapScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
-    if (userPosition && !initialPosition) {
-      // Remount the map only once when the first location is obtained
-      setMapKey((k) => k + 1);
-    }
-  }, [userPosition, initialPosition]);
+// # Atualiza a chave do mapa apenas uma vez, quando a primeira posição é obtida
+useEffect(() => {
+  if (userPosition && !initialPosition) {
+    setMapKey((k) => k + 1);
+  }
+}, [userPosition, initialPosition]);
 
-  useEffect(() => {
-    startWatch();
-    return () => {
-      watchRef.current && watchRef.current.remove();
-    };
-  }, []);
+// # Inicia o tracking de localização ao montar o componente
+useEffect(() => {
+  startWatch();
+  return () => {
+    watchRef.current && watchRef.current.remove();
+  };
+}, []);
+
 
   const locateUser = async (zoom = 18) => {
     try {
