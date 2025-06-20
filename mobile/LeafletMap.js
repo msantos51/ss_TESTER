@@ -66,7 +66,11 @@ const LeafletMap = forwardRef((props, ref) => {
           markers.forEach(function(m) {
             var opts = {};
             if (m.iconHtml) {
-              opts.icon = L.divIcon({ className: 'custom-icon', html: m.iconHtml });
+opts.icon = L.divIcon({
+  className: m.iconHtml.includes('img') ? 'custom-icon' : '',
+  html: m.iconHtml
+});
+
             }
             if (m.selected) {
               opts.zIndexOffset = 1000;
