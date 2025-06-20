@@ -139,15 +139,14 @@ export default function MapScreen({ navigation }) {
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
-// # Atualiza a chave do mapa apenas uma vez, quando a primeira posição é obtida
+// Atualiza a chave do mapa se for a primeira localização
 useEffect(() => {
   if (userPosition && !initialPosition) {
     setMapKey((k) => k + 1);
   }
 }, [userPosition, initialPosition]);
 
-// # Inicia o tracking de localização ao montar o componente
+// Inicia o tracking da localização quando o componente monta
 useEffect(() => {
   startWatch();
   return () => {
@@ -211,7 +210,7 @@ useEffect(() => {
         <LeafletMap
           key={mapKey}
           ref={mapRef}
-          initialPosition={initialPosition}
+          initialPosition={userPosition || initialPosition}
           markers={[
             ...filteredVendors.map((v) => {
               const photo = v.profile_photo
