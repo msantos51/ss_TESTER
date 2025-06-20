@@ -47,6 +47,7 @@ export default function MapScreen({ navigation }) {
   const [selectedVendorId, setSelectedVendorId] = useState(null);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [userPosition, setUserPosition] = useState(null);
+  const [mapKey, setMapKey] = useState(0);
   const mapRef = useRef(null);
 
   const fetchVendors = async () => {
@@ -118,6 +119,12 @@ export default function MapScreen({ navigation }) {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    if (userPosition) {
+      setMapKey((k) => k + 1);
+    }
+  }, [userPosition]);
+
   const locateUser = async (zoom = 18) => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -161,6 +168,7 @@ export default function MapScreen({ navigation }) {
         <ActivityIndicator animating size="large" style={StyleSheet.absoluteFill} />
       ) : (
         <LeafletMap
+          key={mapKey}
           ref={mapRef}
           initialPosition={initialPosition}
           markers={[
