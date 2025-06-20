@@ -260,6 +260,36 @@ setMapKey((k) => k + 1);
           <Picker.Item label="Gelados" value="Gelados" />
         </Picker>
       </View>
+
+      <View style={styles.buttonsContainer}>
+        {currentUser ? (
+          <Button
+            mode="contained"
+            style={styles.button}
+            onPress={() => navigation.navigate('Dashboard')}
+          >
+            Perfil
+          </Button>
+        ) : (
+          <>
+            <Button
+              mode="contained"
+              style={styles.button}
+              onPress={() => navigation.navigate('Login')}
+            >
+              Login
+            </Button>
+
+            <Button
+              mode="outlined"
+              style={styles.button}
+              onPress={() => navigation.navigate('Register')}
+            >
+              Registar
+            </Button>
+          </>
+        )}
+      </View>
     </View>
   );
 }
@@ -276,6 +306,15 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   picker: { backgroundColor: '#eee', marginBottom: 4 },
+  buttonsContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    right: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  button: { flex: 1, marginHorizontal: 4 },
   locateButton: {
     position: 'absolute',
     bottom: 110,
