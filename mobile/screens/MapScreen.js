@@ -166,7 +166,7 @@ export default function MapScreen({ navigation }) {
           markers={[
             ...filteredVendors.map((v) => {
               const photo = v.profile_photo
-                ? `${BASE_URL.replace(/\\/$/, '')}/${v.profile_photo}`
+                ? `${BASE_URL.replace(/\/$/, '')}/${v.profile_photo}`
                 : null;
               return {
                 latitude: v.current_lat,
