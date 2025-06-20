@@ -155,31 +155,31 @@ useEffect(() => {
 }, []);
 
 
-  const locateUser = async (zoom = 18) => {
+  const locateUser = async (zoom = 19) => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status === 'granted') {
-        const loc = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Highest,
-        });
-        const coords = {
-          latitude: loc.coords.latitude,
-          longitude: loc.coords.longitude,
-        };
-        setInitialPosition(coords);
-        setUserPosition(coords);
-        startWatch();
-        // Center the map after updating state
-        setTimeout(
-          () =>
-            mapRef.current?.setView(
-              loc.coords.latitude,
-              loc.coords.longitude,
-              zoom
-            ),
-          100
-        );
+      if (status !== 'granted') return;
+
+      if (userPosition) {
+        mapRef.current?.setView(userPosition.latitude, userPosition.longitude, zoom);
+        return;
       }
+
+      const loc = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Highest,
+      });
+      const coords = {
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude,
+      };
+      setInitialPosition(coords);
+      setUserPosition(coords);
+      startWatch();
+
+      setTimeout(
+        () => mapRef.current?.setView(loc.coords.latitude, loc.coords.longitude, zoom),
+        100
+      );
     } catch (err) {
       console.log('Erro ao obter localização:', err);
     }
@@ -233,7 +233,7 @@ useEffect(() => {
                     longitude: userPosition.longitude,
                     title: 'Você',
                     iconHtml:
-                      '<div class="gm-pin" style="background-color: #0077FF; border-radius: 50%; width: 24px; height: 24px; border: 2px solid white;"></div>',
+                      '<div class="gm-pin" style="background-color: white; border: 2px solid #0077FF;"></div>',
                   },
                 ]
               : []),
@@ -242,7 +242,7 @@ useEffect(() => {
       )}
 
       {!loadingLocation && (
-        <TouchableOpacity style={styles.locateButton} onPress={() => locateUser()}>
+        <TouchableOpacity style={styles.locateButton} onPress={() => locateUser(19)}>
           <Text style={styles.locateIcon}>📍</Text>
         </TouchableOpacity>
       )}
