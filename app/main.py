@@ -19,6 +19,7 @@ from email import policy
 import smtplib
 import time
 import json
+import asyncio
 import base64
 import hmac
 import hashlib
@@ -461,8 +462,16 @@ def stop_route(
         distance += haversine(p1["lat"], p1["lng"], p2["lat"], p2["lng"])
     route.distance_m = distance
     route.end_time = datetime.utcnow()
+    # Clear vendor's current location so clients remove it from the map
+    current_vendor.current_lat = None
+    current_vendor.current_lng = None
     db.commit()
     db.refresh(route)
+    db.refresh(current_vendor)
+    # Notify via websocket that the vendor stopped sharing location
+    asyncio.create_task(
+        manager.broadcast({"vendor_id": vendor_id, "lat": None, "lng": None})
+    )
     return {
         "id": route.id,
         "start_time": route.start_time.isoformat(),
