@@ -7,6 +7,7 @@ const LeafletMap = forwardRef((props, ref) => {
   const {
     markers = [],
     initialPosition = { latitude: 38.736946, longitude: -9.142685 },
+    initialZoom = 13,
     polyline = [],
   } = props;
   const webviewRef = useRef(null);
@@ -59,7 +60,7 @@ const LeafletMap = forwardRef((props, ref) => {
           var map = L.map('map').setView([
             ${initialPosition.latitude},
             ${initialPosition.longitude}
-          ], 13);
+          ], ${initialZoom});
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
           var markers = ${JSON.stringify(markers)};
           var line = ${JSON.stringify(polyline)};
