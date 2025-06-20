@@ -171,8 +171,10 @@ useEffect(() => {
       setInitialPosition(coords);
       setUserPosition(coords);
       startWatch();
-      // Remount the map so the user pin becomes visible
-      setMapKey((k) => k + 1);
+      
+// Remount the map so the user pin becomes visible
+setMapKey((k) => k + 1);
+
 
       setTimeout(
         () => mapRef.current?.setView(loc.coords.latitude, loc.coords.longitude, zoom),
