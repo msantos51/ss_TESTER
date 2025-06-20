@@ -46,6 +46,7 @@ export default function MapScreen({ navigation }) {
   const [loadingLocation, setLoadingLocation] = useState(true);
   const [selectedVendorId, setSelectedVendorId] = useState(null);
   const [favoriteIds, setFavoriteIds] = useState([]);
+  const [userPosition, setUserPosition] = useState(null); // posicao atual do cliente
   const mapRef = useRef(null);
 
   const fetchVendors = async () => {
@@ -117,10 +118,12 @@ export default function MapScreen({ navigation }) {
           // Utiliza a maior precisão disponível para centrar o mapa
           accuracy: Location.Accuracy.Highest,
         });
-        setInitialPosition({
+        const coords = {
           latitude: loc.coords.latitude,
           longitude: loc.coords.longitude,
-        });
+        };
+        setInitialPosition(coords);
+        setUserPosition(coords);
         mapRef.current?.setView(
           loc.coords.latitude,
           loc.coords.longitude,
@@ -160,20 +163,31 @@ export default function MapScreen({ navigation }) {
         <LeafletMap
           ref={mapRef}
           initialPosition={initialPosition}
-          markers={filteredVendors.map((v) => {
-            const photo = v.profile_photo
-              ? `${BASE_URL.replace(/\/$/, '')}/${v.profile_photo}`
-              : null;
-            return {
-              latitude: v.current_lat,
-              longitude: v.current_lng,
-              title: v.name || 'Vendedor',
-              iconHtml: photo
-                ? `<div class="gm-pin" style="border: 2px solid ${v.pin_color || '#FFB6C1'};"><img src="${photo}" /></div>`
-                : null,
-              selected: v.id === selectedVendorId,
-            };
-          })}
+          markers={[
+            ...filteredVendors.map((v) => {
+              const photo = v.profile_photo
+                ? `${BASE_URL.replace(/\/$/, '')}/${v.profile_photo}`
+                : null;
+              return {
+                latitude: v.current_lat,
+                longitude: v.current_lng,
+                title: v.name || 'Vendedor',
+                iconHtml: photo
+                  ? `<div class="gm-pin" style="border: 2px solid ${v.pin_color || '#FFB6C1'};"><img src="${photo}" /></div>`
+                  : null,
+                selected: v.id === selectedVendorId,
+              };
+            }),
+            ...(userPosition
+              ? [
+                  {
+                    latitude: userPosition.latitude,
+                    longitude: userPosition.longitude,
+                    title: 'Você',
+                  },
+                ]
+              : []),
+          ]}
         />
       )}
 
