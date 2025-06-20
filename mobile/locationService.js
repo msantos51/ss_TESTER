@@ -1,4 +1,5 @@
-// # Serviço para obter e enviar localização para o backend
+// locationService.js - atualizado para evitar reaparecimento indevido no mapa
+
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -16,7 +17,7 @@ const getValidToken = async () => {
 
 // # Inicia a partilha da localização em tempo real
 export const startLocationSharing = async (vendorId) => {
-  if (locationSubscription) return;
+  if (locationSubscription) return; // já está a partilhar
 
   currentVendorId = vendorId;
 
@@ -34,19 +35,16 @@ export const startLocationSharing = async (vendorId) => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    // # Começa a partilhar localização a cada X segundos ou X metros
+    // # Começa a partilhar localização a cada segundo ou 1 metro
     locationSubscription = await Location.watchPositionAsync(
       {
-        // Maior precisão possível para obter coordenadas mais exatas
         accuracy: Location.Accuracy.BestForNavigation,
-        timeInterval: 1000,        // Atualiza a cada 1 segundo
-        distanceInterval: 1,       // Ou quando se move 1 metro
+        timeInterval: 1000,
+        distanceInterval: 1,
       },
       async ({ coords }) => {
         try {
           const currentToken = await getValidToken();
-
-          // # Envia nova posição para o backend
           await axios.put(
             `${BASE_URL}/vendors/${vendorId}/location`,
             {
@@ -63,7 +61,6 @@ export const startLocationSharing = async (vendorId) => {
       }
     );
 
-    // # Guarda no AsyncStorage que a partilha está ativa
     await AsyncStorage.setItem('sharingLocation', 'true');
   } catch (err) {
     console.error('Erro ao iniciar partilha de localização:', err.message);
@@ -80,19 +77,15 @@ export const stopLocationSharing = async () => {
   if (currentVendorId) {
     try {
       const token = await getValidToken();
-
-      // # Envia requisição para terminar trajeto
       await axios.post(`${BASE_URL}/vendors/${currentVendorId}/routes/stop`, null, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      currentVendorId = null;
     } catch (err) {
       console.log('Erro ao terminar trajeto:', err.response?.data || err.message);
     }
+    currentVendorId = null;
   }
 
-  // # Atualiza estado local
   await AsyncStorage.setItem('sharingLocation', 'false');
 };
 
