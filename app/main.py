@@ -397,20 +397,24 @@ async def update_vendor_location(
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    vendor.current_lat = lat
-    vendor.current_lng = lng
-    db.commit()
-
-    route = (
+    # only allow updates if the vendor has an active route
+    active_route = (
         db.query(models.Route)
         .filter(models.Route.vendor_id == vendor_id, models.Route.end_time == None)
         .order_by(models.Route.start_time.desc())
         .first()
     )
-    if route:
-        points = json.loads(route.points or "[]")
+    if not active_route:
+        raise HTTPException(status_code=400, detail="Location sharing inactive")
+
+    vendor.current_lat = lat
+    vendor.current_lng = lng
+    db.commit()
+
+    if active_route:
+        points = json.loads(active_route.points or "[]")
         points.append({"lat": lat, "lng": lng, "t": datetime.utcnow().isoformat()})
-        route.points = json.dumps(points)
+        active_route.points = json.dumps(points)
         db.commit()
 
     await manager.broadcast({"vendor_id": vendor_id, "lat": lat, "lng": lng})

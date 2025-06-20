@@ -131,6 +131,10 @@ def test_protected_routes(client):
     assert resp.status_code == 401
 
     # update location with auth
+    client.post(
+        f"/vendors/{vendor_id}/routes/start",
+        headers={"Authorization": f"Bearer {token}"},
+    )
     resp = client.put(
         f"/vendors/{vendor_id}/location",
         json={"lat": 1.0, "lng": 2.0},
@@ -145,6 +149,10 @@ def test_location_update_fields(client):
     confirm_latest_email(client)
     token = get_token(client)
 
+    client.post(
+        f"/vendors/{vendor_id}/routes/start",
+        headers={"Authorization": f"Bearer {token}"},
+    )
     resp = client.put(
         f"/vendors/{vendor_id}/location",
         json={"lat": 10.5, "lng": -20.3},
@@ -166,6 +174,10 @@ def test_websocket_location_broadcast(client):
     confirm_latest_email(client)
     token = get_token(client)
 
+    client.post(
+        f"/vendors/{vendor_id}/routes/start",
+        headers={"Authorization": f"Bearer {token}"},
+    )
     with client.websocket_connect("/ws/locations") as websocket:
         resp = client.put(
             f"/vendors/{vendor_id}/location",
