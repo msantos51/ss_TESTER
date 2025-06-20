@@ -49,6 +49,26 @@ export default function MapScreen({ navigation }) {
   const [userPosition, setUserPosition] = useState(null);
   const [mapKey, setMapKey] = useState(0);
   const mapRef = useRef(null);
+  const watchRef = useRef(null);
+
+  const startWatch = async () => {
+    if (watchRef.current) return;
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') return;
+    watchRef.current = await Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.Highest,
+        distanceInterval: 5,
+      },
+      (loc) => {
+        const coords = {
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude,
+        };
+        setUserPosition(coords);
+      }
+    );
+  };
 
   const fetchVendors = async () => {
     try {
@@ -125,6 +145,13 @@ export default function MapScreen({ navigation }) {
     }
   }, [userPosition]);
 
+  useEffect(() => {
+    startWatch();
+    return () => {
+      watchRef.current && watchRef.current.remove();
+    };
+  }, []);
+
   const locateUser = async (zoom = 18) => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -138,6 +165,7 @@ export default function MapScreen({ navigation }) {
         };
         setInitialPosition(coords);
         setUserPosition(coords);
+        startWatch();
         mapRef.current?.setView(loc.coords.latitude, loc.coords.longitude, zoom);
       }
     } catch (err) {
