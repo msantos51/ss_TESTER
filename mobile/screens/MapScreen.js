@@ -100,15 +100,30 @@ export default function MapScreen({ navigation }) {
   }, [navigation]);
 
   useEffect(() => {
-    const unsubscribe = subscribeLocations(({ vendor_id, lat, lng }) => {
-      setVendors((prev) =>
-        prev.map((v) =>
+  const unsubscribe = subscribeLocations(({ vendor_id, lat, lng, remove }) => {
+    setVendors((prev) => {
+      if (remove === true) {
+        // ✅ Remover vendedor da lista (desaparece do mapa)
+        return prev.filter((v) => v.id !== vendor_id);
+      }
+
+      const exists = prev.find((v) => v.id === vendor_id);
+
+      if (exists) {
+        // ✅ Atualizar localização
+        return prev.map((v) =>
           v.id === vendor_id ? { ...v, current_lat: lat, current_lng: lng } : v
-        )
-      );
+        );
+      } else {
+        // ✅ Adicionar novo vendedor à lista (caso não exista)
+        return [...prev, { id: vendor_id, current_lat: lat, current_lng: lng }];
+      }
     });
-    return unsubscribe;
-  }, []);
+  });
+
+  return unsubscribe;
+}, []);
+
 
   const locateUser = async (zoom = 18) => {
     try {

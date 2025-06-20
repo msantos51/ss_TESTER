@@ -469,7 +469,13 @@ async def stop_route(
     db.refresh(route)
     db.refresh(current_vendor)
     # Notify via websocket that the vendor stopped sharing location
-    await manager.broadcast({"vendor_id": vendor_id, "lat": None, "lng": None})
+    await manager.broadcast({
+    "vendor_id": vendor_id,
+    "lat": None,
+    "lng": None,
+    "remove": True  # 👈 Esta linha é essencial!
+})
+
     return {
         "id": route.id,
         "start_time": route.start_time.isoformat(),
