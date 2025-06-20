@@ -48,6 +48,7 @@ export default function MapScreen({ navigation }) {
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [userPosition, setUserPosition] = useState(null);
   const [mapKey, setMapKey] = useState(0);
+  const [mapZoom, setMapZoom] = useState(15);
   const mapRef = useRef(null);
   const watchRef = useRef(null);
 
@@ -158,6 +159,7 @@ useEffect(() => {
 
       if (userPosition) {
         mapRef.current?.setView(userPosition.latitude, userPosition.longitude, zoom);
+        setMapZoom(zoom);
         return;
       }
 
@@ -171,7 +173,7 @@ useEffect(() => {
       setInitialPosition(coords);
       setUserPosition(coords);
       startWatch();
-      
+
 // Remount the map so the user pin becomes visible
 setMapKey((k) => k + 1);
 
@@ -180,6 +182,7 @@ setMapKey((k) => k + 1);
         () => mapRef.current?.setView(loc.coords.latitude, loc.coords.longitude, zoom),
         100
       );
+      setMapZoom(zoom);
     } catch (err) {
       console.log('Erro ao obter localização:', err);
     }
@@ -211,6 +214,7 @@ setMapKey((k) => k + 1);
           key={mapKey}
           ref={mapRef}
           initialPosition={userPosition || initialPosition}
+          initialZoom={mapZoom}
           markers={[
             ...filteredVendors.map((v) => {
               const photo = v.profile_photo
