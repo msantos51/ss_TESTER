@@ -263,6 +263,78 @@ setMapKey((k) => k + 1);
           <Picker.Item label="Acessórios" value="Acessórios" />
           <Picker.Item label="Gelados" value="Gelados" />
         </Picker>
+        <TouchableOpacity
+          style={styles.listToggle}
+          onPress={() => setShowList((v) => !v)}
+        >
+          <Text style={styles.listToggleText}>{showList ? 'Fechar Lista' : 'Mostrar Lista'}</Text>
+        </TouchableOpacity>
+
+        {showList && (
+          <>
+            <TextInput
+              mode="outlined"
+              style={styles.searchInput}
+              label="Procurar..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            <FlatList
+              data={filteredVendors}
+              keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
+              style={styles.vendorList}
+              renderItem={({ item }) => {
+                const photoUri = item.profile_photo
+                  ? `${BASE_URL.replace(/\/$/, '')}/${item.profile_photo}`
+                  : null;
+                const fav = favoriteIds.includes(item.id);
+                return (
+                  <TouchableOpacity
+                    style={styles.vendorItem}
+                    accessible
+                    onPress={() => {
+                      setSelectedVendorId(item.id);
+                      mapRef.current?.setView(item.current_lat, item.current_lng);
+                    }}
+                    onLongPress={() => {
+                      setSelectedVendorId(item.id);
+                      navigation.navigate('VendorDetail', { vendor: item });
+                    }}
+                  >
+                    {photoUri && (
+                      <Image source={{ uri: photoUri }} style={styles.vendorImage} />
+                    )}
+                    <Text>
+                      {item.name || 'Vendedor'}
+                      {item.rating_average != null
+                        ? ` \u2013 ${item.rating_average.toFixed(1)}\u2605`
+                        : ''}
+                    </Text>
+                    <TouchableOpacity
+                      accessibilityRole="button"
+                      accessibilityLabel={fav ? t('removeFavorite') : t('addFavorite')}
+                      onPress={async () => {
+                        if (fav) {
+                          await removeFavorite(item.id);
+                        } else {
+                          await addFavorite(item.id);
+                        }
+                        loadFavorites();
+                      }}
+                      accessible
+                    >
+                      <MaterialCommunityIcons
+                        name={fav ? 'star' : 'star-outline'}
+                        size={24}
+                        color={theme.colors.accent}
+                      />
+                    </TouchableOpacity>
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          </>
+        )}
       </View>
 
       <View style={styles.buttonsContainer}>
@@ -303,13 +375,30 @@ const styles = StyleSheet.create({
   filterContainer: {
     position: 'absolute',
     top: 10,
-    left: 20,
-    right: 20,
+    left: 70,
+    right: 70,
     backgroundColor: theme.colors.background,
     borderRadius: 16,
     padding: 6,
   },
   picker: { backgroundColor: '#eee', marginBottom: 4 },
+  vendorList: { maxHeight: 200 },
+  vendorItem: {
+    paddingVertical: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  searchInput: { marginBottom: 4 },
+  listToggle: { backgroundColor: theme.colors.primary, padding: 6, borderRadius: 8, marginBottom: 4 },
+  listToggleText: { color: '#fff', textAlign: 'center' },
+  vendorImage: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 8,
+  },
   buttonsContainer: {
     position: 'absolute',
     bottom: 40,
