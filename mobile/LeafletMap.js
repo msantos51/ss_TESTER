@@ -68,16 +68,18 @@ const LeafletMap = forwardRef((props, ref) => {
             L.polyline(line, { color: 'red' }).addTo(map);
             map.fitBounds(line);
           }
-          window.setView = function(lat, lng) { map.setView([lat, lng], 15); };
+          window.setView = function(lat, lng, zoom) {
+            map.setView([lat, lng], zoom || 15);
+          };
         </script>
       </body>
     </html>
   `;
 
   useImperativeHandle(ref, () => ({
-    setView: (lat, lng) => {
+    setView: (lat, lng, zoom) => {
       if (webviewRef.current) {
-        const js = `window.setView(${lat}, ${lng}); true;`;
+        const js = `window.setView(${lat}, ${lng}, ${zoom}); true;`;
         webviewRef.current.injectJavaScript(js);
       }
     },

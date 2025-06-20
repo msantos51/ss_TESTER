@@ -109,7 +109,7 @@ export default function MapScreen({ navigation }) {
     return unsubscribe;
   }, []);
 
-  const locateUser = async () => {
+  const locateUser = async (zoom = 18) => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status === 'granted') {
@@ -123,7 +123,8 @@ export default function MapScreen({ navigation }) {
         });
         mapRef.current?.setView(
           loc.coords.latitude,
-          loc.coords.longitude
+          loc.coords.longitude,
+          zoom
         );
       }
     } catch (err) {
@@ -133,7 +134,7 @@ export default function MapScreen({ navigation }) {
 
   useEffect(() => {
     const init = async () => {
-      await locateUser();
+      await locateUser(15);
       setLoadingLocation(false);
     };
     init();
@@ -179,7 +180,7 @@ export default function MapScreen({ navigation }) {
       {!loadingLocation && (
         <TouchableOpacity
           style={styles.locateButton}
-          onPress={locateUser}
+          onPress={() => locateUser()}
         >
           <Text style={styles.locateIcon}>📍</Text>
         </TouchableOpacity>
