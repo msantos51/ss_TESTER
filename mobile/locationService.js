@@ -15,27 +15,28 @@ const getValidToken = async () => {
   return token;
 };
 
-// # Inicia a partilha da localização em tempo real
+// ⚠️ Nova variável para bloquear chamadas múltiplas
+let isStarting = false;
+
 export const startLocationSharing = async (vendorId) => {
-  if (locationSubscription) return; // já está a partilhar
+  if (locationSubscription || isStarting) return;
+  isStarting = true;
 
   currentVendorId = vendorId;
 
-  // # Pedir permissão de localização ao utilizador
   const { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== 'granted') {
+    isStarting = false;
     throw new Error('Permissão de localização negada');
   }
 
   try {
     const token = await getValidToken();
 
-    // # Envia requisição para iniciar trajeto
     await axios.post(`${BASE_URL}/vendors/${vendorId}/routes/start`, null, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    // # Começa a partilhar localização a cada segundo ou 1 metro
     locationSubscription = await Location.watchPositionAsync(
       {
         accuracy: Location.Accuracy.BestForNavigation,
@@ -47,13 +48,8 @@ export const startLocationSharing = async (vendorId) => {
           const currentToken = await getValidToken();
           await axios.put(
             `${BASE_URL}/vendors/${vendorId}/location`,
-            {
-              lat: coords.latitude,
-              lng: coords.longitude,
-            },
-            {
-              headers: { Authorization: `Bearer ${currentToken}` },
-            }
+            { lat: coords.latitude, lng: coords.longitude },
+            { headers: { Authorization: `Bearer ${currentToken}` } }
           );
         } catch (err) {
           console.log('Erro ao enviar localização:', err.response?.data || err.message);
@@ -64,6 +60,8 @@ export const startLocationSharing = async (vendorId) => {
     await AsyncStorage.setItem('sharingLocation', 'true');
   } catch (err) {
     console.error('Erro ao iniciar partilha de localização:', err.message);
+  } finally {
+    isStarting = false;
   }
 };
 

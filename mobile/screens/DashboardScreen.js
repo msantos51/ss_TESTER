@@ -108,14 +108,18 @@ export default function DashboardScreen({ navigation }) {
           fetchReviews(v.id);
 
           const share = await isLocationSharing();
-          setSharingLocation(share);
-          if (share) {
-            try {
-              await startLocationSharing(v.id);
-            } catch (err) {
-              setError(err.message);
-            }
-          }
+if (share) {
+  try {
+    await startLocationSharing(v.id);
+    setSharingLocation(true);
+  } catch (err) {
+    setError(err.message);
+    setSharingLocation(false);
+  }
+} else {
+  setSharingLocation(false);
+}
+
         } else {
           setError('Utilizador não encontrado.');
         }
