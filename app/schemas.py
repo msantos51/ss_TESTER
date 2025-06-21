@@ -74,3 +74,13 @@ class RouteOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class PaidWeekOut(BaseModel):
+    id: int
+    start_date: str
+    end_date: str
+    receipt_url: Optional[str] = None
+
+    class Config:
+        orm_mode = True

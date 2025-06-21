@@ -8,6 +8,7 @@ const translations = {
     favorites: 'Favorites',
     addFavorite: 'Add to favorites',
     removeFavorite: 'Remove favorite',
+    paidWeeksTitle: 'Paid weeks',
   },
   pt: {
     statsTitle: 'Estatísticas',
@@ -15,6 +16,7 @@ const translations = {
     favorites: 'Favoritos',
     addFavorite: 'Adicionar aos favoritos',
     removeFavorite: 'Remover favorito',
+    paidWeeksTitle: 'Semanas Pagas',
   },
 };
 

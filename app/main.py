@@ -537,6 +537,23 @@ def list_routes(
     return result
 
 
+@app.get("/vendors/{vendor_id}/paid-weeks", response_model=list[schemas.PaidWeekOut])
+def list_paid_weeks(
+    vendor_id: int,
+    db: Session = Depends(get_db),
+    current_vendor: models.Vendor = Depends(get_current_vendor),
+):
+    if current_vendor.id != vendor_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    weeks = (
+        db.query(models.PaidWeek)
+        .filter(models.PaidWeek.vendor_id == vendor_id)
+        .order_by(models.PaidWeek.start_date.desc())
+        .all()
+    )
+    return weeks
+
+
 @app.get("/password-reset/{token}", response_class=HTMLResponse)
 async def show_password_reset_form(token: str):
     return f"""
@@ -685,5 +702,12 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         if vendor:
             vendor.subscription_active = True
             vendor.subscription_valid_until = datetime.utcnow() + timedelta(days=7)
+            paid = models.PaidWeek(
+                vendor_id=vendor_id,
+                start_date=datetime.utcnow(),
+                end_date=datetime.utcnow() + timedelta(days=7),
+                receipt_url=session.get("receipt_url") or session.get("url"),
+            )
+            db.add(paid)
             db.commit()
     return {"status": "success"}

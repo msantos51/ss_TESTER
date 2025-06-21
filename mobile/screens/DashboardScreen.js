@@ -462,6 +462,9 @@ if (share) {
           <Button mode="text" onPress={() => { setMenuOpen(false); paySubscription(); }}>
             Pagar Semanalidade
           </Button>
+          <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('PaidWeeks'); }}>
+            {t('paidWeeksTitle')}
+          </Button>
           <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('Routes'); }}>
             Trajetos
           </Button>
