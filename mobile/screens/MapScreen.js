@@ -209,7 +209,8 @@ export default function MapScreen({ navigation }) {
         v?.name?.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
-  useProximityNotifications(filteredVendors, 500, favoriteIds);
+  // Enviar notificações quando um vendedor estiver a 20 metros
+  useProximityNotifications(filteredVendors, 20, favoriteIds);
 
   return (
     <View style={styles.container}>
