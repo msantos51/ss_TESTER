@@ -56,6 +56,24 @@ O script `scripts/simulate_movement.py` envia localizações fictícias de um ve
 python scripts/simulate_movement.py
 ```
 
+## Resolução de Problemas
+
+Ao executar `npm ci` em ambientes como o EAS Build pode surgir o erro:
+
+```
+npm ci can only install packages when your package.json and package-lock.json are in sync
+```
+
+Isso significa que as versões listadas em `package.json` não coincidem com o
+`package-lock.json`. Entre na pasta `mobile` e rode:
+
+```bash
+npm install
+```
+
+Em seguida commite o `package-lock.json` atualizado para que a build use as
+mesmas dependências do projeto.
+
 ## Licença
 
 Este projeto está licenciado sob a [MIT License](LICENSE).
