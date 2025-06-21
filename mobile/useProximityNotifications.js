@@ -33,7 +33,8 @@ export default function useProximityNotifications(
         {
           // Maior precisão para detectar proximidade com exatidão
           accuracy: Location.Accuracy.Highest,
-          distanceInterval: 50,
+          // Atualiza frequentemente para detectar distâncias pequenas
+          distanceInterval: Math.min(10, radius / 2),
         },
         (loc) => {
           vendors.forEach((v) => {
