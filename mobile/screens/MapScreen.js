@@ -1,61 +1,51 @@
 // (em português) Este ecrã mostra o mapa com os vendedores ativos e o pin azul do cliente
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   FlatList,
   Image,
-} from 'react-native';
-import {
-  Button,
-  Text,
-  TextInput,
-  ActivityIndicator,
-} from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import LeafletMap from '../LeafletMap';
-import axios from 'axios';
-import { BASE_URL } from '../config';
-import { theme } from '../theme';
-import { subscribe as subscribeLocations } from '../socketService';
+} from "react-native";
+import { Button, Text, TextInput, ActivityIndicator } from "react-native-paper";
+import { Picker } from "@react-native-picker/picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LeafletMap from "../LeafletMap";
+import axios from "axios";
+import { BASE_URL } from "../config";
+import { theme } from "../theme";
+import { subscribe as subscribeLocations } from "../socketService";
 import {
   startLocationSharing,
   stopLocationSharing,
   isLocationSharing,
-} from '../locationService';
-import * as Location from 'expo-location';
-import useProximityNotifications from '../useProximityNotifications';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import {
-  getFavorites,
-  addFavorite,
-  removeFavorite,
-} from '../favoritesService';
-import t from '../i18n';
+} from "../locationService";
+import * as Location from "expo-location";
+import useProximityNotifications from "../useProximityNotifications";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { getFavorites, addFavorite, removeFavorite } from "../favoritesService";
+import t from "../i18n";
 
 export default function MapScreen({ navigation }) {
   const [vendors, setVendors] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState('Todos os vendedores');
+  const [selectedProduct, setSelectedProduct] = useState("Todos os vendedores");
   const [showList, setShowList] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [initialPosition, setInitialPosition] = useState(null);
   const [loadingLocation, setLoadingLocation] = useState(true);
   const [selectedVendorId, setSelectedVendorId] = useState(null);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [userPosition, setUserPosition] = useState(null);
   const [mapKey, setMapKey] = useState(0);
-  const [mapZoom, setMapZoom] = useState(15);
   const mapRef = useRef(null);
   const watchRef = useRef(null);
 
   const startWatch = async () => {
     if (watchRef.current) return;
     const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') return;
+    if (status !== "granted") return;
     watchRef.current = await Location.watchPositionAsync(
       {
         accuracy: Location.Accuracy.Highest,
@@ -67,7 +57,7 @@ export default function MapScreen({ navigation }) {
           longitude: loc.coords.longitude,
         };
         setUserPosition(coords);
-      }
+      },
     );
   };
 
@@ -76,13 +66,13 @@ export default function MapScreen({ navigation }) {
       const res = await axios.get(`${BASE_URL}/vendors/`);
       setVendors(res.data);
     } catch (err) {
-      console.log('Erro ao buscar vendedores:', err);
+      console.log("Erro ao buscar vendedores:", err);
     }
   };
 
   const loadUser = async () => {
     try {
-      const stored = await AsyncStorage.getItem('user');
+      const stored = await AsyncStorage.getItem("user");
       if (stored) {
         const v = JSON.parse(stored);
         setCurrentUser(v);
@@ -91,7 +81,7 @@ export default function MapScreen({ navigation }) {
           try {
             await startLocationSharing(v.id);
           } catch (err) {
-            console.log('Erro ao iniciar localização:', err);
+            console.log("Erro ao iniciar localização:", err);
           }
         }
       } else {
@@ -99,7 +89,7 @@ export default function MapScreen({ navigation }) {
         await stopLocationSharing();
       }
     } catch (err) {
-      console.log('Erro ao carregar utilizador:', err);
+      console.log("Erro ao carregar utilizador:", err);
       setCurrentUser(null);
     }
   };
@@ -110,7 +100,7 @@ export default function MapScreen({ navigation }) {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener("focus", () => {
       fetchVendors();
       loadUser();
       loadFavorites();
@@ -122,44 +112,53 @@ export default function MapScreen({ navigation }) {
   }, [navigation]);
 
   useEffect(() => {
-    const unsubscribe = subscribeLocations(({ vendor_id, lat, lng, remove }) => {
-      setVendors((prev) => {
-        if (remove === true) {
-          return prev.filter((v) => v.id !== vendor_id);
-        }
-        const exists = prev.find((v) => v.id === vendor_id);
-        if (exists) {
-          return prev.map((v) =>
-            v.id === vendor_id ? { ...v, current_lat: lat, current_lng: lng } : v
-          );
-        } else {
-          return [...prev, { id: vendor_id, current_lat: lat, current_lng: lng }];
-        }
-      });
-    });
+    const unsubscribe = subscribeLocations(
+      ({ vendor_id, lat, lng, remove }) => {
+        setVendors((prev) => {
+          if (remove === true) {
+            return prev.filter((v) => v.id !== vendor_id);
+          }
+          const exists = prev.find((v) => v.id === vendor_id);
+          if (exists) {
+            return prev.map((v) =>
+              v.id === vendor_id
+                ? { ...v, current_lat: lat, current_lng: lng }
+                : v,
+            );
+          } else {
+            return [
+              ...prev,
+              { id: vendor_id, current_lat: lat, current_lng: lng },
+            ];
+          }
+        });
+      },
+    );
     return unsubscribe;
   }, []);
 
-// Remove previous effect. The map will be remounted when the first
-// location is obtained inside `locateUser`.
+  // Remove previous effect. The map will be remounted when the first
+  // location is obtained inside `locateUser`.
 
-// Inicia o tracking da localização quando o componente monta
-useEffect(() => {
-  startWatch();
-  return () => {
-    watchRef.current && watchRef.current.remove();
-  };
-}, []);
-
+  // Inicia o tracking da localização quando o componente monta
+  useEffect(() => {
+    startWatch();
+    return () => {
+      watchRef.current && watchRef.current.remove();
+    };
+  }, []);
 
   const locateUser = async (zoom = 19) => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') return;
+      if (status !== "granted") return;
 
       if (userPosition) {
-        mapRef.current?.setView(userPosition.latitude, userPosition.longitude, zoom);
-        setMapZoom(zoom);
+        mapRef.current?.setView(
+          userPosition.latitude,
+          userPosition.longitude,
+          zoom,
+        );
         return;
       }
 
@@ -174,17 +173,20 @@ useEffect(() => {
       setUserPosition(coords);
       startWatch();
 
-// Remount the map so the user pin becomes visible
-setMapKey((k) => k + 1);
-
+      // Remount the map so the user pin becomes visible
+      setMapKey((k) => k + 1);
 
       setTimeout(
-        () => mapRef.current?.setView(loc.coords.latitude, loc.coords.longitude, zoom),
-        100
+        () =>
+          mapRef.current?.setView(
+            loc.coords.latitude,
+            loc.coords.longitude,
+            zoom,
+          ),
+        100,
       );
-      setMapZoom(zoom);
     } catch (err) {
-      console.log('Erro ao obter localização:', err);
+      console.log("Erro ao obter localização:", err);
     }
   };
 
@@ -196,11 +198,15 @@ setMapKey((k) => k + 1);
     init();
   }, []);
 
-  const activeVendors = vendors.filter((v) => v?.current_lat != null && v?.current_lng != null);
+  const activeVendors = vendors.filter(
+    (v) => v?.current_lat != null && v?.current_lng != null,
+  );
   const filteredVendors = activeVendors.filter(
     (v) =>
-      (selectedProduct === 'Todos os vendedores' || v?.product === selectedProduct) &&
-      (searchQuery === '' || v?.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+      (selectedProduct === "Todos os vendedores" ||
+        v?.product === selectedProduct) &&
+      (searchQuery === "" ||
+        v?.name?.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
   useProximityNotifications(filteredVendors, 500, favoriteIds);
@@ -208,24 +214,27 @@ setMapKey((k) => k + 1);
   return (
     <View style={styles.container}>
       {loadingLocation ? (
-        <ActivityIndicator animating size="large" style={StyleSheet.absoluteFill} />
+        <ActivityIndicator
+          animating
+          size="large"
+          style={StyleSheet.absoluteFill}
+        />
       ) : (
         <LeafletMap
           key={mapKey}
           ref={mapRef}
           initialPosition={userPosition || initialPosition}
-          initialZoom={mapZoom}
           markers={[
             ...filteredVendors.map((v) => {
               const photo = v.profile_photo
-                ? `${BASE_URL.replace(/\/$/, '')}/${v.profile_photo}`
+                ? `${BASE_URL.replace(/\/$/, "")}/${v.profile_photo}`
                 : null;
               return {
                 latitude: v.current_lat,
                 longitude: v.current_lng,
-                title: v.name || 'Vendedor',
+                title: v.name || "Vendedor",
                 iconHtml: photo
-                  ? `<div class="gm-pin" style="border: 2px solid ${v.pin_color || '#FFB6C1'};"><img src="${photo}" /></div>`
+                  ? `<div class="gm-pin" style="border: 2px solid ${v.pin_color || "#FFB6C1"};"><img src="${photo}" /></div>`
                   : null,
                 selected: v.id === selectedVendorId,
               };
@@ -235,10 +244,9 @@ setMapKey((k) => k + 1);
                   {
                     latitude: userPosition.latitude,
                     longitude: userPosition.longitude,
-                    title: 'Você',
+                    title: "Você",
                     iconHtml:
-  '<div class="gm-pin" style="background-color: white; border: 2px solid #0077FF;"></div>',
-
+                      '<div class="gm-pin" style="background-color: white; border: 2px solid #0077FF;"></div>',
                   },
                 ]
               : []),
@@ -247,7 +255,10 @@ setMapKey((k) => k + 1);
       )}
 
       {!loadingLocation && (
-        <TouchableOpacity style={styles.locateButton} onPress={() => locateUser(19)}>
+        <TouchableOpacity
+          style={styles.locateButton}
+          onPress={() => locateUser(19)}
+        >
           <Text style={styles.locateIcon}>📍</Text>
         </TouchableOpacity>
       )}
@@ -258,7 +269,10 @@ setMapKey((k) => k + 1);
           onValueChange={(itemValue) => setSelectedProduct(itemValue)}
           style={styles.picker}
         >
-          <Picker.Item label="Todos os vendedores" value="Todos os vendedores" />
+          <Picker.Item
+            label="Todos os vendedores"
+            value="Todos os vendedores"
+          />
           <Picker.Item label="Bolas de Berlim" value="Bolas de Berlim" />
           <Picker.Item label="Acessórios" value="Acessórios" />
           <Picker.Item label="Gelados" value="Gelados" />
@@ -267,7 +281,9 @@ setMapKey((k) => k + 1);
           style={styles.listToggle}
           onPress={() => setShowList((v) => !v)}
         >
-          <Text style={styles.listToggleText}>{showList ? 'Fechar Lista' : 'Mostrar Lista'}</Text>
+          <Text style={styles.listToggleText}>
+            {showList ? "Fechar Lista" : "Mostrar Lista"}
+          </Text>
         </TouchableOpacity>
 
         {showList && (
@@ -281,11 +297,13 @@ setMapKey((k) => k + 1);
             />
             <FlatList
               data={filteredVendors}
-              keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
+              keyExtractor={(item) =>
+                item.id?.toString() ?? Math.random().toString()
+              }
               style={styles.vendorList}
               renderItem={({ item }) => {
                 const photoUri = item.profile_photo
-                  ? `${BASE_URL.replace(/\/$/, '')}/${item.profile_photo}`
+                  ? `${BASE_URL.replace(/\/$/, "")}/${item.profile_photo}`
                   : null;
                 const fav = favoriteIds.includes(item.id);
                 return (
@@ -294,25 +312,33 @@ setMapKey((k) => k + 1);
                     accessible
                     onPress={() => {
                       setSelectedVendorId(item.id);
-                      mapRef.current?.setView(item.current_lat, item.current_lng);
+                      mapRef.current?.setView(
+                        item.current_lat,
+                        item.current_lng,
+                      );
                     }}
                     onLongPress={() => {
                       setSelectedVendorId(item.id);
-                      navigation.navigate('VendorDetail', { vendor: item });
+                      navigation.navigate("VendorDetail", { vendor: item });
                     }}
                   >
                     {photoUri && (
-                      <Image source={{ uri: photoUri }} style={styles.vendorImage} />
+                      <Image
+                        source={{ uri: photoUri }}
+                        style={styles.vendorImage}
+                      />
                     )}
                     <Text>
-                      {item.name || 'Vendedor'}
+                      {item.name || "Vendedor"}
                       {item.rating_average != null
                         ? ` \u2013 ${item.rating_average.toFixed(1)}\u2605`
-                        : ''}
+                        : ""}
                     </Text>
                     <TouchableOpacity
                       accessibilityRole="button"
-                      accessibilityLabel={fav ? t('removeFavorite') : t('addFavorite')}
+                      accessibilityLabel={
+                        fav ? t("removeFavorite") : t("addFavorite")
+                      }
                       onPress={async () => {
                         if (fav) {
                           await removeFavorite(item.id);
@@ -324,7 +350,7 @@ setMapKey((k) => k + 1);
                       accessible
                     >
                       <MaterialCommunityIcons
-                        name={fav ? 'star' : 'star-outline'}
+                        name={fav ? "star" : "star-outline"}
                         size={24}
                         color={theme.colors.accent}
                       />
@@ -342,7 +368,7 @@ setMapKey((k) => k + 1);
           <Button
             mode="contained"
             style={styles.button}
-            onPress={() => navigation.navigate('Dashboard')}
+            onPress={() => navigation.navigate("Dashboard")}
           >
             Perfil
           </Button>
@@ -351,7 +377,7 @@ setMapKey((k) => k + 1);
             <Button
               mode="contained"
               style={styles.button}
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => navigation.navigate("Login")}
             >
               Login
             </Button>
@@ -359,7 +385,7 @@ setMapKey((k) => k + 1);
             <Button
               mode="outlined"
               style={styles.button}
-              onPress={() => navigation.navigate('Register')}
+              onPress={() => navigation.navigate("Register")}
             >
               Registar
             </Button>
@@ -373,7 +399,7 @@ setMapKey((k) => k + 1);
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   filterContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     left: 70,
     right: 70,
@@ -381,42 +407,42 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 6,
   },
-  picker: { backgroundColor: '#eee', marginBottom: 4 },
+  picker: { backgroundColor: "#eee", marginBottom: 4 },
   vendorList: { maxHeight: 200 },
   vendorItem: {
     paddingVertical: 4,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    flexDirection: 'row',
-    alignItems: 'center',
+    borderBottomColor: "#ccc",
+    flexDirection: "row",
+    alignItems: "center",
   },
   searchInput: { marginBottom: 4 },
-  listToggle: { backgroundColor: theme.colors.primary, padding: 6, borderRadius: 8, marginBottom: 4 },
-  listToggleText: { color: '#fff', textAlign: 'center' },
-  vendorImage: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    marginRight: 8,
+  listToggle: {
+    backgroundColor: theme.colors.primary,
+    padding: 6,
+    borderRadius: 8,
+    marginBottom: 4,
   },
+  listToggleText: { color: "#fff", textAlign: "center" },
+  vendorImage: { width: 32, height: 32, borderRadius: 16, marginRight: 8 },
   buttonsContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 40,
     left: 20,
     right: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   button: { flex: 1, marginHorizontal: 4 },
   locateButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 110,
     right: 20,
     backgroundColor: theme.colors.background,
     borderRadius: 20,
     padding: 8,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
   },
   locateIcon: {
     fontSize: 24,
