@@ -58,3 +58,17 @@ class Route(Base):
 
     vendor = relationship("Vendor", back_populates="routes")
 
+
+class PaidWeek(Base):
+    """Registo de semanas pagas pelos vendedores."""
+
+    __tablename__ = "paid_weeks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vendor_id = Column(Integer, ForeignKey("vendors.id"))
+    start_date = Column(DateTime, default=datetime.utcnow)
+    end_date = Column(DateTime)
+    receipt_url = Column(String, nullable=True)
+
+    vendor = relationship("Vendor")
+

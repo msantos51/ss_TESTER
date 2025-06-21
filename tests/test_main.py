@@ -310,3 +310,26 @@ def test_password_reset_form(client):
     assert resp.status_code == 200
     assert "<form" in resp.text and token in resp.text
 
+
+def test_paid_weeks_listing(client):
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+
+    event = {
+        "type": "checkout.session.completed",
+        "data": {"object": {"metadata": {"vendor_id": vendor_id}, "url": "http://r"}},
+    }
+    resp = client.post("/stripe/webhook", json=event)
+    assert resp.status_code == 200
+
+    token = get_token(client)
+    resp = client.get(
+        f"/vendors/{vendor_id}/paid-weeks",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+    weeks = resp.json()
+    assert len(weeks) == 1
+    assert weeks[0]["receipt_url"] == "http://r"
+
