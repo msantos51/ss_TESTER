@@ -471,6 +471,9 @@ if (share) {
           <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('Stats'); }}>
             {t('statsTitle')}
           </Button>
+          <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('Language'); }}>
+            {t('languageTitle')}
+          </Button>
           <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('Terms'); }}>
             Termos e Condições
           </Button>
