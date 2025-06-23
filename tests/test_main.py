@@ -47,6 +47,18 @@ def register_vendor(client, email="vendor@example.com", password="Secret123", na
     return client.post("/vendors/", data=data, files=files)
 
 
+def register_client(client, email="client@example.com", password="Secret123", name="Client"):
+    data = {"name": name, "email": email, "password": password}
+    files = {"profile_photo": ("test.png", b"fakeimage", "image/png")}
+    return client.post("/clients/", data=data, files=files)
+
+
+def confirm_latest_client_email(client):
+    body = client.sent_emails[-1]["body"]
+    token = body.split("/confirm-client-email/")[1]
+    return client.get(f"/confirm-client-email/{token}")
+
+
 def confirm_latest_email(client):
     body = client.sent_emails[-1]["body"]
     token = body.split("/confirm-email/")[1]
@@ -63,6 +75,12 @@ def test_vendor_registration(client):
 
 def get_token(client, email="vendor@example.com", password="Secret123"):
     resp = client.post("/token", json={"email": email, "password": password})
+    assert resp.status_code == 200
+    return resp.json()["access_token"]
+
+
+def get_client_token(client, email="client@example.com", password="Secret123"):
+    resp = client.post("/client-token", json={"email": email, "password": password})
     assert resp.status_code == 200
     return resp.json()["access_token"]
 
@@ -193,10 +211,16 @@ def test_reviews_endpoints(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
 
+    resp = register_client(client)
+    confirm_latest_client_email(client)
+    client_token = get_client_token(client)
+    headers = {"Authorization": f"Bearer {client_token}"}
+
     # add review
     resp = client.post(
         f"/vendors/{vendor_id}/reviews",
         json={"rating": 4, "comment": "Bom"},
+        headers=headers,
     )
     assert resp.status_code == 200
     review = resp.json()
@@ -206,13 +230,20 @@ def test_reviews_endpoints(client):
     resp = client.get(f"/vendors/{vendor_id}/reviews")
     assert resp.status_code == 200
     reviews = resp.json()
-    assert len(reviews) == 1 and reviews[0]["comment"] == "Bom"
+    assert len(reviews) == 1 and reviews[0]["comment"] == "Bom" and reviews[0]["client_name"] == "Client"
 
 
 def test_review_response_and_delete(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
-    review = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 5}).json()
+    register_client(client)
+    confirm_latest_client_email(client)
+    ctoken = get_client_token(client)
+    review = client.post(
+        f"/vendors/{vendor_id}/reviews",
+        json={"rating": 5},
+        headers={"Authorization": f"Bearer {ctoken}"},
+    ).json()
 
     confirm_latest_email(client)
     token = get_token(client)
@@ -239,8 +270,13 @@ def test_vendor_average_rating(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
 
-    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 5})
-    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 3})
+    register_client(client)
+    confirm_latest_client_email(client)
+    token = get_client_token(client)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 5}, headers=headers)
+    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 3}, headers=headers)
 
     resp = client.get("/vendors/")
     assert resp.status_code == 200

@@ -38,6 +38,23 @@ class VendorOut(BaseModel):
         orm_mode = True
 
 
+class ClientCreate(BaseModel):
+    name: str
+    email: str
+    password: str
+    profile_photo: str
+
+
+class ClientOut(BaseModel):
+    id: int
+    name: str
+    email: str
+    profile_photo: str
+
+    class Config:
+        orm_mode = True
+
+
 class ReviewCreate(BaseModel):
     rating: int
     comment: Optional[str] = None
@@ -50,6 +67,7 @@ class ReviewResponse(BaseModel):
 class ReviewOut(BaseModel):
     id: int
     vendor_id: int
+    client_name: Optional[str] = None
     rating: int
     comment: Optional[str] = None
     response: Optional[str] = None
