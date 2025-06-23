@@ -449,12 +449,14 @@ if (share) {
                   ? `Média: ${vendor.rating_average.toFixed(1)}\u2605`
                   : 'Ainda sem avaliações'}
               </Text>
-              {reviews.map((r) => (
-                <View key={r.id} style={styles.reviewItem}>
-                  <Text style={styles.reviewRating}>⭐ {r.rating}</Text>
-                  {r.comment ? <Text>{r.comment}</Text> : null}
-                </View>
-              ))}
+              <ScrollView style={styles.reviewList} nestedScrollEnabled>
+                {reviews.map((r) => (
+                  <View key={r.id} style={styles.reviewItem}>
+                    <Text style={styles.reviewRating}>⭐ {r.rating}</Text>
+                    {r.comment ? <Text>{r.comment}</Text> : null}
+                  </View>
+                ))}
+              </ScrollView>
             </>
           ) : (
             <Text style={styles.averageText}>Ainda sem avaliações</Text>
@@ -534,6 +536,7 @@ const styles = StyleSheet.create({
   reviewSection: { width: '100%', marginTop: 16 },
   sectionTitle: { fontWeight: 'bold', marginBottom: 4 },
   averageText: { marginBottom: 8 },
+  reviewList: { maxHeight: 200 },
   reviewItem: {
     paddingVertical: 4,
     borderBottomWidth: 1,
