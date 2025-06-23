@@ -485,6 +485,9 @@ if (share) {
           <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('Stats'); }}>
             {t('statsTitle')}
           </Button>
+          <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('AccountSettings'); }}>
+            {t('accountSettingsTitle')}
+          </Button>
           <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('Language'); }}>
             {t('languageTitle')}
           </Button>

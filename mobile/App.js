@@ -15,6 +15,7 @@ import StatsScreen from './screens/StatsScreen';
 import TermsScreen from './screens/TermsScreen';
 import PaidWeeksScreen from './screens/PaidWeeksScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
+import AccountSettingsScreen from './screens/AccountSettingsScreen';
 import { theme } from './theme';
 import t, { loadLanguage } from './i18n';
 import LanguageScreen from './screens/LanguageScreen';
@@ -53,6 +54,7 @@ export default function App() {
           <Stack.Screen name="PaidWeeks" component={PaidWeeksScreen} options={{ title: t('paidWeeksTitle') }} />
           <Stack.Screen name="RouteDetail" component={RouteDetailScreen} options={{ title: 'Trajeto' }} />
           <Stack.Screen name="Terms" component={TermsScreen} options={{ title: 'Termos' }} />
+          <Stack.Screen name="AccountSettings" component={AccountSettingsScreen} options={{ title: t('accountSettingsTitle') }} />
           <Stack.Screen name="Language" component={LanguageScreen} options={{ title: t('languageTitle') }} />
         </Stack.Navigator>
       </NavigationContainer>

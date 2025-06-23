@@ -15,6 +15,7 @@ import LeafletMap from "../LeafletMap";
 import axios from "axios";
 import { BASE_URL } from "../config";
 import { theme } from "../theme";
+import { isNotificationsEnabled, getNotificationRadius } from "../settingsService";
 import { subscribe as subscribeLocations } from "../socketService";
 import {
   startLocationSharing,
@@ -40,6 +41,8 @@ export default function MapScreen({ navigation }) {
   const [userPosition, setUserPosition] = useState(null);
   const [mapKey, setMapKey] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(13);
+  const [notifEnabled, setNotifEnabled] = useState(true);
+  const [notifRadius, setNotifRadius] = useState(20);
   const mapRef = useRef(null);
   const watchRef = useRef(null);
 
@@ -201,6 +204,14 @@ export default function MapScreen({ navigation }) {
     init();
   }, []);
 
+  useEffect(() => {
+    const load = async () => {
+      setNotifEnabled(await isNotificationsEnabled());
+      setNotifRadius(await getNotificationRadius());
+    };
+    load();
+  }, []);
+
   const activeVendors = vendors.filter(
     (v) => v?.current_lat != null && v?.current_lng != null,
   );
@@ -212,8 +223,8 @@ export default function MapScreen({ navigation }) {
         v?.name?.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
-  // Enviar notificações quando um vendedor estiver a 20 metros
-  useProximityNotifications(filteredVendors, 20, favoriteIds);
+  // Enviar notificações de proximidade se estiver ativo
+  useProximityNotifications(filteredVendors, notifRadius, favoriteIds, notifEnabled);
 
   return (
     <View style={styles.container}>
