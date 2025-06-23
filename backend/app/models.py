@@ -29,6 +29,25 @@ class Vendor(Base):
     routes = relationship("Route", back_populates="vendor")
 
 
+class Client(Base):
+    """Utilizador cliente que pode avaliar e guardar favoritos."""
+
+    __tablename__ = "clients"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    profile_photo = Column(String)
+    email_confirmed = Column(Boolean, default=False)
+    confirmation_token = Column(String, nullable=True, index=True)
+    password_reset_token = Column(String, nullable=True, index=True)
+    password_reset_expires = Column(DateTime, nullable=True)
+
+    favorites = relationship("Favorite", back_populates="client")
+    reviews = relationship("Review", back_populates="client")
+
+
 class Review(Base):
     """Avaliações/comentários de clientes para um vendedor."""
 
@@ -36,12 +55,14 @@ class Review(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     vendor_id = Column(Integer, ForeignKey("vendors.id"))
+    client_id = Column(Integer, ForeignKey("clients.id"), nullable=True)
     rating = Column(Integer)
     comment = Column(String)
     response = Column(String, nullable=True)
     active = Column(Boolean, default=True)
 
     vendor = relationship("Vendor", back_populates="reviews")
+    client = relationship("Client", back_populates="reviews")
 
 
 class Route(Base):
@@ -70,5 +91,18 @@ class PaidWeek(Base):
     end_date = Column(DateTime)
     receipt_url = Column(String, nullable=True)
 
+    vendor = relationship("Vendor")
+
+
+class Favorite(Base):
+    """Vínculo de clientes a vendedores favoritos."""
+
+    __tablename__ = "favorites"
+
+    id = Column(Integer, primary_key=True, index=True)
+    client_id = Column(Integer, ForeignKey("clients.id"))
+    vendor_id = Column(Integer, ForeignKey("vendors.id"))
+
+    client = relationship("Client", back_populates="favorites")
     vendor = relationship("Vendor")
 

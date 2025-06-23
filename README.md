@@ -15,7 +15,7 @@ scripts/    Utilidades auxiliares
 1. **Requisitos**: Python 3.10+, Node.js e Expo CLI.
 2. Instale as dependências Python:
    ```bash
-   pip install -r backend/requirements.txt
+   pip install -r requirements.txt
    ```
 3. Defina as variáveis de ambiente usadas pelo backend (PostgreSQL ou SQLite):
    - `DATABASE_URL` para apontar para a base de dados.
