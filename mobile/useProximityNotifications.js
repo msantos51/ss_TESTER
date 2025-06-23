@@ -19,9 +19,11 @@ function distanceMeters(lat1, lon1, lat2, lon2) {
 export default function useProximityNotifications(
   vendors,
   radius = 500,
-  favoriteIds = []
+  favoriteIds = [],
+  enabled = true
 ) {
   useEffect(() => {
+    if (!enabled) return;
     let sub;
     const start = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -64,5 +66,5 @@ export default function useProximityNotifications(
     return () => {
       sub && sub.remove();
     };
-  }, [vendors, radius, favoriteIds]);
+  }, [vendors, radius, favoriteIds, enabled]);
 }

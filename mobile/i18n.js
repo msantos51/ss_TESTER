@@ -13,6 +13,9 @@ const translations = {
     languageTitle: 'Language',
     english: 'English',
     portuguese: 'Portuguese',
+    accountSettingsTitle: 'Account Settings',
+    notificationsEnabled: 'Enable notifications',
+    notificationRadius: 'Notification radius (m)',
   },
   pt: {
     statsTitle: 'Estatísticas',
@@ -24,6 +27,9 @@ const translations = {
     languageTitle: 'Idioma',
     english: 'Inglês',
     portuguese: 'Português',
+    accountSettingsTitle: 'Definições de Conta',
+    notificationsEnabled: 'Ativar notificações',
+    notificationRadius: 'Raio para notificações (m)',
   },
 };
 
