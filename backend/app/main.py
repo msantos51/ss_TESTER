@@ -127,7 +127,10 @@ class ConnectionManager:
 
     async def broadcast(self, message: dict):
         for connection in list(self.active_connections):
-            await connection.send_json(message)
+            try:
+                await connection.send_json(message)
+            except Exception:
+                self.disconnect(connection)
 
 manager = ConnectionManager()
 
@@ -199,6 +202,26 @@ def get_db_local():
         yield db
     finally:
         db.close()
+
+ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
+
+def get_admin(request: Request):
+    token = request.headers.get("X-Admin-Token")
+    if not ADMIN_TOKEN or token != ADMIN_TOKEN:
+        raise HTTPException(status_code=401, detail="Admin unauthorized")
+    return True
+
+# --------------------------
+# Subscrip\xE7\xE3o
+# --------------------------
+def verify_active_subscription(vendor: models.Vendor, db: Session):
+    """Ensure subscription is active and not expired."""
+    if vendor.subscription_active and vendor.subscription_valid_until and vendor.subscription_valid_until < datetime.utcnow():
+        vendor.subscription_active = False
+        db.commit()
+        db.refresh(vendor)
+    if not vendor.subscription_active:
+        raise HTTPException(status_code=403, detail="Subscription inactive")
 
 # --------------------------
 # Login do vendedor
@@ -402,6 +425,8 @@ def list_vendors(db: Session = Depends(get_db)):
             v.rating_average = sum(r.rating for r in v.reviews) / len(v.reviews)
         else:
             v.rating_average = None
+        if v.last_seen:
+            v.last_seen = v.last_seen.isoformat()
     return vendors
 
 # --------------------------
@@ -443,6 +468,8 @@ def list_favorites(
             v.rating_average = sum(r.rating for r in v.reviews) / len(v.reviews)
         else:
             v.rating_average = None
+        if v.last_seen:
+            v.last_seen = v.last_seen.isoformat()
     return vendors
 
 
@@ -534,6 +561,8 @@ async def update_vendor_location(
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
 
+    verify_active_subscription(current_vendor, db)
+
     # only allow updates if the vendor has an active route
     active_route = (
         db.query(models.Route)
@@ -546,6 +575,7 @@ async def update_vendor_location(
 
     vendor.current_lat = lat
     vendor.current_lng = lng
+    vendor.last_seen = datetime.utcnow()
     db.commit()
 
     if active_route:
@@ -569,6 +599,8 @@ def start_route(
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
 
+    verify_active_subscription(current_vendor, db)
+
     # close any previously active routes to avoid duplicates
     active_routes = (
         db.query(models.Route)
@@ -584,6 +616,7 @@ def start_route(
         r.end_time = datetime.utcnow()
 
     route = models.Route(vendor_id=vendor_id, points="[]")
+    current_vendor.last_seen = datetime.utcnow()
     db.add(route)
     db.commit()
     db.refresh(route)
@@ -604,6 +637,8 @@ async def stop_route(
 ):
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
+
+    verify_active_subscription(current_vendor, db)
     routes = (
         db.query(models.Route)
         .filter(models.Route.vendor_id == vendor_id, models.Route.end_time == None)
@@ -625,6 +660,7 @@ async def stop_route(
     # Clear vendor's current location so clients remove it from the map
     current_vendor.current_lat = None
     current_vendor.current_lng = None
+    current_vendor.last_seen = datetime.utcnow()
     db.commit()
     for r in routes:
         db.refresh(r)
@@ -857,3 +893,23 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
             db.add(paid)
             db.commit()
     return {"status": "success"}
+
+# --------------------------
+# Admin endpoints simples
+# --------------------------
+@app.get("/admin/vendors", response_model=list[schemas.VendorOut])
+def admin_list_vendors(db: Session = Depends(get_db), admin: bool = Depends(get_admin)):
+    vendors = db.query(models.Vendor).all()
+    for v in vendors:
+        if v.last_seen:
+            v.last_seen = v.last_seen.isoformat()
+    return vendors
+
+@app.post("/admin/vendors/{vendor_id}/deactivate")
+def admin_deactivate_vendor(vendor_id: int, db: Session = Depends(get_db), admin: bool = Depends(get_admin)):
+    vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendor not found")
+    vendor.subscription_active = False
+    db.commit()
+    return {"status": "deactivated"}
