@@ -33,6 +33,7 @@ class VendorOut(BaseModel):
     rating_average: Optional[float] = None
     subscription_active: Optional[bool] = None
     subscription_valid_until: Optional[str] = None
+    last_seen: Optional[str] = None
 
     class Config:
         orm_mode = True

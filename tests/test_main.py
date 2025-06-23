@@ -52,6 +52,13 @@ def register_client(client, email="client@example.com", password="Secret123", na
     files = {"profile_photo": ("test.png", b"fakeimage", "image/png")}
     return client.post("/clients/", data=data, files=files)
 
+def activate_subscription(client, vendor_id):
+    event = {
+        "type": "checkout.session.completed",
+        "data": {"object": {"metadata": {"vendor_id": vendor_id}, "url": "http://r"}},
+    }
+    client.post("/stripe/webhook", json=event)
+
 
 def confirm_latest_client_email(client):
     body = client.sent_emails[-1]["body"]
@@ -133,6 +140,7 @@ def test_protected_routes(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
+    activate_subscription(client, vendor_id)
     token = get_token(client)
 
     # update profile with auth
@@ -165,6 +173,7 @@ def test_location_update_fields(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
+    activate_subscription(client, vendor_id)
     token = get_token(client)
 
     client.post(
@@ -190,6 +199,7 @@ def test_websocket_location_broadcast(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
+    activate_subscription(client, vendor_id)
     token = get_token(client)
 
     client.post(
@@ -288,6 +298,7 @@ def test_routes_flow(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
+    activate_subscription(client, vendor_id)
     token = get_token(client)
 
     # start route
