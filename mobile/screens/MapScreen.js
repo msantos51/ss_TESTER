@@ -15,7 +15,10 @@ import LeafletMap from "../LeafletMap";
 import axios from "axios";
 import { BASE_URL } from "../config";
 import { theme } from "../theme";
+<<<<<<< Updated upstream
 import { isNotificationsEnabled, getNotificationRadius } from "../settingsService";
+=======
+>>>>>>> Stashed changes
 import { subscribe as subscribeLocations } from "../socketService";
 import {
   startLocationSharing,
@@ -163,7 +166,10 @@ export default function MapScreen({ navigation }) {
           userPosition.longitude,
           zoom,
         );
+<<<<<<< Updated upstream
         setZoomLevel(zoom);
+=======
+>>>>>>> Stashed changes
         return;
       }
 
@@ -204,6 +210,7 @@ export default function MapScreen({ navigation }) {
     init();
   }, []);
 
+<<<<<<< Updated upstream
   useEffect(() => {
     const load = async () => {
       setNotifEnabled(await isNotificationsEnabled());
@@ -212,6 +219,8 @@ export default function MapScreen({ navigation }) {
     load();
   }, []);
 
+=======
+>>>>>>> Stashed changes
   const activeVendors = vendors.filter(
     (v) => v?.current_lat != null && v?.current_lng != null,
   );
@@ -340,6 +349,7 @@ export default function MapScreen({ navigation }) {
                   <TouchableOpacity
                     style={styles.vendorItem}
                     accessible
+<<<<<<< Updated upstream
                   onPress={() => {
                     setSelectedVendorId(item.id);
                     mapRef.current?.setView(
@@ -348,6 +358,15 @@ export default function MapScreen({ navigation }) {
                       zoomLevel,
                     );
                   }}
+=======
+                    onPress={() => {
+                      setSelectedVendorId(item.id);
+                      mapRef.current?.setView(
+                        item.current_lat,
+                        item.current_lng,
+                      );
+                    }}
+>>>>>>> Stashed changes
                     onLongPress={() => {
                       setSelectedVendorId(item.id);
                       navigation.navigate("VendorDetail", { vendor: item });
