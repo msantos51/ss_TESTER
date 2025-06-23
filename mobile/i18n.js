@@ -1,5 +1,6 @@
 import { I18n } from 'i18n-js';
 import * as Localization from 'expo-localization';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const translations = {
   en: {
@@ -9,6 +10,9 @@ const translations = {
     addFavorite: 'Add to favorites',
     removeFavorite: 'Remove favorite',
     paidWeeksTitle: 'Paid weeks',
+    languageTitle: 'Language',
+    english: 'English',
+    portuguese: 'Portuguese',
   },
   pt: {
     statsTitle: 'Estatísticas',
@@ -17,11 +21,30 @@ const translations = {
     addFavorite: 'Adicionar aos favoritos',
     removeFavorite: 'Remover favorito',
     paidWeeksTitle: 'Semanas Pagas',
+    languageTitle: 'Idioma',
+    english: 'Inglês',
+    portuguese: 'Português',
   },
 };
 
 const i18n = new I18n(translations);
-i18n.locale = Localization.locale;
 i18n.enableFallback = true;
 
-export default (key) => i18n.t(key);
+export async function loadLanguage() {
+  const stored = await AsyncStorage.getItem('language');
+  i18n.locale = stored || Localization.locale;
+}
+
+export async function setLanguage(lang) {
+  i18n.locale = lang;
+  await AsyncStorage.setItem('language', lang);
+}
+
+export async function getLanguage() {
+  const stored = await AsyncStorage.getItem('language');
+  return stored || Localization.locale;
+}
+
+export default function t(key) {
+  return i18n.t(key);
+}

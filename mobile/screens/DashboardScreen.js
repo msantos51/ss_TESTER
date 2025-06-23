@@ -19,9 +19,10 @@ import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { BASE_URL } from '../config';
 import { theme } from '../theme';
-import t from '../i18n';
+import t, { getLanguage } from '../i18n';
 import {
   startLocationSharing,
   stopLocationSharing,
@@ -55,6 +56,7 @@ export default function DashboardScreen({ navigation }) {
   const [editing, setEditing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [reviews, setReviews] = useState([]);
+  const [lang, setLang] = useState('en');
 
   const fetchVendorFromServer = async (vendorId) => {
     try {
@@ -137,6 +139,12 @@ if (share) {
     });
     return unsubscribe;
   }, [navigation, vendor?.id]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getLanguage().then(setLang);
+    }, [])
+  );
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -263,6 +271,10 @@ if (share) {
 
         <TouchableOpacity style={styles.mapButton} onPress={() => navigation.navigate('Map')}>
           <MaterialCommunityIcons name="map-outline" size={50} />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.langButton} onPress={() => navigation.navigate('Language')}>
+          <Text style={styles.langIcon}>{lang === 'pt' ? '🇵🇹' : '🇺🇸'}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuButton} onPress={() => setMenuOpen(!menuOpen)}>
@@ -502,6 +514,8 @@ const styles = StyleSheet.create({
   logoutButton: { marginTop: 'auto' },
   mapButton: { position: 'absolute', top: 16, right: 16 },
   mapIcon: { fontSize: 50 },
+  langButton: { position: 'absolute', top: 16, right: 72 },
+  langIcon: { fontSize: 40 },
   menuButton: { position: 'absolute', top: 16, left: 16 },
   menuIcon: { fontSize: 40 },
   menu: {
