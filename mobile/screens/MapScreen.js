@@ -39,6 +39,7 @@ export default function MapScreen({ navigation }) {
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [userPosition, setUserPosition] = useState(null);
   const [mapKey, setMapKey] = useState(0);
+  const [zoomLevel, setZoomLevel] = useState(13);
   const mapRef = useRef(null);
   const watchRef = useRef(null);
 
@@ -159,6 +160,7 @@ export default function MapScreen({ navigation }) {
           userPosition.longitude,
           zoom,
         );
+        setZoomLevel(zoom);
         return;
       }
 
@@ -185,6 +187,7 @@ export default function MapScreen({ navigation }) {
           ),
         100,
       );
+      setZoomLevel(zoom);
     } catch (err) {
       console.log("Erro ao obter localização:", err);
     }
@@ -225,6 +228,7 @@ export default function MapScreen({ navigation }) {
           key={mapKey}
           ref={mapRef}
           initialPosition={userPosition || initialPosition}
+          initialZoom={zoomLevel}
           markers={[
             ...filteredVendors.map((v) => {
               const photo = v.profile_photo
@@ -311,13 +315,14 @@ export default function MapScreen({ navigation }) {
                   <TouchableOpacity
                     style={styles.vendorItem}
                     accessible
-                    onPress={() => {
-                      setSelectedVendorId(item.id);
-                      mapRef.current?.setView(
-                        item.current_lat,
-                        item.current_lng,
-                      );
-                    }}
+                  onPress={() => {
+                    setSelectedVendorId(item.id);
+                    mapRef.current?.setView(
+                      item.current_lat,
+                      item.current_lng,
+                      zoomLevel,
+                    );
+                  }}
                     onLongPress={() => {
                       setSelectedVendorId(item.id);
                       navigation.navigate("VendorDetail", { vendor: item });
