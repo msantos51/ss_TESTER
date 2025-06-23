@@ -259,6 +259,20 @@ export default function MapScreen({ navigation }) {
         />
       )}
 
+      <TouchableOpacity
+        style={styles.vendorIcon}
+        onPress={() => navigation.navigate("Login")}
+        accessibilityRole="button"
+        accessibilityLabel="Login Vendedor"
+        accessible
+      >
+        <MaterialCommunityIcons
+          name="account"
+          size={32}
+          color={theme.colors.primary}
+        />
+      </TouchableOpacity>
+
       {!loadingLocation && (
         <TouchableOpacity
           style={styles.locateButton}
@@ -385,7 +399,7 @@ export default function MapScreen({ navigation }) {
               style={styles.button}
               onPress={() => navigation.navigate("Login")}
             >
-              Login
+              Login Cliente
             </Button>
 
             <Button
@@ -393,7 +407,7 @@ export default function MapScreen({ navigation }) {
               style={styles.button}
               onPress={() => navigation.navigate("Register")}
             >
-              Registar
+              Registar Cliente
             </Button>
           </>
         )}
@@ -452,5 +466,10 @@ const styles = StyleSheet.create({
   },
   locateIcon: {
     fontSize: 24,
+  },
+  vendorIcon: {
+    position: "absolute",
+    top: 10,
+    right: 10,
   },
 });
