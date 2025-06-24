@@ -1,4 +1,4 @@
-// Tela de login do utilizador
+// Tela de login do cliente de praia
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import {
@@ -7,24 +7,23 @@ import {
   Text,
   ActivityIndicator,
 } from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../config';
 import { theme } from '../theme';
 
-export default function LoginScreen({ navigation }) {
+export default function ClientLoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // # Função para decodificar o token e obter o vendorId
-  const getVendorIdFromToken = (token) => {
+  const getIdFromToken = (token) => {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.sub;
     } catch (e) {
-      console.error('Erro ao decodificar o token:', e);
+      console.error('Erro ao decodificar token:', e);
       return null;
     }
   };
@@ -34,31 +33,24 @@ export default function LoginScreen({ navigation }) {
     setLoading(true);
     setError(null);
     try {
-      // # Obter o token
-      const tokenRes = await axios.post(`${BASE_URL}/token`, {
+      const resp = await axios.post(`${BASE_URL}/client-token`, {
         email,
         password,
       });
-      const token = tokenRes.data.access_token;
-
-      // # Guardar o token
-      await AsyncStorage.setItem('token', token);
-
-      // # Extrair e guardar o vendorId do token
-      const vendorId = getVendorIdFromToken(token);
-      if (vendorId) {
-        await AsyncStorage.setItem('vendorId', vendorId.toString());
+      const token = resp.data.access_token;
+      await AsyncStorage.setItem('clientToken', token);
+      const clientId = getIdFromToken(token);
+      let client = { id: clientId, email };
+      if (clientId) {
+        try {
+          const details = await axios.get(`${BASE_URL}/clients/${clientId}`);
+          client = details.data;
+        } catch (e) {
+          console.log('Erro ao obter cliente:', e);
+        }
       }
-
-      // # Obter dados do utilizador (nome, produto, etc.)
-      const userRes = await axios.post(`${BASE_URL}/login`, {
-        email,
-        password,
-      });
-      await AsyncStorage.setItem('user', JSON.stringify(userRes.data));
-
-      // # Navegar para o dashboard
-      navigation.navigate('Dashboard');
+      await AsyncStorage.setItem('client', JSON.stringify(client));
+      navigation.navigate('ClientDashboard');
     } catch (err) {
       console.error(err);
       if (err.response?.data?.detail) {
@@ -74,48 +66,38 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {error && <Text style={styles.error}>{error}</Text>}
-
       <TextInput
         mode="outlined"
         style={styles.input}
         label="Email"
         value={email}
-        onChangeText={(text) => {
-          setEmail(text);
+        onChangeText={(t) => {
+          setEmail(t);
           setError(null);
         }}
         autoCapitalize="none"
       />
-
       <TextInput
         mode="outlined"
         style={styles.input}
         label="Password"
         secureTextEntry
         value={password}
-        onChangeText={(text) => {
-          setPassword(text);
+        onChangeText={(t) => {
+          setPassword(t);
           setError(null);
         }}
       />
-
       {loading ? (
         <ActivityIndicator animating size="large" />
       ) : (
-        <Button mode="contained" onPress={login} disabled={!email || !password}
-        >Entrar</Button>
+        <Button mode="contained" onPress={login} disabled={!email || !password}>
+          Entrar
+        </Button>
       )}
-
       <View style={{ marginTop: 12 }} />
-      <Button mode="outlined" onPress={() => navigation.navigate('VendorRegister')}>
+      <Button mode="outlined" onPress={() => navigation.navigate('ClientRegister')}>
         Registar
-      </Button>
-      <View style={{ marginTop: 12 }} />
-      <Button
-        mode="text"
-        onPress={() => navigation.navigate('ForgotPassword')}
-      >
-        Esqueci a minha password
       </Button>
     </View>
   );

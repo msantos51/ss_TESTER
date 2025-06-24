@@ -4,8 +4,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
 
-import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
+import VendorLoginScreen from './screens/LoginScreen';
+import VendorRegisterScreen from './screens/RegisterScreen';
+import ClientLoginScreen from './screens/ClientLoginScreen';
+import ClientRegisterScreen from './screens/ClientRegisterScreen';
+import ClientDashboardScreen from './screens/ClientDashboardScreen';
 import MapScreen from './screens/MapScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import VendorDetailScreen from './screens/VendorDetailScreen';
@@ -45,8 +48,11 @@ export default function App() {
             component={VendorDetailScreen}
             options={{ title: 'Vendedor' }}
           />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="VendorLogin" component={VendorLoginScreen} />
+          <Stack.Screen name="VendorRegister" component={VendorRegisterScreen} />
+          <Stack.Screen name="ClientLogin" component={ClientLoginScreen} />
+          <Stack.Screen name="ClientRegister" component={ClientRegisterScreen} />
+          <Stack.Screen name="ClientDashboard" component={ClientDashboardScreen} />
           <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ title: 'Recuperar Password' }} />
           <Stack.Screen name="Dashboard" component={DashboardScreen} />
           <Stack.Screen name="Routes" component={RoutesScreen} options={{ title: 'Trajetos' }} />

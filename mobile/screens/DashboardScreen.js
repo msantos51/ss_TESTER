@@ -92,7 +92,7 @@ export default function DashboardScreen({ navigation }) {
     await stopLocationSharing();
     await AsyncStorage.removeItem('user');
     await AsyncStorage.removeItem('token');
-    navigation.replace('Login');
+    navigation.replace('VendorLogin');
   };
 
   useEffect(() => {

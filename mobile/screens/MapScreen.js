@@ -15,10 +15,7 @@ import LeafletMap from "../LeafletMap";
 import axios from "axios";
 import { BASE_URL } from "../config";
 import { theme } from "../theme";
-<<<<<<< Updated upstream
 import { isNotificationsEnabled, getNotificationRadius } from "../settingsService";
-=======
->>>>>>> Stashed changes
 import { subscribe as subscribeLocations } from "../socketService";
 import {
   startLocationSharing,
@@ -33,7 +30,8 @@ import t from "../i18n";
 
 export default function MapScreen({ navigation }) {
   const [vendors, setVendors] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [vendorUser, setVendorUser] = useState(null);
+  const [clientUser, setClientUser] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState("Todos os vendedores");
   const [showList, setShowList] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -77,12 +75,12 @@ export default function MapScreen({ navigation }) {
     }
   };
 
-  const loadUser = async () => {
+  const loadVendor = async () => {
     try {
       const stored = await AsyncStorage.getItem("user");
       if (stored) {
         const v = JSON.parse(stored);
-        setCurrentUser(v);
+        setVendorUser(v);
         const share = await isLocationSharing();
         if (share) {
           try {
@@ -92,12 +90,26 @@ export default function MapScreen({ navigation }) {
           }
         }
       } else {
-        setCurrentUser(null);
+        setVendorUser(null);
         await stopLocationSharing();
       }
     } catch (err) {
-      console.log("Erro ao carregar utilizador:", err);
-      setCurrentUser(null);
+      console.log("Erro ao carregar vendedor:", err);
+      setVendorUser(null);
+    }
+  };
+
+  const loadClient = async () => {
+    try {
+      const stored = await AsyncStorage.getItem("client");
+      if (stored) {
+        setClientUser(JSON.parse(stored));
+      } else {
+        setClientUser(null);
+      }
+    } catch (err) {
+      console.log("Erro ao carregar cliente:", err);
+      setClientUser(null);
     }
   };
 
@@ -109,11 +121,13 @@ export default function MapScreen({ navigation }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       fetchVendors();
-      loadUser();
+      loadVendor();
+      loadClient();
       loadFavorites();
     });
     fetchVendors();
-    loadUser();
+    loadVendor();
+    loadClient();
     loadFavorites();
     return unsubscribe;
   }, [navigation]);
@@ -166,10 +180,7 @@ export default function MapScreen({ navigation }) {
           userPosition.longitude,
           zoom,
         );
-<<<<<<< Updated upstream
         setZoomLevel(zoom);
-=======
->>>>>>> Stashed changes
         return;
       }
 
@@ -210,7 +221,6 @@ export default function MapScreen({ navigation }) {
     init();
   }, []);
 
-<<<<<<< Updated upstream
   useEffect(() => {
     const load = async () => {
       setNotifEnabled(await isNotificationsEnabled());
@@ -218,9 +228,6 @@ export default function MapScreen({ navigation }) {
     };
     load();
   }, []);
-
-=======
->>>>>>> Stashed changes
   const activeVendors = vendors.filter(
     (v) => v?.current_lat != null && v?.current_lng != null,
   );
@@ -281,7 +288,9 @@ export default function MapScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.vendorIcon}
-        onPress={() => navigation.navigate("Login")}
+        onPress={() =>
+          navigation.navigate(vendorUser ? "Dashboard" : "VendorLogin")
+        }
         accessibilityRole="button"
         accessibilityLabel="Login Vendedor"
         accessible
@@ -349,24 +358,14 @@ export default function MapScreen({ navigation }) {
                   <TouchableOpacity
                     style={styles.vendorItem}
                     accessible
-<<<<<<< Updated upstream
-                  onPress={() => {
-                    setSelectedVendorId(item.id);
-                    mapRef.current?.setView(
-                      item.current_lat,
-                      item.current_lng,
-                      zoomLevel,
-                    );
-                  }}
-=======
                     onPress={() => {
                       setSelectedVendorId(item.id);
                       mapRef.current?.setView(
                         item.current_lat,
                         item.current_lng,
+                        zoomLevel,
                       );
                     }}
->>>>>>> Stashed changes
                     onLongPress={() => {
                       setSelectedVendorId(item.id);
                       navigation.navigate("VendorDetail", { vendor: item });
@@ -414,11 +413,11 @@ export default function MapScreen({ navigation }) {
       </View>
 
       <View style={styles.buttonsContainer}>
-        {currentUser ? (
+        {clientUser ? (
           <Button
             mode="contained"
             style={styles.button}
-            onPress={() => navigation.navigate("Dashboard")}
+            onPress={() => navigation.navigate("ClientDashboard")}
           >
             Perfil
           </Button>
@@ -427,7 +426,7 @@ export default function MapScreen({ navigation }) {
             <Button
               mode="contained"
               style={styles.button}
-              onPress={() => navigation.navigate("Login")}
+              onPress={() => navigation.navigate("ClientLogin")}
             >
               Login Cliente
             </Button>
@@ -435,7 +434,7 @@ export default function MapScreen({ navigation }) {
             <Button
               mode="outlined"
               style={styles.button}
-              onPress={() => navigation.navigate("Register")}
+              onPress={() => navigation.navigate("ClientRegister")}
             >
               Registar Cliente
             </Button>
