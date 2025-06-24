@@ -425,8 +425,6 @@ def list_vendors(db: Session = Depends(get_db)):
             v.rating_average = sum(r.rating for r in v.reviews) / len(v.reviews)
         else:
             v.rating_average = None
-        if v.last_seen:
-            v.last_seen = v.last_seen.isoformat()
     return vendors
 
 # --------------------------
@@ -575,7 +573,6 @@ async def update_vendor_location(
 
     vendor.current_lat = lat
     vendor.current_lng = lng
-    vendor.last_seen = datetime.utcnow()
     db.commit()
 
     if active_route:
@@ -616,7 +613,6 @@ def start_route(
         r.end_time = datetime.utcnow()
 
     route = models.Route(vendor_id=vendor_id, points="[]")
-    current_vendor.last_seen = datetime.utcnow()
     db.add(route)
     db.commit()
     db.refresh(route)
@@ -660,7 +656,6 @@ async def stop_route(
     # Clear vendor's current location so clients remove it from the map
     current_vendor.current_lat = None
     current_vendor.current_lng = None
-    current_vendor.last_seen = datetime.utcnow()
     db.commit()
     for r in routes:
         db.refresh(r)
@@ -901,8 +896,6 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 def admin_list_vendors(db: Session = Depends(get_db), admin: bool = Depends(get_admin)):
     vendors = db.query(models.Vendor).all()
     for v in vendors:
-        if v.last_seen:
-            v.last_seen = v.last_seen.isoformat()
     return vendors
 
 @app.post("/admin/vendors/{vendor_id}/deactivate")

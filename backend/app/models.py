@@ -18,7 +18,6 @@ class Vendor(Base):
     pin_color = Column(String, default="#FFB6C1")
     current_lat = Column(Float, nullable=True)
     current_lng = Column(Float, nullable=True)
-    last_seen = Column(DateTime, nullable=True)
     subscription_active = Column(Boolean, default=False)
     subscription_valid_until = Column(DateTime, nullable=True)
     email_confirmed = Column(Boolean, default=False)
