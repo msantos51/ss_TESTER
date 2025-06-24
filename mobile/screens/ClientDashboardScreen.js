@@ -7,6 +7,7 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import { getFavorites } from '../favoritesService';
 import { theme } from '../theme';
+import t from '../i18n';
 
 export default function ClientDashboardScreen({ navigation }) {
   const [favorites, setFavorites] = useState([]);
@@ -61,6 +62,13 @@ export default function ClientDashboardScreen({ navigation }) {
           );
         }}
       />
+      <Button
+        mode="outlined"
+        onPress={() => navigation.navigate('AccountSettings')}
+        style={styles.settings}
+      >
+        {t('accountSettingsTitle')}
+      </Button>
       <Button mode="outlined" onPress={logout} style={styles.logout}>
         Sair
       </Button>
@@ -79,5 +87,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   image: { width: 40, height: 40, borderRadius: 20, marginRight: 8 },
+  settings: { marginTop: 20 },
   logout: { marginTop: 20 },
 });
