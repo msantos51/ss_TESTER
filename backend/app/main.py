@@ -895,7 +895,6 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 @app.get("/admin/vendors", response_model=list[schemas.VendorOut])
 def admin_list_vendors(db: Session = Depends(get_db), admin: bool = Depends(get_admin)):
     vendors = db.query(models.Vendor).all()
-    for v in vendors:
     return vendors
 
 @app.post("/admin/vendors/{vendor_id}/deactivate")
