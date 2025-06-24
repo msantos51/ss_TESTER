@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Switch, Text, TextInput } from 'react-native-paper';
+import { Switch, Text } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
 import {
   isNotificationsEnabled,
   setNotificationsEnabled,
@@ -30,11 +31,8 @@ export default function AccountSettingsScreen() {
   };
 
   const changeRadius = async (value) => {
-    setRadius(value);
-    const num = parseInt(value, 10);
-    if (!isNaN(num)) {
-      await setNotificationRadius(num);
-    }
+    setRadius(String(value));
+    await setNotificationRadius(value);
   };
 
   return (
@@ -44,14 +42,16 @@ export default function AccountSettingsScreen() {
         <Text>{t('notificationsEnabled')}</Text>
         <Switch value={enabled} onValueChange={toggleNotifications} />
       </View>
-      <TextInput
-        mode="outlined"
-        style={styles.input}
-        label={t('notificationRadius')}
-        keyboardType="numeric"
-        value={radius}
-        onChangeText={changeRadius}
-      />
+      <Text>{t('notificationRadius')}</Text>
+      <Picker
+        selectedValue={parseInt(radius, 10)}
+        onValueChange={changeRadius}
+        style={styles.picker}
+      >
+        <Picker.Item label="20" value={20} />
+        <Picker.Item label="50" value={50} />
+        <Picker.Item label="100" value={100} />
+      </Picker>
     </View>
   );
 }
@@ -60,5 +60,5 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: theme.colors.background },
   title: { fontSize: 20, marginBottom: 16 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
-  input: { marginBottom: 16 },
+  picker: { marginBottom: 16 },
 });

@@ -1,4 +1,4 @@
-// Tela de recuperacao de password
+// Tela de recuperação de palavra-passe
 import React, { useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { TextInput, Button, Text, ActivityIndicator } from 'react-native-paper';
@@ -17,7 +17,7 @@ export default function ForgotPasswordScreen({ navigation }) {
     setError(null);
     try {
       await axios.post(`${BASE_URL}/password-reset-request`, { email });
-      Alert.alert('Pedido enviado', 'Verifique o seu e-mail para definir nova password.');
+      Alert.alert('Pedido enviado', 'Verifique o seu e-mail para definir nova palavra-passe.');
       navigation.goBack();
     } catch (err) {
       console.error(err);

@@ -1,6 +1,5 @@
 import { I18n } from 'i18n-js';
 import * as Localization from 'expo-localization';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const translations = {
   en: {
@@ -16,6 +15,10 @@ const translations = {
     accountSettingsTitle: 'Account Settings',
     notificationsEnabled: 'Enable notifications',
     notificationRadius: 'Notification radius (m)',
+    clearFavorites: 'Clear favorites',
+    proximityMenu: 'Proximity notifications',
+    manageAccount: 'Manage account',
+    aboutHelp: 'About/Help',
   },
   pt: {
     statsTitle: 'Estatísticas',
@@ -30,26 +33,35 @@ const translations = {
     accountSettingsTitle: 'Definições de Conta',
     notificationsEnabled: 'Ativar notificações',
     notificationRadius: 'Raio para notificações (m)',
+    clearFavorites: 'Limpar favoritos',
+    proximityMenu: 'Notificações de proximidade',
+    manageAccount: 'Definições',
+    aboutHelp: 'Sobre/Ajuda',
+  },
+  'pt-PT': {
+    statsTitle: 'Estatísticas',
+    noRoutes: 'Nenhum trajeto registado',
+    favorites: 'Favoritos',
+    addFavorite: 'Adicionar aos favoritos',
+    removeFavorite: 'Remover favorito',
+    paidWeeksTitle: 'Semanas Pagas',
+    languageTitle: 'Idioma',
+    english: 'Inglês',
+    portuguese: 'Português',
+    accountSettingsTitle: 'Definições de Conta',
+    notificationsEnabled: 'Ativar notificações',
+    notificationRadius: 'Raio para notificações (m)',
+    clearFavorites: 'Limpar favoritos',
+    proximityMenu: 'Notificações de proximidade',
+    manageAccount: 'Definições',
+    aboutHelp: 'Sobre/Ajuda',
   },
 };
 
 const i18n = new I18n(translations);
 i18n.enableFallback = true;
-
-export async function loadLanguage() {
-  const stored = await AsyncStorage.getItem('language');
-  i18n.locale = stored || Localization.locale;
-}
-
-export async function setLanguage(lang) {
-  i18n.locale = lang;
-  await AsyncStorage.setItem('language', lang);
-}
-
-export async function getLanguage() {
-  const stored = await AsyncStorage.getItem('language');
-  return stored || Localization.locale;
-}
+// Forçar português de Portugal por omissão
+i18n.locale = Localization.locale.startsWith('pt') ? 'pt-PT' : 'en';
 
 export default function t(key) {
   return i18n.t(key);

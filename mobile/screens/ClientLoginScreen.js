@@ -80,7 +80,7 @@ export default function ClientLoginScreen({ navigation }) {
       <TextInput
         mode="outlined"
         style={styles.input}
-        label="Password"
+        label="Palavra-passe"
         secureTextEntry
         value={password}
         onChangeText={(t) => {

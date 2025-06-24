@@ -292,7 +292,7 @@ export default function MapScreen({ navigation }) {
           navigation.navigate(vendorUser ? "Dashboard" : "VendorLogin")
         }
         accessibilityRole="button"
-        accessibilityLabel="Login Vendedor"
+        accessibilityLabel="Iniciar sessão de Vendedor"
         accessible
       >
         <MaterialCommunityIcons
@@ -428,7 +428,7 @@ export default function MapScreen({ navigation }) {
               style={styles.button}
               onPress={() => navigation.navigate("ClientLogin")}
             >
-              Login Cliente
+              Iniciar sessão Cliente
             </Button>
 
             <Button

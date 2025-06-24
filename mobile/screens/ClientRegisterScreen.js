@@ -37,7 +37,7 @@ export default function ClientRegisterScreen({ navigation }) {
       return;
     }
     if (password.length < 8 || password.toLowerCase() === password) {
-      setError('Password deve ter 8 caracteres e uma letra maiúscula');
+      setError('Palavra-passe deve ter 8 caracteres e uma letra maiúscula');
       return;
     }
     setLoading(true);
@@ -98,7 +98,7 @@ export default function ClientRegisterScreen({ navigation }) {
       <TextInput
         mode="outlined"
         style={styles.input}
-        label="Password"
+        label="Palavra-passe"
         secureTextEntry
         value={password}
         onChangeText={(t) => {

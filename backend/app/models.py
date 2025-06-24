@@ -64,6 +64,14 @@ class Review(Base):
     vendor = relationship("Vendor", back_populates="reviews")
     client = relationship("Client", back_populates="reviews")
 
+    @property
+    def client_name(self) -> str | None:
+        return self.client.name if self.client else None
+
+    @property
+    def client_profile_photo(self) -> str | None:
+        return self.client.profile_photo if self.client else None
+
 
 class Route(Base):
     """Trajetos percorridos pelos vendedores."""

@@ -40,7 +40,7 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
     if (password.length < 8 || password.toLowerCase() === password) {
-      setError('Password deve ter 8 caracteres e uma letra maiúscula');
+      setError('Palavra-passe deve ter 8 caracteres e uma letra maiúscula');
       return;
     }
 
@@ -91,6 +91,7 @@ export default function RegisterScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {error && <Text style={styles.error}>{error}</Text>}
+      <Text style={styles.notice}>Esta página destina-se apenas a vendedores.</Text>
 
       <TextInput
         mode="outlined"
@@ -118,7 +119,7 @@ export default function RegisterScreen({ navigation }) {
       <TextInput
         mode="outlined"
         style={styles.input}
-        label="Password"
+        label="Palavra-passe"
         secureTextEntry
         value={password}
         onChangeText={(text) => {
@@ -166,6 +167,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16, backgroundColor: theme.colors.background },
   input: { marginBottom: 12 },
   error: { color: 'red', marginBottom: 12, textAlign: 'center' },
+  notice: { marginBottom: 12, textAlign: 'center' },
   imagePreview: {
     width: 100,
     height: 100,

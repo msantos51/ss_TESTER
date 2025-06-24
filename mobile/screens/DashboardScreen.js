@@ -18,11 +18,10 @@ import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+
 import { BASE_URL } from '../config';
 import { theme } from '../theme';
-import t, { getLanguage } from '../i18n';
+import t from '../i18n';
 import {
   startLocationSharing,
   stopLocationSharing,
@@ -56,7 +55,6 @@ export default function DashboardScreen({ navigation }) {
   const [editing, setEditing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [reviews, setReviews] = useState([]);
-  const [lang, setLang] = useState('en');
 
   const fetchVendorFromServer = async (vendorId) => {
     try {
@@ -140,11 +138,7 @@ if (share) {
     return unsubscribe;
   }, [navigation, vendor?.id]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      getLanguage().then(setLang);
-    }, [])
-  );
+
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -161,7 +155,7 @@ if (share) {
   const updateProfile = async () => {
     if (!vendor) return;
     if (changingPassword && (!password || !oldPassword)) {
-      setError('Preencha as passwords');
+      setError('Preencha as palavras-passe');
       return;
     }
     try {
@@ -270,11 +264,7 @@ if (share) {
         {error && <Text style={styles.error}>{error}</Text>}
 
         <TouchableOpacity style={styles.mapButton} onPress={() => navigation.navigate('Map')}>
-          <MaterialCommunityIcons name="map-outline" size={50} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.langButton} onPress={() => navigation.navigate('Language')}>
-          <Text style={styles.langIcon}>{lang === 'pt' ? '🇵🇹' : '🇺🇸'}</Text>
+          <Text style={styles.mapIcon}>🗺️</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuButton} onPress={() => setMenuOpen(!menuOpen)}>
@@ -313,7 +303,7 @@ if (share) {
                 <TextInput
                   mode="outlined"
                   style={styles.input}
-                  label="Password atual"
+                  label="Palavra-passe atual"
                   secureTextEntry
                   value={oldPassword}
                   onChangeText={setOldPassword}
@@ -321,7 +311,7 @@ if (share) {
                 <TextInput
                   mode="outlined"
                   style={styles.input}
-                  label="Nova password"
+                  label="Nova palavra-passe"
                   secureTextEntry
                   value={password}
                   onChangeText={setPassword}
@@ -332,12 +322,12 @@ if (share) {
                 <TextInput
                   mode="outlined"
                   style={[styles.input, styles.inputDisabled]}
-                  label="Password"
+                  label="Palavra-passe"
                   value="********"
                   editable={false}
                 />
                 <Button mode="outlined" onPress={() => setChangingPassword(true)}>
-                  Alterar password
+                  Alterar palavra-passe
                 </Button>
               </>
             )}
@@ -453,9 +443,19 @@ if (share) {
                 {reviews.map((r) => (
                   <View key={r.id} style={styles.reviewItem}>
                     <Text style={styles.reviewRating}>⭐ {r.rating}</Text>
-                    {r.comment ? <Text>{r.comment}</Text> : null}
+                    {r.client_profile_photo && (
+                      <Image
+                        source={{ uri: `${BASE_URL.replace(/\/$/, '')}/${r.client_profile_photo}` }}
+                        style={styles.reviewPhoto}
+                      />
+                    )}
+                    {r.client_name && <Text style={styles.reviewName}>{r.client_name}</Text>}
+                    {r.comment ? (
+                      <Text style={styles.reviewComment}>{r.comment}</Text>
+                    ) : null}
                   </View>
                 ))}
+
               </ScrollView>
             </>
           ) : (
@@ -464,7 +464,7 @@ if (share) {
         </View>
 
         <View style={[styles.fullButton, styles.logoutButton]}>
-          <Button mode="outlined" onPress={logout}>Logout</Button>
+          <Button mode="outlined" onPress={logout}>Sair</Button>
         </View>
       </ScrollView>
 
@@ -484,12 +484,6 @@ if (share) {
           </Button>
           <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('Stats'); }}>
             {t('statsTitle')}
-          </Button>
-          <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('AccountSettings'); }}>
-            {t('accountSettingsTitle')}
-          </Button>
-          <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('Language'); }}>
-            {t('languageTitle')}
           </Button>
           <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('Terms'); }}>
             Termos e Condições
@@ -522,8 +516,6 @@ const styles = StyleSheet.create({
   logoutButton: { marginTop: 'auto' },
   mapButton: { position: 'absolute', top: 16, right: 16 },
   mapIcon: { fontSize: 50 },
-  langButton: { position: 'absolute', top: 16, right: 72 },
-  langIcon: { fontSize: 40 },
   menuButton: { position: 'absolute', top: 16, left: 16 },
   menuIcon: { fontSize: 40 },
   menu: {
@@ -544,8 +536,19 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
   },
   reviewRating: { fontWeight: 'bold' },
+  reviewPhoto: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    marginHorizontal: 8,
+  },
+  reviewName: { marginRight: 8 },
+  reviewComment: { flexShrink: 1, flexBasis: '100%' },
   pinColorLabel: { alignSelf: 'flex-start', marginBottom: 4 },
   colorOptions: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 12 },
   colorOption: {

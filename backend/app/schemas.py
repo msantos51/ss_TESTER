@@ -68,6 +68,7 @@ class ReviewOut(BaseModel):
     id: int
     vendor_id: int
     client_name: Optional[str] = None
+    client_profile_photo: Optional[str] = None
     rating: int
     comment: Optional[str] = None
     response: Optional[str] = None

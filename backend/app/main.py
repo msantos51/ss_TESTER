@@ -6,10 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-from backend.app import models, schemas
+from . import models, schemas
 import stripe
 from datetime import datetime, timedelta
-from backend.app.database import SessionLocal, engine, get_db
+from app.database import SessionLocal, engine, get_db
 import os
 import shutil
 from uuid import uuid4
@@ -433,6 +433,15 @@ def list_vendors(db: Session = Depends(get_db)):
             v.rating_average = sum(r.rating for r in v.reviews) / len(v.reviews)
         else:
             v.rating_average = None
+
+        active_route = (
+            db.query(models.Route)
+            .filter(models.Route.vendor_id == v.id, models.Route.end_time == None)
+            .first()
+        )
+        if not active_route:
+            v.current_lat = None
+            v.current_lng = None
     return vendors
 
 # --------------------------
@@ -813,6 +822,7 @@ def create_review(
     return new_rev
 
 
+
 @app.get("/vendors/{vendor_id}/reviews", response_model=list[schemas.ReviewOut])
 def list_reviews(vendor_id: int, db: Session = Depends(get_db)):
     reviews = (
@@ -820,9 +830,12 @@ def list_reviews(vendor_id: int, db: Session = Depends(get_db)):
         .filter(models.Review.vendor_id == vendor_id, models.Review.active == True)
         .all()
     )
-    for r in reviews:
-        r.client_name = r.client.name if r.client else None
     return reviews
+
+
+
+
+
 
 
 @app.post("/vendors/{vendor_id}/reviews/{review_id}/response", response_model=schemas.ReviewOut)
@@ -835,6 +848,7 @@ def respond_review(
 ):
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
+
     review = (
         db.query(models.Review)
         .filter(models.Review.id == review_id, models.Review.vendor_id == vendor_id)
@@ -842,10 +856,12 @@ def respond_review(
     )
     if not review:
         raise HTTPException(status_code=404, detail="Review not found")
+
     review.response = data.response
     db.commit()
     db.refresh(review)
     return review
+
 
 
 @app.delete("/vendors/{vendor_id}/reviews/{review_id}")

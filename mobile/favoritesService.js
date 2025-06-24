@@ -25,3 +25,7 @@ export async function isFavorite(id) {
   const favs = await getFavorites();
   return favs.includes(id);
 }
+
+export async function clearFavorites() {
+  await AsyncStorage.removeItem(KEY);
+}
