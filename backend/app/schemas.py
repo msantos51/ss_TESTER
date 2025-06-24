@@ -34,7 +34,6 @@ class VendorOut(BaseModel):
     subscription_active: Optional[bool] = None
     subscription_valid_until: Optional[str] = None
     last_seen: Optional[str] = None
-
     class Config:
         orm_mode = True
 
