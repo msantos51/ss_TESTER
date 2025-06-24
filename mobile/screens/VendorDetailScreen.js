@@ -32,49 +32,35 @@ export default function VendorDetailScreen({ route }) {
     isFavorite(vendor.id).then(setFavorite);
   }, []);
 
-const submitReview = async () => {
-  try {
-    // 1️⃣ Vai buscar o token ao AsyncStorage
-    const token = await AsyncStorage.getItem('clientToken');
-
-    // 2️⃣ Mostra no log o token e os dados enviados
-    console.log("🚀 Token usado na review:", token);
-    console.log("🚀 Dados enviados na review:", { rating, comment });
-
-    if (!token) {
-      Alert.alert(
-        'Inicie sessão',
-        'É necessário iniciar sessão para avaliar um vendedor.'
-      );
-      return;
-    }
-
-    // 3️⃣ Faz o pedido POST com o token no header
-    await axios.post(
-      `${BASE_URL}/vendors/${vendor.id}/reviews`,
-      {
-        rating: rating,
-        comment: comment,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const submitReview = async () => {
+    try {
+      const token = await AsyncStorage.getItem('clientToken');
+      if (!token) {
+        Alert.alert(
+          'Inicie sessão',
+          'É necessário iniciar sessão para avaliar um vendedor.'
+        );
+        return;
       }
-    );
 
-    // 4️⃣ Limpa os campos e atualiza as reviews
-    setRating(0);
-    setComment('');
-    loadReviews();
+      console.log("🚀 Token usado na review:", token);
+      console.log("🚀 Dados enviados na review:", { rating, comment });
 
-    console.log("✅ Review enviada com sucesso!");
+      await axios.post(
+        `${BASE_URL}/vendors/${vendor.id}/reviews`,
+        { rating, comment },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-  } catch (e) {
-    console.error('❌ Erro ao enviar review:', e.response?.data || e.message);
-  }
-};
+      setRating(0);
+      setComment('');
+      loadReviews();
 
+      console.log("✅ Review enviada com sucesso!");
+    } catch (e) {
+      console.error('❌ Erro ao enviar review:', e.response?.data || e.message);
+    }
+  };
 
   const photoUri = vendor.profile_photo
     ? `${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}`

@@ -5,7 +5,7 @@ import { Text, Button } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BASE_URL } from '../config';
-import { getFavorites, clearFavorites } from '../favoritesService';
+import { getFavorites, clearFavorites as clearAllFavorites } from '../favoritesService';
 import { theme } from '../theme';
 import t from '../i18n';
 
@@ -13,7 +13,7 @@ export default function ClientDashboardScreen({ navigation }) {
   const [favorites, setFavorites] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // # Função para carregar os favoritos
+  // Função para carregar os favoritos
   const loadFavorites = async () => {
     const ids = await getFavorites();
     if (ids.length === 0) {
@@ -29,29 +29,20 @@ export default function ClientDashboardScreen({ navigation }) {
     }
   };
 
-  // # Função para limpar os favoritos
-  const clearAllFavorites = async () => {
-    await clearFavorites();
-    setFavorites([]);
-  };
-
-  // # Função para logout
+  // Função para logout
   const logout = async () => {
     await AsyncStorage.removeItem('client');
     await AsyncStorage.removeItem('clientToken');
     navigation.replace('ClientLogin');
   };
 
-  // # Carregar favoritos ao abrir e quando voltar ao ecrã
   useEffect(() => {
     loadFavorites();
     const unsubscribe = navigation.addListener('focus', loadFavorites);
     return unsubscribe;
   }, [navigation]);
 
-  // # Return do componente
   return (
-    // (em português) Este componente mostra os favoritos e um menu lateral para definições e ações
     <View style={{ flex: 1 }}>
       <View style={styles.container}>
         <TouchableOpacity
@@ -60,7 +51,9 @@ export default function ClientDashboardScreen({ navigation }) {
         >
           <Text style={styles.menuIcon}>☰</Text>
         </TouchableOpacity>
+
         <Text style={styles.title}>Favoritos</Text>
+
         <FlatList
           data={favorites}
           keyExtractor={(item) => item.id.toString()}
@@ -93,11 +86,11 @@ export default function ClientDashboardScreen({ navigation }) {
 
       {menuOpen && (
         <View style={styles.menu}>
-          <Button mode="text" onPress={() => { setMenuOpen(false); clearAllFavorites(); }}>
+          <Button mode="text" onPress={() => { setMenuOpen(false); clearAllFavorites(); setFavorites([]); }}>
             {t('clearFavorites')}
           </Button>
           <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('AccountSettings'); }}>
-            {t('proximityMenu')}
+            {t('accountSettingsTitle')}
           </Button>
           <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('ManageAccount'); }}>
             {t('manageAccount')}
@@ -115,8 +108,10 @@ export default function ClientDashboardScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: theme.colors.background },
-  title: { fontSize: 18, marginBottom: 12, textAlign: 'center' },
+  container: { flex: 1, padding: 10, backgroundColor: theme.colors.background },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },
+  menuButton: { position: 'absolute', top: 16, left: 16, padding: 10 },
+  menuIcon: { fontSize: 30 },
   vendor: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -124,13 +119,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
-  image: { width: 40, height: 40, borderRadius: 20, marginRight: 8 },
+  image: { width: 50, height: 50, borderRadius: 25, marginRight: 10 },
   activePhoto: { borderWidth: 2, borderColor: 'green' },
   inactivePhoto: { borderWidth: 2, borderColor: 'red' },
-  button: { marginTop: 12 },
-  logout: { marginTop: 20 },
-  menuButton: { position: 'absolute', top: 16, left: 16 },
-  menuIcon: { fontSize: 40 },
   menu: {
     position: 'absolute',
     top: 70,
