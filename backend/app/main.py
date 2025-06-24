@@ -314,6 +314,14 @@ def generate_client_token(credentials: schemas.UserLogin, db: Session = Depends(
     token = create_access_token({"sub": client.id, "type": "client"})
     return {"access_token": token, "token_type": "bearer"}
 
+
+@app.get("/clients/{client_id}", response_model=schemas.ClientOut)
+def get_client(client_id: int, db: Session = Depends(get_db)):
+    client = db.query(models.Client).filter(models.Client.id == client_id).first()
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    return client
+
 # --------------------------
 # Registo de vendedor
 # --------------------------
