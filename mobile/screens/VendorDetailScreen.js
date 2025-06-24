@@ -4,6 +4,7 @@ import { View, Image, StyleSheet, FlatList, TouchableOpacity } from 'react-nativ
 import { Text, TextInput, Button } from 'react-native-paper';
 import StarRatingInput from '../StarRatingInput';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../config';
 import { theme } from '../theme';
 import { isFavorite, addFavorite, removeFavorite } from '../favoritesService';
@@ -33,10 +34,15 @@ export default function VendorDetailScreen({ route }) {
 
   const submitReview = async () => {
     try {
-      await axios.post(`${BASE_URL}/vendors/${vendor.id}/reviews`, {
-        rating: rating,
-        comment,
-      });
+      const token = await AsyncStorage.getItem('clientToken');
+      await axios.post(
+        `${BASE_URL}/vendors/${vendor.id}/reviews`,
+        {
+          rating: rating,
+          comment,
+        },
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      );
       setRating(0);
       setComment('');
       loadReviews();
