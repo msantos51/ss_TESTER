@@ -1,19 +1,35 @@
-// Dashboard simples para o cliente listar os vendedores favoritos
+// (em português) Este é o dashboard do cliente que mostra o perfil e os vendedores favoritos
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { Text, Button } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BASE_URL } from '../config';
-import { getFavorites, clearFavorites as clearAllFavorites } from '../favoritesService';
+import { getFavorites, clearFavorites } from '../favoritesService';
 import { theme } from '../theme';
 import t from '../i18n';
 
 export default function ClientDashboardScreen({ navigation }) {
+  const [client, setClient] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Função para carregar os favoritos
+  // (em português) Carrega os dados do cliente guardados localmente
+  const loadClient = async () => {
+    try {
+      const stored = await AsyncStorage.getItem('client');
+      if (stored) {
+        setClient(JSON.parse(stored));
+      } else {
+        setClient(null);
+      }
+    } catch (e) {
+      console.log('Erro ao carregar cliente:', e);
+      setClient(null);
+    }
+  };
+
+  // (em português) Carrega os vendedores favoritos
   const loadFavorites = async () => {
     const ids = await getFavorites();
     if (ids.length === 0) {
@@ -29,40 +45,78 @@ export default function ClientDashboardScreen({ navigation }) {
     }
   };
 
-  // Função para logout
+  // (em português) Limpa os favoritos
+  const clearAllFavorites = async () => {
+    await clearFavorites();
+    setFavorites([]);
+  };
+
+  // (em português) Faz logout do cliente
   const logout = async () => {
     await AsyncStorage.removeItem('client');
     await AsyncStorage.removeItem('clientToken');
     navigation.replace('ClientLogin');
   };
 
+  // (em português) Carrega dados ao abrir o ecrã ou ao voltar ao foco
   useEffect(() => {
     loadFavorites();
-    const unsubscribe = navigation.addListener('focus', loadFavorites);
+    loadClient();
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadFavorites();
+      loadClient();
+    });
     return unsubscribe;
   }, [navigation]);
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.menuButton}
-          onPress={() => setMenuOpen(!menuOpen)}
-        >
-          <Text style={styles.menuIcon}>☰</Text>
-        </TouchableOpacity>
+      {/* Botão do mapa */}
+      <TouchableOpacity
+        style={styles.mapButton}
+        onPress={() => navigation.navigate('Map')}
+      >
+        <Text style={styles.mapIcon}>🗺️</Text>
+      </TouchableOpacity>
 
-        <Text style={styles.title}>Favoritos</Text>
+      {/* Botão do menu */}
+      <TouchableOpacity
+        style={styles.menuButton}
+        onPress={() => setMenuOpen(!menuOpen)}
+      >
+        <Text style={styles.menuIcon}>☰</Text>
+      </TouchableOpacity>
 
-        <FlatList
-          data={favorites}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => {
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>Meu Perfil</Text>
+
+        {client?.profile_photo && (
+          <Image
+            source={{ uri: `${BASE_URL.replace(/\/$/, '')}/${client.profile_photo}` }}
+            style={styles.imagePreview}
+          />
+        )}
+
+        {client && (
+          <>
+            <Text style={styles.infoText}>
+              <Text style={styles.label}>Nome:</Text> {client.name}
+            </Text>
+            <Text style={styles.infoText}>
+              <Text style={styles.label}>Email:</Text> {client.email}
+            </Text>
+          </>
+        )}
+
+        <View style={styles.favoriteSection}>
+          <Text style={styles.sectionTitle}>Vendedores Favoritos</Text>
+          {favorites.map((item) => {
             const photoUri = item.profile_photo
               ? `${BASE_URL.replace(/\/$/, '')}/${item.profile_photo}`
               : null;
             return (
               <TouchableOpacity
+                key={item.id.toString()}
                 style={styles.vendor}
                 onPress={() => navigation.navigate('VendorDetail', { vendor: item })}
               >
@@ -71,26 +125,30 @@ export default function ClientDashboardScreen({ navigation }) {
                     source={{ uri: photoUri }}
                     style={[
                       styles.image,
-                      item.subscription_active
-                        ? styles.activePhoto
-                        : styles.inactivePhoto,
+                      item.subscription_active ? styles.activePhoto : styles.inactivePhoto,
                     ]}
                   />
                 )}
                 <Text>{item.name}</Text>
               </TouchableOpacity>
             );
-          }}
-        />
-      </View>
+          })}
+        </View>
+
+        <View style={[styles.fullButton, styles.logoutButton]}>
+          <Button mode="outlined" onPress={logout}>
+            Sair
+          </Button>
+        </View>
+      </ScrollView>
 
       {menuOpen && (
         <View style={styles.menu}>
-          <Button mode="text" onPress={() => { setMenuOpen(false); clearAllFavorites(); setFavorites([]); }}>
+          <Button mode="text" onPress={() => { setMenuOpen(false); clearAllFavorites(); }}>
             {t('clearFavorites')}
           </Button>
           <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('AccountSettings'); }}>
-            {t('accountSettingsTitle')}
+            {t('proximityMenu')}
           </Button>
           <Button mode="text" onPress={() => { setMenuOpen(false); navigation.navigate('ManageAccount'); }}>
             {t('manageAccount')}
@@ -107,11 +165,19 @@ export default function ClientDashboardScreen({ navigation }) {
   );
 }
 
+// (em português) Estilos do dashboard
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10, backgroundColor: theme.colors.background },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },
-  menuButton: { position: 'absolute', top: 16, left: 16, padding: 10 },
-  menuIcon: { fontSize: 30 },
+  container: {
+    flexGrow: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: theme.colors.background,
+  },
+  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 16 },
+  infoText: { marginBottom: 8, width: '100%' },
+  label: { fontWeight: 'bold' },
+  imagePreview: { width: 120, height: 120, marginVertical: 12, borderRadius: 60 },
   vendor: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -119,9 +185,27 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
-  image: { width: 50, height: 50, borderRadius: 25, marginRight: 10 },
+  image: { width: 40, height: 40, borderRadius: 20, marginRight: 8 },
   activePhoto: { borderWidth: 2, borderColor: 'green' },
   inactivePhoto: { borderWidth: 2, borderColor: 'red' },
+  fullButton: { width: '100%', marginBottom: 12 },
+  logoutButton: { marginTop: 'auto' },
+  mapButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    zIndex: 101,
+    elevation: 10,
+  },
+  mapIcon: { fontSize: 50 },
+  menuButton: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    zIndex: 101,
+    elevation: 10,
+  },
+  menuIcon: { fontSize: 40 },
   menu: {
     position: 'absolute',
     top: 70,
@@ -132,4 +216,6 @@ const styles = StyleSheet.create({
     elevation: 10,
     zIndex: 100,
   },
+  favoriteSection: { width: '100%', marginTop: 16 },
+  sectionTitle: { fontWeight: 'bold', marginBottom: 4 },
 });
