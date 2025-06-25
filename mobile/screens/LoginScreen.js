@@ -100,24 +100,25 @@ export default function LoginScreen({ navigation }) {
         }}
       />
 
-      {loading ? (
-        <ActivityIndicator animating size="large" />
-      ) : (
-        <Button mode="contained" onPress={login} disabled={!email || !password}
-        >Entrar</Button>
-      )}
+        {loading ? (
+          <ActivityIndicator animating size="large" />
+        ) : (
+          <Button mode="contained" onPress={login} disabled={!email || !password}>
+            <Text>Entrar</Text>
+          </Button>
+        )}
 
       <View style={{ marginTop: 12 }} />
-      <Button mode="outlined" onPress={() => navigation.navigate('VendorRegister')}>
-        Registar
-      </Button>
+        <Button mode="outlined" onPress={() => navigation.navigate('VendorRegister')}>
+          <Text>Registar</Text>
+        </Button>
       <View style={{ marginTop: 12 }} />
-      <Button
-        mode="text"
-        onPress={() => navigation.navigate('ForgotPassword')}
-      >
-        Esqueci-me da palavra-passe
-      </Button>
+        <Button
+          mode="text"
+          onPress={() => navigation.navigate('ForgotPassword')}
+        >
+          <Text>Esqueci-me da palavra-passe</Text>
+        </Button>
     </View>
   );
 }

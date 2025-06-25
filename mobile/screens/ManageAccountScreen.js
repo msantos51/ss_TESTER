@@ -26,10 +26,10 @@ export default function ManageAccountScreen() {
         style={styles.input}
       />
       <Button mode="contained" onPress={changePassword} style={styles.button}>
-        Alterar Palavra-passe
+        <Text>Alterar Palavra-passe</Text>
       </Button>
       <Button mode="contained" onPress={deleteAccount} style={styles.button}>
-        Apagar Conta
+        <Text>Apagar Conta</Text>
       </Button>
     </View>
   );

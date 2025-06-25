@@ -92,12 +92,12 @@ export default function ClientLoginScreen({ navigation }) {
         <ActivityIndicator animating size="large" />
       ) : (
         <Button mode="contained" onPress={login} disabled={!email || !password}>
-          Entrar
+          <Text>Entrar</Text>
         </Button>
       )}
       <View style={{ marginTop: 12 }} />
       <Button mode="outlined" onPress={() => navigation.navigate('ClientRegister')}>
-        Registar
+        <Text>Registar</Text>
       </Button>
     </View>
   );

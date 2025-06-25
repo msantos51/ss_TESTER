@@ -42,7 +42,7 @@ export default function ForgotPasswordScreen({ navigation }) {
         <ActivityIndicator animating size="large" />
       ) : (
         <Button mode="contained" onPress={requestReset} disabled={!email}>
-          Enviar
+          <Text>Enviar</Text>
         </Button>
       )}
     </View>

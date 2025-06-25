@@ -1,17 +1,24 @@
 // Definicoes de tema para React Native Paper
-import { DefaultTheme, configureFonts } from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, configureFonts } from 'react-native-paper';
 
 const fontConfig = {
-  default: {
-    regular: { fontFamily: 'Roboto', fontWeight: '400' },
-    medium: { fontFamily: 'Roboto', fontWeight: '500' },
-    light: { fontFamily: 'Roboto', fontWeight: '300' },
-    thin: { fontFamily: 'Roboto', fontWeight: '100' },
+  ios: {
+    regular: { fontFamily: 'Inter_400Regular', fontWeight: 'normal' },
+    medium: { fontFamily: 'Inter_500Medium', fontWeight: 'normal' },
+    light: { fontFamily: 'Inter_300Light', fontWeight: 'normal' },
+    thin: { fontFamily: 'Inter_100Thin', fontWeight: 'normal' },
+  },
+  android: {
+    regular: { fontFamily: 'Inter_400Regular', fontWeight: 'normal' },
+    medium: { fontFamily: 'Inter_500Medium', fontWeight: 'normal' },
+    light: { fontFamily: 'Inter_300Light', fontWeight: 'normal' },
+    thin: { fontFamily: 'Inter_100Thin', fontWeight: 'normal' },
   },
 };
 
 export const theme = {
   ...DefaultTheme,
+  roundness: 8,
   colors: {
     ...DefaultTheme.colors,
     primary: '#FDC500',   // Amarelo solar moderno

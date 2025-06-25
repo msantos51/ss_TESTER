@@ -106,7 +106,9 @@ export default function ClientRegisterScreen({ navigation }) {
           setError(null);
         }}
       />
-      <Button mode="outlined" onPress={pickImage}>Escolher Foto de Perfil</Button>
+      <Button mode="outlined" onPress={pickImage}>
+        <Text>Escolher Foto de Perfil</Text>
+      </Button>
       {profilePhoto && (
         <Image source={{ uri: profilePhoto.uri }} style={styles.imagePreview} />
       )}
@@ -114,7 +116,9 @@ export default function ClientRegisterScreen({ navigation }) {
       {loading ? (
         <ActivityIndicator animating size="large" />
       ) : (
-        <Button mode="contained" onPress={register}>Registar</Button>
+        <Button mode="contained" onPress={register}>
+          <Text>Registar</Text>
+        </Button>
       )}
     </View>
   );

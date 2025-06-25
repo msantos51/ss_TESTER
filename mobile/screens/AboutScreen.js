@@ -12,14 +12,14 @@ export default function AboutScreen({ navigation }) {
         onPress={() => navigation.navigate('Terms')}
         style={styles.button}
       >
-        Termos e Condições
+        <Text>Termos e Condições</Text>
       </Button>
       <Button
         mode="outlined"
         onPress={() => Linking.openURL('mailto:suporte@sunnysales.com')}
         style={styles.button}
       >
-        Contactar Suporte
+        <Text>Contactar Suporte</Text>
       </Button>
     </View>
   );

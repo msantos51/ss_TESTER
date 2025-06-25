@@ -143,7 +143,9 @@ export default function RegisterScreen({ navigation }) {
       </Picker>
 
 
-      <Button mode="outlined" onPress={pickImage}>Escolher Foto de Perfil</Button>
+      <Button mode="outlined" onPress={pickImage}>
+        <Text>Escolher Foto de Perfil</Text>
+      </Button>
 
       {profilePhoto && (
         <Image
@@ -157,7 +159,9 @@ export default function RegisterScreen({ navigation }) {
       {loading ? (
         <ActivityIndicator animating size="large" />
       ) : (
-        <Button mode="contained" onPress={register}>Registar</Button>
+        <Button mode="contained" onPress={register}>
+          <Text>Registar</Text>
+        </Button>
       )}
     </View>
   );
