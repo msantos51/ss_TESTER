@@ -11,6 +11,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../config';
 import { theme } from '../theme';
+import BackButton from '../BackButton';
 
 export default function ClientLoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -65,6 +66,7 @@ export default function ClientLoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <BackButton style={styles.back} />
       {error && <Text style={styles.error}>{error}</Text>}
       <TextInput
         mode="outlined"
@@ -107,4 +109,5 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16, backgroundColor: theme.colors.background },
   input: { marginBottom: 12 },
   error: { color: 'red', marginBottom: 12, textAlign: 'center' },
+  back: { position: 'absolute', top: 16, left: 16 },
 });

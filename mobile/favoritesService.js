@@ -1,3 +1,4 @@
+// Serviço utilitário para guardar vendedores favoritos em armazenamento local
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEY = 'favorites';

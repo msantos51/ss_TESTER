@@ -141,7 +141,7 @@ export default function ClientDashboardScreen({ navigation }) {
           })}
         </View>
 
-        <Button mode="outlined" style={styles.fullButton} onPress={logout}>
+        <Button mode="contained" style={styles.fullButton} onPress={logout}>
           <Text>Sair</Text>
         </Button>
       </ScrollView>
@@ -235,4 +235,11 @@ const styles = StyleSheet.create({
   image: { width: 40, height: 40, borderRadius: 20, marginRight: 8 },
   activePhoto: { borderWidth: 2, borderColor: 'green' },
   inactivePhoto: { borderWidth: 2, borderColor: 'red' },
+  logoutButton: {
+  width: '100%',
+  marginVertical: 8,
+  borderRadius: 12,
+  backgroundColor: '#FDC500',
+},
+
 });

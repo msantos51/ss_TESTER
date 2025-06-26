@@ -4,6 +4,7 @@ import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 import { theme } from '../theme';
 import LeafletMap from '../LeafletMap';
+import BackButton from '../BackButton';
 
 export default function RouteDetailScreen({ route }) {
   const r = route.params.route;
@@ -16,6 +17,7 @@ export default function RouteDetailScreen({ route }) {
     : { latitude: 0, longitude: 0 };
   return (
     <View style={styles.container}>
+      <BackButton style={styles.back} />
       <LeafletMap initialPosition={initial} polyline={polyline} />
       <View style={styles.info}>
         <Text>Início: {start.toLocaleString()}</Text>
@@ -30,4 +32,5 @@ export default function RouteDetailScreen({ route }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   info: { padding: 16 },
+  back: { position: 'absolute', top: 16, left: 16, zIndex: 1 },
 });

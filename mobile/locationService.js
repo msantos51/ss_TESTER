@@ -59,7 +59,11 @@ export const startLocationSharing = async (vendorId) => {
 
     await AsyncStorage.setItem('sharingLocation', 'true');
   } catch (err) {
-    console.error('Erro ao iniciar partilha de localização:', err.message);
+    console.error(
+      'Erro ao iniciar partilha de localização:',
+      err.response?.data || err.message,
+    );
+    throw err;
   } finally {
     isStarting = false;
   }

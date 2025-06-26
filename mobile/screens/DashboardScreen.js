@@ -179,8 +179,17 @@ export default function DashboardScreen({ navigation }) {
       await stopLocationSharing();
       setSharingLocation(false);
     } else {
-      await startLocationSharing(vendor.id);
-      setSharingLocation(true);
+      try {
+        await startLocationSharing(vendor.id);
+        setSharingLocation(true);
+        setError(null);
+      } catch (err) {
+        const msg =
+          err?.response?.data?.detail === 'Subscription inactive'
+            ? 'Dever\u00e1 pagar a semanalidade para poder ativar a localiza\u00e7\u00e3o'
+            : 'Erro ao ativar localiza\u00e7\u00e3o';
+        setError(msg);
+      }
     }
   };
 
@@ -346,29 +355,138 @@ export default function DashboardScreen({ navigation }) {
   );
 }
 
+// (em português) Estilos modernos inspirados no exemplo que enviaste
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, padding: 16, alignItems: 'center', backgroundColor: theme.colors.background },
-  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 16 },
-  input: { marginBottom: 12, width: '100%' },
-  infoText: { marginBottom: 8, width: '100%' },
-  label: { fontWeight: 'bold' },
-  error: { color: 'red', textAlign: 'center', marginBottom: 12 },
-  imagePreview: { width: 120, height: 120, borderRadius: 60, marginBottom: 16 },
-  fullButton: { width: '100%', marginVertical: 8 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', width: '100%' },
-  mapButton: { position: 'absolute', top: 16, right: 16 },
-  mapIcon: { fontSize: 40 },
-  menuButton: { position: 'absolute', top: 16, left: 16 },
-  menuIcon: { fontSize: 40 },
-  colorRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-  colorPreview: { width: 20, height: 20, borderRadius: 10, marginLeft: 8, borderWidth: 1, borderColor: '#000' },
-  colorOptions: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 12 },
-  colorOption: { width: 24, height: 24, borderRadius: 12, marginRight: 8, marginBottom: 8, borderWidth: 1, borderColor: '#000' },
-  colorOptionSelected: { borderWidth: 3 },
-  pinColorLabel: { alignSelf: 'flex-start', marginBottom: 4 },
-  menu: { position: 'absolute', top: 70, left: 16, right: 16, backgroundColor: 'white', padding: 8, borderRadius: 12, elevation: 10, zIndex: 100 },
-  sectionTitle: { alignSelf: 'flex-start', fontWeight: 'bold', marginTop: 8, marginBottom: 4 },
-  reviewList: { width: '100%', marginBottom: 12 },
-  reviewItem: { paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#ccc' },
-  reviewRating: { fontWeight: 'bold' },
+  container: { 
+    flexGrow: 1, 
+    padding: 16, 
+    alignItems: 'center', 
+    backgroundColor: '#F9F9F9' // fundo cinza muito claro 
+  },
+  title: { 
+    fontSize: 22, 
+    fontWeight: '600', 
+    color: '#333', 
+    marginBottom: 16 
+  },
+  input: { 
+    marginBottom: 12, 
+    width: '100%', 
+    backgroundColor: '#fff', 
+    borderRadius: 12 
+  },
+  infoText: { 
+    marginBottom: 8, 
+    width: '100%', 
+    fontSize: 16, 
+    color: '#555' 
+  },
+  label: { 
+    fontWeight: 'bold', 
+    color: '#333' 
+  },
+  error: { 
+    color: 'red', 
+    textAlign: 'center', 
+    marginBottom: 12 
+  },
+  imagePreview: { 
+    width: 120, 
+    height: 120, 
+    borderRadius: 60, 
+    marginBottom: 16, 
+    borderWidth: 2, 
+    borderColor: '#FDC500' // cor do amarelo principal 
+  },
+  fullButton: { 
+    width: '100%', 
+    marginVertical: 8, 
+    borderRadius: 12, 
+    backgroundColor: '#FDC500' 
+  },
+  row: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    width: '100%' 
+  },
+  mapButton: { 
+    position: 'absolute', 
+    top: 16, 
+    right: 16 
+  },
+  mapIcon: { 
+    fontSize: 36 
+  },
+  menuButton: { 
+    position: 'absolute', 
+    top: 16, 
+    left: 16 
+  },
+  menuIcon: { 
+    fontSize: 36 
+  },
+  colorRow: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginBottom: 8 
+  },
+  colorPreview: { 
+    width: 20, 
+    height: 20, 
+    borderRadius: 10, 
+    marginLeft: 8, 
+    borderWidth: 1, 
+    borderColor: '#000' 
+  },
+  colorOptions: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    marginBottom: 12 
+  },
+  colorOption: { 
+    width: 24, 
+    height: 24, 
+    borderRadius: 12, 
+    marginRight: 8, 
+    marginBottom: 8, 
+    borderWidth: 1, 
+    borderColor: '#000' 
+  },
+  colorOptionSelected: { 
+    borderWidth: 3 
+  },
+  pinColorLabel: { 
+    alignSelf: 'flex-start', 
+    marginBottom: 4 
+  },
+  menu: { 
+    position: 'absolute', 
+    top: 70, 
+    left: 16, 
+    right: 16, 
+    backgroundColor: '#fff', 
+    padding: 8, 
+    borderRadius: 12, 
+    elevation: 10, 
+    zIndex: 100 
+  },
+  sectionTitle: { 
+    alignSelf: 'flex-start', 
+    fontWeight: '600', 
+    fontSize: 18, 
+    marginTop: 8, 
+    marginBottom: 4 
+  },
+  reviewList: { 
+    width: '100%', 
+    marginBottom: 12 
+  },
+  reviewItem: { 
+    paddingVertical: 4, 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#ccc' 
+  },
+  reviewRating: { 
+    fontWeight: 'bold' 
+  }
 });

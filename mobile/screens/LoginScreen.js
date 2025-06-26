@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { theme } from '../theme';
+import BackButton from '../BackButton';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -73,6 +74,7 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <BackButton style={styles.back} />
       {error && <Text style={styles.error}>{error}</Text>}
       <Text style={styles.notice}>Esta página destina-se apenas a vendedores.</Text>
 
@@ -128,4 +130,5 @@ const styles = StyleSheet.create({
   input: { marginBottom: 12 },
   error: { color: 'red', marginBottom: 12, textAlign: 'center' },
   notice: { marginBottom: 12, textAlign: 'center' },
+  back: { position: 'absolute', top: 16, left: 16 },
 });

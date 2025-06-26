@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { theme } from '../theme';
+import BackButton from '../BackButton';
 
 export default function RoutesScreen({ navigation }) {
   const [routes, setRoutes] = useState([]);
@@ -49,6 +50,7 @@ export default function RoutesScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <BackButton style={styles.back} />
       <FlatList data={routes} keyExtractor={(r) => r.id.toString()} renderItem={renderItem} />
     </View>
   );
@@ -61,4 +63,5 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
+  back: { position: 'absolute', top: 16, left: 16 },
 });

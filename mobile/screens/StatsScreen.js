@@ -1,3 +1,4 @@
+// Ecrã de estatísticas de distâncias percorridas
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { Text } from 'react-native-paper';
@@ -7,6 +8,7 @@ import { BarChart } from 'react-native-chart-kit';
 import { BASE_URL } from '../config';
 import { theme } from '../theme';
 import t from '../i18n';
+import BackButton from '../BackButton';
 
 export default function StatsScreen({ navigation }) {
   const [data, setData] = useState([]);
@@ -42,9 +44,11 @@ export default function StatsScreen({ navigation }) {
 
   return (
     <ScrollView contentContainerStyle={styles.container} accessible accessibilityLabel={t('statsTitle')}>
+      <BackButton style={styles.back} />
       {data.length > 0 ? (
         <>
           <Text style={styles.title}>{t('statsTitle')}</Text>
+          {/* Gráfico de barras com as distâncias por dia */}
           <BarChart
             data={{
               labels: labels,
@@ -76,4 +80,5 @@ export default function StatsScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flexGrow: 1, padding: 16, backgroundColor: theme.colors.background, alignItems: 'center' },
   title: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
+  back: { position: 'absolute', top: 16, left: 16 },
 });

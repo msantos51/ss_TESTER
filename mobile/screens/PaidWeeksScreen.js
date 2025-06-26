@@ -1,3 +1,4 @@
+// Ecrã que lista semanas pagas e respetivos recibos
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Linking } from 'react-native';
 import { Text, List } from 'react-native-paper';
@@ -5,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { theme } from '../theme';
+import BackButton from '../BackButton';
 
 export default function PaidWeeksScreen({ navigation }) {
   const [weeks, setWeeks] = useState([]);
@@ -31,21 +33,22 @@ export default function PaidWeeksScreen({ navigation }) {
     return unsub;
   }, [navigation]);
 
-  const renderItem = ({ item }) => {
-    const start = new Date(item.start_date).toLocaleDateString();
-    const end = new Date(item.end_date).toLocaleDateString();
-    return (
-      <List.Item
-        style={styles.item}
-        title={`${start} - ${end}`}
-        description={item.receipt_url ? 'Recibo disponível' : ''}
-        onPress={() => item.receipt_url && Linking.openURL(item.receipt_url)}
-      />
-    );
-  };
+const renderItem = ({ item }) => {
+  const start = new Date(item.start_date).toLocaleDateString();
+  const end = new Date(item.end_date).toLocaleDateString();
+  return (
+    <List.Item
+      style={styles.item}
+      title={`${start} - ${end}`}
+      description={item.receipt_url ? 'Recibo disponível' : ''}
+      onPress={() => item.receipt_url && Linking.openURL(item.receipt_url)}
+    />
+  );
+};
 
   return (
     <View style={styles.container}>
+      <BackButton style={styles.back} />
       <FlatList data={weeks} keyExtractor={(w) => w.id.toString()} renderItem={renderItem} />
     </View>
   );
@@ -58,4 +61,5 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
+  back: { position: 'absolute', top: 16, left: 16 },
 });

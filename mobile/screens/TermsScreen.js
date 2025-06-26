@@ -4,10 +4,12 @@ import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text } from 'react-native-paper';
 import { theme } from '../theme';
+import BackButton from '../BackButton';
 
 export default function TermsScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <BackButton style={styles.back} />
       <Text style={styles.title}>Termos e Condições</Text>
 
       <Text style={styles.sectionTitle}>1. Aceitação dos Termos</Text>
@@ -82,5 +84,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: 'justify',
   },
+  back: { position: 'absolute', top: 16, left: 16 },
 });
 

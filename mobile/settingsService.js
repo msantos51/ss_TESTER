@@ -1,3 +1,4 @@
+// Guardar e ler definições de notificações no armazenamento local
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ENABLED_KEY = 'notifications_enabled';

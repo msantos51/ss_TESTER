@@ -11,6 +11,7 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { theme } from '../theme';
+import BackButton from '../BackButton';
 
 export default function ClientRegisterScreen({ navigation }) {
   const [name, setName] = useState('');
@@ -73,6 +74,7 @@ export default function ClientRegisterScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <BackButton style={styles.back} />
       {error && <Text style={styles.error}>{error}</Text>}
       <TextInput
         mode="outlined"
@@ -135,4 +137,5 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignSelf: 'center',
   },
+  back: { position: 'absolute', top: 16, left: 16 },
 });

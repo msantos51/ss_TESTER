@@ -4,6 +4,7 @@ import { useFonts, Inter_400Regular, Inter_500Medium, Inter_300Light, Inter_100T
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import VendorLoginScreen from './screens/LoginScreen';
 import VendorRegisterScreen from './screens/RegisterScreen';
@@ -41,9 +42,11 @@ export default function App() {
   }
 
   return (
-    <PaperProvider theme={theme}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Map">
+    <SafeAreaProvider>
+      <PaperProvider theme={theme}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }} edges={['top']}>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="Map" screenOptions={{ headerShown: false }}>
           <Stack.Screen
             name="Map"
             component={MapScreen}
@@ -70,8 +73,10 @@ export default function App() {
           <Stack.Screen name="AccountSettings" component={AccountSettingsScreen} options={{ title: t('accountSettingsTitle') }} />
           <Stack.Screen name="ManageAccount" component={ManageAccountScreen} options={{ title: 'Definições' }} />
           <Stack.Screen name="About" component={AboutScreen} options={{ title: 'Sobre/Ajuda' }} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </PaperProvider>
+          </Stack.Navigator>
+        </NavigationContainer>
+        </SafeAreaView>
+      </PaperProvider>
+    </SafeAreaProvider>
   );
 }
