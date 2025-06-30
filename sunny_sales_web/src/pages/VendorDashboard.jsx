@@ -9,6 +9,7 @@ let watchId = null;
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
+  const [reviews, setReviews] = useState([]);
   const navigate = useNavigate();
 
   // carrega dados do vendedor guardados no localStorage
@@ -20,6 +21,19 @@ export default function VendorDashboard() {
     const share = localStorage.getItem('sharingLocation') === 'true';
     setSharing(share);
   }, []);
+
+  useEffect(() => {
+    const loadReviews = async () => {
+      if (!vendor) return;
+      try {
+        const res = await axios.get(`${BASE_URL}/vendors/${vendor.id}/reviews`);
+        setReviews(res.data);
+      } catch (err) {
+        console.log('Erro ao carregar reviews:', err);
+      }
+    };
+    loadReviews();
+  }, [vendor]);
 
   const logout = () => {
     localStorage.removeItem('user');
@@ -133,6 +147,19 @@ export default function VendorDashboard() {
             <strong>Subscrição:</strong>{' '}
             {vendor.subscription_active ? 'ativa' : 'inativa'}
           </p>
+          {reviews.length > 0 && (
+            <div style={styles.reviewSection}>
+              <h3>Avaliações</h3>
+              <ul style={styles.reviewList}>
+                {reviews.map((r) => (
+                  <li key={r.id} style={styles.reviewItem}>
+                    <strong>⭐ {r.rating}</strong>
+                    {r.comment && <span> {r.comment}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </>
       )}
 
@@ -200,5 +227,18 @@ const styles = {
     borderRadius: '50%',
     marginLeft: 8,
     verticalAlign: 'middle',
+  },
+  reviewSection: {
+    marginTop: '1rem',
+    textAlign: 'left',
+  },
+  reviewList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+  },
+  reviewItem: {
+    borderBottom: '1px solid #ccc',
+    padding: '4px 0',
   },
 };
