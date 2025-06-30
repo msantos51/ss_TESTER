@@ -2,8 +2,9 @@
 @import 'leaflet/dist/leaflet.css';
 
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
+  /* Expande para toda a largura no desktop e adapta-se em ecrãs menores */
+  width: 100%;
+  margin: 0;
   padding: 2rem;
   text-align: center;
 }
