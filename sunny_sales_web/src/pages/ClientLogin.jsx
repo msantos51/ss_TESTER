@@ -59,88 +59,46 @@ export default function ClientLogin() {
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Login do Cliente</h2>
-      {error && <p style={styles.error}>{error}</p>}
-
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => {
-          setEmail(e.target.value);
-          setError(null);
-        }}
-        style={styles.input}
-      />
-
-      <input
-        type="password"
-        placeholder="Palavra-passe"
-        value={password}
-        onChange={(e) => {
-          setPassword(e.target.value);
-          setError(null);
-        }}
-        style={styles.input}
-      />
-
-      <button onClick={login} className="btn" style={styles.button} disabled={!email || !password || loading}>
-        {loading ? 'A carregar...' : 'Entrar'}
-      </button>
-
-      <button onClick={() => navigate('/register')} className="btn" style={styles.outlinedButton}>
-        Registar
-      </button>
+    <div className="form-box">
+      <h2 className="title">Login do Cliente</h2>
+      {error && (
+        <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>
+      )}
+      <div className="form">
+        <div className="form-container">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setError(null);
+            }}
+            className="input"
+          />
+          <input
+            type="password"
+            placeholder="Palavra-passe"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setError(null);
+            }}
+            className="input"
+          />
+        </div>
+        <button onClick={login} disabled={!email || !password || loading}>
+          {loading ? 'A carregar...' : 'Entrar'}
+        </button>
+        <button
+          type="button"
+          className="outlined-button"
+          onClick={() => navigate('/register')}
+        >
+          Registar
+        </button>
+      </div>
     </div>
   );
 }
 
-// (em português) Estilos embutidos
-const styles = {
-  container: {
-    maxWidth: '400px',
-    margin: '5rem auto',
-    padding: '2rem',
-    backgroundColor: '#f6f6f6',
-    borderRadius: '12px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-    textAlign: 'center',
-  },
-  title: {
-    marginBottom: '1.5rem',
-  },
-  input: {
-    display: 'block',
-    width: '100%',
-    padding: '0.75rem',
-    marginBottom: '1rem',
-    borderRadius: '8px',
-    border: '1px solid #ccc',
-    fontSize: '1rem',
-  },
-  button: {
-    width: '100%',
-    padding: '0.75rem',
-    backgroundColor: '#f9c200',
-    color: '#000',
-    border: 'none',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    fontSize: '1rem',
-    marginBottom: '1rem',
-  },
-  outlinedButton: {
-    width: '100%',
-    padding: '0.75rem',
-    backgroundColor: 'white',
-    color: '#333',
-    border: '1px solid #ccc',
-    cursor: 'pointer',
-    fontSize: '1rem',
-  },
-  error: {
-    color: 'red',
-    marginBottom: '1rem',
-  },
-};

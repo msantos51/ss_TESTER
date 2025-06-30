@@ -15,57 +15,31 @@ export default function ManageAccount() {
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Definições de Conta</h2>
-
-      <input
-        type="password"
-        placeholder="Nova palavra-passe"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        style={styles.input}
-      />
-
-      <button onClick={changePassword} className="btn" style={styles.button}>
-        Alterar Palavra-passe
-      </button>
-
-      <button onClick={deleteAccount} className="btn" style={{ ...styles.button, backgroundColor: '#e74c3c' }}>
-        Apagar Conta
-      </button>
+    <div className="form-box">
+      <h2 className="title">Definições de Conta</h2>
+      <div className="form">
+        <div className="form-container">
+          <input
+            type="password"
+            placeholder="Nova palavra-passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input"
+          />
+        </div>
+        <button type="button" onClick={changePassword}>
+          Alterar Palavra-passe
+        </button>
+        <button
+          type="button"
+          style={{ backgroundColor: '#e74c3c', color: '#fff' }}
+          onClick={deleteAccount}
+        >
+          Apagar Conta
+        </button>
+      </div>
     </div>
   );
 }
 
 // (em português) Estilos simples para a página
-const styles = {
-  container: {
-    maxWidth: '400px',
-    margin: '3rem auto',
-    padding: '2rem',
-    border: '1px solid #ccc',
-    borderRadius: '12px',
-    backgroundColor: '#fff',
-    textAlign: 'center',
-  },
-  title: {
-    fontSize: '20px',
-    marginBottom: '1.5rem',
-  },
-  input: {
-    width: '100%',
-    padding: '10px',
-    marginBottom: '1.5rem',
-    borderRadius: '8px',
-    border: '1px solid #ccc',
-  },
-  button: {
-    width: '100%',
-    padding: '10px',
-    marginBottom: '1rem',
-    backgroundColor: '#FDC500',
-    color: '#000',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-  },
-};

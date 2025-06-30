@@ -111,6 +111,7 @@ export default function MapScreenWeb() {
           placeholder="Procurar vendedor..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          className="input"
         />
       </div>
 
