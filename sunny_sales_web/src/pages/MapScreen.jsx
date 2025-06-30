@@ -92,7 +92,7 @@ export default function MapScreenWeb() {
 
   return (
     <div style={{ padding: '1rem', position: 'relative' }}>
-      <h2>🌞 Localização dos Vendedores</h2>
+      <h2>Localização dos Vendedores</h2>
 
       <div style={{ marginBottom: '1rem' }}>
         <select
@@ -155,11 +155,13 @@ export default function MapScreenWeb() {
         </MapContainer>
       </div>
 
+      <button style={styles.locateButton} onClick={locateUser}>📍</button>
+
       <button
         style={styles.vendorIcon}
         onClick={() => navigate(vendorUser ? '/dashboard' : '/vendor-login')}
       >
-        🧑‍💼
+        👤
       </button>
 
       <div style={styles.buttonsContainer}>
@@ -189,6 +191,16 @@ const styles = {
   vendorIcon: {
     position: 'absolute',
     top: 10,
+    right: 10,
+    backgroundColor: '#fff',
+    border: '1px solid #ccc',
+    borderRadius: '50%',
+    padding: '0.5rem',
+    cursor: 'pointer',
+  },
+  locateButton: {
+    position: 'absolute',
+    bottom: 80,
     right: 10,
     backgroundColor: '#fff',
     border: '1px solid #ccc',

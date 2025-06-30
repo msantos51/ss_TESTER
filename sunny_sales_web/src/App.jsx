@@ -25,11 +25,7 @@ export default function App() {
     <Router>
       {/* (em português) Barra de navegação */}
       <div style={styles.navbar}>
-        <Link style={styles.link} to="/">🏖️ Sunny Sales</Link>
-        <div>
-          <Link style={styles.link} to="/about">Sobre</Link>
-          <Link style={styles.link} to="/settings">Definições</Link>
-        </div>
+        <Link style={styles.link} to="/">Sunny Sales</Link>
       </div>
 
       {/* (em português) Container central da aplicação */}
