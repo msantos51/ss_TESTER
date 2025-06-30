@@ -154,8 +154,8 @@ export default function MapScreenWeb() {
               icon={L.divIcon({
                 className: 'vendor-pin',
                 html: v.profile_photo
-                  ? `<div style="border:2px solid #f9c200;width:32px;height:32px;border-radius:50%;overflow:hidden;"><img src="${BASE_URL}/${v.profile_photo}" style="width:100%;height:100%;object-fit:cover;" /></div>`
-                  : '<div style="background:#FFB6C1;width:16px;height:16px;border-radius:50%;"></div>',
+                  ? `<div style="border:2px solid ${v.pin_color || '#f9c200'};width:32px;height:32px;border-radius:50%;overflow:hidden;"><img src="${BASE_URL}/${v.profile_photo}" style="width:100%;height:100%;object-fit:cover;" /></div>`
+                  : `<div style="background:${v.pin_color || '#FFB6C1'};width:16px;height:16px;border-radius:50%;"></div>`,
               })}
               eventHandlers={{
                 click: () => {
