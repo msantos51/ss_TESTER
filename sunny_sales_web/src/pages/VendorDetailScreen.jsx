@@ -87,7 +87,7 @@ export default function VendorDetailScreen({ vendor }) {
           />
         )}
         <h2>{vendor.name}</h2>
-        <button onClick={toggleFavorite}>
+        <button className="btn" onClick={toggleFavorite}>
           {favorite ? '★ Remover dos Favoritos' : '☆ Adicionar aos Favoritos'}
         </button>
         <p>Produto: {vendor.product}</p>
@@ -143,7 +143,7 @@ export default function VendorDetailScreen({ vendor }) {
           onChange={(e) => setComment(e.target.value)}
           placeholder="Comentário"
         />
-        <button onClick={submitReview}>Enviar</button>
+        <button className="btn" onClick={submitReview}>Enviar</button>
       </div>
     </div>
   );

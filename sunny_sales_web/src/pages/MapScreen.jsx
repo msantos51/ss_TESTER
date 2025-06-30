@@ -166,15 +166,16 @@ export default function MapScreenWeb() {
 
       <div style={styles.buttonsContainer}>
         {clientUser ? (
-          <button style={styles.button} onClick={() => navigate('/dashboard')}>
+          <button className="btn" style={styles.button} onClick={() => navigate('/dashboard')}>
             Perfil
           </button>
         ) : (
           <>
-            <button style={styles.button} onClick={() => navigate('/login')}>
+            <button className="btn" style={styles.button} onClick={() => navigate('/login')}>
               Iniciar sessão Cliente
             </button>
             <button
+              className="btn"
               style={styles.outlinedButton}
               onClick={() => navigate('/register')}
             >
@@ -218,7 +219,6 @@ const styles = {
     padding: '0.5rem 1rem',
     backgroundColor: '#f9c200',
     border: 'none',
-    borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 'bold',
   },
@@ -226,7 +226,6 @@ const styles = {
     padding: '0.5rem 1rem',
     backgroundColor: '#fff',
     border: '1px solid #ccc',
-    borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 'bold',
   },

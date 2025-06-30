@@ -42,6 +42,7 @@ export default function ForgotPassword() {
       <button
         onClick={requestReset}
         disabled={loading || !email}
+        className="btn"
         style={styles.button}
       >
         {loading ? 'A enviar...' : 'Enviar'}
@@ -74,7 +75,6 @@ const styles = {
     fontSize: '1rem',
     backgroundColor: '#f9c200',
     border: 'none',
-    borderRadius: 4,
     cursor: 'pointer',
   },
   error: {

@@ -106,7 +106,7 @@ export default function VendorRegister() {
         </select>
 
         <input type="file" onChange={handlePhotoChange} style={styles.input} />
-        <button type="submit" style={styles.button}>Registar</button>
+        <button type="submit" className="btn" style={styles.button}>Registar</button>
       </form>
     </div>
   );

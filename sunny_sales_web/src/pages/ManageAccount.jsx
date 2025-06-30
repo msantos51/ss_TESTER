@@ -26,11 +26,11 @@ export default function ManageAccount() {
         style={styles.input}
       />
 
-      <button onClick={changePassword} style={styles.button}>
+      <button onClick={changePassword} className="btn" style={styles.button}>
         Alterar Palavra-passe
       </button>
 
-      <button onClick={deleteAccount} style={{ ...styles.button, backgroundColor: '#e74c3c' }}>
+      <button onClick={deleteAccount} className="btn" style={{ ...styles.button, backgroundColor: '#e74c3c' }}>
         Apagar Conta
       </button>
     </div>
@@ -66,8 +66,6 @@ const styles = {
     backgroundColor: '#FDC500',
     color: '#000',
     fontWeight: 'bold',
-    border: 'none',
-    borderRadius: '8px',
     cursor: 'pointer',
   },
 };
