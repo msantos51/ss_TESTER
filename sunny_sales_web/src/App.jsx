@@ -33,7 +33,7 @@ return (
   </div>
 
   <Routes>
-    <Route path="/" element={<h2 style={styles.home}>Bem-vindo à Sunny Sales!</h2>} />
+    <Route path="/" element={<MapScreen />} />
     <Route path="/about" element={<About />} />
     <Route path="/settings" element={<AccountSettings />} />
     <Route path="/login" element={<ClientLogin />} />
