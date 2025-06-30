@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
+import LoadingDots from '../components/LoadingDots';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -41,7 +42,7 @@ export default function ForgotPassword() {
           />
         </div>
         <button onClick={requestReset} disabled={loading || !email}>
-          {loading ? 'A enviar...' : 'Enviar'}
+          {loading ? <LoadingDots /> : 'Enviar'}
         </button>
       </div>
     </div>

@@ -5,8 +5,8 @@ import {
   TextInput,
   Button,
   Text,
-  ActivityIndicator,
 } from 'react-native-paper';
+import LoadingDots from '../LoadingDots';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../config';
@@ -98,7 +98,7 @@ export default function ClientLoginScreen({ navigation }) {
         }}
       />
       {loading ? (
-        <ActivityIndicator animating size="large" />
+        <LoadingDots />
       ) : (
         <Button mode="contained" onPress={login} disabled={!email || !password}>
           <Text>Entrar</Text>

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../config';
+import LoadingDots from '../components/LoadingDots';
 
 export default function ClientLogin() {
   const [email, setEmail] = useState('');
@@ -88,7 +89,7 @@ export default function ClientLogin() {
           />
         </div>
         <button onClick={login} disabled={!email || !password || loading}>
-          {loading ? 'A carregar...' : 'Entrar'}
+          {loading ? <LoadingDots /> : 'Entrar'}
         </button>
         <button
           type="button"
