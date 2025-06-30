@@ -3,6 +3,7 @@ import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 
+// LeafletMap
 const LeafletMap = forwardRef((props, ref) => {
   const {
     markers = [],
@@ -10,8 +11,10 @@ const LeafletMap = forwardRef((props, ref) => {
     initialZoom = 13,
     polyline = [],
   } = props;
+  // webviewRef
   const webviewRef = useRef(null);
 
+  // html
   const html = `
     <!DOCTYPE html>
     <html>
@@ -93,6 +96,7 @@ opts.icon = L.divIcon({
   useImperativeHandle(ref, () => ({
     setView: (lat, lng, zoom) => {
       if (webviewRef.current) {
+        // js
         const js = `window.setView(${lat}, ${lng}, ${zoom}); true;`;
         webviewRef.current.injectJavaScript(js);
       }

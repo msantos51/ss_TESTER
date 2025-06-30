@@ -30,11 +30,16 @@ from fastapi.responses import HTMLResponse
 PROFILE_PHOTO_DIR = "profile_photos"
 os.makedirs(PROFILE_PHOTO_DIR, exist_ok=True)
 
+# Diretório para stories dos vendedores
+STORY_DIR = "stories"
+os.makedirs(STORY_DIR, exist_ok=True)
+
 # Inicializar app
 app = FastAPI()
 
 # Endpoint raiz simples para verificação de funcionamento
 @app.get("/")
+# read_root
 def read_root():
     return {"status": "ok"}
 
@@ -50,6 +55,7 @@ app.add_middleware(
 
 # Montar rota para servir fotos publicamente
 app.mount("/profile_photos", StaticFiles(directory=PROFILE_PHOTO_DIR), name="profile_photos")
+app.mount("/stories", StaticFiles(directory=STORY_DIR), name="stories")
 
 # Criar as tabelas na base de dados
 models.Base.metadata.create_all(bind=engine)
@@ -65,6 +71,7 @@ SUCCESS_URL = os.getenv("SUCCESS_URL", "https://example.com/success")
 CANCEL_URL = os.getenv("CANCEL_URL", "https://example.com/cancel")
 
 
+# validate_password
 def validate_password(password: str):
     if len(password) < 8 or password.lower() == password:
         raise HTTPException(
@@ -73,6 +80,7 @@ def validate_password(password: str):
         )
 
 
+# haversine
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371000
     phi1 = radians(lat1)
@@ -90,6 +98,7 @@ SMTP_USER = os.getenv("SMTP_USER")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 
 
+# send_email
 def send_email(to: str, subject: str, body: str):
     if not SMTP_USER or not SMTP_PASSWORD:
         print("❌ Credenciais de email não definidas")
@@ -114,17 +123,21 @@ def send_email(to: str, subject: str, body: str):
 
 # Gerenciador de WebSockets
 class ConnectionManager:
+    # __init__
     def __init__(self):
         self.active_connections: list[WebSocket] = []
 
+    # connect
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
 
+    # disconnect
     def disconnect(self, websocket: WebSocket):
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
 
+    # broadcast
     async def broadcast(self, message: dict):
         for connection in list(self.active_connections):
             try:
@@ -140,15 +153,18 @@ manager = ConnectionManager()
 SECRET_KEY = os.getenv("SECRET_KEY", "secret")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+# _b64
 def _b64(data: dict | bytes) -> str:
     if isinstance(data, dict):
         data = json.dumps(data, separators=(",", ":"), sort_keys=True).encode()
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
 
+# _b64decode
 def _b64decode(segment: str) -> bytes:
     padded = segment + "=" * (-len(segment) % 4)
     return base64.urlsafe_b64decode(padded)
 
+# create_access_token
 def create_access_token(payload: dict, expires_sec: int = 604800) -> str:
     data = payload.copy()
     data["exp"] = int(time.time()) + expires_sec
@@ -159,6 +175,7 @@ def create_access_token(payload: dict, expires_sec: int = 604800) -> str:
     segments.append(_b64(sig))
     return ".".join(segments)
 
+# decode_token
 def decode_token(token: str) -> dict:
     try:
         header_b64, payload_b64, sig_b64 = token.split(".")
@@ -175,6 +192,7 @@ def decode_token(token: str) -> dict:
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+# get_current_vendor
 def get_current_vendor(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     payload = decode_token(token)
     vendor_id = payload.get("sub")
@@ -183,6 +201,7 @@ def get_current_vendor(token: str = Depends(oauth2_scheme), db: Session = Depend
         raise HTTPException(status_code=401, detail="Vendor not found")
     return vendor
 
+# get_current_client
 def get_current_client(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     payload = decode_token(token)
     if payload.get("type") != "client":
@@ -205,6 +224,7 @@ def get_db_local():
 
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
 
+# get_admin
 def get_admin(request: Request):
     token = request.headers.get("X-Admin-Token")
     if not ADMIN_TOKEN or token != ADMIN_TOKEN:
@@ -227,6 +247,7 @@ def verify_active_subscription(vendor: models.Vendor, db: Session):
 # Login do vendedor
 # --------------------------
 @app.post("/login", response_model=schemas.VendorOut)
+# login
 def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     vendor = db.query(models.Vendor).filter(models.Vendor.email == credentials.email).first()
     if not vendor or not pwd_context.verify(credentials.password, vendor.hashed_password):
@@ -239,9 +260,43 @@ def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
 # Endpoint para obter JWT
 # --------------------------
 @app.post("/token")
-def generate_token(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
-    vendor = db.query(models.Vendor).filter(models.Vendor.email == credentials.email).first()
-    if not vendor or not pwd_context.verify(credentials.password, vendor.hashed_password):
+# generate_token
+async def generate_token(
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    """Allow token generation using either JSON or form-encoded data."""
+    email = None
+    password = None
+
+
+    content_type = request.headers.get("content-type", "").lower()
+
+    if "application/json" in content_type:
+        data = await request.json()
+        email = data.get("email") or data.get("username")
+        password = data.get("password")
+    elif "application/x-www-form-urlencoded" in content_type or "multipart/form-data" in content_type:
+        form = await request.form()
+        email = form.get("email") or form.get("username")
+        password = form.get("password")
+    else:
+        # fallback: tentar json primeiro, depois form
+        try:
+            data = await request.json()
+            email = data.get("email") or data.get("username")
+            password = data.get("password")
+        except Exception:
+            form = await request.form()
+            email = form.get("email") or form.get("username")
+            password = form.get("password")
+
+
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email and password required")
+
+    vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
+    if not vendor or not pwd_context.verify(password, vendor.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     if not vendor.email_confirmed:
         raise HTTPException(status_code=400, detail="Email not confirmed")
@@ -252,6 +307,7 @@ def generate_token(credentials: schemas.UserLogin, db: Session = Depends(get_db)
 # Registo de cliente
 # --------------------------
 @app.post("/clients/", response_model=schemas.ClientOut)
+# create_client
 async def create_client(
     name: str = Form(...),
     email: str = Form(...),
@@ -294,6 +350,7 @@ async def create_client(
 
 
 @app.get("/confirm-client-email/{token}")
+# confirm_client_email
 def confirm_client_email(token: str, db: Session = Depends(get_db)):
     client = db.query(models.Client).filter(models.Client.confirmation_token == token).first()
     if not client:
@@ -305,6 +362,7 @@ def confirm_client_email(token: str, db: Session = Depends(get_db)):
 
 
 @app.post("/client-token")
+# generate_client_token
 def generate_client_token(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     client = db.query(models.Client).filter(models.Client.email == credentials.email).first()
     if not client or not pwd_context.verify(credentials.password, client.hashed_password):
@@ -316,6 +374,7 @@ def generate_client_token(credentials: schemas.UserLogin, db: Session = Depends(
 
 
 @app.get("/clients/{client_id}", response_model=schemas.ClientOut)
+# get_client
 def get_client(client_id: int, db: Session = Depends(get_db)):
     client = db.query(models.Client).filter(models.Client.id == client_id).first()
     if not client:
@@ -326,6 +385,7 @@ def get_client(client_id: int, db: Session = Depends(get_db)):
 # Registo de vendedor
 # --------------------------
 @app.post("/vendors/", response_model=schemas.VendorOut)
+# create_vendor
 async def create_vendor(
     name: str = Form(...),
     email: str = Form(...),
@@ -371,6 +431,7 @@ async def create_vendor(
 
 
 @app.get("/confirm-email/{token}")
+# confirm_email
 def confirm_email(token: str, db: Session = Depends(get_db)):
     vendor = db.query(models.Vendor).filter(models.Vendor.confirmation_token == token).first()
     if not vendor:
@@ -382,6 +443,7 @@ def confirm_email(token: str, db: Session = Depends(get_db)):
 
 
 @app.post("/password-reset-request")
+# password_reset_request
 async def password_reset_request(
     request: Request,
     email: str = Form(None),
@@ -411,6 +473,7 @@ async def password_reset_request(
 
 
 @app.post("/password-reset/{token}")
+# password_reset
 def password_reset(token: str, new_password: str = Form(...), db: Session = Depends(get_db)):
     vendor = db.query(models.Vendor).filter(models.Vendor.password_reset_token == token).first()
     if not vendor or not vendor.password_reset_expires or vendor.password_reset_expires < datetime.utcnow():
@@ -426,6 +489,7 @@ def password_reset(token: str, new_password: str = Form(...), db: Session = Depe
 # Listar vendedores
 # --------------------------
 @app.get("/vendors/", response_model=list[schemas.VendorOut])
+# list_vendors
 def list_vendors(db: Session = Depends(get_db)):
     vendors = db.query(models.Vendor).all()
     for v in vendors:
@@ -448,6 +512,7 @@ def list_vendors(db: Session = Depends(get_db)):
 # Favoritos de clientes
 # --------------------------
 @app.post("/clients/{client_id}/favorites/{vendor_id}")
+# add_favorite
 def add_favorite(
     client_id: int,
     vendor_id: int,
@@ -469,6 +534,7 @@ def add_favorite(
 
 
 @app.get("/clients/{client_id}/favorites", response_model=list[schemas.VendorOut])
+# list_favorites
 def list_favorites(
     client_id: int,
     db: Session = Depends(get_db),
@@ -489,6 +555,7 @@ def list_favorites(
 
 
 @app.delete("/clients/{client_id}/favorites/{vendor_id}")
+# remove_favorite
 def remove_favorite(
     client_id: int,
     vendor_id: int,
@@ -511,6 +578,7 @@ def remove_favorite(
 # Atualizar perfil do vendedor (agora com PATCH)
 # --------------------------
 @app.patch("/vendors/{vendor_id}/profile", response_model=schemas.VendorOut)
+# update_vendor_profile
 async def update_vendor_profile(
     vendor_id: int,
     name: str = Form(None),
@@ -563,6 +631,7 @@ async def update_vendor_profile(
 # Atualizar localização do vendedor
 # --------------------------
 @app.put("/vendors/{vendor_id}/location")
+# update_vendor_location
 async def update_vendor_location(
     vendor_id: int,
     lat: float = Body(...),
@@ -605,6 +674,7 @@ async def update_vendor_location(
 # Iniciar e terminar trajetos
 # --------------------------
 @app.post("/vendors/{vendor_id}/routes/start", response_model=schemas.RouteOut)
+# start_route
 def start_route(
     vendor_id: int,
     db: Session = Depends(get_db),
@@ -643,6 +713,7 @@ def start_route(
 
 
 @app.post("/vendors/{vendor_id}/routes/stop", response_model=schemas.RouteOut)
+# stop_route
 async def stop_route(
     vendor_id: int,
     db: Session = Depends(get_db),
@@ -695,6 +766,7 @@ async def stop_route(
 
 
 @app.get("/vendors/{vendor_id}/routes", response_model=list[schemas.RouteOut])
+# list_routes
 def list_routes(
     vendor_id: int,
     db: Session = Depends(get_db),
@@ -723,6 +795,7 @@ def list_routes(
 
 
 @app.get("/vendors/{vendor_id}/paid-weeks", response_model=list[schemas.PaidWeekOut])
+# list_paid_weeks
 def list_paid_weeks(
     vendor_id: int,
     db: Session = Depends(get_db),
@@ -740,6 +813,7 @@ def list_paid_weeks(
 
 
 @app.get("/password-reset/{token}", response_class=HTMLResponse)
+# show_password_reset_form
 async def show_password_reset_form(token: str):
     return f"""
     <!DOCTYPE html>
@@ -761,6 +835,7 @@ async def show_password_reset_form(token: str):
 # Criar sessão de pagamento no Stripe
 # --------------------------
 @app.post("/vendors/{vendor_id}/create-checkout-session")
+# create_checkout_session
 def create_checkout_session(
     vendor_id: int,
     db: Session = Depends(get_db),
@@ -789,6 +864,7 @@ def create_checkout_session(
 # WebSocket para localização em tempo real
 # --------------------------
 @app.websocket("/ws/locations")
+# websocket_locations
 async def websocket_locations(websocket: WebSocket):
     await manager.connect(websocket)
     try:
@@ -801,6 +877,7 @@ async def websocket_locations(websocket: WebSocket):
 # Reviews dos vendedores
 # --------------------------
 @app.post("/vendors/{vendor_id}/reviews", response_model=schemas.ReviewOut)
+# create_review
 def create_review(
     vendor_id: int,
     review: schemas.ReviewCreate,
@@ -824,6 +901,7 @@ def create_review(
 
 
 @app.get("/vendors/{vendor_id}/reviews", response_model=list[schemas.ReviewOut])
+# list_reviews
 def list_reviews(vendor_id: int, db: Session = Depends(get_db)):
     reviews = (
         db.query(models.Review)
@@ -839,6 +917,7 @@ def list_reviews(vendor_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/vendors/{vendor_id}/reviews/{review_id}/response", response_model=schemas.ReviewOut)
+# respond_review
 def respond_review(
     vendor_id: int,
     review_id: int,
@@ -865,6 +944,7 @@ def respond_review(
 
 
 @app.delete("/vendors/{vendor_id}/reviews/{review_id}")
+# delete_review
 def delete_review(
     vendor_id: int,
     review_id: int,
@@ -884,10 +964,63 @@ def delete_review(
     db.commit()
     return {"status": "deleted"}
 
+
+@app.post("/vendors/{vendor_id}/stories", response_model=schemas.StoryOut)
+# create_story
+async def create_story(
+    vendor_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_vendor: models.Vendor = Depends(get_current_vendor),
+):
+    if current_vendor.id != vendor_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    ext = os.path.splitext(file.filename)[1]
+    file_name = f"{uuid4().hex}{ext}"
+    file_path = os.path.join(STORY_DIR, file_name)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    created = datetime.utcnow()
+    story = models.Story(
+        vendor_id=vendor_id,
+        media_path=f"stories/{file_name}",
+        created_at=created,
+        expires_at=created + timedelta(hours=2),
+    )
+    db.add(story)
+    db.commit()
+    db.refresh(story)
+    return {
+        "id": story.id,
+        "media_url": story.media_path,
+        "created_at": story.created_at.isoformat(),
+    }
+
+
+@app.get("/vendors/{vendor_id}/stories", response_model=list[schemas.StoryOut])
+# list_stories
+def list_stories(vendor_id: int, db: Session = Depends(get_db)):
+    now = datetime.utcnow()
+    stories = (
+        db.query(models.Story)
+        .filter(models.Story.vendor_id == vendor_id, models.Story.expires_at > now)
+        .order_by(models.Story.created_at.desc())
+        .all()
+    )
+    return [
+        {
+            "id": s.id,
+            "media_url": s.media_path,
+            "created_at": s.created_at.isoformat(),
+        }
+        for s in stories
+    ]
+
 # --------------------------
 # Webhook do Stripe
 # --------------------------
 @app.post("/stripe/webhook")
+# stripe_webhook
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     payload = await request.body()
     sig = request.headers.get("stripe-signature")
@@ -917,11 +1050,13 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 # Admin endpoints simples
 # --------------------------
 @app.get("/admin/vendors", response_model=list[schemas.VendorOut])
+# admin_list_vendors
 def admin_list_vendors(db: Session = Depends(get_db), admin: bool = Depends(get_admin)):
     vendors = db.query(models.Vendor).all()
     return vendors
 
 @app.post("/admin/vendors/{vendor_id}/deactivate")
+# admin_deactivate_vendor
 def admin_deactivate_vendor(vendor_id: int, db: Session = Depends(get_db), admin: bool = Depends(get_admin)):
     vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
     if not vendor:
@@ -929,3 +1064,7 @@ def admin_deactivate_vendor(vendor_id: int, db: Session = Depends(get_db), admin
     vendor.subscription_active = False
     db.commit()
     return {"status": "deactivated"}
+
+@app.get("/vendors/me", response_model=schemas.VendorOut)
+def get_my_vendor_profile(current_vendor: models.Vendor = Depends(get_current_vendor)):
+    return current_vendor

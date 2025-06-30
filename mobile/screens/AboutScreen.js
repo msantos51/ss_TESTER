@@ -35,6 +35,7 @@ export default function AboutScreen({ navigation }) {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

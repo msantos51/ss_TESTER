@@ -10,6 +10,7 @@ let currentVendorId = null;
 
 // # Função auxiliar para garantir que o token JWT está disponível
 const getValidToken = async () => {
+  // token
   const token = await AsyncStorage.getItem('token');
   if (!token) throw new Error('Token não encontrado. Sessão pode ter expirado.');
   return token;
@@ -31,6 +32,7 @@ export const startLocationSharing = async (vendorId) => {
   }
 
   try {
+    // token
     const token = await getValidToken();
 
     await axios.post(`${BASE_URL}/vendors/${vendorId}/routes/start`, null, {
@@ -45,6 +47,7 @@ export const startLocationSharing = async (vendorId) => {
       },
       async ({ coords }) => {
         try {
+          // currentToken
           const currentToken = await getValidToken();
           await axios.put(
             `${BASE_URL}/vendors/${vendorId}/location`,
@@ -78,6 +81,7 @@ export const stopLocationSharing = async () => {
 
   if (currentVendorId) {
     try {
+      // token
       const token = await getValidToken();
       await axios.post(`${BASE_URL}/vendors/${currentVendorId}/routes/stop`, null, {
         headers: { Authorization: `Bearer ${token}` },
@@ -93,6 +97,7 @@ export const stopLocationSharing = async () => {
 
 // # Verifica se a partilha de localização está ativa
 export const isLocationSharing = async () => {
+  // value
   const value = await AsyncStorage.getItem('sharingLocation');
   return value === 'true';
 };

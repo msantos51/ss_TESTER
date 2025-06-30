@@ -8,10 +8,12 @@ import BackButton from '../BackButton';
 export default function ManageAccountScreen() {
   const [password, setPassword] = React.useState('');
 
+  // changePassword
   const changePassword = () => {
     Alert.alert('Funcionalidade indisponível');
   };
 
+  // deleteAccount
   const deleteAccount = () => {
     Alert.alert('Funcionalidade indisponível');
   };
@@ -40,6 +42,7 @@ export default function ManageAccountScreen() {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: theme.colors.background },
   title: { fontSize: 20, marginBottom: 16, textAlign: 'center' },

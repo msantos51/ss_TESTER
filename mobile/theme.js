@@ -1,6 +1,7 @@
 // Definições de tema para React Native Paper
 import { MD3LightTheme as DefaultTheme, configureFonts } from 'react-native-paper';
 
+// fontConfig
 const fontConfig = {
   ios: {
     regular: { fontFamily: 'Inter_400Regular', fontWeight: 'normal' },

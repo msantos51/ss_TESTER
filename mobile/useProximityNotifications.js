@@ -3,15 +3,21 @@ import { useEffect } from 'react';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
 
+// distanceMeters
 function distanceMeters(lat1, lon1, lat2, lon2) {
+  // R
   const R = 6371000;
+  // dLat
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  // dLon
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  // a
   const a =
     Math.sin(dLat / 2) ** 2 +
     Math.cos((lat1 * Math.PI) / 180) *
       Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLon / 2) ** 2;
+  // c
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -25,9 +31,11 @@ export default function useProximityNotifications(
   useEffect(() => {
     if (!enabled) return;
     let sub;
+    // start
     const start = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') return;
+      // notif
       const notif = await Notifications.requestPermissionsAsync();
       if (notif.status !== 'granted') return;
 
@@ -42,6 +50,7 @@ export default function useProximityNotifications(
           vendors.forEach((v) => {
             if (favoriteIds.length && !favoriteIds.includes(v.id)) return;
             if (v.current_lat != null && v.current_lng != null) {
+              // dist
               const dist = distanceMeters(
                 loc.coords.latitude,
                 loc.coords.longitude,

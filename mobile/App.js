@@ -1,6 +1,12 @@
-// App.js - ponto de entrada do aplicativo React Native com navegacao
+// App.js - ponto de entrada do aplicativo React Native com navegação
 import React from 'react';
-import { useFonts, Inter_400Regular, Inter_500Medium, Inter_300Light, Inter_100Thin } from '@expo-google-fonts/inter';
+import {
+  useFonts,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_300Light,
+  Inter_100Thin,
+} from '@expo-google-fonts/inter';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
@@ -27,9 +33,12 @@ import AboutScreen from './screens/AboutScreen';
 import { theme } from './theme';
 import t from './i18n';
 
+// Navegador principal utilizado pela aplicação
 const Stack = createNativeStackNavigator();
 
+// Componente raiz da aplicação
 export default function App() {
+  // Carregamento das fontes utilizadas
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -37,15 +46,18 @@ export default function App() {
     Inter_100Thin,
   });
 
+  // Se as fontes ainda não carregaram, não renderizar nada
   if (!fontsLoaded) {
     return null;
   }
 
+  // Conteúdo principal da aplicação
   return (
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }} edges={['top']}>
           <NavigationContainer>
+            {/* Registo das telas de navegação */}
             <Stack.Navigator initialRouteName="Map" screenOptions={{ headerShown: false }}>
           <Stack.Screen
             name="Map"

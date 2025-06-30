@@ -11,12 +11,17 @@ import BackButton from '../BackButton';
 export default function RoutesScreen({ navigation }) {
   const [routes, setRoutes] = useState([]);
 
+  // loadRoutes
   const loadRoutes = async () => {
+    // stored
     const stored = await AsyncStorage.getItem('user');
+    // token
     const token = await AsyncStorage.getItem('token');
     if (!stored) return;
+    // vendor
     const vendor = JSON.parse(stored);
     try {
+      // res
       const res = await axios.get(`${BASE_URL}/vendors/${vendor.id}/routes`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -27,16 +32,23 @@ export default function RoutesScreen({ navigation }) {
   };
 
   useEffect(() => {
+    // unsubscribe
     const unsubscribe = navigation.addListener('focus', loadRoutes);
     loadRoutes();
     return unsubscribe;
   }, [navigation]);
 
+  // renderItem
   const renderItem = ({ item }) => {
+    // start
     const start = new Date(item.start_time);
+    // end
     const end = item.end_time ? new Date(item.end_time) : null;
+    // durationMin
     const durationMin = end ? Math.round((end - start) / 60000) : 0;
+    // title
     const title = start.toLocaleString();
+    // description
     const description = `${durationMin} min - ${(item.distance_m / 1000).toFixed(2)} km`;
     return (
       <List.Item
@@ -56,6 +68,7 @@ export default function RoutesScreen({ navigation }) {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: theme.colors.background },
   item: {

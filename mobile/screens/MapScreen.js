@@ -45,9 +45,12 @@ export default function MapScreen({ navigation }) {
   const [zoomLevel, setZoomLevel] = useState(13);
   const [notifEnabled, setNotifEnabled] = useState(true);
   const [notifRadius, setNotifRadius] = useState(20);
+  // mapRef
   const mapRef = useRef(null);
+  // watchRef
   const watchRef = useRef(null);
 
+  // startWatch
   const startWatch = async () => {
     if (watchRef.current) return;
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -58,6 +61,7 @@ export default function MapScreen({ navigation }) {
         distanceInterval: 5,
       },
       (loc) => {
+        // coords
         const coords = {
           latitude: loc.coords.latitude,
           longitude: loc.coords.longitude,
@@ -67,8 +71,10 @@ export default function MapScreen({ navigation }) {
     );
   };
 
+  // fetchVendors
   const fetchVendors = async () => {
     try {
+      // res
       const res = await axios.get(`${BASE_URL}/vendors/`);
       setVendors(res.data);
     } catch (err) {
@@ -76,12 +82,16 @@ export default function MapScreen({ navigation }) {
     }
   };
 
+  // loadVendor
   const loadVendor = async () => {
     try {
+      // stored
       const stored = await AsyncStorage.getItem("user");
       if (stored) {
+        // v
         const v = JSON.parse(stored);
         setVendorUser(v);
+        // share
         const share = await isLocationSharing();
         if (share) {
           try {
@@ -100,8 +110,10 @@ export default function MapScreen({ navigation }) {
     }
   };
 
+  // loadClient
   const loadClient = async () => {
     try {
+      // stored
       const stored = await AsyncStorage.getItem("client");
       if (stored) {
         setClientUser(JSON.parse(stored));
@@ -114,12 +126,15 @@ export default function MapScreen({ navigation }) {
     }
   };
 
+  // loadFavorites
   const loadFavorites = async () => {
+    // favs
     const favs = await getFavorites();
     setFavoriteIds(favs);
   };
 
   useEffect(() => {
+    // unsubscribe
     const unsubscribe = navigation.addListener("focus", () => {
       fetchVendors();
       loadVendor();
@@ -134,12 +149,14 @@ export default function MapScreen({ navigation }) {
   }, [navigation]);
 
   useEffect(() => {
+    // unsubscribe
     const unsubscribe = subscribeLocations(
       ({ vendor_id, lat, lng, remove }) => {
         setVendors((prev) => {
           if (remove === true) {
             return prev.filter((v) => v.id !== vendor_id);
           }
+          // exists
           const exists = prev.find((v) => v.id === vendor_id);
           if (exists) {
             return prev.map((v) =>
@@ -170,6 +187,7 @@ export default function MapScreen({ navigation }) {
     };
   }, []);
 
+  // locateUser
   const locateUser = async (zoom = 19) => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -185,9 +203,11 @@ export default function MapScreen({ navigation }) {
         return;
       }
 
+      // loc
       const loc = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Highest,
       });
+      // coords
       const coords = {
         latitude: loc.coords.latitude,
         longitude: loc.coords.longitude,
@@ -215,6 +235,7 @@ export default function MapScreen({ navigation }) {
   };
 
   useEffect(() => {
+    // init
     const init = async () => {
       await locateUser(15);
       setLoadingLocation(false);
@@ -223,15 +244,18 @@ export default function MapScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
+    // load
     const load = async () => {
       setNotifEnabled(await isNotificationsEnabled());
       setNotifRadius(await getNotificationRadius());
     };
     load();
   }, []);
+  // activeVendors
   const activeVendors = vendors.filter(
     (v) => v?.current_lat != null && v?.current_lng != null,
   );
+  // filteredVendors
   const filteredVendors = activeVendors.filter(
     (v) =>
       (selectedProduct === "Todos os vendedores" ||
@@ -259,6 +283,7 @@ export default function MapScreen({ navigation }) {
           initialZoom={zoomLevel}
           markers={[
             ...filteredVendors.map((v) => {
+              // photo
               const photo = v.profile_photo
                 ? `${BASE_URL.replace(/\/$/, "")}/${v.profile_photo}`
                 : null;
@@ -351,9 +376,11 @@ export default function MapScreen({ navigation }) {
               }
               style={styles.vendorList}
               renderItem={({ item }) => {
+                // photoUri
                 const photoUri = item.profile_photo
                   ? `${BASE_URL.replace(/\/$/, "")}/${item.profile_photo}`
                   : null;
+                // fav
                 const fav = favoriteIds.includes(item.id);
                 return (
                   <TouchableOpacity
@@ -453,6 +480,7 @@ export default function MapScreen({ navigation }) {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   filterContainer: {

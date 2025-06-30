@@ -22,6 +22,7 @@ export default function LoginScreen({ navigation }) {
   // # Função para decodificar o token e obter o vendorId
   const getVendorIdFromToken = (token) => {
     try {
+      // payload
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.sub;
     } catch (e) {
@@ -30,6 +31,7 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  // login
   const login = async () => {
     if (!email || !password) return;
     setLoading(true);
@@ -40,6 +42,7 @@ export default function LoginScreen({ navigation }) {
         email,
         password,
       });
+      // token
       const token = tokenRes.data.access_token;
 
       // # Guardar o token
@@ -125,6 +128,7 @@ export default function LoginScreen({ navigation }) {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16, backgroundColor: theme.colors.background },
   input: { marginBottom: 12 },

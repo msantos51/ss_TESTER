@@ -14,20 +14,28 @@ export default function StatsScreen({ navigation }) {
   const [data, setData] = useState([]);
   const [labels, setLabels] = useState([]);
 
+  // loadRoutes
   const loadRoutes = async () => {
+    // stored
     const stored = await AsyncStorage.getItem('user');
+    // token
     const token = await AsyncStorage.getItem('token');
     if (!stored) return;
+    // vendor
     const vendor = JSON.parse(stored);
     try {
+      // res
       const res = await axios.get(`${BASE_URL}/vendors/${vendor.id}/routes`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
+      // daily
       const daily = {};
       res.data.forEach((r) => {
+        // d
         const d = r.start_time.split('T')[0];
         daily[d] = (daily[d] || 0) + r.distance_m;
       });
+      // sorted
       const sorted = Object.entries(daily).sort();
       setData(sorted.map(([, dist]) => Number((dist / 1000).toFixed(2))));
       setLabels(sorted.map(([date]) => date.slice(5)));
@@ -37,6 +45,7 @@ export default function StatsScreen({ navigation }) {
   };
 
   useEffect(() => {
+    // unsub
     const unsub = navigation.addListener('focus', loadRoutes);
     loadRoutes();
     return unsub;
@@ -77,6 +86,7 @@ export default function StatsScreen({ navigation }) {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: { flexGrow: 1, padding: 16, backgroundColor: theme.colors.background, alignItems: 'center' },
   title: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },

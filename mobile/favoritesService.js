@@ -1,14 +1,17 @@
 // Serviço utilitário para guardar vendedores favoritos em armazenamento local
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// KEY
 const KEY = 'favorites';
 
 export async function getFavorites() {
+  // data
   const data = await AsyncStorage.getItem(KEY);
   return data ? JSON.parse(data) : [];
 }
 
 export async function addFavorite(id) {
+  // favs
   const favs = await getFavorites();
   if (!favs.includes(id)) {
     favs.push(id);
@@ -23,6 +26,7 @@ export async function removeFavorite(id) {
 }
 
 export async function isFavorite(id) {
+  // favs
   const favs = await getFavorites();
   return favs.includes(id);
 }

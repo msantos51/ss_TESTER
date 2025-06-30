@@ -11,6 +11,7 @@ export default function ForgotPasswordScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // requestReset
   const requestReset = async () => {
     if (!email) return;
     setLoading(true);
@@ -49,6 +50,7 @@ export default function ForgotPasswordScreen({ navigation }) {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16, backgroundColor: theme.colors.background },
   input: { marginBottom: 12 },

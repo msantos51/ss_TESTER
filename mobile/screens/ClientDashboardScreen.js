@@ -20,12 +20,15 @@ export default function ClientDashboardScreen({ navigation }) {
   const [client, setClient] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  // menuAnim
   const menuAnim = useRef(new Animated.Value(0)).current;
   const [accountOpen, setAccountOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
 
+  // loadClient
   const loadClient = async () => {
     try {
+      // stored
       const stored = await AsyncStorage.getItem('client');
       if (stored) {
         setClient(JSON.parse(stored));
@@ -37,14 +40,18 @@ export default function ClientDashboardScreen({ navigation }) {
     }
   };
 
+  // loadFavorites
   const loadFavorites = async () => {
     try {
+      // ids
       const ids = await getFavorites();
       if (ids.length === 0) {
         setFavorites([]);
         return;
       }
+      // resp
       const resp = await axios.get(`${BASE_URL}/vendors/`);
+      // vendors
       const vendors = resp.data.filter((v) => ids.includes(v.id));
       setFavorites(vendors);
     } catch {
@@ -52,6 +59,7 @@ export default function ClientDashboardScreen({ navigation }) {
     }
   };
 
+  // logout
   const logout = async () => {
     await AsyncStorage.removeItem('client');
     await AsyncStorage.removeItem('clientToken');
@@ -76,6 +84,7 @@ export default function ClientDashboardScreen({ navigation }) {
   useEffect(() => {
     loadClient();
     loadFavorites();
+    // unsubscribe
     const unsubscribe = navigation.addListener('focus', () => {
       loadClient();
       loadFavorites();
@@ -117,6 +126,7 @@ export default function ClientDashboardScreen({ navigation }) {
         <Text style={styles.sectionTitle}>Vendedores Favoritos</Text>
         <View style={styles.favoriteList}>
           {favorites.map((item) => {
+            // photoUri
             const photoUri = item.profile_photo
               ? `${BASE_URL.replace(/\/$/, '')}/${item.profile_photo}`
               : null;
@@ -217,6 +227,7 @@ export default function ClientDashboardScreen({ navigation }) {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: { flexGrow: 1, padding: 16, alignItems: 'center', backgroundColor: theme.colors.background },
   title: { fontSize: 20, fontWeight: 'bold', marginBottom: 16 },

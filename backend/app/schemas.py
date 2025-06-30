@@ -2,10 +2,12 @@
 from pydantic import BaseModel
 from typing import Optional, Literal
 
+# UserLogin
 class UserLogin(BaseModel):
     email: str
     password: str
 
+# VendorProfileUpdate
 class VendorProfileUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
@@ -14,6 +16,7 @@ class VendorProfileUpdate(BaseModel):
     profile_photo: Optional[str] = None
     pin_color: Optional[str] = None
 
+# VendorCreate
 class VendorCreate(BaseModel):
     name: str
     email: str
@@ -21,6 +24,7 @@ class VendorCreate(BaseModel):
     product: Literal["Bolas de Berlim", "Gelados", "Acess\u00f3rios"]
     profile_photo: str
 
+# VendorOut
 class VendorOut(BaseModel):
     id: int
     name: str
@@ -34,10 +38,12 @@ class VendorOut(BaseModel):
     subscription_active: Optional[bool] = None
     subscription_valid_until: Optional[str] = None
     last_seen: Optional[str] = None
+    # Config
     class Config:
         orm_mode = True
 
 
+# ClientCreate
 class ClientCreate(BaseModel):
     name: str
     email: str
@@ -45,25 +51,30 @@ class ClientCreate(BaseModel):
     profile_photo: str
 
 
+# ClientOut
 class ClientOut(BaseModel):
     id: int
     name: str
     email: str
     profile_photo: str
 
+    # Config
     class Config:
         orm_mode = True
 
 
+# ReviewCreate
 class ReviewCreate(BaseModel):
     rating: int
     comment: Optional[str] = None
 
 
+# ReviewResponse
 class ReviewResponse(BaseModel):
     response: str
 
 
+# ReviewOut
 class ReviewOut(BaseModel):
     id: int
     vendor_id: int
@@ -74,16 +85,19 @@ class ReviewOut(BaseModel):
     response: Optional[str] = None
     active: bool
 
+    # Config
     class Config:
         orm_mode = True
 
 
+# RoutePoint
 class RoutePoint(BaseModel):
     lat: float
     lng: float
     t: str
 
 
+# RouteOut
 class RouteOut(BaseModel):
     id: int
     start_time: str
@@ -91,15 +105,29 @@ class RouteOut(BaseModel):
     distance_m: float
     points: list[RoutePoint]
 
+    # Config
     class Config:
         orm_mode = True
 
 
+# PaidWeekOut
 class PaidWeekOut(BaseModel):
     id: int
     start_date: str
     end_date: str
     receipt_url: Optional[str] = None
 
+    # Config
+    class Config:
+        orm_mode = True
+
+
+# StoryOut
+class StoryOut(BaseModel):
+    id: int
+    media_url: str
+    created_at: str
+
+    # Config
     class Config:
         orm_mode = True

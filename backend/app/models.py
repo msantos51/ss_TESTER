@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base
 
+# Vendor
 class Vendor(Base):
     """Tabela principal de vendedores (utilizadores)."""
 
@@ -29,6 +30,7 @@ class Vendor(Base):
     routes = relationship("Route", back_populates="vendor")
 
 
+# Client
 class Client(Base):
     """Utilizador cliente que pode avaliar e guardar favoritos."""
 
@@ -48,6 +50,7 @@ class Client(Base):
     reviews = relationship("Review", back_populates="client")
 
 
+# Review
 class Review(Base):
     """Avaliações/comentários de clientes para um vendedor."""
 
@@ -65,14 +68,17 @@ class Review(Base):
     client = relationship("Client", back_populates="reviews")
 
     @property
+    # client_name
     def client_name(self) -> str | None:
         return self.client.name if self.client else None
 
     @property
+    # client_profile_photo
     def client_profile_photo(self) -> str | None:
         return self.client.profile_photo if self.client else None
 
 
+# Route
 class Route(Base):
     """Trajetos percorridos pelos vendedores."""
 
@@ -88,6 +94,7 @@ class Route(Base):
     vendor = relationship("Vendor", back_populates="routes")
 
 
+# PaidWeek
 class PaidWeek(Base):
     """Registo de semanas pagas pelos vendedores."""
 
@@ -102,6 +109,7 @@ class PaidWeek(Base):
     vendor = relationship("Vendor")
 
 
+# Favorite
 class Favorite(Base):
     """Vínculo de clientes a vendedores favoritos."""
 
@@ -112,5 +120,20 @@ class Favorite(Base):
     vendor_id = Column(Integer, ForeignKey("vendors.id"))
 
     client = relationship("Client", back_populates="favorites")
+    vendor = relationship("Vendor")
+
+
+# Story
+class Story(Base):
+    """Stories efêmeras publicadas pelos vendedores."""
+
+    __tablename__ = "stories"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vendor_id = Column(Integer, ForeignKey("vendors.id"))
+    media_path = Column(String)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    expires_at = Column(DateTime)
+
     vendor = relationship("Vendor")
 

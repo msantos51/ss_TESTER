@@ -21,7 +21,9 @@ export default function ClientRegisterScreen({ navigation }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // pickImage
   const pickImage = async () => {
+    // result
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -32,6 +34,7 @@ export default function ClientRegisterScreen({ navigation }) {
     }
   };
 
+  // register
   const register = async () => {
     if (!name || !email || !password) {
       setError('Preencha todos os campos obrigatórios');
@@ -44,6 +47,7 @@ export default function ClientRegisterScreen({ navigation }) {
     setLoading(true);
     setError(null);
     try {
+      // data
       const data = new FormData();
       data.append('name', name);
       data.append('email', email);
@@ -126,6 +130,7 @@ export default function ClientRegisterScreen({ navigation }) {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16, backgroundColor: theme.colors.background },
   input: { marginBottom: 12 },

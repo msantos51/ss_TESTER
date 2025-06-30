@@ -7,11 +7,17 @@ import LeafletMap from '../LeafletMap';
 import BackButton from '../BackButton';
 
 export default function RouteDetailScreen({ route }) {
+  // r
   const r = route.params.route;
+  // polyline
   const polyline = r.points.map((p) => [p.lat, p.lng]);
+  // start
   const start = new Date(r.start_time);
+  // end
   const end = r.end_time ? new Date(r.end_time) : null;
+  // durationMin
   const durationMin = end ? Math.round((end - start) / 60000) : 0;
+  // initial
   const initial = polyline.length
     ? { latitude: polyline[0][0], longitude: polyline[0][1] }
     : { latitude: 0, longitude: 0 };
@@ -29,6 +35,7 @@ export default function RouteDetailScreen({ route }) {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   info: { padding: 16 },

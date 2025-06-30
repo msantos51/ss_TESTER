@@ -8,6 +8,7 @@ import {
   ScrollView,
   Animated,
   Linking,
+  Alert,
 } from 'react-native';
 import {
   TextInput,
@@ -42,13 +43,16 @@ export default function DashboardScreen({ navigation }) {
   const [sharingLocation, setSharingLocation] = useState(false);
   const [editing, setEditing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // menuAnim
   const menuAnim = useRef(new Animated.Value(0)).current;
   const [paymentsOpen, setPaymentsOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [reviews, setReviews] = useState([]);
+  const [uploadingStory, setUploadingStory] = useState(false);
 
+  // colorOptions
   const colorOptions = ['#FFB6C1', '#ADD8E6', '#90EE90', '#FFFF99', '#C8A2C8', '#98E8D5', '#FFCC99', '#E6E6FA'];
 
   useEffect(() => {
@@ -69,16 +73,20 @@ export default function DashboardScreen({ navigation }) {
   }, [menuOpen]);
 
   useEffect(() => {
+    // loadVendor
     const loadVendor = async () => {
       try {
+        // stored
         const stored = await AsyncStorage.getItem('user');
         if (stored) {
+          // v
           const v = JSON.parse(stored);
           setVendor(v);
           setName(v.name);
           setEmail(v.email);
           setProduct(v.product);
           setPinColor(v.pin_color || '#FFB6C1');
+          // share
           const share = await isLocationSharing();
           setSharingLocation(share);
         }
@@ -90,9 +98,11 @@ export default function DashboardScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
+    // loadReviews
     const loadReviews = async () => {
       if (!vendor) return;
       try {
+        // resp
         const resp = await axios.get(`${BASE_URL}/vendors/${vendor.id}/reviews`);
         setReviews(resp.data);
       } catch {
@@ -102,24 +112,31 @@ export default function DashboardScreen({ navigation }) {
     loadReviews();
   }, [vendor]);
 
+  // subscriptionText
   const subscriptionText = React.useMemo(() => {
     if (!vendor) return '';
     if (!vendor.subscription_active) return 'Subscrição inativa';
     if (!vendor.subscription_valid_until) return 'Subscrição ativa';
+    // diff
     const diff = new Date(vendor.subscription_valid_until) - new Date();
     if (diff <= 0) return 'Subscrição expirada';
+    // days
     const days = Math.floor(diff / 86400000);
+    // hours
     const hours = Math.floor((diff % 86400000) / 3600000);
     return `Subscrição ativa - termina em ${days}d ${hours}h`;
   }, [vendor]);
 
+  // profileUri
   const profileUri = profilePhoto
     ? profilePhoto.uri
     : vendor && vendor.profile_photo
     ? `${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}`
     : null;
 
+  // pickImage
   const pickImage = async () => {
+    // result
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -130,6 +147,62 @@ export default function DashboardScreen({ navigation }) {
     }
   };
 
+  // addStory
+  const addStory = async (asset) => {
+    if (!vendor || !asset) return;
+    try {
+      setUploadingStory(true);
+      // token
+      const token = await AsyncStorage.getItem('token');
+      // data
+      const data = new FormData();
+      data.append('file', {
+        uri: asset.uri,
+        name: 'story.jpg',
+        type: 'image/jpeg',
+      });
+      await axios.post(`${BASE_URL}/vendors/${vendor.id}/stories`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      Alert.alert('Story publicado');
+    } catch (e) {
+      setError('Erro ao publicar story');
+    } finally {
+      setUploadingStory(false);
+    }
+  };
+
+  // handleAddStory
+  const handleAddStory = () => {
+    Alert.alert('Novo Story', 'Escolha uma opção', [
+      {
+        text: 'Câmara',
+        onPress: async () => {
+          // res
+          const res = await ImagePicker.launchCameraAsync({ quality: 1 });
+          if (!res.canceled && res.assets.length > 0) addStory(res.assets[0]);
+        },
+      },
+      {
+        text: 'Galeria',
+        onPress: async () => {
+          // res
+          const res = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            quality: 1,
+          });
+          if (!res.canceled && res.assets.length > 0) addStory(res.assets[0]);
+        },
+      },
+      { text: 'Cancelar', style: 'cancel' },
+    ]);
+  };
+
+  // updateProfile
   const updateProfile = async () => {
     if (!vendor) return;
     if (changingPassword && (!password || !oldPassword)) {
@@ -137,6 +210,7 @@ export default function DashboardScreen({ navigation }) {
       return;
     }
     try {
+      // data
       const data = new FormData();
       if (name !== vendor.name) data.append('name', name);
       if (email !== vendor.email) data.append('email', email);
@@ -153,7 +227,9 @@ export default function DashboardScreen({ navigation }) {
           type: 'image/jpeg',
         });
       }
+      // token
       const token = await AsyncStorage.getItem('token');
+      // res
       const res = await axios.patch(`${BASE_URL}/vendors/${vendor.id}/profile`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -173,6 +249,7 @@ export default function DashboardScreen({ navigation }) {
     }
   };
 
+  // toggleLocation
   const toggleLocation = async () => {
     if (!vendor) return;
     if (sharingLocation) {
@@ -184,6 +261,7 @@ export default function DashboardScreen({ navigation }) {
         setSharingLocation(true);
         setError(null);
       } catch (err) {
+        // msg
         const msg =
           err?.response?.data?.detail === 'Subscription inactive'
             ? 'Dever\u00e1 pagar a semanalidade para poder ativar a localiza\u00e7\u00e3o'
@@ -193,6 +271,7 @@ export default function DashboardScreen({ navigation }) {
     }
   };
 
+  // logout
   const logout = async () => {
     await stopLocationSharing();
     await AsyncStorage.removeItem('user');
@@ -200,9 +279,12 @@ export default function DashboardScreen({ navigation }) {
     navigation.replace('VendorLogin');
   };
 
+  // paySubscription
   const paySubscription = async () => {
     try {
+      // token
       const token = await AsyncStorage.getItem('token');
+      // res
       const res = await axios.post(`${BASE_URL}/vendors/${vendor.id}/create-checkout-session`, null, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -309,10 +391,18 @@ export default function DashboardScreen({ navigation }) {
           ))}
         </View>
 
-        <Button mode="outlined" style={styles.fullButton} onPress={logout}>
+        <Button mode="contained" style={styles.fullButton} onPress={logout}>
           <Text>Sair</Text>
         </Button>
       </ScrollView>
+
+      <TouchableOpacity
+        style={styles.storyButton}
+        onPress={handleAddStory}
+        disabled={uploadingStory}
+      >
+        <Text style={styles.storyIcon}>📷</Text>
+      </TouchableOpacity>
 
       <Animated.View
         pointerEvents={menuOpen ? 'auto' : 'none'}
@@ -486,7 +576,22 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, 
     borderBottomColor: '#ccc' 
   },
-  reviewRating: { 
-    fontWeight: 'bold' 
-  }
+  reviewRating: {
+    fontWeight: 'bold'
+  },
+  storyButton: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 6,
+  },
+  storyIcon: {
+    fontSize: 28,
+  },
 });

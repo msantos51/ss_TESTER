@@ -63,6 +63,7 @@ export default function TermsScreen() {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: {
     padding: 16,

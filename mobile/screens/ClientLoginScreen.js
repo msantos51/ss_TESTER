@@ -19,8 +19,10 @@ export default function ClientLoginScreen({ navigation }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // getIdFromToken
   const getIdFromToken = (token) => {
     try {
+      // payload
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.sub;
     } catch (e) {
@@ -29,21 +31,26 @@ export default function ClientLoginScreen({ navigation }) {
     }
   };
 
+  // login
   const login = async () => {
     if (!email || !password) return;
     setLoading(true);
     setError(null);
     try {
+      // resp
       const resp = await axios.post(`${BASE_URL}/client-token`, {
         email,
         password,
       });
+      // token
       const token = resp.data.access_token;
       await AsyncStorage.setItem('clientToken', token);
+      // clientId
       const clientId = getIdFromToken(token);
       let client = { id: clientId, email };
       if (clientId) {
         try {
+          // details
           const details = await axios.get(`${BASE_URL}/clients/${clientId}`);
           client = details.data;
         } catch (e) {
@@ -105,6 +112,7 @@ export default function ClientLoginScreen({ navigation }) {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16, backgroundColor: theme.colors.background },
   input: { marginBottom: 12 },

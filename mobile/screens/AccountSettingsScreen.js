@@ -18,20 +18,25 @@ export default function AccountSettingsScreen() {
   const [radius, setRadius] = useState('20');
 
   useEffect(() => {
+    // load
     const load = async () => {
       setEnabled(await isNotificationsEnabled());
+      // r
       const r = await getNotificationRadius();
       setRadius(String(r));
     };
     load();
   }, []);
 
+  // toggleNotifications
   const toggleNotifications = async () => {
+    // val
     const val = !enabled;
     setEnabled(val);
     await setNotificationsEnabled(val);
   };
 
+  // changeRadius
   const changeRadius = async (value) => {
     setRadius(String(value));
     await setNotificationRadius(value);
@@ -61,6 +66,7 @@ export default function AccountSettingsScreen() {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: theme.colors.background },
   title: { fontSize: 20, marginBottom: 16 },

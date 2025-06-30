@@ -3,15 +3,19 @@ import { BASE_URL } from './config';
 
 let socket = null;
 let reconnectTimeout = null;
+// listeners
 const listeners = new Set();
 
+// getWsUrl
 function getWsUrl() {
   // Convert http(s):// to ws(s)://
   return `${BASE_URL.replace(/^http/, 'ws')}/ws/locations`;
 }
 
+// connect
 function connect() {
   if (socket) return;
+  // url
   const url = getWsUrl();
   try {
     socket = new WebSocket(url);
@@ -23,6 +27,7 @@ function connect() {
 
   socket.onmessage = (event) => {
     try {
+      // data
       const data = JSON.parse(event.data);
       listeners.forEach((cb) => cb(data));
     } catch (e) {
@@ -41,6 +46,7 @@ function connect() {
   };
 }
 
+// scheduleReconnect
 function scheduleReconnect() {
   if (reconnectTimeout) return;
   reconnectTimeout = setTimeout(() => {

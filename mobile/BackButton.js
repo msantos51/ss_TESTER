@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { theme } from './theme';
 
 export default function BackButton({ style }) {
+  // navigation
   const navigation = useNavigation();
   if (!navigation.canGoBack()) return null;
   return (

@@ -16,6 +16,7 @@ export default function StarRatingInput({ rating = 0, onChange }) {
   );
 }
 
+// styles
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
