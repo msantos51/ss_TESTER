@@ -9,9 +9,8 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { Button, Text, TextInput } from "react-native-paper";
+import { Button, Text, TextInput, Checkbox } from "react-native-paper";
 import LoadingDots from "../LoadingDots";
-import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LeafletMap from "../LeafletMap";
 import axios from "axios";
@@ -34,7 +33,8 @@ export default function MapScreen({ navigation }) {
   const [vendors, setVendors] = useState([]);
   const [vendorUser, setVendorUser] = useState(null);
   const [clientUser, setClientUser] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState("Todos os vendedores");
+  const PRODUCTS = ["Bolas de Berlim", "Acessórios", "Gelados"];
+  const [selectedProducts, setSelectedProducts] = useState([...PRODUCTS]);
   const [showList, setShowList] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [initialPosition, setInitialPosition] = useState(null);
@@ -259,8 +259,7 @@ export default function MapScreen({ navigation }) {
   // filteredVendors
   const filteredVendors = activeVendors.filter(
     (v) =>
-      (selectedProduct === "Todos os vendedores" ||
-        v?.product === selectedProduct) &&
+      (selectedProducts.length === 0 || selectedProducts.includes(v?.product)) &&
       (searchQuery === "" ||
         v?.name?.toLowerCase().includes(searchQuery.toLowerCase())),
   );
@@ -280,17 +279,16 @@ export default function MapScreen({ navigation }) {
           initialZoom={zoomLevel}
           markers={[
             ...filteredVendors.map((v) => {
-              // photo
               const photo = v.profile_photo
                 ? `${BASE_URL.replace(/\/$/, "")}/${v.profile_photo}`
                 : null;
+              const color = v.pin_color || "#FFB6C1";
+              const imgHtml = photo ? `<img src="${photo}" />` : "";
               return {
                 latitude: v.current_lat,
                 longitude: v.current_lng,
                 title: v.name || "Vendedor",
-                iconHtml: photo
-                  ? `<div class="gm-pin" style="border: 2px solid ${v.pin_color || "#FFB6C1"};"><img src="${photo}" /></div>`
-                  : null,
+                iconHtml: `<div class="gm-pin" style="background-color: ${color}; border: 2px solid white;">${imgHtml}</div>`,
                 selected: v.id === selectedVendorId,
               };
             }),
@@ -339,19 +337,26 @@ export default function MapScreen({ navigation }) {
       )}
 
       <View style={styles.filterContainer}>
-        <Picker
-          selectedValue={selectedProduct}
-          onValueChange={(itemValue) => setSelectedProduct(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item
-            label="Todos os vendedores"
-            value="Todos os vendedores"
-          />
-          <Picker.Item label="Bolas de Berlim" value="Bolas de Berlim" />
-          <Picker.Item label="Acessórios" value="Acessórios" />
-          <Picker.Item label="Gelados" value="Gelados" />
-        </Picker>
+        <View style={styles.checkboxRow}>
+          {PRODUCTS.map((p) => (
+            <TouchableOpacity
+              key={p}
+              style={styles.checkboxItem}
+              onPress={() =>
+                setSelectedProducts((prev) =>
+                  prev.includes(p)
+                    ? prev.filter((v) => v !== p)
+                    : [...prev, p],
+                )
+              }
+            >
+              <Checkbox
+                status={selectedProducts.includes(p) ? "checked" : "unchecked"}
+              />
+              <Text>{p}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         <TouchableOpacity
           style={styles.listToggle}
           onPress={() => setShowList((v) => !v)}
@@ -493,7 +498,12 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 6,
   },
-  picker: { backgroundColor: "#eee", marginBottom: 4 },
+  checkboxRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 4,
+  },
+  checkboxItem: { flexDirection: "row", alignItems: "center" },
   vendorList: { maxHeight: 200 },
   vendorItem: {
     paddingVertical: 4,
