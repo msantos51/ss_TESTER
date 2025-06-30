@@ -48,10 +48,22 @@ export default function DashboardCliente() {
       <button style={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)}>☰</button>
 
       {menuOpen && (
-        <div style={styles.menu}>
-          <Link to="/settings" style={styles.menuItem}>⚙️ Definições</Link>
-          <Link to="/about" style={styles.menuItem}>📄 Sobre</Link>
-          <button style={styles.menuItem} onClick={() => window.location.href = 'mailto:suporte@sunnysales.com'}>📧 Suporte</button>
+        <div style={styles.menu} onClick={() => setMenuOpen(false)}>
+          <div style={styles.sectionTitle}>Notificações</div>
+          <Link to="/settings" style={styles.menuItem}>Notificações</Link>
+
+          <div style={styles.sectionTitle}>Definições de Conta</div>
+          <Link to="/account" style={styles.menuItem}>Atualizar Dados Pessoais</Link>
+          <Link to="/account" style={styles.menuItem}>Apagar Conta</Link>
+
+          <div style={styles.sectionTitle}>Sobre e Ajuda</div>
+          <Link to="/terms" style={styles.menuItem}>Termos e Condições</Link>
+          <button
+            style={styles.menuItem}
+            onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}
+          >
+            Contactar Suporte
+          </button>
         </div>
       )}
 
@@ -159,5 +171,19 @@ const styles = {
     padding: '1rem',
     borderRadius: '12px',
     zIndex: 10,
+  },
+  sectionTitle: {
+    fontWeight: 'bold',
+    marginTop: '0.5rem',
+  },
+  menuItem: {
+    display: 'block',
+    textDecoration: 'none',
+    color: '#0077cc',
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    cursor: 'pointer',
+    textAlign: 'left',
   }
 }

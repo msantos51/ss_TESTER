@@ -78,6 +78,21 @@ export default function VendorDashboard() {
     setSharing(false);
   };
 
+  const paySubscription = async () => {
+    if (!vendor) return;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.post(
+        `${BASE_URL}/vendors/${vendor.id}/create-checkout-session`,
+        null,
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      );
+      if (res.data.checkout_url) window.open(res.data.checkout_url, '_blank');
+    } catch (err) {
+      console.log('Erro no pagamento:', err);
+    }
+  };
+
   return (
     <div style={styles.container}>
       <button style={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)}>☰</button>
@@ -113,10 +128,43 @@ export default function VendorDashboard() {
 
       {menuOpen && (
         <div style={styles.menu} onClick={() => setMenuOpen(false)}>
-          <Link style={styles.link} to="/routes">Trajetos</Link>
-          <Link style={styles.link} to="/paid-weeks">Semanas Pagas</Link>
-          <Link style={styles.link} to="/stats">Estatísticas</Link>
-          <Link style={styles.link} to="/account">Conta</Link>
+          <div style={styles.sectionTitle}>Pagamentos</div>
+          <button style={styles.menuItem} onClick={paySubscription}>
+            Pagar Semanalidade
+          </button>
+          <Link style={styles.menuItem} to="/paid-weeks">
+            Semanas Pagas
+          </Link>
+          <Link style={styles.menuItem} to="/invoices">
+            Faturas
+          </Link>
+
+          <div style={styles.sectionTitle}>Estatísticas</div>
+          <Link style={styles.menuItem} to="/routes">
+            Trajetos
+          </Link>
+          <Link style={styles.menuItem} to="/stats">
+            Distância Percorrida
+          </Link>
+
+          <div style={styles.sectionTitle}>Definições de Conta</div>
+          <Link style={styles.menuItem} to="/account">
+            Atualizar Dados Pessoais
+          </Link>
+          <Link style={styles.menuItem} to="/account">
+            Apagar Conta
+          </Link>
+
+          <div style={styles.sectionTitle}>Sobre e Ajuda</div>
+          <Link style={styles.menuItem} to="/terms">
+            Termos e Condições
+          </Link>
+          <button
+            style={styles.menuItem}
+            onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}
+          >
+            Contactar Suporte
+          </button>
         </div>
       )}
     </div>
@@ -186,6 +234,19 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5rem',
+  },
+  sectionTitle: {
+    fontWeight: 'bold',
+    marginTop: '0.5rem',
+  },
+  menuItem: {
+    textDecoration: 'none',
+    color: '#0077cc',
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    cursor: 'pointer',
+    textAlign: 'left',
   },
   pinPreview: {
     display: 'inline-block',
