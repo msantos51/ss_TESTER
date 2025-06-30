@@ -26,63 +26,26 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Recuperar Palavra-passe</h2>
-      {error && <p style={styles.error}>{error}</p>}
-      {message && <p style={styles.success}>{message}</p>}
-
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        style={styles.input}
-      />
-
-      <button
-        onClick={requestReset}
-        disabled={loading || !email}
-        className="btn"
-        style={styles.button}
-      >
-        {loading ? 'A enviar...' : 'Enviar'}
-      </button>
+    <div className="form-box">
+      <h2 className="title">Recuperar Palavra-passe</h2>
+      {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
+      {message && <p style={{ color: 'green', marginBottom: '1rem' }}>{message}</p>}
+      <div className="form">
+        <div className="form-container">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input"
+          />
+        </div>
+        <button onClick={requestReset} disabled={loading || !email}>
+          {loading ? 'A enviar...' : 'Enviar'}
+        </button>
+      </div>
     </div>
   );
 }
 
 // (em português) Estilos básicos para a página
-const styles = {
-  container: {
-    maxWidth: 400,
-    margin: '2rem auto',
-    padding: '2rem',
-    border: '1px solid #ccc',
-    borderRadius: 8,
-    backgroundColor: '#fff',
-  },
-  input: {
-    width: '100%',
-    padding: '0.5rem',
-    fontSize: '1rem',
-    marginBottom: '1rem',
-    borderRadius: 4,
-    border: '1px solid #ccc',
-  },
-  button: {
-    width: '100%',
-    padding: '0.75rem',
-    fontSize: '1rem',
-    backgroundColor: '#f9c200',
-    border: 'none',
-    cursor: 'pointer',
-  },
-  error: {
-    color: 'red',
-    marginBottom: '1rem',
-  },
-  success: {
-    color: 'green',
-    marginBottom: '1rem',
-  },
-};

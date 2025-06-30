@@ -66,69 +66,52 @@ export default function VendorRegister() {
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Registo de Vendedor</h2>
+    <div className="form-box">
+      <h2 className="title">Registo de Vendedor</h2>
 
-      {error && <p style={styles.error}>{error}</p>}
-      {success && <p style={styles.success}>{success}</p>}
+      {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
+      {success && <p style={{ color: 'green', marginBottom: '1rem' }}>{success}</p>}
 
-      <form onSubmit={handleRegister} style={styles.form}>
-        <input
-          type="text"
-          placeholder="Nome"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={styles.input}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={styles.input}
-        />
-        <input
-          type="password"
-          placeholder="Palavra-passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={styles.input}
-        />
-        <select
-          value={product}
-          onChange={(e) => setProduct(e.target.value)}
-          style={styles.input}
-        >
-          <option value="">Selecione um produto</option>
-          <option value="Bolas de Berlim">Bolas de Berlim</option>
-          <option value="Gelados">Gelados</option>
-          <option value="Acessórios">Acessórios</option>
-        </select>
+      <form onSubmit={handleRegister} className="form">
+        <div className="form-container">
+          <input
+            type="text"
+            placeholder="Nome"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="input"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input"
+          />
+          <input
+            type="password"
+            placeholder="Palavra-passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input"
+          />
+          <select
+            value={product}
+            onChange={(e) => setProduct(e.target.value)}
+            className="input"
+          >
+            <option value="">Selecione um produto</option>
+            <option value="Bolas de Berlim">Bolas de Berlim</option>
+            <option value="Gelados">Gelados</option>
+            <option value="Acessórios">Acessórios</option>
+          </select>
 
-        <input type="file" onChange={handlePhotoChange} style={styles.input} />
-        <button type="submit" className="btn" style={styles.button}>Registar</button>
+          <input type="file" onChange={handlePhotoChange} className="input" />
+        </div>
+        <button type="submit">Registar</button>
       </form>
     </div>
   );
 }
 
 // # Estilos simples para layout Web
-const styles = {
-  container: { padding: '2rem', maxWidth: '500px', margin: '0 auto' },
-  form: { display: 'flex', flexDirection: 'column' },
-  input: {
-    padding: '0.75rem',
-    marginBottom: '1rem',
-    fontSize: '1rem',
-  },
-  button: {
-    padding: '0.75rem',
-    backgroundColor: '#f9c200',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    fontWeight: 'bold',
-  },
-  error: { color: 'red', marginBottom: '1rem' },
-  success: { color: 'green', marginBottom: '1rem' },
-};

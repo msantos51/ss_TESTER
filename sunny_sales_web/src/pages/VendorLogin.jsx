@@ -53,93 +53,55 @@ export default function VendorLogin() {
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Login de Vendedor</h2>
-      <p style={styles.notice}>Esta página destina-se apenas a vendedores.</p>
+    <div className="form-box">
+      <h2 className="title">Login de Vendedor</h2>
+      <p style={{ marginBottom: '1rem', fontStyle: 'italic' }}>
+        Esta página destina-se apenas a vendedores.
+      </p>
 
-      {error && <p style={styles.error}>{error}</p>}
+      {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => { setEmail(e.target.value); setError(null); }}
-        style={styles.input}
-      />
-      <input
-        type="password"
-        placeholder="Palavra-passe"
-        value={password}
-        onChange={(e) => { setPassword(e.target.value); setError(null); }}
-        style={styles.input}
-      />
+      <div className="form">
+        <div className="form-container">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => { setEmail(e.target.value); setError(null); }}
+            className="input"
+          />
+          <input
+            type="password"
+            placeholder="Palavra-passe"
+            value={password}
+            onChange={(e) => { setPassword(e.target.value); setError(null); }}
+            className="input"
+          />
+        </div>
 
-      <button onClick={login} disabled={!email || !password || loading} className="btn" style={styles.button}>
-        {loading ? 'A entrar...' : 'Entrar'}
-      </button>
+        <button onClick={login} disabled={!email || !password || loading}>
+          {loading ? 'A entrar...' : 'Entrar'}
+        </button>
 
-      <button onClick={() => window.location.href = '/register'} className="btn" style={styles.outlinedButton}>
-        Registar
-      </button>
+        <button
+          type="button"
+          className="outlined-button"
+          onClick={() => (window.location.href = '/register')}
+        >
+          Registar
+        </button>
 
-      <button onClick={() => window.location.href = '/forgot-password'} className="btn" style={styles.textButton}>
-        Esqueci-me da palavra-passe
-      </button>
+        <button
+          type="button"
+          className="outlined-button"
+          onClick={() => (window.location.href = '/forgot-password')}
+          style={{ background: 'none', border: 'none', color: '#007BFF', textDecoration: 'underline' }}
+        >
+          Esqueci-me da palavra-passe
+        </button>
+      </div>
     </div>
   );
 }
 
 // (em português) Estilos simples para versão Web
-const styles = {
-  container: {
-    maxWidth: '400px',
-    margin: '3rem auto',
-    padding: '2rem',
-    border: '1px solid #ccc',
-    borderRadius: '12px',
-    backgroundColor: '#fff',
-    textAlign: 'center',
-  },
-  input: {
-    width: '100%',
-    padding: '10px',
-    marginBottom: '1rem',
-    borderRadius: '8px',
-    border: '1px solid #ccc',
-  },
-  button: {
-    width: '100%',
-    padding: '10px',
-    backgroundColor: '#FDC500',
-    color: '#000',
-    fontWeight: 'bold',
-    border: 'none',
-    cursor: 'pointer',
-    marginBottom: '1rem',
-  },
-  outlinedButton: {
-    width: '100%',
-    padding: '10px',
-    backgroundColor: 'white',
-    border: '2px solid #FDC500',
-    color: '#000',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    marginBottom: '1rem',
-  },
-  textButton: {
-    background: 'none',
-    border: 'none',
-    color: '#007BFF',
-    textDecoration: 'underline',
-    cursor: 'pointer',
-  },
-  error: {
-    color: 'red',
-    marginBottom: '1rem',
-  },
-  notice: {
-    marginBottom: '1rem',
-    fontStyle: 'italic',
-  },
-};

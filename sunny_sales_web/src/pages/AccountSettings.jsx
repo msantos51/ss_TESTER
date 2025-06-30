@@ -44,60 +44,30 @@ export default function AccountSettings() {
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Definições da Conta</h2>
+    <div className="form-box">
+      <h2 className="title">Definições da Conta</h2>
 
-      {/* Interruptor de notificações */}
-      <div style={styles.row}>
-        <span>Notificações Ativas</span>
-        <input type="checkbox" checked={enabled} onChange={toggleNotifications} />
+      <div className="form">
+        <div className="form-container">
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+            <span>Notificações Ativas</span>
+            <input type="checkbox" checked={enabled} onChange={toggleNotifications} />
+          </div>
+
+          <label style={{ display: 'block', marginBottom: '0.5rem' }}>Raio de Alertas (metros):</label>
+          <select
+            value={radius}
+            onChange={(e) => changeRadius(e.target.value)}
+            className="input"
+          >
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
       </div>
-
-      {/* Seletor de raio */}
-      <label style={styles.label}>Raio de Alertas (metros):</label>
-      <select
-        value={radius}
-        onChange={(e) => changeRadius(e.target.value)}
-        style={styles.select}
-      >
-        <option value="20">20</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
-      </select>
     </div>
   );
 }
 
 // (em português) Estilos incluídos no mesmo ficheiro
-const styles = {
-  container: {
-    padding: '2rem',
-    maxWidth: '500px',
-    margin: 'auto',
-    backgroundColor: '#f6f6f6',
-    borderRadius: '12px',
-    marginTop: '3rem',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-  },
-  title: {
-    marginBottom: '1.5rem',
-    fontSize: '1.5rem',
-    textAlign: 'center',
-  },
-  row: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '1rem',
-  },
-  label: {
-    display: 'block',
-    marginBottom: '0.5rem',
-  },
-  select: {
-    width: '100%',
-    padding: '0.5rem',
-    borderRadius: '8px',
-    fontSize: '1rem',
-  },
-};
