@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import HamburgerMenu from '../components/HamburgerMenu';
 import { BASE_URL } from '../config';
 import axios from 'axios';
 
@@ -8,7 +9,6 @@ let watchId = null;
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   // carrega dados do vendedor guardados no localStorage
@@ -95,7 +95,23 @@ export default function VendorDashboard() {
 
   return (
     <div style={styles.container}>
-      <button style={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)}>☰</button>
+      <HamburgerMenu style={styles.menuButton}>
+        <legend>Menu</legend>
+        <ul>
+          <li><button onClick={paySubscription}>Pagar Semanalidade</button></li>
+          <li><button onClick={() => navigate('/paid-weeks')}>Semanas Pagas</button></li>
+          <li><button onClick={() => navigate('/invoices')}>Faturas</button></li>
+          <hr />
+          <li><button onClick={() => navigate('/routes')}>Trajetos</button></li>
+          <li><button onClick={() => navigate('/stats')}>Distância Percorrida</button></li>
+          <hr />
+          <li><button onClick={() => navigate('/account')}>Atualizar Dados Pessoais</button></li>
+          <li><button onClick={() => navigate('/account')}>Apagar Conta</button></li>
+          <hr />
+          <li><button onClick={() => navigate('/terms')}>Termos e Condições</button></li>
+          <li><button onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}>Contactar Suporte</button></li>
+        </ul>
+      </HamburgerMenu>
       <h2 style={styles.title}>Painel do Vendedor</h2>
       {vendor && (
         <>
@@ -125,48 +141,6 @@ export default function VendorDashboard() {
       </button>
 
       <button className="btn" style={styles.logout} onClick={logout}>Sair</button>
-
-      {menuOpen && (
-        <div style={styles.menu} onClick={() => setMenuOpen(false)}>
-          <div style={styles.sectionTitle}>Pagamentos</div>
-          <button style={styles.menuItem} onClick={paySubscription}>
-            Pagar Semanalidade
-          </button>
-          <Link style={styles.menuItem} to="/paid-weeks">
-            Semanas Pagas
-          </Link>
-          <Link style={styles.menuItem} to="/invoices">
-            Faturas
-          </Link>
-
-          <div style={styles.sectionTitle}>Estatísticas</div>
-          <Link style={styles.menuItem} to="/routes">
-            Trajetos
-          </Link>
-          <Link style={styles.menuItem} to="/stats">
-            Distância Percorrida
-          </Link>
-
-          <div style={styles.sectionTitle}>Definições de Conta</div>
-          <Link style={styles.menuItem} to="/account">
-            Atualizar Dados Pessoais
-          </Link>
-          <Link style={styles.menuItem} to="/account">
-            Apagar Conta
-          </Link>
-
-          <div style={styles.sectionTitle}>Sobre e Ajuda</div>
-          <Link style={styles.menuItem} to="/terms">
-            Termos e Condições
-          </Link>
-          <button
-            style={styles.menuItem}
-            onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}
-          >
-            Contactar Suporte
-          </button>
-        </div>
-      )}
     </div>
   );
 }
@@ -218,29 +192,6 @@ const styles = {
     background: 'none',
     border: 'none',
     cursor: 'pointer',
-  },
-  menu: {
-    position: 'absolute',
-    top: 70,
-    left: 16,
-    backgroundColor: '#fff',
-    border: '1px solid #ccc',
-    padding: '1rem',
-    borderRadius: '12px',
-    zIndex: 10,
-  },
-  sectionTitle: {
-    fontWeight: 'bold',
-    marginTop: '0.5rem',
-  },
-  menuItem: {
-    textDecoration: 'none',
-    color: '#0077cc',
-    background: 'none',
-    border: 'none',
-    padding: 0,
-    cursor: 'pointer',
-    textAlign: 'left',
   },
   pinPreview: {
     display: 'inline-block',

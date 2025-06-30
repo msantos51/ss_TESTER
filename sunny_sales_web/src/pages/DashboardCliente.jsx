@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import HamburgerMenu from '../components/HamburgerMenu';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 
 export default function DashboardCliente() {
   const [client, setClient] = useState(null);
   const [favorites, setFavorites] = useState([]);
-  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   // carregar cliente do localStorage
@@ -45,27 +45,20 @@ export default function DashboardCliente() {
 
   return (
     <div style={styles.container}>
-      <button style={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)}>☰</button>
-
-      {menuOpen && (
-        <div style={styles.menu} onClick={() => setMenuOpen(false)}>
-          <div style={styles.sectionTitle}>Notificações</div>
-          <Link to="/settings" style={styles.menuItem}>Notificações</Link>
-
-          <div style={styles.sectionTitle}>Definições de Conta</div>
-          <Link to="/account" style={styles.menuItem}>Atualizar Dados Pessoais</Link>
-          <Link to="/account" style={styles.menuItem}>Apagar Conta</Link>
-
-          <div style={styles.sectionTitle}>Sobre e Ajuda</div>
-          <Link to="/terms" style={styles.menuItem}>Termos e Condições</Link>
-          <button
-            style={styles.menuItem}
-            onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}
-          >
-            Contactar Suporte
-          </button>
-        </div>
-      )}
+      <HamburgerMenu style={styles.menuButton}>
+        <legend>Menu</legend>
+        <ul>
+          <li><button onClick={() => navigate('/settings')}>Notificações</button></li>
+          <hr />
+          <li><button onClick={() => navigate('/account')}>Atualizar Dados Pessoais</button></li>
+          <li><button onClick={() => navigate('/account')}>Apagar Conta</button></li>
+          <hr />
+          <li><button onClick={() => navigate('/terms')}>Termos e Condições</button></li>
+          <li>
+            <button onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}>Contactar Suporte</button>
+          </li>
+        </ul>
+      </HamburgerMenu>
 
       <h2 style={styles.title}>Meu Perfil</h2>
 
@@ -160,29 +153,5 @@ const styles = {
     background: 'none',
     border: 'none',
     cursor: 'pointer',
-  },
-  menu: {
-    position: 'absolute',
-    top: 70,
-    left: 16,
-    backgroundColor: '#fff',
-    border: '1px solid #ccc',
-    padding: '1rem',
-    borderRadius: '12px',
-    zIndex: 10,
-  },
-  sectionTitle: {
-    fontWeight: 'bold',
-    marginTop: '0.5rem',
-  },
-  menuItem: {
-    display: 'block',
-    textDecoration: 'none',
-    color: '#0077cc',
-    background: 'none',
-    border: 'none',
-    padding: 0,
-    cursor: 'pointer',
-    textAlign: 'left',
   }
 }
