@@ -49,9 +49,12 @@ export default function AccountSettings() {
 
       <div className="form">
         <div className="form-container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'center' }}>
             <span>Notificações Ativas</span>
-            <input type="checkbox" checked={enabled} onChange={toggleNotifications} />
+            <label className="checkbox-container">
+              <input type="checkbox" checked={enabled} onChange={toggleNotifications} />
+              <span className="checkmark"></span>
+            </label>
           </div>
 
           <label style={{ display: 'block', marginBottom: '0.5rem' }}>Raio de Alertas (metros):</label>

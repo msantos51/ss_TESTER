@@ -333,7 +333,11 @@ export default function MapScreen({ navigation }) {
           style={styles.locateButton}
           onPress={() => locateUser(19)}
         >
-          <Text style={styles.locateIcon}>📍</Text>
+          <MaterialCommunityIcons
+            name="crosshairs-gps"
+            size={24}
+            color="black"
+          />
         </TouchableOpacity>
       )}
 
@@ -528,9 +532,6 @@ const styles = StyleSheet.create({
     padding: 8,
     borderWidth: 1,
     borderColor: "#ccc",
-  },
-  locateIcon: {
-    fontSize: 24,
   },
   vendorIcon: {
     position: "absolute",

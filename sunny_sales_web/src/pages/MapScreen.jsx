@@ -1,5 +1,5 @@
 // (em português) Versão Web do ecrã de mapa com vendedores ativos e filtros
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
@@ -18,11 +18,13 @@ function ChangeMapView({ coords, zoom }) {
 
 export default function MapScreenWeb() {
   const [vendors, setVendors] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState('Todos os vendedores');
+  const PRODUCTS = ['Bolas de Berlim', 'Acessórios', 'Gelados'];
+  const [selectedProducts, setSelectedProducts] = useState([...PRODUCTS]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedVendorId, setSelectedVendorId] = useState(null);
   const [userPosition, setUserPosition] = useState(null);
   const [zoom, setZoom] = useState(13);
+  const [mapCenter, setMapCenter] = useState([38.7169, -9.1399]);
   const [vendorUser, setVendorUser] = useState(null);
   const [clientUser, setClientUser] = useState(null);
   const navigate = useNavigate();
@@ -65,6 +67,7 @@ export default function MapScreenWeb() {
           lng: pos.coords.longitude,
         };
         setUserPosition(coords);
+        setMapCenter([coords.lat, coords.lng]);
         setZoom(16);
       },
       (err) => {
@@ -77,7 +80,7 @@ export default function MapScreenWeb() {
   // filtro
   const filteredVendors = vendors.filter((v) => {
     const matchProduct =
-      selectedProduct === 'Todos os vendedores' || v.product === selectedProduct;
+      selectedProducts.length === 0 || selectedProducts.includes(v.product);
     const matchSearch =
       !searchQuery || v.name?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchProduct && matchSearch && v.current_lat && v.current_lng;
@@ -95,16 +98,27 @@ export default function MapScreenWeb() {
       <h2>Localização dos Vendedores</h2>
 
       <div style={{ marginBottom: '1rem' }}>
-        <select
-          value={selectedProduct}
-          onChange={(e) => setSelectedProduct(e.target.value)}
-          style={{ marginRight: '1rem' }}
-        >
-          <option>Todos os vendedores</option>
-          <option>Bolas de Berlim</option>
-          <option>Acessórios</option>
-          <option>Gelados</option>
-        </select>
+        {PRODUCTS.map((p) => (
+          <label
+            key={p}
+            className="checkbox-container"
+            style={{ marginRight: '0.5rem' }}
+          >
+            <input
+              type="checkbox"
+              checked={selectedProducts.includes(p)}
+              onChange={() =>
+                setSelectedProducts((prev) =>
+                  prev.includes(p)
+                    ? prev.filter((v) => v !== p)
+                    : [...prev, p]
+                )
+              }
+            />
+            <span className="checkmark"></span>
+            <span style={{ marginLeft: '0.25rem' }}>{p}</span>
+          </label>
+        ))}
 
         <input
           type="text"
@@ -112,13 +126,14 @@ export default function MapScreenWeb() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="input"
+          style={{ marginLeft: '0.5rem' }}
         />
       </div>
 
       <div style={{ height: '500px', width: '100%' }}>
-        <MapContainer center={[38.7169, -9.1399]} zoom={zoom} style={{ height: '100%', width: '100%' }}>
+        <MapContainer center={mapCenter} zoom={zoom} style={{ height: '100%', width: '100%' }}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          {userPosition && <ChangeMapView coords={[userPosition.lat, userPosition.lng]} zoom={zoom} />}
+          <ChangeMapView coords={mapCenter} zoom={zoom} />
 
           {userPosition && (
             <Marker
@@ -143,7 +158,11 @@ export default function MapScreenWeb() {
                   : '<div style="background:#FFB6C1;width:16px;height:16px;border-radius:50%;"></div>',
               })}
               eventHandlers={{
-                click: () => setSelectedVendorId(v.id),
+                click: () => {
+                  setSelectedVendorId(v.id);
+                  setMapCenter([v.current_lat, v.current_lng]);
+                  setZoom(17);
+                },
               }}
             >
               <Popup>
@@ -156,7 +175,32 @@ export default function MapScreenWeb() {
         </MapContainer>
       </div>
 
-      <button style={styles.locateButton} onClick={locateUser}>📍</button>
+      <ul style={{ maxHeight: '200px', overflowY: 'auto', listStyle: 'none', padding: 0, marginTop: '0.5rem' }}>
+        {filteredVendors.map((v) => (
+          <li
+            key={v.id}
+            onClick={() => {
+              setSelectedVendorId(v.id);
+              setMapCenter([v.current_lat, v.current_lng]);
+              setZoom(17);
+            }}
+            style={{ padding: '4px 0', borderBottom: '1px solid #ccc', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+          >
+            {v.profile_photo && (
+              <img
+                src={`${BASE_URL}/${v.profile_photo}`}
+                style={{ width: 32, height: 32, borderRadius: 16, marginRight: 8 }}
+              />
+            )}
+            <span>
+              {v.name}
+              {v.rating_average != null ? ` – ${v.rating_average.toFixed(1)}★` : ''}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <button style={styles.locateButton} onClick={locateUser}>🎯</button>
 
       <button
         style={styles.vendorIcon}
@@ -202,7 +246,7 @@ const styles = {
   },
   locateButton: {
     position: 'absolute',
-    bottom: 80,
+    bottom: 10,
     right: 10,
     backgroundColor: '#fff',
     border: '1px solid #ccc',
