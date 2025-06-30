@@ -9,7 +9,7 @@ from passlib.context import CryptContext
 from . import models, schemas
 import stripe
 from datetime import datetime, timedelta
-from app.database import SessionLocal, engine, get_db
+from .database import SessionLocal, engine, get_db
 import os
 import shutil
 from uuid import uuid4
