@@ -85,11 +85,11 @@ export default function ClientLogin() {
         style={styles.input}
       />
 
-      <button onClick={login} style={styles.button} disabled={!email || !password || loading}>
+      <button onClick={login} className="btn" style={styles.button} disabled={!email || !password || loading}>
         {loading ? 'A carregar...' : 'Entrar'}
       </button>
 
-      <button onClick={() => navigate('/register')} style={styles.outlinedButton}>
+      <button onClick={() => navigate('/register')} className="btn" style={styles.outlinedButton}>
         Registar
       </button>
     </div>
@@ -125,7 +125,6 @@ const styles = {
     backgroundColor: '#f9c200',
     color: '#000',
     border: 'none',
-    borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 'bold',
     fontSize: '1rem',
@@ -137,7 +136,6 @@ const styles = {
     backgroundColor: 'white',
     color: '#333',
     border: '1px solid #ccc',
-    borderRadius: '8px',
     cursor: 'pointer',
     fontSize: '1rem',
   },

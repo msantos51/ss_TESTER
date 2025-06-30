@@ -97,7 +97,7 @@ export default function DashboardCliente() {
         ))}
       </div>
 
-      <button onClick={logout} style={styles.logoutButton}>Sair</button>
+      <button onClick={logout} className="btn" style={styles.logoutButton}>Sair</button>
     </div>
   );
 }
@@ -149,7 +149,6 @@ const styles = {
     padding: '1rem',
     backgroundColor: '#FDC500',
     border: 'none',
-    borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 'bold',
   },

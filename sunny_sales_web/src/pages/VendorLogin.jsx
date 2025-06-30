@@ -74,15 +74,15 @@ export default function VendorLogin() {
         style={styles.input}
       />
 
-      <button onClick={login} disabled={!email || !password || loading} style={styles.button}>
+      <button onClick={login} disabled={!email || !password || loading} className="btn" style={styles.button}>
         {loading ? 'A entrar...' : 'Entrar'}
       </button>
 
-      <button onClick={() => window.location.href = '/register'} style={styles.outlinedButton}>
+      <button onClick={() => window.location.href = '/register'} className="btn" style={styles.outlinedButton}>
         Registar
       </button>
 
-      <button onClick={() => window.location.href = '/forgot-password'} style={styles.textButton}>
+      <button onClick={() => window.location.href = '/forgot-password'} className="btn" style={styles.textButton}>
         Esqueci-me da palavra-passe
       </button>
     </div>
@@ -114,7 +114,6 @@ const styles = {
     color: '#000',
     fontWeight: 'bold',
     border: 'none',
-    borderRadius: '8px',
     cursor: 'pointer',
     marginBottom: '1rem',
   },
@@ -125,7 +124,6 @@ const styles = {
     border: '2px solid #FDC500',
     color: '#000',
     fontWeight: 'bold',
-    borderRadius: '8px',
     cursor: 'pointer',
     marginBottom: '1rem',
   },

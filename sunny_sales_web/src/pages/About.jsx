@@ -24,7 +24,6 @@ const styles = {
     padding: '0.75rem',
     margin: '1rem 0',
     border: 'none',
-    borderRadius: '8px',
     backgroundColor: '#f9c200',
     color: 'black',
     fontSize: '1rem',
@@ -39,12 +38,14 @@ export default function About() {
         <h2>Sobre e Ajuda</h2>
         <hr />
         <button
+          className="btn"
           style={styles.button}
           onClick={() => (window.location.href = '/terms')}
         >
           📄 Termos e Condições
         </button>
         <button
+          className="btn"
           style={styles.button}
           onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}
         >

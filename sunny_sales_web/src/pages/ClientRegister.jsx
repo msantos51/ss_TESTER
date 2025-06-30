@@ -109,7 +109,7 @@ export default function ClientRegister() {
         />
       )}
 
-      <button onClick={register} style={styles.button} disabled={loading}>
+      <button onClick={register} className="btn" style={styles.button} disabled={loading}>
         {loading ? 'A enviar...' : 'Registar'}
       </button>
     </div>
@@ -155,7 +155,6 @@ const styles = {
     backgroundColor: '#f9c200',
     color: '#000',
     border: 'none',
-    borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 'bold',
     fontSize: '1rem',
