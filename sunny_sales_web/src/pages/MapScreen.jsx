@@ -1,6 +1,7 @@
 // (em português) Versão Web do ecrã de mapa com vendedores ativos e filtros
 import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { useNavigate } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import axios from 'axios';
@@ -22,6 +23,28 @@ export default function MapScreenWeb() {
   const [selectedVendorId, setSelectedVendorId] = useState(null);
   const [userPosition, setUserPosition] = useState(null);
   const [zoom, setZoom] = useState(13);
+  const [vendorUser, setVendorUser] = useState(null);
+  const [clientUser, setClientUser] = useState(null);
+  const navigate = useNavigate();
+
+  // carregar dados guardados no localStorage
+  const loadVendor = () => {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      setVendorUser(JSON.parse(stored));
+    } else {
+      setVendorUser(null);
+    }
+  };
+
+  const loadClient = () => {
+    const stored = localStorage.getItem('client');
+    if (stored) {
+      setClientUser(JSON.parse(stored));
+    } else {
+      setClientUser(null);
+    }
+  };
 
   // fetch vendors
   const fetchVendors = async () => {
@@ -63,10 +86,12 @@ export default function MapScreenWeb() {
   useEffect(() => {
     fetchVendors();
     locateUser();
+    loadVendor();
+    loadClient();
   }, []);
 
   return (
-    <div style={{ padding: '1rem' }}>
+    <div style={{ padding: '1rem', position: 'relative' }}>
       <h2>🌞 Localização dos Vendedores</h2>
 
       <div style={{ marginBottom: '1rem' }}>
@@ -129,6 +154,68 @@ export default function MapScreenWeb() {
           ))}
         </MapContainer>
       </div>
+
+      <button
+        style={styles.vendorIcon}
+        onClick={() => navigate(vendorUser ? '/dashboard' : '/vendor-login')}
+      >
+        🧑‍💼
+      </button>
+
+      <div style={styles.buttonsContainer}>
+        {clientUser ? (
+          <button style={styles.button} onClick={() => navigate('/dashboard')}>
+            Perfil
+          </button>
+        ) : (
+          <>
+            <button style={styles.button} onClick={() => navigate('/login')}>
+              Iniciar sessão Cliente
+            </button>
+            <button
+              style={styles.outlinedButton}
+              onClick={() => navigate('/register')}
+            >
+              Registar Cliente
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
+
+const styles = {
+  vendorIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: '#fff',
+    border: '1px solid #ccc',
+    borderRadius: '50%',
+    padding: '0.5rem',
+    cursor: 'pointer',
+  },
+  buttonsContainer: {
+    display: 'flex',
+    gap: '1rem',
+    justifyContent: 'center',
+    marginTop: '1rem',
+  },
+  button: {
+    padding: '0.5rem 1rem',
+    backgroundColor: '#f9c200',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+  },
+  outlinedButton: {
+    padding: '0.5rem 1rem',
+    backgroundColor: '#fff',
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+  },
+};
