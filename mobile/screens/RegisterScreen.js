@@ -5,8 +5,8 @@ import {
   TextInput,
   Button,
   Text,
-  ActivityIndicator,
 } from 'react-native-paper';
+import LoadingDots from '../LoadingDots';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
@@ -161,7 +161,7 @@ export default function RegisterScreen({ navigation }) {
       <View style={{ marginTop: 12 }} />
 
       {loading ? (
-        <ActivityIndicator animating size="large" />
+        <LoadingDots />
       ) : (
         <Button mode="contained" onPress={register}>
           <Text>Registar</Text>

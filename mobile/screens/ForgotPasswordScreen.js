@@ -1,7 +1,8 @@
 // Tela de recuperação de palavra-passe
 import React, { useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
-import { TextInput, Button, Text, ActivityIndicator } from 'react-native-paper';
+import { TextInput, Button, Text } from 'react-native-paper';
+import LoadingDots from '../LoadingDots';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { theme } from '../theme';
@@ -40,7 +41,7 @@ export default function ForgotPasswordScreen({ navigation }) {
         autoCapitalize="none"
       />
       {loading ? (
-        <ActivityIndicator animating size="large" />
+        <LoadingDots />
       ) : (
         <Button mode="contained" onPress={requestReset} disabled={!email}>
           <Text>Enviar</Text>

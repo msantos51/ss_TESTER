@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
+import LoadingDots from '../components/LoadingDots';
 
 export default function VendorLogin() {
   const [email, setEmail] = useState('');
@@ -80,7 +81,7 @@ export default function VendorLogin() {
         </div>
 
         <button onClick={login} disabled={!email || !password || loading}>
-          {loading ? 'A entrar...' : 'Entrar'}
+          {loading ? <LoadingDots /> : 'Entrar'}
         </button>
 
         <button

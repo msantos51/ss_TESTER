@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
+import LoadingDots from '../components/LoadingDots';
 
 export default function ClientRegister() {
   const [name, setName] = useState('');
@@ -113,7 +114,7 @@ export default function ClientRegister() {
           />
         )}
         <button onClick={register} disabled={loading}>
-          {loading ? 'A enviar...' : 'Registar'}
+          {loading ? <LoadingDots /> : 'Registar'}
         </button>
       </div>
     </div>

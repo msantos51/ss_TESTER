@@ -14,9 +14,9 @@ import {
   TextInput,
   Button,
   Text,
-  ActivityIndicator,
   List,
 } from 'react-native-paper';
+import LoadingDots from '../LoadingDots';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -297,7 +297,7 @@ export default function DashboardScreen({ navigation }) {
   if (!vendor) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" />
+        <LoadingDots />
         <Text>A carregar...</Text>
         {error && <Text style={styles.error}>{error}</Text>}
       </View>
