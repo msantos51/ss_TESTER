@@ -1,9 +1,9 @@
 /* (em português) Estilo da barra de filtros */
 .filter-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
   margin-bottom: 1rem;
 }
 
@@ -16,7 +16,7 @@
 }
 
 /* (em português) Estilo moderno do checkbox com cor amarela */
-.checkbox-container {
+.filter-container .checkbox-container {
   display: inline-block;
   position: relative;
   padding-left: 35px;
@@ -26,7 +26,7 @@
   user-select: none;
 }
 
-.custom-checkbox {
+.filter-container .custom-checkbox {
   position: absolute;
   opacity: 0;
   cursor: pointer;
@@ -34,7 +34,7 @@
   width: 0;
 }
 
-.checkmark {
+.filter-container .checkmark {
   position: absolute;
   top: 0;
   left: 0;
@@ -46,7 +46,7 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.checkmark:after {
+.filter-container .checkmark:after {
   content: "";
   position: absolute;
   display: none;
@@ -59,12 +59,12 @@
   transform: rotate(45deg);
 }
 
-.custom-checkbox:checked ~ .checkmark {
+.filter-container .custom-checkbox:checked ~ .checkmark {
   background-color: #f9c200; /* cor amarela personalizada */
   box-shadow: 0 3px 7px rgba(249, 194, 0, 0.4);
 }
 
-.custom-checkbox:checked ~ .checkmark:after {
+.filter-container .custom-checkbox:checked ~ .checkmark:after {
   display: block;
   animation: checkAnim 0.2s forwards;
 }
