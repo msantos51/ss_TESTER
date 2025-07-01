@@ -337,7 +337,25 @@ export default function MapScreen({ navigation }) {
       )}
 
       <View style={styles.filterContainer}>
-        <View style={styles.checkboxRow}>
+        <View style={styles.checkboxColumn}>
+          <TouchableOpacity
+            key="all"
+            style={styles.checkboxItem}
+            onPress={() =>
+              setSelectedProducts((prev) =>
+                prev.length === PRODUCTS.length ? [] : [...PRODUCTS],
+              )
+            }
+          >
+            <Checkbox
+              status={
+                selectedProducts.length === PRODUCTS.length
+                  ? "checked"
+                  : "unchecked"
+              }
+            />
+            <Text>Todos</Text>
+          </TouchableOpacity>
           {PRODUCTS.map((p) => (
             <TouchableOpacity
               key={p}
@@ -498,9 +516,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 6,
   },
-  checkboxRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+  checkboxColumn: {
+    flexDirection: "column",
     marginBottom: 4,
   },
   checkboxItem: { flexDirection: "row", alignItems: "center" },
