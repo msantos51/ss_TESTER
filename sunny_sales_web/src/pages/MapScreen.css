@@ -1,9 +1,9 @@
 /* (em português) Estilo da barra de filtros */
 .filter-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
   margin-bottom: 1rem;
 }
 

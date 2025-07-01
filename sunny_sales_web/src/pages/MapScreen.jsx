@@ -86,6 +86,21 @@ export default function MapScreenWeb() {
       <h2>Localização dos Vendedores</h2>
 
       <div className="filter-container">
+        <label key="all" className="checkbox-container">
+          Todos
+          <input
+            type="checkbox"
+            className="custom-checkbox"
+            checked={selectedProducts.length === PRODUCTS.length}
+            onChange={() =>
+              setSelectedProducts((prev) =>
+                prev.length === PRODUCTS.length ? [] : [...PRODUCTS]
+              )
+            }
+          />
+          <span className="checkmark"></span>
+        </label>
+
         {PRODUCTS.map((p) => (
           <label key={p} className="checkbox-container">
             {p}
