@@ -1,4 +1,4 @@
-// (em português) Versão Web do ecrã de mapa com vendedores ativos e filtros com checkboxes personalizados
+// (em português) Versão Web do ecrã de mapa com vendedores ativos e filtros
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
@@ -6,8 +6,8 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import axios from 'axios';
 import { BASE_URL } from '../config';
-import './MapScreenWeb.css';
 
+// (em português) Função auxiliar para mudar a vista do mapa
 function ChangeMapView({ coords, zoom }) {
   const map = useMap();
   useEffect(() => {
@@ -29,16 +29,26 @@ export default function MapScreenWeb() {
   const [clientUser, setClientUser] = useState(null);
   const navigate = useNavigate();
 
+  // carregar dados guardados no localStorage
   const loadVendor = () => {
     const stored = localStorage.getItem('user');
-    if (stored) setVendorUser(JSON.parse(stored));
+    if (stored) {
+      setVendorUser(JSON.parse(stored));
+    } else {
+      setVendorUser(null);
+    }
   };
 
   const loadClient = () => {
     const stored = localStorage.getItem('client');
-    if (stored) setClientUser(JSON.parse(stored));
+    if (stored) {
+      setClientUser(JSON.parse(stored));
+    } else {
+      setClientUser(null);
+    }
   };
 
+  // fetch vendors
   const fetchVendors = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/vendors/`);
@@ -48,6 +58,7 @@ export default function MapScreenWeb() {
     }
   };
 
+  // localizar utilizador
   const locateUser = () => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -66,6 +77,7 @@ export default function MapScreenWeb() {
     );
   };
 
+  // filtro
   const filteredVendors = vendors.filter((v) => {
     const matchProduct =
       selectedProducts.length === 0 || selectedProducts.includes(v.product);
@@ -85,21 +97,26 @@ export default function MapScreenWeb() {
     <div style={{ padding: '1rem', position: 'relative' }}>
       <h2>Localização dos Vendedores</h2>
 
-      <div className="filter-container">
+      <div style={{ marginBottom: '1rem' }}>
         {PRODUCTS.map((p) => (
-          <label key={p} className="checkbox-container">
-            {p}
+          <label
+            key={p}
+            className="checkbox-container"
+            style={{ marginRight: '0.5rem' }}
+          >
             <input
               type="checkbox"
-              className="custom-checkbox"
               checked={selectedProducts.includes(p)}
               onChange={() =>
                 setSelectedProducts((prev) =>
-                  prev.includes(p) ? prev.filter((v) => v !== p) : [...prev, p]
+                  prev.includes(p)
+                    ? prev.filter((v) => v !== p)
+                    : [...prev, p]
                 )
               }
             />
             <span className="checkmark"></span>
+            <span style={{ marginLeft: '0.25rem' }}>{p}</span>
           </label>
         ))}
 
@@ -108,7 +125,8 @@ export default function MapScreenWeb() {
           placeholder="Procurar vendedor..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-input"
+          className="input"
+          style={{ marginLeft: '0.5rem' }}
         />
       </div>
 
@@ -157,7 +175,7 @@ export default function MapScreenWeb() {
         </MapContainer>
       </div>
 
-      <ul className="vendor-list">
+      <ul style={{ maxHeight: '200px', overflowY: 'auto', listStyle: 'none', padding: 0, marginTop: '0.5rem' }}>
         {filteredVendors.map((v) => (
           <li
             key={v.id}
@@ -166,7 +184,7 @@ export default function MapScreenWeb() {
               setMapCenter([v.current_lat, v.current_lng]);
               setZoom(17);
             }}
-            className="vendor-item"
+            style={{ padding: '4px 0', borderBottom: '1px solid #ccc', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
           >
             {v.profile_photo && (
               <img
@@ -183,15 +201,31 @@ export default function MapScreenWeb() {
       </ul>
 
       <button style={styles.locateButton} onClick={locateUser}>🎯</button>
-      <button style={styles.vendorIcon} onClick={() => navigate(vendorUser ? '/dashboard' : '/vendor-login')}>👤</button>
+
+      <button
+        style={styles.vendorIcon}
+        onClick={() => navigate(vendorUser ? '/dashboard' : '/vendor-login')}
+      >
+        👤
+      </button>
 
       <div style={styles.buttonsContainer}>
         {clientUser ? (
-          <button className="btn" style={styles.button} onClick={() => navigate('/dashboard')}>Perfil</button>
+          <button className="btn" style={styles.button} onClick={() => navigate('/dashboard')}>
+            Perfil
+          </button>
         ) : (
           <>
-            <button className="btn" style={styles.button} onClick={() => navigate('/login')}>Iniciar sessão Cliente</button>
-            <button className="btn" style={styles.outlinedButton} onClick={() => navigate('/register')}>Registar Cliente</button>
+            <button className="btn" style={styles.button} onClick={() => navigate('/login')}>
+              Iniciar sessão Cliente
+            </button>
+            <button
+              className="btn"
+              style={styles.outlinedButton}
+              onClick={() => navigate('/register')}
+            >
+              Registar Cliente
+            </button>
           </>
         )}
       </div>
