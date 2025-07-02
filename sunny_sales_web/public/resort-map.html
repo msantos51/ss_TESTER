@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Resort</title>
+    <link rel="stylesheet" href="resort-style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <header class="main-header">
+        <img src="logo.png" alt="Logo" class="logo">
+        <nav>
+            <ul>
+                <li><a href="#">Início</a></li>
+                <li><a href="#">Vendedores</a></li>
+                <li><a href="#">Mapa</a></li>
+                <li><a href="#">Sobre</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <img src="palm-left.svg" class="decor decor-left" alt="">
+    <img src="palm-right.svg" class="decor decor-right" alt="">
+
+    <div class="map-wrapper">
+        <div id="map"></div>
+    </div>
+
+    <script>
+        // Exemplo de inicialização do mapa (pode ser removido se já existir no projeto)
+        var map = L.map('map').setView([38.7169, -9.1399], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        }).addTo(map);
+    </script>
+</body>
+</html>

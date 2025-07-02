@@ -1,0 +1,73 @@
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f9f3e7;
+    /* Opcional textura de areia */
+    /* background-image: url('sand-texture.png'); */
+    background-size: cover;
+}
+
+.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    z-index: 1000;
+}
+
+.main-header .logo {
+    height: 40px;
+    margin-right: 1rem;
+}
+
+.main-header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+.main-header nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.map-wrapper {
+    width: 90%;
+    margin: 80px auto 40px; /* deixa espaço para o cabeçalho */
+    height: 80vh;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+.decor {
+    position: absolute;
+    pointer-events: none;
+    z-index: 500;
+}
+
+.decor-left {
+    left: 0;
+    bottom: 0;
+}
+
+.decor-right {
+    right: 0;
+    top: 0;
+}
