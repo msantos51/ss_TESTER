@@ -24,9 +24,15 @@ export default function App() {
   return (
     <Router>
       {/* (em português) Barra de navegação */}
-      <div style={styles.navbar}>
-        <Link style={styles.link} to="/">Sunny Sales</Link>
-      </div>
+      <header style={styles.navbar}>
+        <Link style={styles.logo} to="/">Sunny Sales</Link>
+        <nav style={styles.navLinks}>
+          <Link style={styles.navLink} to="/vendor-login">Login Vendedor</Link>
+          <Link style={styles.navLink} to="/vendor-register">Registar Vendedor</Link>
+          <Link style={styles.navLink} to="/login">Login Cliente</Link>
+          <Link style={styles.navLink} to="/register">Registar Cliente</Link>
+        </nav>
+      </header>
 
       {/* (em português) Container central da aplicação */}
       <div className="container">
@@ -62,14 +68,23 @@ const styles = {
   navbar: {
     display: 'flex',
     justifyContent: 'space-between',
-    padding: '1rem 2rem',
+    padding: '1.5rem 2rem',
     backgroundColor: '#f9c200',
     alignItems: 'center',
   },
-  link: {
-    marginLeft: '1rem',
+  logo: {
     textDecoration: 'none',
-    color: 'black',
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: '2.5rem',
+  },
+  navLinks: {
+    display: 'flex',
+    gap: '1rem',
+  },
+  navLink: {
+    textDecoration: 'none',
+    color: 'white',
     fontWeight: 'bold',
   },
 };
