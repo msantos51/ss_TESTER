@@ -18,6 +18,7 @@ import TermsScreen from './pages/TermsScreen';
 import VendorDetailScreen from './pages/VendorDetailScreen';
 import Invoices from './pages/Invoices';
 import Dashboard from './pages/Dashboard';
+import ModernMapLayout from './pages/ModernMapLayout';
 import './index.css'; // (em português) Importa os estilos globais
 
 export default function App() {
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/map" element={<MapScreen />} />
+          <Route path="/modern-map" element={<ModernMapLayout />} />
           <Route path="/vendor-register" element={<VendorRegister />} />
           <Route path="/route-detail" element={<RouteDetail />} />
           <Route path="/routes" element={<RoutesScreen />} />
