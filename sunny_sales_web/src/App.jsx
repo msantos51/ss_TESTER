@@ -8,7 +8,6 @@ import ClientRegister from './pages/ClientRegister';
 import ForgotPassword from './pages/ForgotPassword';
 import VendorLogin from './pages/VendorLogin';
 import ManageAccount from './pages/ManageAccount';
-import MapScreen from './pages/MapScreen';
 import PaidWeeksScreen from './pages/PaidWeeksScreen.jsx';
 import VendorRegister from './pages/VendorRegister';
 import RouteDetail from './pages/RouteDetail';
@@ -32,26 +31,27 @@ export default function App() {
       {/* (em português) Container central da aplicação */}
       <div className="container">
         <Routes>
-          <Route path="/" element={<MapScreen />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/settings" element={<AccountSettings />} />
-          <Route path="/login" element={<ClientLogin />} />
-          <Route path="/register" element={<ClientRegister />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/vendor-login" element={<VendorLogin />} />
-          <Route path="/account" element={<ManageAccount />} />
-          <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
-          <Route path="/invoices" element={<Invoices />} />
-          <Route path="/map" element={<MapScreen />} />
-          <Route path="/modern-map" element={<ModernMapLayout />} />
-          <Route path="/vendor-register" element={<VendorRegister />} />
-          <Route path="/route-detail" element={<RouteDetail />} />
-          <Route path="/routes" element={<RoutesScreen />} />
-          <Route path="/stats" element={<StatsScreen />} />
-          <Route path="/terms" element={<TermsScreen />} />
-          <Route path="/vendors/:id" element={<VendorDetailScreen />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
+  {/* Usamos o novo layout moderno como página principal */}
+  <Route path="/" element={<ModernMapLayout />} />
+  <Route path="/about" element={<About />} />
+  <Route path="/settings" element={<AccountSettings />} />
+  <Route path="/login" element={<ClientLogin />} />
+  <Route path="/register" element={<ClientRegister />} />
+  <Route path="/forgot-password" element={<ForgotPassword />} />
+  <Route path="/vendor-login" element={<VendorLogin />} />
+  <Route path="/account" element={<ManageAccount />} />
+  <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
+  <Route path="/invoices" element={<Invoices />} />
+  {/* Mantemos apenas o layout moderno */}
+  <Route path="/map" element={<ModernMapLayout />} />
+  <Route path="/vendor-register" element={<VendorRegister />} />
+  <Route path="/route-detail" element={<RouteDetail />} />
+  <Route path="/routes" element={<RoutesScreen />} />
+  <Route path="/stats" element={<StatsScreen />} />
+  <Route path="/terms" element={<TermsScreen />} />
+  <Route path="/vendors/:id" element={<VendorDetailScreen />} />
+  <Route path="/dashboard" element={<Dashboard />} />
+</Routes>
       </div>
     </Router>
   );
