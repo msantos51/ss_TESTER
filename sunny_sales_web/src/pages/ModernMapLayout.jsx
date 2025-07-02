@@ -9,6 +9,8 @@ import './ModernMapLayout.css';
 export default function ModernMapLayout() {
   const [vendors, setVendors] = useState([]);
   const [search, setSearch] = useState('');
+  const PRODUCTS = ['Bolas de Berlim', 'Acessórios', 'Gelados'];
+  const [selectedProducts, setSelectedProducts] = useState([...PRODUCTS]);
   const [selected, setSelected] = useState(null);
   const mapRef = useRef(null);
 
@@ -32,8 +34,10 @@ export default function ModernMapLayout() {
 
   const activeVendors = vendors.filter((v) => v.current_lat && v.current_lng);
 
-  const filteredActive = activeVendors.filter((v) =>
-    v.name?.toLowerCase().includes(search.toLowerCase())
+  const filteredActive = activeVendors.filter(
+    (v) =>
+      v.name?.toLowerCase().includes(search.toLowerCase()) &&
+      (selectedProducts.length === 0 || selectedProducts.includes(v.product))
   );
 
   const focusVendor = (v) => {
@@ -55,6 +59,37 @@ export default function ModernMapLayout() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+
+        <div className="product-filters">
+          <label>
+            <input
+              type="checkbox"
+              checked={selectedProducts.length === PRODUCTS.length}
+              onChange={() =>
+                setSelectedProducts((prev) =>
+                  prev.length === PRODUCTS.length ? [] : [...PRODUCTS]
+                )
+              }
+            />{' '}
+            Todos
+          </label>
+          {PRODUCTS.map((p) => (
+            <label key={p}>
+              <input
+                type="checkbox"
+                checked={selectedProducts.includes(p)}
+                onChange={() =>
+                  setSelectedProducts((prev) =>
+                    prev.includes(p)
+                      ? prev.filter((v) => v !== p)
+                      : [...prev, p]
+                  )
+                }
+              />{' '}
+              {p}
+            </label>
+          ))}
+        </div>
 
         <div className="section">
           <h3 className="section-title">Ativos</h3>
@@ -108,7 +143,7 @@ export default function ModernMapLayout() {
         <MapContainer
           center={[38.7169, -9.1399]}
           zoom={13}
-          style={{ height: '100%', width: '100%' }}
+          style={{ height: '66vh', width: '100%' }}
           whenCreated={(map) => {
             mapRef.current = map;
           }}
