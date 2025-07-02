@@ -49,6 +49,10 @@ export default function MapScreenWeb() {
   };
 
   const locateUser = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocalização não suportada neste navegador.');
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const coords = {
@@ -61,6 +65,7 @@ export default function MapScreenWeb() {
       },
       (err) => {
         console.log('Erro ao obter localização:', err);
+        alert('Não foi possível obter a sua localização.');
       },
       { enableHighAccuracy: true }
     );
@@ -224,6 +229,7 @@ const styles = {
     borderRadius: '50%',
     padding: '0.5rem',
     cursor: 'pointer',
+    zIndex: 1000,
   },
   locateButton: {
     position: 'absolute',
@@ -234,6 +240,7 @@ const styles = {
     borderRadius: '50%',
     padding: '0.5rem',
     cursor: 'pointer',
+    zIndex: 1000,
   },
   buttonsContainer: {
     display: 'flex',
