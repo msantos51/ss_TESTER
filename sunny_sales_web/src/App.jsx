@@ -8,7 +8,6 @@ import ClientRegister from './pages/ClientRegister';
 import ForgotPassword from './pages/ForgotPassword';
 import VendorLogin from './pages/VendorLogin';
 import ManageAccount from './pages/ManageAccount';
-import MapScreen from './pages/MapScreen';
 import PaidWeeksScreen from './pages/PaidWeeksScreen.jsx';
 import VendorRegister from './pages/VendorRegister';
 import RouteDetail from './pages/RouteDetail';
@@ -18,6 +17,7 @@ import TermsScreen from './pages/TermsScreen';
 import VendorDetailScreen from './pages/VendorDetailScreen';
 import Invoices from './pages/Invoices';
 import Dashboard from './pages/Dashboard';
+import ModernMapLayout from './pages/ModernMapLayout';
 import './index.css'; // (em português) Importa os estilos globais
 
 export default function App() {
@@ -31,7 +31,8 @@ export default function App() {
       {/* (em português) Container central da aplicação */}
       <div className="container">
         <Routes>
-          <Route path="/" element={<MapScreen />} />
+          {/* Usamos o novo layout moderno como página principal */}
+          <Route path="/" element={<ModernMapLayout />} />
           <Route path="/about" element={<About />} />
           <Route path="/settings" element={<AccountSettings />} />
           <Route path="/login" element={<ClientLogin />} />
@@ -41,7 +42,8 @@ export default function App() {
           <Route path="/account" element={<ManageAccount />} />
           <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
           <Route path="/invoices" element={<Invoices />} />
-          <Route path="/map" element={<MapScreen />} />
+          {/* Mantemos a rota /map apontando também para o layout moderno */}
+          <Route path="/map" element={<ModernMapLayout />} />
           <Route path="/vendor-register" element={<VendorRegister />} />
           <Route path="/route-detail" element={<RouteDetail />} />
           <Route path="/routes" element={<RoutesScreen />} />
