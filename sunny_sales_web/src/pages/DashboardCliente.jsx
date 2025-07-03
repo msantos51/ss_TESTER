@@ -1,8 +1,8 @@
 // (em português) Dashboard do cliente na versão web com favoritos e menu lateral
 
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import HamburgerMenu from '../components/HamburgerMenu';
+import { useNavigate } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 
@@ -45,7 +45,7 @@ export default function DashboardCliente() {
 
   return (
     <div style={styles.container}>
-      <HamburgerMenu style={styles.menuButton}>
+      <Sidebar>
         <legend>Menu</legend>
         <ul>
           <li><button onClick={() => navigate('/settings')}>Notificações</button></li>
@@ -58,9 +58,10 @@ export default function DashboardCliente() {
             <button onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}>Contactar Suporte</button>
           </li>
         </ul>
-      </HamburgerMenu>
+      </Sidebar>
 
-      <h2 style={styles.title}>Meu Perfil</h2>
+      <main style={styles.content}>
+        <h2 style={styles.title}>Meu Perfil</h2>
 
       {client?.profile_photo && (
         <img src={`${BASE_URL}/${client.profile_photo}`} style={styles.image} alt="Foto de perfil" />
@@ -91,6 +92,7 @@ export default function DashboardCliente() {
       </div>
 
       <button onClick={logout} className="btn" style={styles.logoutButton}>Sair</button>
+      </main>
     </div>
   );
 }
@@ -98,10 +100,9 @@ export default function DashboardCliente() {
 // estilos embutidos
 const styles = {
   container: {
-    padding: '2rem',
-    maxWidth: '600px',
-    margin: 'auto',
+    display: 'flex',
     position: 'relative',
+    minHeight: '100vh',
   },
   title: {
     textAlign: 'center',
@@ -145,14 +146,11 @@ const styles = {
     cursor: 'pointer',
     fontWeight: 'bold',
   },
-  menuButton: {
-    position: 'absolute',
-    top: 16,
-    left: 16,
-    fontSize: '2rem',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    zIndex: 1000,
-  }
+  content: {
+    flex: 1,
+    padding: '2rem',
+    maxWidth: '600px',
+    margin: '0 auto',
+    marginLeft: '200px',
+  },
 }
