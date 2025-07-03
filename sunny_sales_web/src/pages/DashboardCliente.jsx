@@ -50,7 +50,7 @@ export default function DashboardCliente() {
         <ul>
           <li><button onClick={() => navigate('/settings')}>Notificações</button></li>
           <hr />
-          <li><button onClick={() => alert('Funcionalidade indisponivel')}>Atualizar Dados Pessoais</button></li>
+          <li><button onClick={() => navigate('/edit-profile')}>Atualizar Dados Pessoais</button></li>
           <li><button onClick={() => alert('Funcionalidade indisponivel')}>Apagar Conta</button></li>
           <hr />
           <li><button onClick={() => navigate('/terms')}>Termos e Condições</button></li>
