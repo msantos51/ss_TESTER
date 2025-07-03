@@ -85,6 +85,7 @@ export default function MapScreen({ navigation }) {
 
   // loadVendor
   const loadVendor = async () => {
+    let ret = null;
     try {
       // stored
       const stored = await AsyncStorage.getItem("user");
@@ -92,6 +93,7 @@ export default function MapScreen({ navigation }) {
         // v
         const v = JSON.parse(stored);
         setVendorUser(v);
+        ret = v;
         // share
         const share = await isLocationSharing();
         if (share) {
@@ -108,7 +110,9 @@ export default function MapScreen({ navigation }) {
     } catch (err) {
       console.log("Erro ao carregar vendedor:", err);
       setVendorUser(null);
+      return null;
     }
+    return ret;
   };
 
   // loadClient
@@ -117,7 +121,9 @@ export default function MapScreen({ navigation }) {
       // stored
       const stored = await AsyncStorage.getItem("client");
       if (stored) {
-        setClientUser(JSON.parse(stored));
+        const c = JSON.parse(stored);
+        setClientUser(c);
+        return c;
       } else {
         setClientUser(null);
       }
@@ -125,6 +131,7 @@ export default function MapScreen({ navigation }) {
       console.log("Erro ao carregar cliente:", err);
       setClientUser(null);
     }
+    return null;
   };
 
   // loadFavorites
@@ -309,9 +316,10 @@ export default function MapScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.vendorIcon}
-        onPress={() =>
-          navigation.navigate(vendorUser ? "Dashboard" : "VendorLogin")
-        }
+        onPress={async () => {
+          const v = await loadVendor();
+          navigation.navigate(v ? "Dashboard" : "VendorLogin");
+        }}
         accessibilityRole="button"
         accessibilityLabel="Iniciar sessão de Vendedor"
         accessible
@@ -476,7 +484,10 @@ export default function MapScreen({ navigation }) {
           <Button
             mode="contained"
             style={styles.button}
-            onPress={() => navigation.navigate("ClientDashboard")}
+            onPress={async () => {
+              const c = await loadClient();
+              navigation.navigate(c ? "ClientDashboard" : "ClientLogin");
+            }}
           >
             <Text>Perfil</Text>
           </Button>
