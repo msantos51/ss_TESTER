@@ -1,6 +1,6 @@
 // (em português) Componente principal da aplicação Web com rotas
 
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
 import ClientLogin from './pages/ClientLogin';
