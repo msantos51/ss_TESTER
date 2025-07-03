@@ -31,7 +31,9 @@ export default function App() {
       {/* (em português) Barra de navegação */}
       <header style={styles.navbar}>
         <Link style={styles.logo} to="/">Sunny Sales</Link>
-        <HamburgerMenu style={styles.menuButton}>
+
+        {/* (em português) Botão e menu hambúrguer */}
+        <HamburgerMenu>
           <nav style={styles.menuLinks}>
             <Link style={styles.navLink} to="/vendor-login">Login Vendedor</Link>
             <Link style={styles.navLink} to="/vendor-register">Registar Vendedor</Link>
@@ -39,6 +41,8 @@ export default function App() {
             <Link style={styles.navLink} to="/register">Registar Cliente</Link>
           </nav>
         </HamburgerMenu>
+
+        {/* (em português) Ícone de perfil */}
         <Link to={profileLink} style={styles.profileIcon} aria-label="Login">
           👤
         </Link>
@@ -47,28 +51,27 @@ export default function App() {
       {/* (em português) Container central da aplicação */}
       <div className="container">
         <Routes>
-  {/* Usamos o novo layout moderno como página principal */}
-  <Route path="/" element={<ModernMapLayout />} />
-  <Route path="/about" element={<About />} />
-  <Route path="/settings" element={<AccountSettings />} />
-  <Route path="/login" element={<ClientLogin />} />
-  <Route path="/register" element={<ClientRegister />} />
-  <Route path="/forgot-password" element={<ForgotPassword />} />
-  <Route path="/vendor-login" element={<VendorLogin />} />
-  <Route path="/login-selection" element={<LoginSelection />} />
-  <Route path="/account" element={<ManageAccount />} />
-  <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
-  <Route path="/invoices" element={<Invoices />} />
-  {/* Mantemos apenas o layout moderno */}
-  <Route path="/map" element={<ModernMapLayout />} />
-  <Route path="/vendor-register" element={<VendorRegister />} />
-  <Route path="/route-detail" element={<RouteDetail />} />
-  <Route path="/routes" element={<RoutesScreen />} />
-  <Route path="/stats" element={<StatsScreen />} />
-  <Route path="/terms" element={<TermsScreen />} />
-  <Route path="/vendors/:id" element={<VendorDetailScreen />} />
-  <Route path="/dashboard" element={<Dashboard />} />
-</Routes>
+          {/* (em português) Página principal com layout moderno */}
+          <Route path="/" element={<ModernMapLayout />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/settings" element={<AccountSettings />} />
+          <Route path="/login" element={<ClientLogin />} />
+          <Route path="/register" element={<ClientRegister />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/vendor-login" element={<VendorLogin />} />
+          <Route path="/login-selection" element={<LoginSelection />} />
+          <Route path="/account" element={<ManageAccount />} />
+          <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
+          <Route path="/invoices" element={<Invoices />} />
+          <Route path="/map" element={<ModernMapLayout />} />
+          <Route path="/vendor-register" element={<VendorRegister />} />
+          <Route path="/route-detail" element={<RouteDetail />} />
+          <Route path="/routes" element={<RoutesScreen />} />
+          <Route path="/stats" element={<StatsScreen />} />
+          <Route path="/terms" element={<TermsScreen />} />
+          <Route path="/vendors/:id" element={<VendorDetailScreen />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
       </div>
     </Router>
   );
@@ -82,6 +85,8 @@ const styles = {
     padding: '1.5rem 2rem',
     backgroundColor: '#f9c200',
     alignItems: 'center',
+    position: 'relative',
+    zIndex: 3000,
   },
   logo: {
     textDecoration: 'none',
@@ -103,9 +108,6 @@ const styles = {
     color: 'white',
     fontSize: '2rem',
     marginLeft: '1rem',
-  },
-  menuButton: {
-    position: 'relative',
   },
   menuLinks: {
     display: 'flex',
