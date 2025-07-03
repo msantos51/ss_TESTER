@@ -4,6 +4,7 @@ from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form, Bod
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from . import models, schemas
@@ -11,6 +12,7 @@ import stripe
 from datetime import datetime, timedelta
 from .database import SessionLocal, engine, get_db
 import os
+from pathlib import Path
 import shutil
 from uuid import uuid4
 from secrets import token_urlsafe
@@ -24,7 +26,6 @@ import base64
 import hmac
 import hashlib
 from math import radians, sin, cos, sqrt, atan2
-from fastapi.responses import HTMLResponse
 
 # Diretório para guardar fotos de perfil
 PROFILE_PHOTO_DIR = "profile_photos"
@@ -37,8 +38,8 @@ os.makedirs(STORY_DIR, exist_ok=True)
 # Inicializar app
 app = FastAPI()
 
-# Endpoint raiz simples para verificação de funcionamento
-@app.get("/")
+# Endpoint de verificação de funcionamento da API
+@app.get("/api/status")
 # read_root
 def read_root():
     return {"status": "ok"}
@@ -56,6 +57,11 @@ app.add_middleware(
 # Montar rota para servir fotos publicamente
 app.mount("/profile_photos", StaticFiles(directory=PROFILE_PHOTO_DIR), name="profile_photos")
 app.mount("/stories", StaticFiles(directory=STORY_DIR), name="stories")
+
+# Servir a aplicação web compilada, se existir
+WEB_DIST = Path(__file__).resolve().parents[2] / "sunny_sales_web" / "dist"
+if WEB_DIST.is_dir():
+    app.mount("/", StaticFiles(directory=str(WEB_DIST), html=True), name="web")
 
 # Criar as tabelas na base de dados
 models.Base.metadata.create_all(bind=engine)
