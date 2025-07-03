@@ -1,4 +1,6 @@
 // (em português) Página "Sobre e Ajuda" com estilos embutidos
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const styles = {
   container: {
@@ -32,6 +34,7 @@ const styles = {
 };
 
 export default function About() {
+  const navigate = useNavigate();
   return (
     <div style={styles.container}>
       <div style={styles.card}>
@@ -40,7 +43,7 @@ export default function About() {
         <button
           className="btn"
           style={styles.button}
-          onClick={() => (window.location.href = '/terms')}
+          onClick={() => navigate('/terms')}
         >
           📄 Termos e Condições
         </button>

@@ -1,6 +1,7 @@
 // (em português) Página Web para login de vendedores
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import LoadingDots from '../components/LoadingDots';
@@ -10,6 +11,7 @@ export default function VendorLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // (em português) Decodifica o token JWT para extrair o ID do vendedor
   const getVendorIdFromToken = (token) => {
@@ -44,7 +46,7 @@ export default function VendorLogin() {
       localStorage.removeItem('clientToken');
       localStorage.removeItem('favorites');
 
-      window.location.href = '/dashboard'; // redirecionar para o dashboard
+      navigate('/dashboard');
     } catch (err) {
       console.error(err);
       if (err.response?.data?.detail) {
@@ -91,7 +93,7 @@ export default function VendorLogin() {
         <button
           type="button"
           className="outlined-button"
-          onClick={() => (window.location.href = '/register')}
+          onClick={() => navigate('/register')}
         >
           Registar
         </button>
@@ -99,7 +101,7 @@ export default function VendorLogin() {
         <button
           type="button"
           className="outlined-button"
-          onClick={() => (window.location.href = '/forgot-password')}
+          onClick={() => navigate('/forgot-password')}
           style={{ background: 'none', border: 'none', color: '#007BFF', textDecoration: 'underline' }}
         >
           Esqueci-me da palavra-passe
