@@ -17,6 +17,11 @@
   padding: 0;
 }
 
+/* Override global button:hover rule so the icon stays visible */
+.burger:hover {
+  background: none !important;
+}
+
 .burger span {
   display: block;
   height: 3px;
