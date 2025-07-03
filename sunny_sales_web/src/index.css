@@ -1,9 +1,14 @@
 /* (em português) Estilo moderno inspirado em praia */
 
 :root {
+  /* Tema default */
+  --primary-color: #f9c200;
+  --secondary-color: #063d93;
+  --bg-color: #ffffff;
+  --text-color: #06286e;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #fff; /* fundo branco */
-  color: #06286e;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 body {
@@ -16,7 +21,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(to right, #ffe072, #ffde8a);
+  background: linear-gradient(to right, var(--primary-color), #ffde8a);
   padding: 1.5rem 2rem;
 }
 
@@ -27,7 +32,7 @@ header h1 {
 }
 
 .btn-top {
-  background: #063d93;
+  background: var(--secondary-color);
   color: white;
   padding: 0.6rem 1.2rem;
   border-radius: 2rem;
@@ -116,7 +121,7 @@ h2 {
   border-radius: 20px;
   border: 0 !important;
   outline: 0 !important;
-  background: teal;
+  background: var(--secondary-color);
   color: white;
   cursor: pointer;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -138,8 +143,8 @@ h2 {
   margin-left: 1px;
   font-size: 11px;
   text-decoration: underline;
-  text-decoration-color: teal;
-  color: teal;
+  text-decoration-color: var(--secondary-color);
+  color: var(--secondary-color);
   cursor: pointer;
   font-weight: 800;
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
