@@ -153,5 +153,6 @@ const styles = {
     background: 'none',
     border: 'none',
     cursor: 'pointer',
+    zIndex: 1000,
   }
 }
