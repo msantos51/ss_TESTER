@@ -22,6 +22,9 @@ import LoginSelection from './pages/LoginSelection';
 import './index.css'; // (em português) Importa os estilos globais
 
 export default function App() {
+  const isLoggedIn = localStorage.getItem('user') || localStorage.getItem('client');
+  const profileLink = isLoggedIn ? '/dashboard' : '/login-selection';
+
   return (
     <Router>
       {/* (em português) Barra de navegação */}
@@ -33,7 +36,7 @@ export default function App() {
           <Link style={styles.navLink} to="/login">Login Cliente</Link>
           <Link style={styles.navLink} to="/register">Registar Cliente</Link>
         </nav>
-        <Link to="/login-selection" style={styles.profileIcon} aria-label="Login">
+        <Link to={profileLink} style={styles.profileIcon} aria-label="Login">
           👤
         </Link>
       </header>
