@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
+import DashboardMenu from '../components/DashboardMenu';
 
 let watchId = null;
 
@@ -108,7 +109,7 @@ export default function VendorDashboard() {
 
   return (
     <div style={styles.wrapper}>
-      <div style={styles.menu}>
+      <DashboardMenu>
         <legend>Menu</legend>
         <ul>
           <li><button onClick={paySubscription}>Pagar Semanalidade</button></li>
@@ -124,7 +125,7 @@ export default function VendorDashboard() {
           <li><button onClick={() => navigate('/terms')}>Termos e Condições</button></li>
           <li><button onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}>Contactar Suporte</button></li>
         </ul>
-      </div>
+      </DashboardMenu>
       <div style={styles.container}>
         <h2 style={styles.title}>Painel do Vendedor</h2>
       {vendor && (
@@ -175,13 +176,7 @@ export default function VendorDashboard() {
 
 const styles = {
   wrapper: {
-    display: 'flex',
-    alignItems: 'flex-start',
-  },
-  menu: {
-    width: '220px',
-    padding: '1rem',
-    borderRight: '1px solid #ccc',
+    position: 'relative',
   },
   container: {
     padding: '2rem',
@@ -222,9 +217,6 @@ const styles = {
     backgroundColor: '#f9c200',
     cursor: 'pointer',
   },
-  menuButton: {
-    display: 'none',
-  },
   pinPreview: {
     display: 'inline-block',
     width: 16,
@@ -247,3 +239,4 @@ const styles = {
     padding: '4px 0',
   },
 };
+
