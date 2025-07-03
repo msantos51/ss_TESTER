@@ -39,6 +39,10 @@ export default function VendorLogin() {
 
       const userRes = await axios.post(`${BASE_URL}/login`, { email, password });
       localStorage.setItem('user', JSON.stringify(userRes.data));
+      // remove any previous client session data
+      localStorage.removeItem('client');
+      localStorage.removeItem('clientToken');
+      localStorage.removeItem('favorites');
 
       window.location.href = '/dashboard'; // redirecionar para o dashboard
     } catch (err) {

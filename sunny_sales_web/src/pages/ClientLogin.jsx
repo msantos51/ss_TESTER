@@ -46,6 +46,11 @@ export default function ClientLogin() {
       }
 
       localStorage.setItem('client', JSON.stringify(client));
+      // remove any previous vendor session data
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('vendorId');
+      localStorage.removeItem('sharingLocation');
       navigate('/dashboard');
     } catch (err) {
       console.error(err);
