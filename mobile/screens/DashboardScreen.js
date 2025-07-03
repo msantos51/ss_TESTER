@@ -306,14 +306,20 @@ export default function DashboardScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1 }}>
+      <TouchableOpacity
+        style={styles.mapButton}
+        onPress={() => navigation.navigate('Map')}
+      >
+        <Text style={styles.mapIcon}>🗺️</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.menuButton}
+        onPress={() => setMenuOpen(!menuOpen)}
+      >
+        <Text style={styles.menuIcon}>☰</Text>
+      </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.container}>
         {error && <Text style={styles.error}>{error}</Text>}
-        <TouchableOpacity style={styles.mapButton} onPress={() => navigation.navigate('Map')}>
-          <Text style={styles.mapIcon}>🗺️</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuButton} onPress={() => setMenuOpen(!menuOpen)}>
-          <Text style={styles.menuIcon}>☰</Text>
-        </TouchableOpacity>
         <Text style={styles.title}>Meu Perfil</Text>
 
         {editing ? (
@@ -499,18 +505,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', 
     width: '100%' 
   },
-  mapButton: { 
-    position: 'absolute', 
-    top: 16, 
-    right: 16 
+  mapButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    zIndex: 101,
+    elevation: 10
   },
   mapIcon: { 
     fontSize: 36 
   },
-  menuButton: { 
-    position: 'absolute', 
-    top: 16, 
-    left: 16 
+  menuButton: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    zIndex: 101,
+    elevation: 10
   },
   menuIcon: { 
     fontSize: 36 

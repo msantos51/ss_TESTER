@@ -94,11 +94,17 @@ export default function ClientDashboardScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <TouchableOpacity style={styles.mapButton} onPress={() => navigation.navigate('Map')}>
+      <TouchableOpacity
+        style={styles.mapButton}
+        onPress={() => navigation.navigate('Map')}
+      >
         <Text style={styles.mapIcon}>🗺️</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuButton} onPress={() => setMenuOpen(!menuOpen)}>
+      <TouchableOpacity
+        style={styles.menuButton}
+        onPress={() => setMenuOpen(!menuOpen)}
+      >
         <Text style={styles.menuIcon}>☰</Text>
       </TouchableOpacity>
 
