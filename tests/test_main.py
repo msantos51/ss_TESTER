@@ -380,3 +380,21 @@ def test_paid_weeks_listing(client):
     assert len(weeks) == 1
     assert weeks[0]["receipt_url"] == "http://r"
 
+
+def test_client_profile_update(client):
+    resp = register_client(client)
+    client_id = resp.json()["id"]
+    confirm_latest_client_email(client)
+    token = get_client_token(client)
+
+    resp = client.patch(
+        f"/clients/{client_id}/profile",
+        data={"name": "NewClient"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["name"] == "NewClient"
+
+    resp = client.patch(f"/clients/{client_id}/profile", data={"name": "Fail"})
+    assert resp.status_code == 401
+
