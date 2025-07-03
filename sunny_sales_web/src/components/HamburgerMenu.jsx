@@ -1,12 +1,13 @@
+// (em português) Componente do menu hambúrguer com menu lateral
 import React, { useState } from 'react';
 import './HamburgerMenu.css';
 
-export default function HamburgerMenu({ children, style }) {
+export default function HamburgerMenu({ children }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div style={{ position: 'relative', ...style }}>
-      {/* Botão hambúrguer */}
+    <div className="popup">
+      {/* (em português) Botão de menu em forma de hambúrguer */}
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
@@ -18,7 +19,7 @@ export default function HamburgerMenu({ children, style }) {
         <span />
       </button>
 
-      {/* Menu lateral */}
+      {/* (em português) Janela de menu que aparece ao clicar */}
       <nav
         className={`popup-window${open ? ' open' : ''}`}
         onClick={() => setOpen(false)}
