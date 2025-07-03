@@ -597,6 +597,53 @@ def remove_favorite(
     return {"status": "deleted"}
 
 # --------------------------
+# Atualizar perfil do cliente
+# --------------------------
+@app.patch("/clients/{client_id}/profile", response_model=schemas.ClientOut)
+# update_client_profile
+async def update_client_profile(
+    client_id: int,
+    name: str = Form(None),
+    email: str = Form(None),
+    password: str = Form(None),
+    old_password: str = Form(None),
+    new_password: str = Form(None),
+    profile_photo: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    current_client: models.Client = Depends(get_current_client),
+):
+    client = db.query(models.Client).filter(models.Client.id == client_id).first()
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    if current_client.id != client_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    if name:
+        client.name = name
+    if email:
+        client.email = email
+    # manter compatibilidade com parametro antigo 'password'
+    if new_password or password:
+        new_pass = new_password if new_password is not None else password
+        if not old_password:
+            raise HTTPException(status_code=400, detail="Old password required")
+        if not pwd_context.verify(old_password, client.hashed_password):
+            raise HTTPException(status_code=400, detail="Old password incorrect")
+        validate_password(new_pass)
+        client.hashed_password = pwd_context.hash(new_pass)
+    if profile_photo:
+        ext = os.path.splitext(profile_photo.filename)[1]
+        file_name = f"{uuid4().hex}{ext}"
+        file_path = os.path.join(PROFILE_PHOTO_DIR, file_name)
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(profile_photo.file, buffer)
+        client.profile_photo = f"profile_photos/{file_name}"
+
+    db.commit()
+    db.refresh(client)
+    return client
+
+# --------------------------
 # Atualizar perfil do vendedor (agora com PATCH)
 # --------------------------
 @app.patch("/vendors/{vendor_id}/profile", response_model=schemas.VendorOut)
