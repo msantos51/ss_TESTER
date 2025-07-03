@@ -4,7 +4,7 @@ from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form, Bod
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from . import models, schemas
@@ -62,6 +62,13 @@ app.mount("/stories", StaticFiles(directory=STORY_DIR), name="stories")
 WEB_DIST = Path(__file__).resolve().parents[2] / "sunny_sales_web" / "dist"
 if WEB_DIST.is_dir():
     app.mount("/", StaticFiles(directory=str(WEB_DIST), html=True), name="web")
+    # Para rotas de SPA como /dashboard funcionarem, devolvemos index.html
+    @app.get("/{path_name:path}", response_class=HTMLResponse)
+    async def serve_spa(path_name: str):
+        index_file = WEB_DIST / "index.html"
+        if index_file.is_file():
+            return FileResponse(index_file)
+        raise HTTPException(status_code=404, detail="Not Found")
 
 # Criar as tabelas na base de dados
 models.Base.metadata.create_all(bind=engine)
