@@ -61,14 +61,23 @@ app.mount("/stories", StaticFiles(directory=STORY_DIR), name="stories")
 # Servir a aplicação web compilada, se existir
 WEB_DIST = Path(__file__).resolve().parents[2] / "sunny_sales_web" / "dist"
 if WEB_DIST.is_dir():
-    app.mount("/", StaticFiles(directory=str(WEB_DIST), html=True), name="web")
-    # Para rotas de SPA como /dashboard funcionarem, devolvemos index.html
-    @app.get("/{path_name:path}", response_class=HTMLResponse)
+    # Servir ficheiros estáticos gerados pelo Vite (JS/CSS)
+    assets_path = WEB_DIST / "assets"
+    if assets_path.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(assets_path)), name="assets")
+
+    # Página principal da SPA
+    @app.get("/", response_class=HTMLResponse, include_in_schema=False)
+    async def serve_index():
+        return FileResponse(WEB_DIST / "index.html")
+
+    # Para rotas de SPA como /dashboard funcionarem após refresh
+    @app.get("/{path_name:path}", response_class=HTMLResponse, include_in_schema=False)
     async def serve_spa(path_name: str):
-        index_file = WEB_DIST / "index.html"
-        if index_file.is_file():
-            return FileResponse(index_file)
-        raise HTTPException(status_code=404, detail="Not Found")
+        file_path = WEB_DIST / path_name
+        if file_path.is_file():
+            return FileResponse(file_path)
+        return FileResponse(WEB_DIST / "index.html")
 
 # Criar as tabelas na base de dados
 models.Base.metadata.create_all(bind=engine)
