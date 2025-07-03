@@ -1,31 +1,67 @@
-// (em português) Componente do menu hambúrguer com menu lateral
-import React, { useState } from 'react';
-import './HamburgerMenu.css';
+/* (em português) Posição do botão no canto superior esquerdo */
+.popup {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2000;
+}
 
-export default function HamburgerMenu({ children }) {
-  const [open, setOpen] = useState(false);
+/* (em português) Estilo do botão hambúrguer */
+.burger {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 2001;
+}
 
-  return (
-    <div className="popup">
-      {/* (em português) Botão de menu em forma de hambúrguer */}
-      <button
-        type="button"
-        onClick={() => setOpen(o => !o)}
-        aria-label="Menu"
-        className={`burger${open ? ' open' : ''}`}
-      >
-        <span />
-        <span />
-        <span />
-      </button>
+/* (em português) Quando se passa o rato por cima do botão */
+.burger:hover {
+  background: none !important;
+}
 
-      {/* (em português) Janela de menu que aparece ao clicar */}
-      <nav
-        className={`popup-window${open ? ' open' : ''}`}
-        onClick={() => setOpen(false)}
-      >
-        {children}
-      </nav>
-    </div>
-  );
+/* (em português) As três linhas do hambúrguer */
+.burger span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background: #000;
+  margin: 4px 0;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* (em português) Transformações quando o menu está aberto */
+.burger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.burger.open span:nth-child(2) {
+  opacity: 0;
+}
+.burger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* (em português) Estilo do menu popup */
+.popup-window {
+  display: none;
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 1rem;
+  border-radius: 10px;
+  min-width: 220px;
+  z-index: 1999;
+}
+
+/* (em português) Quando o menu está aberto */
+.popup-window.open {
+  display: block;
 }
