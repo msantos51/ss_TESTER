@@ -178,6 +178,7 @@ const styles = {
     maxWidth: '600px',
     margin: '0 auto',
     textAlign: 'center',
+    position: 'relative',
   },
   title: {
     marginBottom: '1rem',
@@ -219,6 +220,7 @@ const styles = {
     background: 'none',
     border: 'none',
     cursor: 'pointer',
+    zIndex: 1000,
   },
   pinPreview: {
     display: 'inline-block',
