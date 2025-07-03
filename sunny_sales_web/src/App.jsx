@@ -9,6 +9,7 @@ import ClientRegister from './pages/ClientRegister';
 import ForgotPassword from './pages/ForgotPassword';
 import VendorLogin from './pages/VendorLogin';
 import ManageAccount from './pages/ManageAccount';
+import EditProfileScreen from './pages/EditProfileScreen';
 import PaidWeeksScreen from './pages/PaidWeeksScreen.jsx';
 import VendorRegister from './pages/VendorRegister';
 import RouteDetail from './pages/RouteDetail';
@@ -61,6 +62,7 @@ export default function App() {
           <Route path="/vendor-login" element={<VendorLogin />} />
           <Route path="/login-selection" element={<LoginSelection />} />
           <Route path="/account" element={<ManageAccount />} />
+          <Route path="/edit-profile" element={<EditProfileScreen />} />
           <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/map" element={<ModernMapLayout />} />

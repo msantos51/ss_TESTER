@@ -438,7 +438,13 @@ export default function DashboardScreen({ navigation }) {
               <List.Item title="Distância Percorrida" onPress={() => { setMenuOpen(false); navigation.navigate('Stats'); }} />
             </List.Accordion>
             <List.Accordion title="Definições de Conta" expanded={accountOpen} onPress={() => setAccountOpen(!accountOpen)}>
-              <List.Item title="Atualizar Dados Pessoais" onPress={() => { setMenuOpen(false); setEditing(true); }} />
+              <List.Item
+                title="Atualizar Dados Pessoais"
+                onPress={() => {
+                  setMenuOpen(false);
+                  navigation.navigate('EditProfileScreen');
+                }}
+              />
               <List.Item title="Apagar Conta" onPress={() => { setMenuOpen(false); navigation.navigate('ManageAccount'); }} />
             </List.Accordion>
             <List.Accordion title="Sobre e Ajuda" expanded={helpOpen} onPress={() => setHelpOpen(!helpOpen)}>

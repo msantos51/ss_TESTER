@@ -196,7 +196,7 @@ export default function ClientDashboardScreen({ navigation }) {
                 title="Atualizar Dados Pessoais"
                 onPress={() => {
                   setMenuOpen(false);
-                  navigation.navigate('ManageAccount');
+                  navigation.navigate('EditProfileScreen');
                 }}
               />
               <List.Item
