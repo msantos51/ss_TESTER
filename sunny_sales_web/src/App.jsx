@@ -18,6 +18,7 @@ import VendorDetailScreen from './pages/VendorDetailScreen';
 import Invoices from './pages/Invoices';
 import Dashboard from './pages/Dashboard';
 import ModernMapLayout from './pages/ModernMapLayout';
+import LoginSelection from './pages/LoginSelection';
 import './index.css'; // (em português) Importa os estilos globais
 
 export default function App() {
@@ -32,6 +33,9 @@ export default function App() {
           <Link style={styles.navLink} to="/login">Login Cliente</Link>
           <Link style={styles.navLink} to="/register">Registar Cliente</Link>
         </nav>
+        <Link to="/login-selection" style={styles.profileIcon} aria-label="Login">
+          👤
+        </Link>
       </header>
 
       {/* (em português) Container central da aplicação */}
@@ -45,6 +49,7 @@ export default function App() {
   <Route path="/register" element={<ClientRegister />} />
   <Route path="/forgot-password" element={<ForgotPassword />} />
   <Route path="/vendor-login" element={<VendorLogin />} />
+  <Route path="/login-selection" element={<LoginSelection />} />
   <Route path="/account" element={<ManageAccount />} />
   <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
   <Route path="/invoices" element={<Invoices />} />
@@ -86,5 +91,11 @@ const styles = {
     textDecoration: 'none',
     color: 'white',
     fontWeight: 'bold',
+  },
+  profileIcon: {
+    textDecoration: 'none',
+    color: 'white',
+    fontSize: '2rem',
+    marginLeft: '1rem',
   },
 };
