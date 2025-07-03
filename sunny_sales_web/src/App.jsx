@@ -1,6 +1,7 @@
 // (em português) Componente principal da aplicação Web com rotas
 
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import HamburgerMenu from './components/HamburgerMenu';
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
 import ClientLogin from './pages/ClientLogin';
@@ -30,12 +31,14 @@ export default function App() {
       {/* (em português) Barra de navegação */}
       <header style={styles.navbar}>
         <Link style={styles.logo} to="/">Sunny Sales</Link>
-        <nav style={styles.navLinks}>
-          <Link style={styles.navLink} to="/vendor-login">Login Vendedor</Link>
-          <Link style={styles.navLink} to="/vendor-register">Registar Vendedor</Link>
-          <Link style={styles.navLink} to="/login">Login Cliente</Link>
-          <Link style={styles.navLink} to="/register">Registar Cliente</Link>
-        </nav>
+        <HamburgerMenu style={styles.menuButton}>
+          <nav style={styles.menuLinks}>
+            <Link style={styles.navLink} to="/vendor-login">Login Vendedor</Link>
+            <Link style={styles.navLink} to="/vendor-register">Registar Vendedor</Link>
+            <Link style={styles.navLink} to="/login">Login Cliente</Link>
+            <Link style={styles.navLink} to="/register">Registar Cliente</Link>
+          </nav>
+        </HamburgerMenu>
         <Link to={profileLink} style={styles.profileIcon} aria-label="Login">
           👤
         </Link>
@@ -100,5 +103,13 @@ const styles = {
     color: 'white',
     fontSize: '2rem',
     marginLeft: '1rem',
+  },
+  menuButton: {
+    position: 'relative',
+  },
+  menuLinks: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
   },
 };
