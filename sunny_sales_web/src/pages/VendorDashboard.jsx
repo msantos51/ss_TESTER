@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import HamburgerMenu from '../components/HamburgerMenu';
 import { BASE_URL } from '../config';
 import axios from 'axios';
 
@@ -108,8 +107,8 @@ export default function VendorDashboard() {
   };
 
   return (
-    <div style={styles.container}>
-      <HamburgerMenu style={styles.menuButton}>
+    <div style={styles.wrapper}>
+      <div style={styles.menu}>
         <legend>Menu</legend>
         <ul>
           <li><button onClick={paySubscription}>Pagar Semanalidade</button></li>
@@ -125,8 +124,9 @@ export default function VendorDashboard() {
           <li><button onClick={() => navigate('/terms')}>Termos e Condições</button></li>
           <li><button onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}>Contactar Suporte</button></li>
         </ul>
-      </HamburgerMenu>
-      <h2 style={styles.title}>Painel do Vendedor</h2>
+      </div>
+      <div style={styles.container}>
+        <h2 style={styles.title}>Painel do Vendedor</h2>
       {vendor && (
         <>
           {vendor.profile_photo && (
@@ -168,11 +168,21 @@ export default function VendorDashboard() {
       </button>
 
       <button className="btn" style={styles.logout} onClick={logout}>Sair</button>
+      </div>
     </div>
   );
 }
 
 const styles = {
+  wrapper: {
+    display: 'flex',
+    alignItems: 'flex-start',
+  },
+  menu: {
+    width: '220px',
+    padding: '1rem',
+    borderRight: '1px solid #ccc',
+  },
   container: {
     padding: '2rem',
     maxWidth: '600px',
@@ -213,14 +223,7 @@ const styles = {
     cursor: 'pointer',
   },
   menuButton: {
-    position: 'absolute',
-    top: 16,
-    left: 16,
-    fontSize: '2rem',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    zIndex: 1000,
+    display: 'none',
   },
   pinPreview: {
     display: 'inline-block',

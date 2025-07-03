@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import HamburgerMenu from '../components/HamburgerMenu';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 
@@ -44,8 +43,8 @@ export default function DashboardCliente() {
   }, []);
 
   return (
-    <div style={styles.container}>
-      <HamburgerMenu style={styles.menuButton}>
+    <div style={styles.wrapper}>
+      <div style={styles.menu}>
         <legend>Menu</legend>
         <ul>
           <li><button onClick={() => navigate('/settings')}>Notificações</button></li>
@@ -58,9 +57,10 @@ export default function DashboardCliente() {
             <button onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}>Contactar Suporte</button>
           </li>
         </ul>
-      </HamburgerMenu>
+      </div>
 
-      <h2 style={styles.title}>Meu Perfil</h2>
+      <div style={styles.container}>
+        <h2 style={styles.title}>Meu Perfil</h2>
 
       {client?.profile_photo && (
         <img src={`${BASE_URL}/${client.profile_photo}`} style={styles.image} alt="Foto de perfil" />
@@ -91,12 +91,22 @@ export default function DashboardCliente() {
       </div>
 
       <button onClick={logout} className="btn" style={styles.logoutButton}>Sair</button>
+      </div>
     </div>
   );
 }
 
 // estilos embutidos
 const styles = {
+  wrapper: {
+    display: 'flex',
+    alignItems: 'flex-start',
+  },
+  menu: {
+    width: '220px',
+    padding: '1rem',
+    borderRight: '1px solid #ccc',
+  },
   container: {
     padding: '2rem',
     maxWidth: '600px',
@@ -146,13 +156,6 @@ const styles = {
     fontWeight: 'bold',
   },
   menuButton: {
-    position: 'absolute',
-    top: 16,
-    left: 16,
-    fontSize: '2rem',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    zIndex: 1000,
+    display: 'none',
   }
 }
