@@ -11,15 +11,18 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: none;
-  border: none;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #000;
+  border-radius: 4px;
   cursor: pointer;
   padding: 0;
 }
 
 /* Override global button:hover rule so the icon stays visible */
 .burger:hover {
-  background: none !important;
+  background: rgba(255, 255, 255, 0.9) !important;
 }
 
 .burger span {
