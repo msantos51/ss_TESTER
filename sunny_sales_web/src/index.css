@@ -59,6 +59,14 @@ h2 {
 }
 
 /* === Estilos globais para formulários === */
+.form-box {
+  max-width: 400px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .form-container {
   width: 350px;
   height: 500px;
@@ -86,9 +94,7 @@ h2 {
   margin-bottom: 15px;
 }
 
-.input {
-  border-radius: 20px;
-  border: 1px solid #c0c0c0;
+.input {  border: 1px solid #c0c0c0;
   outline: 0 !important;
   box-sizing: border-box;
   padding: 12px 15px;
@@ -118,7 +124,8 @@ h2 {
   padding: 10px 15px;
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
-  border-radius: 20px;
+  
+  font-size: 1rem;
   border: 0 !important;
   outline: 0 !important;
   background: var(--secondary-color);
@@ -162,7 +169,7 @@ h2 {
 
 .apple-login-button,
 .google-login-button {
-  border-radius: 20px;
+    font-size: 1rem;
   box-sizing: border-box;
   padding: 10px 15px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
@@ -204,7 +211,8 @@ button {
   border: 0;
   border-radius: 20px;
   color: var(--secondary-color);
-  padding: 1em 1.8em;
+  font-size: 1rem;
+  padding: 0.5em 1.2em;
   background: var(--primary-color);
   display: flex;
   transition: 0.2s background;
