@@ -207,14 +207,14 @@ const styles = {
     marginTop: '1rem',
     padding: '0.5rem 1rem',
     border: 'none',
-    backgroundColor: '#f9c200',
+    backgroundColor: '#19a0a4',
     cursor: 'pointer',
   },
   shareButton: {
     marginTop: '1rem',
     padding: '0.5rem 1rem',
     border: 'none',
-    backgroundColor: '#f9c200',
+    backgroundColor: '#19a0a4',
     cursor: 'pointer',
   },
   pinPreview: {
