@@ -30,7 +30,7 @@
   display: block;
   height: 3px;
   width: 100%;
-  background: #000;
+  background: #fff;
   margin: 4px 0;
   border-radius: 2px;
   transition: all 0.3s ease;
@@ -53,15 +53,42 @@
   position: absolute;
   top: 40px;
   left: 0;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  padding: 1rem;
-  border-radius: 10px;
-  min-width: 220px;
+  background: #0d1117;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  padding: 0.5rem 0;
+  border-radius: 12px;
+  min-width: 200px;
   z-index: 1999;
+  color: #fff;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
 }
 
 /* (em português) Quando o menu está aberto */
 .popup-window.open {
   display: block;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 1998;
 }
