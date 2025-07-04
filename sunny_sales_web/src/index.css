@@ -2,7 +2,7 @@
 
 :root {
   /* Tema default */
-  --primary-color: #f9c200;
+  --primary-color: #19a0a4;
   --secondary-color: #19a0a4;
   --bg-color: #ffffff;
   --text-color: #06286e;
@@ -260,4 +260,9 @@ button:hover .arrow {
 
 button:hover .arrow:before {
   right: 0;
+}
+
+/* === Estilo para checkboxes === */
+input[type='checkbox'] {
+  accent-color: #19a0a4;
 }
