@@ -21,7 +21,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(to right, var(--primary-color), #ffde8a);
+  background-color: var(--primary-color);
   padding: 1.5rem 2rem;
 }
 

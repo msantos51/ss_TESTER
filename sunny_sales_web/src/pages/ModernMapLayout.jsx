@@ -12,7 +12,9 @@ export default function ModernMapLayout() {
   const PRODUCTS = ['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'];
   const [selectedProducts, setSelectedProducts] = useState([...PRODUCTS]);
   const [selected, setSelected] = useState(null);
+  const [favorite, setFavorite] = useState(false);
   const mapRef = useRef(null);
+  const loggedIn = !!localStorage.getItem('client');
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -25,6 +27,13 @@ export default function ModernMapLayout() {
     };
     fetchVendors();
   }, []);
+
+  useEffect(() => {
+    if (selected) {
+      const stored = JSON.parse(localStorage.getItem('favorites') || '[]');
+      setFavorite(stored.includes(selected.id));
+    }
+  }, [selected]);
 
   const activeVendors = vendors.filter((v) => v.current_lat && v.current_lng);
   const filteredVendors = activeVendors.filter((v) =>
@@ -42,6 +51,20 @@ export default function ModernMapLayout() {
     if (mapRef.current) {
       mapRef.current.setView([v.current_lat, v.current_lng], 16);
     }
+  };
+
+  const toggleFavorite = () => {
+    if (!selected) return;
+    const stored = JSON.parse(localStorage.getItem('favorites') || '[]');
+    let updated;
+    if (stored.includes(selected.id)) {
+      updated = stored.filter((id) => id !== selected.id);
+      setFavorite(false);
+    } else {
+      updated = [...stored, selected.id];
+      setFavorite(true);
+    }
+    localStorage.setItem('favorites', JSON.stringify(updated));
   };
 
   return (
@@ -72,6 +95,36 @@ export default function ModernMapLayout() {
               />{' '}
               {p}
             </label>
+          ))}
+        </div>
+
+        <div className="online-vendors">
+          <h2 className="vendors-title">Vendedores Online</h2>
+          {filteredVendors.map((v) => (
+            <div
+              key={v.id}
+              className="vendor-entry"
+              onClick={() => focusVendor(v)}
+            >
+              {v.profile_photo ? (
+                <img
+                  src={`${BASE_URL}/${v.profile_photo}`}
+                  alt={v.name}
+                  className="vendor-avatar"
+                />
+              ) : (
+                <div
+                  className="vendor-avatar"
+                  style={{ background: v.pin_color || '#ccc' }}
+                />
+              )}
+              <div>
+                <p className="vendor-name">{v.name}</p>
+                <p className="vendor-rating">
+                  ⭐ {v.rating_average ? v.rating_average.toFixed(1) : '--'}
+                </p>
+              </div>
+            </div>
           ))}
         </div>
       </aside>
@@ -136,6 +189,11 @@ export default function ModernMapLayout() {
             <button className="map-btn" onClick={() => focusVendor(selected)}>
               VER NO MAPA
             </button>
+            {loggedIn && (
+              <button className="map-btn" onClick={toggleFavorite}>
+                {favorite ? '★ Remover dos Favoritos' : '☆ Adicionar aos Favoritos'}
+              </button>
+            )}
           </div>
         )}
       </main>
