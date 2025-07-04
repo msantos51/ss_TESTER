@@ -1,15 +1,16 @@
 /* (em português) Posição do botão no canto superior esquerdo */
 .popup {
-  position: absolute;
-  top: 16px;
+  position: fixed; /* fica abaixo do cabeçalho */
+  top: 80px;
   left: 16px;
-  z-index: 2000;
+  z-index: 3000;
 }
 
 /* (em português) Estilo do botão hambúrguer */
 .burger {
   width: 32px;
   height: 32px;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -51,7 +52,7 @@
 .popup-window {
   display: none;
   position: absolute;
-  top: 40px;
+  top: calc(100% + 8px);
   left: 0;
   background: #0d1117;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
