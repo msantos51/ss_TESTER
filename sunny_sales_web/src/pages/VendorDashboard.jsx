@@ -197,7 +197,7 @@ const styles = {
   },
   link: {
     textDecoration: 'none',
-    color: '#0077cc',
+    color: '#19a0a4',
   },
   subActive: {
     color: 'green',

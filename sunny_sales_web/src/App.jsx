@@ -92,7 +92,7 @@ const styles = {
   },
   logo: {
     textDecoration: 'none',
-    color: '#3c73f0',
+    color: '#ffffff',
     fontWeight: 'bold',
     fontSize: '2.5rem',
   },
@@ -102,12 +102,12 @@ const styles = {
   },
   navLink: {
     textDecoration: 'none',
-    color: '#3c73f0',
+    color: '#19a0a4',
     fontWeight: 'bold',
   },
   profileIcon: {
     textDecoration: 'none',
-    color: '#3c73f0',
+    color: '#19a0a4',
     fontSize: '2rem',
     marginLeft: '1rem',
   },
