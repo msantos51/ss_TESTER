@@ -2,6 +2,7 @@
 
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import HamburgerMenu from './components/HamburgerMenu';
+import { FiLogIn, FiUserPlus } from 'react-icons/fi';
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
 import ClientLogin from './pages/ClientLogin';
@@ -36,10 +37,18 @@ export default function App() {
         {/* (em português) Botão e menu hambúrguer */}
         <HamburgerMenu>
           <nav style={styles.menuLinks}>
-            <Link style={styles.navLink} to="/vendor-login">Login Vendedor</Link>
-            <Link style={styles.navLink} to="/vendor-register">Registar Vendedor</Link>
-            <Link style={styles.navLink} to="/login">Login Cliente</Link>
-            <Link style={styles.navLink} to="/register">Registar Cliente</Link>
+            <Link className="menu-item" to="/vendor-login">
+              <FiLogIn /> Login Vendedor
+            </Link>
+            <Link className="menu-item" to="/vendor-register">
+              <FiUserPlus /> Registar Vendedor
+            </Link>
+            <Link className="menu-item" to="/login">
+              <FiLogIn /> Login Cliente
+            </Link>
+            <Link className="menu-item" to="/register">
+              <FiUserPlus /> Registar Cliente
+            </Link>
           </nav>
         </HamburgerMenu>
 
@@ -99,11 +108,6 @@ const styles = {
   navLinks: {
     display: 'flex',
     gap: '1rem',
-  },
-  navLink: {
-    textDecoration: 'none',
-    color: '#19a0a4',
-    fontWeight: 'bold',
   },
   profileIcon: {
     textDecoration: 'none',
