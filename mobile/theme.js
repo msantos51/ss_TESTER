@@ -22,7 +22,7 @@ export const theme = {
   roundness: 8,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#FDC500',    // Amarelo solar moderno
+    primary: '#19a0a4',    // Cor principal dos botões
     accent: '#0077B6',     // Azul mar moderno
     background: '#FAFAFA', // Fundo branco moderno
     surface: '#FFFFFF',

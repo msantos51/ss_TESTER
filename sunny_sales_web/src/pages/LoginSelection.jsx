@@ -31,7 +31,7 @@ const styles = {
   },
   button: {
     padding: '0.75rem 1.5rem',
-    backgroundColor: '#f9c200',
+    backgroundColor: '#19a0a4',
     border: 'none',
     cursor: 'pointer',
   },
