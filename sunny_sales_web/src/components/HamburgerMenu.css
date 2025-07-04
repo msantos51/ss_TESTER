@@ -8,8 +8,8 @@
 
 /* (em português) Estilo do botão hambúrguer */
 .burger {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
@@ -51,19 +51,19 @@
 /* (em português) Estilo do menu popup */
 .popup-window {
   display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: #0d1117;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  padding: 0.5rem 0;
+  padding: 1rem;
   border-radius: 12px;
-  min-width: 200px;
+  min-width: 220px;
   z-index: 1999;
   color: #fff;
   opacity: 0;
-  transform: translateX(-10px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.2s ease;
   font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
 }
 
@@ -71,7 +71,6 @@
 .popup-window.open {
   display: block;
   opacity: 1;
-  transform: translateX(0);
 }
 
 .menu-item {
