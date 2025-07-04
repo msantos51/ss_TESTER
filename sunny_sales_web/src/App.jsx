@@ -85,7 +85,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     padding: '1.5rem 2rem',
-    backgroundColor: '#f9c200',
+    backgroundColor: '#19a0a4',
     alignItems: 'center',
     position: 'relative',
     zIndex: 3000,

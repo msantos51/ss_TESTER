@@ -11,9 +11,11 @@
 
   display: flex;
   align-items: center;
-  height: 2.5rem;
-  width: fit-content;
-  position: relative;
+justify-content: center;
+gap: 6px;
+background-color: #19a0a4;
+border-radius: 10px;
+
   cursor: pointer;
   justify-content: space-between;
 }
