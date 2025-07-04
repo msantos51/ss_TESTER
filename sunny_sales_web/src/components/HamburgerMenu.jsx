@@ -20,6 +20,8 @@ export default function HamburgerMenu({ children }) {
       </button>
 
       {/* (em português) Janela de menu que aparece ao clicar */}
+      {open && <div className="menu-overlay" onClick={() => setOpen(false)} />}
+
       <nav
         className={`popup-window${open ? ' open' : ''}`}
         onClick={() => setOpen(false)}
