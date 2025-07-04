@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   width: '100%',
   marginVertical: 8,
   borderRadius: 12,
-  backgroundColor: '#FDC500',
+  backgroundColor: '#19a0a4',
 },
 
 });

@@ -498,13 +498,13 @@ const styles = StyleSheet.create({
     borderRadius: 60, 
     marginBottom: 16, 
     borderWidth: 2, 
-    borderColor: '#FDC500' // cor do amarelo principal 
+    borderColor: '#19a0a4' // cor principal dos botões
   },
   fullButton: { 
     width: '100%', 
     marginVertical: 8, 
     borderRadius: 12, 
-    backgroundColor: '#FDC500' 
+    backgroundColor: '#19a0a4'
   },
   row: { 
     flexDirection: 'row', 

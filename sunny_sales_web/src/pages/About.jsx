@@ -26,7 +26,7 @@ const styles = {
     padding: '0.75rem',
     margin: '1rem 0',
     border: 'none',
-    backgroundColor: '#f9c200',
+    backgroundColor: '#19a0a4',
     color: 'black',
     fontSize: '1rem',
     cursor: 'pointer',

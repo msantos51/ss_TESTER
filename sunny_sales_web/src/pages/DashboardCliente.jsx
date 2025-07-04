@@ -145,7 +145,7 @@ const styles = {
     width: '100%',
     marginTop: '2rem',
     padding: '1rem',
-    backgroundColor: '#FDC500',
+    backgroundColor: '#19a0a4',
     border: 'none',
     cursor: 'pointer',
     fontWeight: 'bold',
