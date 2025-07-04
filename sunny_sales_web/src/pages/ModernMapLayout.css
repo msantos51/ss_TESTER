@@ -27,7 +27,7 @@ body {
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #3c73f0;
+  color: #19a0a4;
 }
 
 .login-buttons {
@@ -94,6 +94,17 @@ body {
   border: 1px solid #dee2e6;
   border-radius: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #19a0a4;
 }
 
 .card-header {

@@ -57,7 +57,7 @@ const styles = {
     border: 'none',
     cursor: 'pointer',
     fontSize: '1rem',
-    color: '#0077cc',
+    color: '#19a0a4',
   },
   map: { height: '400px', width: '100%', marginBottom: '1rem' },
   info: { padding: '1rem', backgroundColor: '#f0f0f0', borderRadius: '8px' },

@@ -163,6 +163,13 @@ export default function ModernMapLayout() {
 
         {selected && (
           <div className="vendor-card">
+            <button
+              className="close-btn"
+              onClick={() => setSelected(null)}
+              aria-label="Fechar"
+            >
+              ×
+            </button>
             <div className="card-header">
               {selected.profile_photo ? (
                 <img

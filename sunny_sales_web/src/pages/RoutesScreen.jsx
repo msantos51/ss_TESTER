@@ -65,7 +65,7 @@ const styles = {
     border: 'none',
     cursor: 'pointer',
     fontSize: '1rem',
-    color: '#0077cc',
+    color: '#19a0a4',
   },
   list: { listStyle: 'none', padding: 0 },
   item: {

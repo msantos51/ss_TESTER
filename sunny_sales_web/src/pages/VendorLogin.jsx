@@ -102,7 +102,7 @@ export default function VendorLogin() {
           type="button"
           className="outlined-button"
           onClick={() => navigate('/forgot-password')}
-          style={{ background: 'none', border: 'none', color: '#007BFF', textDecoration: 'underline' }}
+          style={{ background: 'none', border: 'none', color: '#19a0a4', textDecoration: 'underline' }}
         >
           Esqueci-me da palavra-passe
         </button>

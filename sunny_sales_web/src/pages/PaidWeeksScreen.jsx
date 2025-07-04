@@ -72,14 +72,14 @@ const styles = {
   link: {
     marginLeft: '1rem',
     textDecoration: 'none',
-    color: '#0077ff',
+    color: '#19a0a4',
     fontWeight: 'bold',
   },
   back: {
     marginBottom: '1rem',
     background: 'none',
     border: 'none',
-    color: '#0077ff',
+    color: '#19a0a4',
     fontSize: '1rem',
     cursor: 'pointer',
   },
