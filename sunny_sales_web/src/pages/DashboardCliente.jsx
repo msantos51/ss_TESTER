@@ -160,7 +160,8 @@ const styles = {
   },
   menuButton: {
     position: 'fixed',
-    top: '1rem',
+
+    top: '6rem',
     left: '1rem',
     zIndex: 1100,
     backgroundColor: '#19a0a4',
@@ -186,4 +187,3 @@ const styles = {
   sideMenuOpen: {
     transform: 'translateX(0)',
   },
-}
