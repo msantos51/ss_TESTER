@@ -8,6 +8,7 @@ import { BASE_URL } from '../config';
 export default function DashboardCliente() {
   const [client, setClient] = useState(null);
   const [favorites, setFavorites] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   // carregar cliente do localStorage
@@ -44,7 +45,15 @@ export default function DashboardCliente() {
 
   return (
     <div style={styles.wrapper}>
-      <div>
+      <button style={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)}>
+        ☰
+      </button>
+      <div
+        style={{
+          ...styles.sideMenu,
+          ...(menuOpen ? styles.sideMenuOpen : {}),
+        }}
+      >
         <legend>Menu</legend>
         <ul>
           <li><button onClick={() => navigate('/settings')}>Notificações</button></li>
@@ -149,4 +158,33 @@ const styles = {
     cursor: 'pointer',
     fontWeight: 'bold',
   },
-}
+  menuButton: {
+    position: 'fixed',
+    top: '6rem',
+    left: '1rem',
+    zIndex: 1100,
+    backgroundColor: '#19a0a4',
+    color: '#fff',
+    border: 'none',
+    padding: '0.5rem 1rem',
+    cursor: 'pointer',
+  },
+  sideMenu: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    height: '100%',
+    width: '250px',
+    backgroundColor: '#f8f8f8',
+    boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
+    padding: '1rem',
+    boxSizing: 'border-box',
+    transform: 'translateX(-100%)',
+    transition: 'transform 0.3s ease-in-out',
+    zIndex: 1000,
+  },
+  sideMenuOpen: {
+    transform: 'translateX(0)'
+  },
+};
+
