@@ -244,7 +244,7 @@ const styles = {
     zIndex: 1000,
   },
   sideMenuOpen: {
-    transform: 'translateX(0)',
+transform: 'translateX(0)',
   },
   shareButton: {
     marginTop: '1rem',
