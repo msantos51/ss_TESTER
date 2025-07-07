@@ -1,7 +1,6 @@
 // (em português) Componente principal da aplicação Web com rotas
 
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import HamburgerMenu from './components/HamburgerMenu';
 import { FiLogIn, FiUserPlus } from 'react-icons/fi';
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
@@ -34,23 +33,21 @@ export default function App() {
       <header style={styles.navbar}>
         <Link style={styles.logo} to="/">Sunny Sales</Link>
 
-        {/* (em português) Botão e menu hambúrguer */}
-        <HamburgerMenu>
-          <nav style={styles.menuLinks}>
-            <Link className="menu-item" to="/vendor-login">
-              <FiLogIn /> Login Vendedor
-            </Link>
-            <Link className="menu-item" to="/vendor-register">
-              <FiUserPlus /> Registar Vendedor
-            </Link>
-            <Link className="menu-item" to="/login">
-              <FiLogIn /> Login Cliente
-            </Link>
-            <Link className="menu-item" to="/register">
-              <FiUserPlus /> Registar Cliente
-            </Link>
-          </nav>
-        </HamburgerMenu>
+        {/* (em português) Links de navegação */}
+        <nav style={styles.navLinks}>
+          <Link className="menu-item" to="/vendor-login">
+            <FiLogIn /> Login Vendedor
+          </Link>
+          <Link className="menu-item" to="/vendor-register">
+            <FiUserPlus /> Registar Vendedor
+          </Link>
+          <Link className="menu-item" to="/login">
+            <FiLogIn /> Login Cliente
+          </Link>
+          <Link className="menu-item" to="/register">
+            <FiUserPlus /> Registar Cliente
+          </Link>
+        </nav>
 
         {/* (em português) Ícone de perfil */}
         <Link to={profileLink} style={styles.profileIcon} aria-label="Login">
@@ -114,10 +111,5 @@ const styles = {
     color: '#19a0a4',
     fontSize: '2rem',
     marginLeft: '1rem',
-  },
-  menuLinks: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5rem',
   },
 };

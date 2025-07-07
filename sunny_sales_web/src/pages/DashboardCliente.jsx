@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../config';
-import DashboardMenu from '../components/DashboardMenu';
 
 export default function DashboardCliente() {
   const [client, setClient] = useState(null);
@@ -45,7 +44,7 @@ export default function DashboardCliente() {
 
   return (
     <div style={styles.wrapper}>
-      <DashboardMenu>
+      <div>
         <legend>Menu</legend>
         <ul>
           <li><button onClick={() => navigate('/settings')}>Notificações</button></li>
@@ -58,7 +57,7 @@ export default function DashboardCliente() {
             <button onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}>Contactar Suporte</button>
           </li>
         </ul>
-      </DashboardMenu>
+      </div>
 
       <div style={styles.container}>
         <h2 style={styles.title}>Meu Perfil</h2>
