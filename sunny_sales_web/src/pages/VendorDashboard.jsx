@@ -9,6 +9,7 @@ export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [reviews, setReviews] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   // carrega dados do vendedor guardados no localStorage
@@ -108,7 +109,15 @@ export default function VendorDashboard() {
 
   return (
     <div style={styles.wrapper}>
-      <div>
+      <button style={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)}>
+        ☰
+      </button>
+      <div
+        style={{
+          ...styles.sideMenu,
+          ...(menuOpen ? styles.sideMenuOpen : {}),
+        }}
+      >
         <legend>Menu</legend>
         <ul>
           <li><button onClick={paySubscription}>Pagar Semanalidade</button></li>
@@ -208,6 +217,34 @@ const styles = {
     border: 'none',
     backgroundColor: '#19a0a4',
     cursor: 'pointer',
+  },
+  menuButton: {
+    position: 'fixed',
+    top: '6rem',
+    left: '1rem',
+    zIndex: 1100,
+    backgroundColor: '#19a0a4',
+    color: '#fff',
+    border: 'none',
+    padding: '0.5rem 1rem',
+    cursor: 'pointer',
+  },
+  sideMenu: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    height: '100%',
+    width: '250px',
+    backgroundColor: '#f8f8f8',
+    boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
+    padding: '1rem',
+    boxSizing: 'border-box',
+    transform: 'translateX(-100%)',
+    transition: 'transform 0.3s ease-in-out',
+    zIndex: 1000,
+  },
+  sideMenuOpen: {
+    transform: 'translateX(0)',
   },
   shareButton: {
     marginTop: '1rem',
