@@ -160,7 +160,7 @@ const styles = {
   },
   menuButton: {
     position: 'fixed',
-    top: '6rem',
+    top: '12rem',
     left: '1rem',
     zIndex: 1100,
     backgroundColor: '#19a0a4',
