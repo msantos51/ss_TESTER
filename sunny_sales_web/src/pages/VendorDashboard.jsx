@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
-import DashboardMenu from '../components/DashboardMenu';
 
 let watchId = null;
 
@@ -109,7 +108,7 @@ export default function VendorDashboard() {
 
   return (
     <div style={styles.wrapper}>
-      <DashboardMenu>
+      <div>
         <legend>Menu</legend>
         <ul>
           <li><button onClick={paySubscription}>Pagar Semanalidade</button></li>
@@ -125,7 +124,7 @@ export default function VendorDashboard() {
           <li><button onClick={() => navigate('/terms')}>Termos e Condições</button></li>
           <li><button onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}>Contactar Suporte</button></li>
         </ul>
-      </DashboardMenu>
+      </div>
       <div style={styles.container}>
         <h2 style={styles.title}>Painel do Vendedor</h2>
       {vendor && (
