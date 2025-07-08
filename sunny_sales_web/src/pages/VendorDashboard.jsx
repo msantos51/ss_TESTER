@@ -172,11 +172,11 @@ export default function VendorDashboard() {
         </>
       )}
 
-      <button className="btn" style={styles.shareButton} onClick={sharing ? stopSharing : startSharing}>
+      <button className="btn" style={styles.fullButton} onClick={sharing ? stopSharing : startSharing}>
         {sharing ? 'Desativar Localização' : 'Ativar Localização'}
       </button>
 
-      <button className="btn" style={styles.logout} onClick={logout}>Sair</button>
+      <button className="btn" style={styles.fullButton} onClick={logout}>Sair</button>
       </div>
     </div>
   );
@@ -211,11 +211,14 @@ const styles = {
     color: 'green',
     fontWeight: 'bold',
   },
-  logout: {
-    marginTop: '1rem',
-    padding: '0.5rem 1rem',
-    border: 'none',
+  fullButton: {
+    width: 250,
+    alignSelf: 'center',
+    margin: '12px auto',
+    borderRadius: 12,
     backgroundColor: '#19a0a4',
+    border: 'none',
+    padding: '0.5rem 1rem',
     cursor: 'pointer',
   },
   menuButton: {
@@ -244,14 +247,7 @@ const styles = {
     zIndex: 1000,
   },
   sideMenuOpen: {
-transform: 'translateX(0)',
-  },
-  shareButton: {
-    marginTop: '1rem',
-    padding: '0.5rem 1rem',
-    border: 'none',
-    backgroundColor: '#19a0a4',
-    cursor: 'pointer',
+    transform: 'translateX(0)',
   },
   pinPreview: {
     display: 'inline-block',
