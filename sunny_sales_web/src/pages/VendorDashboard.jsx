@@ -1,3 +1,5 @@
+// (em português) Painel principal do vendedor com partilha de localização e menu lateral
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
@@ -5,7 +7,6 @@ import axios from 'axios';
 
 let watchId = null;
 
-// Painel principal do vendedor com partilha de localização
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
@@ -23,6 +24,7 @@ export default function VendorDashboard() {
     setSharing(share);
   }, []);
 
+  // carrega reviews do vendedor
   useEffect(() => {
     const loadReviews = async () => {
       if (!vendor) return;
@@ -43,7 +45,7 @@ export default function VendorDashboard() {
     navigate('/vendor-login');
   };
 
-  // Ativa partilha de localização em tempo real
+  // Ativa partilha de localização
   const startSharing = async () => {
     if (!vendor) return;
     const token = localStorage.getItem('token');
@@ -74,7 +76,7 @@ export default function VendorDashboard() {
     }
   };
 
-  // Desativa a partilha de localização
+  // Desativa partilha de localização
   const stopSharing = async () => {
     if (watchId) {
       navigator.geolocation.clearWatch(watchId);
@@ -96,7 +98,7 @@ export default function VendorDashboard() {
     setSharing(false);
   };
 
-  // Abre o checkout de pagamento de subscrição
+  // Checkout de pagamento da subscrição
   const paySubscription = async () => {
     if (!vendor) return;
     try {
@@ -117,71 +119,70 @@ export default function VendorDashboard() {
       <button style={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)}>
         ☰
       </button>
-      <div
-        style={{
-          ...styles.sideMenu,
-          ...(menuOpen ? styles.sideMenuOpen : {}),
-        }}
-      >
+
+      <div style={{ ...styles.sideMenu, ...(menuOpen ? styles.sideMenuOpen : {}) }}>
         <legend>Menu</legend>
         <ul style={styles.menuList}>
-          <li><button onClick={paySubscription}>Pagar Semanalidade</button></li>
-          <li><button onClick={() => navigate('/paid-weeks')}>Semanas Pagas</button></li>
-          <li><button onClick={() => navigate('/invoices')}>Faturas</button></li>
+          <li><button style={styles.menuButtonItem} onClick={paySubscription}>Pagar Semanalidade</button></li>
+          <li><button style={styles.menuButtonItem} onClick={() => navigate('/paid-weeks')}>Semanas Pagas</button></li>
+          <li><button style={styles.menuButtonItem} onClick={() => navigate('/invoices')}>Faturas</button></li>
           <hr />
-          <li><button onClick={() => navigate('/routes')}>Trajetos</button></li>
-          <li><button onClick={() => navigate('/stats')}>Distância Percorrida</button></li>
+          <li><button style={styles.menuButtonItem} onClick={() => navigate('/routes')}>Trajetos</button></li>
+          <li><button style={styles.menuButtonItem} onClick={() => navigate('/stats')}>Distância Percorrida</button></li>
           <hr />
-          <li><button onClick={() => navigate('/account')}>Atualizar Dados Pessoais</button></li>
-          <li><button onClick={() => navigate('/account')}>Apagar Conta</button></li>
+          <li><button style={styles.menuButtonItem} onClick={() => navigate('/account')}>Atualizar Dados Pessoais</button></li>
+          <li><button style={styles.menuButtonItem} onClick={() => navigate('/account')}>Apagar Conta</button></li>
           <hr />
-          <li><button onClick={() => navigate('/terms')}>Termos e Condições</button></li>
-          <li><button onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}>Contactar Suporte</button></li>
+          <li><button style={styles.menuButtonItem} onClick={() => navigate('/terms')}>Termos e Condições</button></li>
+          <li><button style={styles.menuButtonItem} onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}>Contactar Suporte</button></li>
         </ul>
       </div>
+
       <div style={styles.container}>
         <h2 style={styles.title}>Painel do Vendedor</h2>
-      {vendor && (
-        <>
-          {vendor.profile_photo && (
-            <img
-              src={`${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}`}
-              alt="Foto"
-              style={styles.photo}
-            />
-          )}
-          <p><strong>Nome:</strong> {vendor.name}</p>
-          <p><strong>Email:</strong> {vendor.email}</p>
-          <p><strong>Produto:</strong> {vendor.product}</p>
-          <p>
-            <strong>Cor do Pin:</strong>
-            <span style={{ ...styles.pinPreview, backgroundColor: vendor.pin_color || '#FFB6C1' }} />
-          </p>
-          <p>
-            <strong>Subscrição:</strong>{' '}
-            {vendor.subscription_active ? 'ativa' : 'inativa'}
-          </p>
-          {reviews.length > 0 && (
-            <div style={styles.reviewSection}>
-              <h3>Avaliações</h3>
-              <ul style={styles.reviewList}>
-                {reviews.map((r) => (
-                  <li key={r.id} style={styles.reviewItem}>
-                    <strong>⭐ {r.rating}</strong>
-                    {r.comment && <span> {r.comment}</span>}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </>
-      )}
 
-      <button className="btn" style={styles.fullButton} onClick={sharing ? stopSharing : startSharing}>
-        {sharing ? 'Desativar Localização' : 'Ativar Localização'}
-      </button>
+        {vendor && (
+          <>
+            {vendor.profile_photo && (
+              <img
+                src={`${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}`}
+                alt="Foto"
+                style={styles.photo}
+              />
+            )}
+            <p><strong>Nome:</strong> {vendor.name}</p>
+            <p><strong>Email:</strong> {vendor.email}</p>
+            <p><strong>Produto:</strong> {vendor.product}</p>
+            <p>
+              <strong>Cor do Pin:</strong>
+              <span style={{ ...styles.pinPreview, backgroundColor: vendor.pin_color || '#FFB6C1' }} />
+            </p>
+            <p>
+              <strong>Subscrição:</strong>{' '}
+              {vendor.subscription_active ? 'ativa' : 'inativa'}
+            </p>
 
-      <button className="btn" style={styles.fullButton} onClick={logout}>Sair</button>
+            {reviews.length > 0 && (
+              <div style={styles.reviewSection}>
+                <h3>Avaliações</h3>
+                <ul style={styles.reviewList}>
+                  {reviews.map((r) => (
+                    <li key={r.id} style={styles.reviewItem}>
+                      <strong>⭐ {r.rating}</strong>
+                      {r.comment && <span> {r.comment}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>
+        )}
+
+        <button className="btn" style={styles.fullButton} onClick={sharing ? stopSharing : startSharing}>
+          {sharing ? 'Desativar Localização' : 'Ativar Localização'}
+        </button>
+
+        <button className="btn" style={styles.fullButton} onClick={logout}>Sair</button>
       </div>
     </div>
   );
@@ -208,13 +209,26 @@ const styles = {
     objectFit: 'cover',
     marginBottom: '1rem',
   },
-  link: {
-    textDecoration: 'none',
-    color: '#19a0a4',
+  pinPreview: {
+    display: 'inline-block',
+    width: 16,
+    height: 16,
+    borderRadius: '50%',
+    marginLeft: 8,
+    verticalAlign: 'middle',
   },
-  subActive: {
-    color: 'green',
-    fontWeight: 'bold',
+  reviewSection: {
+    marginTop: '1rem',
+    textAlign: 'left',
+  },
+  reviewList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+  },
+  reviewItem: {
+    borderBottom: '1px solid #ccc',
+    padding: '4px 0',
   },
   fullButton: {
     width: 'auto',
@@ -225,6 +239,8 @@ const styles = {
     border: 'none',
     padding: '0.5rem 1rem',
     cursor: 'pointer',
+    fontWeight: 'bold',
+    color: '#fff',
   },
   menuButton: {
     position: 'fixed',
@@ -236,6 +252,8 @@ const styles = {
     border: 'none',
     padding: '0.5rem 1rem',
     cursor: 'pointer',
+    fontSize: '1.2rem',
+    borderRadius: '50%',
   },
   sideMenu: {
     position: 'fixed',
@@ -255,23 +273,6 @@ const styles = {
   sideMenuOpen: {
     transform: 'translateX(0)',
   },
-  pinPreview: {
-    display: 'inline-block',
-    width: 16,
-    height: 16,
-    borderRadius: '50%',
-    marginLeft: 8,
-    verticalAlign: 'middle',
-  },
-  reviewSection: {
-    marginTop: '1rem',
-    textAlign: 'left',
-  },
-  reviewList: {
-    listStyle: 'none',
-    padding: 0,
-    margin: 0,
-  },
   menuList: {
     listStyle: 'none',
     padding: 0,
@@ -281,10 +282,15 @@ const styles = {
     gap: '0.5rem',
     alignItems: 'flex-start',
   },
-  reviewItem: {
-    borderBottom: '1px solid #ccc',
-    padding: '4px 0',
+  menuButtonItem: {
+    width: '100%',
+    padding: '0.75rem 1rem',
+    backgroundColor: '#19a0a4',
+    color: 'white',
+    border: 'none',
+    borderRadius: '20px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    textAlign: 'left',
   },
 };
-
-
