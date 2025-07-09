@@ -152,7 +152,7 @@ const styles = {
     borderStyle: 'solid',
   },
   fullButton: {
-    width: 250,
+    width: 'auto',
     alignSelf: 'center',
     margin: '12px auto',
     borderRadius: 12,
