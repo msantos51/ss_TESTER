@@ -4,6 +4,7 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import './VendorDetailScreen.css'; // Deves criar este ficheiro com os estilos CSS
 
+// Página de detalhes de um vendedor específico
 export default function VendorDetailScreen({ vendor }) {
   const [reviews, setReviews] = useState([]);
   const [rating, setRating] = useState(0);
@@ -13,6 +14,7 @@ export default function VendorDetailScreen({ vendor }) {
   const [storyIndex, setStoryIndex] = useState(null);
 
   // (em português) Carrega as reviews do vendedor
+  // Carrega avaliações do vendedor
   const loadReviews = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/vendors/${vendor.id}/reviews`);
@@ -23,6 +25,7 @@ export default function VendorDetailScreen({ vendor }) {
   };
 
   // (em português) Carrega os stories
+  // Obtém os stories publicados pelo vendedor
   const loadStories = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/vendors/${vendor.id}/stories`);
@@ -40,6 +43,7 @@ export default function VendorDetailScreen({ vendor }) {
   }, [vendor.id]);
 
   // (em português) Envia nova avaliação
+  // Envia uma nova avaliação do cliente
   const submitReview = async () => {
     const token = localStorage.getItem('clientToken');
     if (!token) return alert('Inicie sessão para avaliar');
@@ -60,6 +64,7 @@ export default function VendorDetailScreen({ vendor }) {
   };
 
   // (em português) Alterna favoritos
+  // Adiciona ou remove o vendedor dos favoritos
   const toggleFavorite = () => {
     const stored = JSON.parse(localStorage.getItem('favorites') || '[]');
     let updated;

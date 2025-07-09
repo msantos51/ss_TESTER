@@ -2,6 +2,7 @@ import React from 'react';
 import DashboardCliente from './DashboardCliente';
 import VendorDashboard from './VendorDashboard';
 
+// Escolhe o dashboard apropriado consoante o tipo de utilizador
 export default function Dashboard() {
   const hasClient = !!localStorage.getItem('client');
   const hasVendor = !!localStorage.getItem('user');

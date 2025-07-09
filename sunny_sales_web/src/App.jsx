@@ -23,6 +23,7 @@ import ModernMapLayout from './pages/ModernMapLayout';
 import LoginSelection from './pages/LoginSelection';
 import './index.css'; // (em português) Importa os estilos globais
 
+// Componente principal que define as rotas da aplicação web
 export default function App() {
   const isLoggedIn = localStorage.getItem('user') || localStorage.getItem('client');
   const profileLink = isLoggedIn ? '/dashboard' : '/login-selection';

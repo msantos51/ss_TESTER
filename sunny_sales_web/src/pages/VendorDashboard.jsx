@@ -5,6 +5,7 @@ import axios from 'axios';
 
 let watchId = null;
 
+// Painel principal do vendedor com partilha de localização
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
@@ -35,12 +36,14 @@ export default function VendorDashboard() {
     loadReviews();
   }, [vendor]);
 
+  // Termina sessão do vendedor
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     navigate('/vendor-login');
   };
 
+  // Ativa partilha de localização em tempo real
   const startSharing = async () => {
     if (!vendor) return;
     const token = localStorage.getItem('token');
@@ -71,6 +74,7 @@ export default function VendorDashboard() {
     }
   };
 
+  // Desativa a partilha de localização
   const stopSharing = async () => {
     if (watchId) {
       navigator.geolocation.clearWatch(watchId);
@@ -92,6 +96,7 @@ export default function VendorDashboard() {
     setSharing(false);
   };
 
+  // Abre o checkout de pagamento de subscrição
   const paySubscription = async () => {
     if (!vendor) return;
     try {

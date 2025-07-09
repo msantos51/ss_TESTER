@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 
+// Painel principal do cliente com lista de favoritos
 export default function DashboardCliente() {
   const [client, setClient] = useState(null);
   const [favorites, setFavorites] = useState([]);
@@ -32,6 +33,7 @@ export default function DashboardCliente() {
     }
   };
 
+  // Termina a sessão do cliente
   const logout = () => {
     localStorage.removeItem('client');
     localStorage.removeItem('clientToken');

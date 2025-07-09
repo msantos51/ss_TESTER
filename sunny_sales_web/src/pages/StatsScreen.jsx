@@ -5,11 +5,12 @@ import { BASE_URL } from '../config';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 
+// Mostra gráfico de distâncias percorridas pelo vendedor
 export default function StatsScreen() {
   const [chartData, setChartData] = useState([]);
   const navigate = useNavigate();
 
-  // carregar dados
+  // Carrega os trajetos para gerar o gráfico
   const loadRoutes = async () => {
     const stored = localStorage.getItem('user');
     const token = localStorage.getItem('token');

@@ -3,6 +3,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Exibe os termos e condições de utilização
 export default function TermsScreen() {
   const navigate = useNavigate();
 
