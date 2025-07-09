@@ -73,8 +73,8 @@ export default function VendorRegister() {
       {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
       {success && <p style={{ color: 'green', marginBottom: '1rem' }}>{success}</p>}
 
-      <form onSubmit={handleRegister} className="form">
-        <div className="form-container">
+      <form onSubmit={handleRegister} className="form login-form">
+        <div className="form-container login-container">
           <input
             type="text"
             placeholder="Nome"
