@@ -68,7 +68,8 @@ export default function VendorLogin() {
 
       {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
 
-      <div className="form">
+<div className="form login-form">
+
         <div className="form-container login-container">
           <input
             type="email"
