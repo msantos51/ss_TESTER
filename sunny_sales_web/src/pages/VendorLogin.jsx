@@ -6,6 +6,7 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import LoadingDots from '../components/LoadingDots';
 
+// Componente de login dedicado aos vendedores
 export default function VendorLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,6 +26,7 @@ export default function VendorLogin() {
   };
 
   // login
+  // Realiza a autenticação do vendedor
   const login = async () => {
     if (!email || !password) return;
     setLoading(true);
@@ -112,4 +114,3 @@ export default function VendorLogin() {
   );
 }
 
-// (em português) Estilos simples para versão Web

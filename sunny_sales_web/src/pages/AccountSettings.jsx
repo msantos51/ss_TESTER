@@ -3,22 +3,25 @@
 import React, { useEffect, useState } from 'react';
 
 // Simulação dos serviços (deves adaptar ao que tiveres no backend/localStorage)
-const isNotificationsEnabled = async () => {
-  return localStorage.getItem('notifications_enabled') === 'true';
-};
+// Obtém se as notificações estão ativas no localStorage
+const isNotificationsEnabled = () =>
+  localStorage.getItem('notifications_enabled') === 'true';
 
-const setNotificationsEnabled = async (value) => {
+// Atualiza o estado de notificações no localStorage
+const setNotificationsEnabled = (value) => {
   localStorage.setItem('notifications_enabled', value);
 };
 
-const getNotificationRadius = async () => {
-  return parseInt(localStorage.getItem('notification_radius') || '20', 10);
-};
+// Obtém o raio configurado
+const getNotificationRadius = () =>
+  parseInt(localStorage.getItem('notification_radius') || '20', 10);
 
-const setNotificationRadius = async (value) => {
+// Guarda o raio de alertas
+const setNotificationRadius = (value) => {
   localStorage.setItem('notification_radius', value);
 };
 
+// Componente que permite configurar notificações e raio de alertas
 export default function AccountSettings() {
   const [enabled, setEnabled] = useState(true);
   const [radius, setRadius] = useState('20');
@@ -32,12 +35,14 @@ export default function AccountSettings() {
     load();
   }, []);
 
+  // Alterna o estado das notificações
   const toggleNotifications = async () => {
     const val = !enabled;
     setEnabled(val);
     await setNotificationsEnabled(val);
   };
 
+  // Atualiza o raio de alertas no localStorage
   const changeRadius = async (value) => {
     setRadius(String(value));
     await setNotificationRadius(value);
@@ -73,4 +78,3 @@ export default function AccountSettings() {
   );
 }
 
-// (em português) Estilos incluídos no mesmo ficheiro

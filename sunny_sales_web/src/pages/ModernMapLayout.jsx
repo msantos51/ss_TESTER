@@ -6,6 +6,7 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import './ModernMapLayout.css';
 
+// Layout principal com mapa e lista de vendedores online
 export default function ModernMapLayout() {
   const navigate = useNavigate();
   const [vendors, setVendors] = useState([]);
@@ -40,12 +41,14 @@ export default function ModernMapLayout() {
     selectedProducts.includes(v.product)
   );
 
+  // Alterna a seleção de um produto no filtro
   const toggleProduct = (p) => {
     setSelectedProducts((prev) =>
       prev.includes(p) ? prev.filter((v) => v !== p) : [...prev, p]
     );
   };
 
+  // Centraliza o mapa no vendedor selecionado
   const focusVendor = (v) => {
     setSelected(v);
     if (mapRef.current) {
@@ -53,6 +56,7 @@ export default function ModernMapLayout() {
     }
   };
 
+  // Marca ou desmarca o vendedor como favorito
   const toggleFavorite = () => {
     if (!selected) return;
     const stored = JSON.parse(localStorage.getItem('favorites') || '[]');

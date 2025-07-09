@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 
+// Formulário de registo para novos vendedores
 export default function VendorRegister() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -12,12 +13,12 @@ export default function VendorRegister() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // # Função para selecionar imagem
+  // Guarda a imagem de perfil selecionada
   const handlePhotoChange = (e) => {
     setPhoto(e.target.files[0]);
   };
 
-  // # Função para registar
+  // Envia os dados de registo do vendedor
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
@@ -114,4 +115,3 @@ export default function VendorRegister() {
   );
 }
 
-// # Estilos simples para layout Web

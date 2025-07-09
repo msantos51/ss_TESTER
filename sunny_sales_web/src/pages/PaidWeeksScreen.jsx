@@ -5,11 +5,12 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import { Link, useNavigate } from 'react-router-dom';
 
+// Mostra ao vendedor as semanas já pagas
 export default function PaidWeeksScreen() {
   const [weeks, setWeeks] = useState([]);
   const navigate = useNavigate();
 
-  // loadWeeks
+  // Carrega as semanas pagas do vendedor
   const loadWeeks = async () => {
     const stored = localStorage.getItem('user');
     const token = localStorage.getItem('token');
