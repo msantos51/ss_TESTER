@@ -57,7 +57,7 @@ export default function DashboardCliente() {
         }}
       >
         <legend>Menu</legend>
-        <ul>
+        <ul style={styles.menuList}>
           <li><button onClick={() => navigate('/settings')}>Notificações</button></li>
           <hr />
           <li><button onClick={() => navigate('/edit-profile')}>Atualizar Dados Pessoais</button></li>
@@ -182,6 +182,7 @@ const styles = {
     backgroundColor: '#f8f8f8',
     boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
     padding: '1rem',
+    paddingTop: '9rem',
     boxSizing: 'border-box',
     transform: 'translateX(-100%)',
     transition: 'transform 0.3s ease-in-out',
@@ -189,5 +190,14 @@ const styles = {
   },
   sideMenuOpen: {
     transform: 'translateX(0)',
+  },
+  menuList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
+    alignItems: 'flex-start',
   },
 };
