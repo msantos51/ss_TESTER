@@ -3,6 +3,7 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 
+// Ecrã para edição dos dados do utilizador autenticado
 export default function EditProfileScreen() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -32,12 +33,14 @@ export default function EditProfileScreen() {
     }
   }, []);
 
+  // Guarda a foto selecionada pelo utilizador
   const handlePhoto = (e) => {
     if (e.target.files && e.target.files[0]) {
       setPhoto(e.target.files[0]);
     }
   };
 
+  // Envia as alterações de perfil para o servidor
   const save = async (e) => {
     e.preventDefault();
     if (!user) return;

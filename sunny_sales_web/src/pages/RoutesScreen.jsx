@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 
+// Lista os trajetos registados pelo vendedor
 export default function RoutesScreen() {
   const [routes, setRoutes] = useState([]);
   const navigate = useNavigate();
 
-  // carregar trajetos do vendedor
+  // Obtém do backend os trajetos do vendedor
   const loadRoutes = async () => {
     const stored = localStorage.getItem('user');
     const token = localStorage.getItem('token');

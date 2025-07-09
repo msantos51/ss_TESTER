@@ -6,6 +6,7 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import LoadingDots from '../components/LoadingDots';
 
+// Componente de login para clientes
 export default function ClientLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,6 +25,7 @@ export default function ClientLogin() {
     }
   };
 
+  // Tenta autenticar o cliente no backend
   const login = async () => {
     if (!email || !password) return;
     setLoading(true);

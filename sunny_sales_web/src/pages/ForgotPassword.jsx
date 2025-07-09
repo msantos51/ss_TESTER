@@ -4,12 +4,14 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import LoadingDots from '../components/LoadingDots';
 
+// Página para solicitar reposição da palavra-passe
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
 
+  // Envia pedido de redefinição de palavra-passe
   const requestReset = async () => {
     if (!email) return;
     setLoading(true);
@@ -49,4 +51,3 @@ export default function ForgotPassword() {
   );
 }
 
-// (em português) Estilos básicos para a página

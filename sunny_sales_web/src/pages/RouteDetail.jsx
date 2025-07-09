@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
+// Mostra no mapa o percurso detalhado do trajeto selecionado
 export default function RouteDetail() {
   const location = useLocation();
   const navigate = useNavigate();

@@ -4,10 +4,12 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 
+// Lista as semanas pagas e respetivas faturas
 export default function Invoices() {
   const [weeks, setWeeks] = useState([]);
   const navigate = useNavigate();
 
+  // Obtém do backend as semanas já pagas
   const loadWeeks = async () => {
     const stored = localStorage.getItem('user');
     const token = localStorage.getItem('token');

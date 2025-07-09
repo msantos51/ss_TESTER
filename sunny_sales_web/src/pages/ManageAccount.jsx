@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 
+// Página para o vendedor atualizar ou remover a sua conta
 export default function ManageAccount() {
   const [vendor, setVendor] = useState(null);
   const [name, setName] = useState('');
@@ -28,10 +29,12 @@ export default function ManageAccount() {
     }
   }, []);
 
+  // Guarda a foto enviada no formulário
   const handlePhotoChange = (e) => {
     setPhoto(e.target.files[0]);
   };
 
+  // Envia as alterações do formulário para o backend
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!vendor) return;
@@ -139,4 +142,3 @@ export default function ManageAccount() {
   );
 }
 
-// (em português) Estilos simples para a página

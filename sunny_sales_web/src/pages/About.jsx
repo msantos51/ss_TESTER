@@ -33,6 +33,7 @@ const styles = {
   }
 };
 
+// Página informativa sobre a aplicação
 export default function About() {
   const navigate = useNavigate();
   return (

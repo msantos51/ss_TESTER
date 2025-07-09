@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Permite escolher o tipo de conta a iniciar sessão
 export default function LoginSelection() {
   const navigate = useNavigate();
   return (

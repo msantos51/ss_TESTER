@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import LoadingDots from '../components/LoadingDots';
 
+// Componente de registo de novos clientes
 export default function ClientRegister() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -15,6 +16,7 @@ export default function ClientRegister() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Trata a seleção de uma foto de perfil
   const pickImage = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -22,6 +24,7 @@ export default function ClientRegister() {
     }
   };
 
+  // Envia os dados de registo para o servidor
   const register = async () => {
     if (!name || !email || !password) {
       setError('Preencha todos os campos obrigatórios');
@@ -121,4 +124,3 @@ export default function ClientRegister() {
   );
 }
 
-// (em português) Estilos embutidos
