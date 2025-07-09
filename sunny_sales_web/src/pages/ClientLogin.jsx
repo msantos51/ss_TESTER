@@ -70,8 +70,8 @@ export default function ClientLogin() {
       {error && (
         <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>
       )}
-      <div className="form">
-        <div className="form-container">
+      <div className="form login-form">
+        <div className="form-container login-container">
           <input
             type="email"
             placeholder="Email"

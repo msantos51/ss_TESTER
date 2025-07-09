@@ -77,6 +77,27 @@ h2 {
   padding: 20px 30px;
 }
 
+/* Versão mais compacta usada nos ecrãs de login */
+.form-container.login-container {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-form {
+  align-items: center;
+}
+
+.login-form button {
+  display: inline-flex;
+  align-self: center;
+}
+
+.form-container.login-container input {
+  width: 100%;
+}
+
 .title {
   text-align: center;
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
