@@ -58,14 +58,35 @@ export default function DashboardCliente() {
       >
         <legend>Menu</legend>
         <ul style={styles.menuList}>
-          <li><button onClick={() => navigate('/settings')}>Notificações</button></li>
-          <hr />
-          <li><button onClick={() => navigate('/edit-profile')}>Atualizar Dados Pessoais</button></li>
-          <li><button onClick={() => alert('Funcionalidade indisponivel')}>Apagar Conta</button></li>
-          <hr />
-          <li><button onClick={() => navigate('/terms')}>Termos e Condições</button></li>
           <li>
-            <button onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}>Contactar Suporte</button>
+            <button style={styles.menuButtonItem} onClick={() => navigate('/settings')}>
+              Notificações
+            </button>
+          </li>
+          <hr />
+          <li>
+            <button style={styles.menuButtonItem} onClick={() => navigate('/edit-profile')}>
+              Atualizar Dados Pessoais
+            </button>
+          </li>
+          <li>
+            <button style={styles.menuButtonItem} onClick={() => alert('Funcionalidade indisponível')}>
+              Apagar Conta
+            </button>
+          </li>
+          <hr />
+          <li>
+            <button style={styles.menuButtonItem} onClick={() => navigate('/terms')}>
+              Termos e Condições
+            </button>
+          </li>
+          <li>
+            <button
+              style={styles.menuButtonItem}
+              onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}
+            >
+              Contactar Suporte
+            </button>
           </li>
         </ul>
       </div>
@@ -73,41 +94,47 @@ export default function DashboardCliente() {
       <div style={styles.container}>
         <h2 style={styles.title}>Meu Perfil</h2>
 
-      {client?.profile_photo && (
-        <img src={`${BASE_URL}/${client.profile_photo}`} style={styles.image} alt="Foto de perfil" />
-      )}
+        {client?.profile_photo && (
+          <img src={`${BASE_URL}/${client.profile_photo}`} style={styles.image} alt="Foto de perfil" />
+        )}
 
-      {client && (
-        <>
-          <p><strong>Nome:</strong> {client.name}</p>
-          <p><strong>Email:</strong> {client.email}</p>
-        </>
-      )}
+        {client && (
+          <>
+            <p>
+              <strong>Nome:</strong> {client.name}
+            </p>
+            <p>
+              <strong>Email:</strong> {client.email}
+            </p>
+          </>
+        )}
 
-      <h3 style={styles.subtitle}>Vendedores Favoritos</h3>
-      <div style={styles.favList}>
-        {favorites.map((item) => (
-          <div key={item.id} style={styles.vendor}>
-            <img
-              src={`${BASE_URL}/${item.profile_photo}`}
-              alt={item.name}
-              style={{
-                ...styles.vendorPhoto,
-                borderColor: item.subscription_active ? 'green' : 'red',
-              }}
-            />
-            <span>{item.name}</span>
-          </div>
-        ))}
-      </div>
+        <h3 style={styles.subtitle}>Vendedores Favoritos</h3>
+        <div style={styles.favList}>
+          {favorites.map((item) => (
+            <div key={item.id} style={styles.vendor}>
+              <img
+                src={`${BASE_URL}/${item.profile_photo}`}
+                alt={item.name}
+                style={{
+                  ...styles.vendorPhoto,
+                  borderColor: item.subscription_active ? 'green' : 'red',
+                }}
+              />
+              <span>{item.name}</span>
+            </div>
+          ))}
+        </div>
 
-      <button onClick={logout} className="btn" style={styles.fullButton}>Sair</button>
+        <button onClick={logout} className="btn" style={styles.fullButton}>
+          Sair
+        </button>
       </div>
     </div>
   );
 }
 
-// estilos embutidos
+// (em português) Estilos CSS embutidos
 const styles = {
   wrapper: {
     position: 'relative',
@@ -172,6 +199,8 @@ const styles = {
     border: 'none',
     padding: '0.5rem 1rem',
     cursor: 'pointer',
+    fontSize: '1.2rem',
+    borderRadius: '50%',
   },
   sideMenu: {
     position: 'fixed',
@@ -199,5 +228,16 @@ const styles = {
     flexDirection: 'column',
     gap: '0.5rem',
     alignItems: 'flex-start',
+  },
+  menuButtonItem: {
+    width: '100%',
+    padding: '0.75rem 1rem',
+    backgroundColor: '#19a0a4',
+    color: 'white',
+    border: 'none',
+    borderRadius: '20px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    textAlign: 'left',
   },
 };
