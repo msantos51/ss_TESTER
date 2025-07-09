@@ -34,21 +34,7 @@ export default function App() {
       <header style={styles.navbar}>
         <Link style={styles.logo} to="/">Sunny Sales</Link>
 
-        {/* (em português) Links de navegação */}
-        <nav style={styles.navLinks}>
-          <Link className="menu-item" to="/vendor-login">
-            <FiLogIn /> Login Vendedor
-          </Link>
-          <Link className="menu-item" to="/vendor-register">
-            <FiUserPlus /> Registar Vendedor
-          </Link>
-          <Link className="menu-item" to="/login">
-            <FiLogIn /> Login Cliente
-          </Link>
-          <Link className="menu-item" to="/register">
-            <FiUserPlus /> Registar Cliente
-          </Link>
-        </nav>
+        {/* (em português) Links de navegação removidos */}
 
         {/* (em português) Ícone de perfil */}
         <Link to={profileLink} style={styles.profileIcon} aria-label="Login">
@@ -102,10 +88,6 @@ const styles = {
     color: '#ffffff',
     fontWeight: 'bold',
     fontSize: '2.5rem',
-  },
-  navLinks: {
-    display: 'flex',
-    gap: '1rem',
   },
   profileIcon: {
     textDecoration: 'none',

@@ -217,7 +217,7 @@ const styles = {
     fontWeight: 'bold',
   },
   fullButton: {
-    width: 250,
+    width: 'auto',
     alignSelf: 'center',
     margin: '12px auto',
     borderRadius: 12,
