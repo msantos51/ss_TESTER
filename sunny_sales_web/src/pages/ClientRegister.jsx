@@ -69,8 +69,8 @@ export default function ClientRegister() {
     <div className="form-box">
       <h2 className="title">Registo de Cliente</h2>
       {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
-      <div className="form">
-        <div className="form-container">
+      <div className="form login-form">
+        <div className="form-container login-container">
           <input
             type="text"
             placeholder="Nome"
