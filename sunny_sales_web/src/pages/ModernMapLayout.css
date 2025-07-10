@@ -3,8 +3,8 @@
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background: #f6f8fb;
-  color: #1f1f1f;
+  background: var(--bg-color);
+  color: var(--text-color);
 }
 
 .modern-layout {
@@ -16,7 +16,7 @@ body {
   width: 30vw;
   min-width: 260px;
   height: 100vh;
-  background: #ffffff;
+  background: var(--bg-color);
   border-right: 1px solid #e0e0e0;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
   padding: 2rem;
@@ -27,7 +27,7 @@ body {
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #19a0a4;
+  color: var(--secondary-color);
 }
 
 .login-buttons {
@@ -38,8 +38,8 @@ body {
 }
 
 .login-btn {
-  background: #19a0a4;
-  color: #fff;
+  background: var(--secondary-color);
+  color: #FFFFFF;
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
@@ -56,7 +56,7 @@ body {
 }
 
 .filters-subtitle {
-  color: #6c757d;
+  color: var(--text-color);
   margin: 0 0 0.5rem 0;
 }
 
@@ -79,7 +79,7 @@ body {
   height: 100%;
   border-radius: 16px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
-  background: #e6eef5;
+  background: #F3D250;
 }
 
 .vendor-card {
@@ -90,7 +90,7 @@ body {
   transform: translate(-50%, -50%);
   width: 260px;
   padding: 1rem;
-  background: #ffffff;
+  background: var(--bg-color);
   border: 1px solid #dee2e6;
   border-radius: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -104,7 +104,7 @@ body {
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
-  color: #19a0a4;
+  color: var(--secondary-color);
 }
 
 .card-header {
@@ -122,8 +122,8 @@ body {
 }
 
 .badge {
-  background: #28a745;
-  color: #fff;
+  background: #F3D250;
+  color: #FFFFFF;
   font-size: 0.8rem;
   padding: 2px 6px;
   border-radius: 4px;
@@ -146,8 +146,8 @@ body {
 }
 
 .map-btn {
-  background: #19a0a4;
-  color: #fff;
+  background: var(--secondary-color);
+  color: #FFFFFF;
   border: none;
   padding: 0.5rem 1rem;
   width: 100%;
@@ -157,7 +157,7 @@ body {
 }
 
 .map-btn:hover {
-  background: #15888c;
+  background: #F3D250;
 }
 
 .online-vendors {
@@ -192,7 +192,7 @@ body {
 .vendor-rating {
   margin: 0;
   font-size: 0.85rem;
-  color: #555;
+  color: var(--text-color);
 }
 
 @media (max-width: 768px) {
