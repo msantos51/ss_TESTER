@@ -21,8 +21,16 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--primary-color);
+  background-color: var(--primary-color) !important;
   padding: 1.5rem 2rem;
+}
+
+header a {
+  color: #ECECEC !important;
+}
+
+header a:last-child {
+  color: var(--secondary-color) !important;
 }
 
 header h1 {
