@@ -2,10 +2,10 @@
 
 :root {
   /* Tema default */
-  --primary-color: #19a0a4;
-  --secondary-color: #19a0a4;
-  --bg-color: #ffffff;
-  --text-color: #06286e;
+  --primary-color: #5DA2D5;
+  --secondary-color: #F78888;
+  --bg-color: #ECECEC;
+  --text-color: #333333;
   font-family: 'Segoe UI', sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -14,7 +14,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #fff; /* remove gradiente para fundo branco */
+  background-color: var(--bg-color); /* fundo claro neutro */
 }
 
 header {
@@ -28,12 +28,12 @@ header {
 header h1 {
   margin: 0;
   font-size: 2.5rem;
-  color: white;
+  color: #ECECEC;
 }
 
 .btn-top {
   background: var(--secondary-color);
-  color: white;
+  color: #ECECEC;
   padding: 0.6rem 1.2rem;
   border-radius: 2rem;
   text-decoration: none;
@@ -70,7 +70,7 @@ h2 {
 .form-container {
   width: 350px;
   height: 500px;
-  background-color: #fff;
+  background-color: var(--bg-color);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   border-radius: 10px;
   box-sizing: border-box;
@@ -126,8 +126,8 @@ align-items: center;
   text-decoration: underline;
   margin: 0;
   text-align: end;
-  color: #747474;
-  text-decoration-color: #747474;
+  color: #90CCF4;
+  text-decoration-color: #90CCF4;
 }
 
 .page-link-label {
@@ -139,7 +139,7 @@ align-items: center;
 }
 
 .page-link-label:hover {
-  color: #000;
+  color: #F3D250;
 }
 
 .form-btn {
@@ -151,7 +151,7 @@ align-items: center;
   border: 0 !important;
   outline: 0 !important;
   background: var(--secondary-color);
-  color: white;
+  color: #ECECEC;
   cursor: pointer;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
@@ -163,7 +163,7 @@ align-items: center;
 .sign-up-label {
   margin: 0;
   font-size: 10px;
-  color: #747474;
+  color: #333333;
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
@@ -207,26 +207,28 @@ align-items: center;
 }
 
 .apple-login-button {
-  background-color: #000;
-  color: #fff;
-  border: 2px solid #000;
+  background-color: #5DA2D5;
+  color: #ECECEC;
+  border: 2px solid #5DA2D5;
 }
 
 .google-login-button {
-  border: 2px solid #747474;
+  border: 2px solid #F3D250;
+  color: #333333;
 }
 
 .apple-icon,
 .google-icon {
   font-size: 18px;
   margin-bottom: 1px;
+  color: #F3D250;
 }
 
 /* === Estilo para botoes === */
 button {
-  --primary-color: #19a0a4;
-  --secondary-color: #fff;
-  --hover-color: #111;
+  --primary-color: #F78888;
+  --secondary-color: #ECECEC;
+  --hover-color: #F3D250;
   --arrow-width: 10px;
   --arrow-stroke: 2px;
   box-sizing: border-box;
@@ -286,5 +288,5 @@ button:hover .arrow:before {
 
 /* === Estilo para checkboxes === */
 input[type='checkbox'] {
-  accent-color: #19a0a4;
+  accent-color: #F78888;
 }
