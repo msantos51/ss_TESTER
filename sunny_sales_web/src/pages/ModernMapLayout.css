@@ -81,9 +81,8 @@ body {
   height: 100%;
   border-radius: 16px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
-
   background: #F3D250;
-
+}
 
 .vendor-card {
   z-index: 1000;
