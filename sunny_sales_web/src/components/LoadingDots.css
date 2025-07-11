@@ -40,7 +40,9 @@
 
   50% {
     transform: scale(1.2);
-    background-color: #F78888;
+
+    background-color: #F3D250;
+
     box-shadow: 0 0 0 10px rgba(243, 210, 80, 0);
   }
 
