@@ -39,7 +39,9 @@ body {
 
 .login-btn {
   background: var(--secondary-color);
+
   color: #FFFFFF;
+
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
@@ -79,8 +81,9 @@ body {
   height: 100%;
   border-radius: 16px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+
   background: #F3D250;
-}
+
 
 .vendor-card {
   z-index: 1000;
@@ -147,7 +150,9 @@ body {
 
 .map-btn {
   background: var(--secondary-color);
+
   color: #FFFFFF;
+
   border: none;
   padding: 0.5rem 1rem;
   width: 100%;

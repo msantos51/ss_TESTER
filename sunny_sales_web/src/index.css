@@ -2,9 +2,11 @@
 
 :root {
   /* Tema default */
+
   --primary-color: #F3D250;
   --secondary-color: #F3D250;
   --bg-color: #FFFFFF;
+
   --text-color: #333333;
   font-family: 'Segoe UI', sans-serif;
   background-color: var(--bg-color);
@@ -29,15 +31,24 @@ header a {
   color: #FFFFFF !important;
 }
 
+header a:last-child {
+  color: var(--secondary-color) !important;
+
+}
+
 header h1 {
   margin: 0;
   font-size: 2.5rem;
+
   color: #FFFFFF;
+
 }
 
 .btn-top {
   background: var(--secondary-color);
+
   color: #FFFFFF;
+
   padding: 0.6rem 1.2rem;
   border-radius: 2rem;
   text-decoration: none;
@@ -130,8 +141,10 @@ align-items: center;
   text-decoration: underline;
   margin: 0;
   text-align: end;
+
   color: #F3D250;
   text-decoration-color: #F3D250;
+
 }
 
 .page-link-label {
@@ -155,7 +168,10 @@ align-items: center;
   border: 0 !important;
   outline: 0 !important;
   background: var(--secondary-color);
+
   color: #FFFFFF;
+=======
+
   cursor: pointer;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
@@ -211,9 +227,12 @@ align-items: center;
 }
 
 .apple-login-button {
+
   background-color: #F3D250;
   color: #FFFFFF;
   border: 2px solid #F3D250;
+
+
 }
 
 .google-login-button {
@@ -232,6 +251,8 @@ align-items: center;
 button {
   --primary-color: #F3D250;
   --secondary-color: #FFFFFF;
+
+
   --hover-color: #F3D250;
   --arrow-width: 10px;
   --arrow-stroke: 2px;
@@ -292,5 +313,6 @@ button:hover .arrow:before {
 
 /* === Estilo para checkboxes === */
 input[type='checkbox'] {
+
   accent-color: #F3D250;
 }
