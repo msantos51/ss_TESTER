@@ -1,7 +1,7 @@
 // (em português) Componente principal da aplicação Web com rotas
 
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { FiLogIn, FiUserPlus } from 'react-icons/fi';
+import { FiLogIn, FiUserPlus, FiUser } from 'react-icons/fi'; // adiciona FiUser
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
 import ClientLogin from './pages/ClientLogin';
@@ -34,11 +34,9 @@ export default function App() {
       <header style={styles.navbar}>
         <Link style={styles.logo} to="/">Sunny Sales</Link>
 
-        {/* (em português) Links de navegação removidos */}
-
-        {/* (em português) Ícone de perfil */}
+        {/* (em português) Ícone de perfil com cor branca */}
         <Link to={profileLink} style={styles.profileIcon} aria-label="Login">
-          👤
+          <FiUser />
         </Link>
       </header>
 
@@ -94,5 +92,7 @@ const styles = {
     color: '#ffffff',
     fontSize: '2rem',
     marginLeft: '1rem',
+    display: 'flex',
+    alignItems: 'center',
   },
 };
