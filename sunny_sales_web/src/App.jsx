@@ -31,11 +31,11 @@ export default function App() {
   return (
     <Router>
       {/* (em português) Barra de navegação */}
-      <header style={styles.navbar}>
-        <Link style={styles.logo} to="/">Sunny Sales</Link>
+      <header className="navbar">
+        <Link className="logo-link" to="/">Sunny Sales</Link>
 
         {/* (em português) Ícone de perfil com cor branca */}
-        <Link to={profileLink} style={styles.profileIcon} aria-label="Login">
+        <Link to={profileLink} className="profile-icon" aria-label="Login">
           <FiUser />
         </Link>
       </header>
@@ -70,29 +70,3 @@ export default function App() {
   );
 }
 
-// (em português) Estilos simples da barra de navegação
-const styles = {
-  navbar: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: '1.5rem 2rem',
-    backgroundColor: '#19a0a4',
-    alignItems: 'center',
-    position: 'relative',
-    zIndex: 3000,
-  },
-  logo: {
-    textDecoration: 'none',
-    color: '#ffffff',
-    fontWeight: 'bold',
-    fontSize: '2.5rem',
-  },
-  profileIcon: {
-    textDecoration: 'none',
-    color: '#ffffff',
-    fontSize: '2rem',
-    marginLeft: '1rem',
-    display: 'flex',
-    alignItems: 'center',
-  },
-};
