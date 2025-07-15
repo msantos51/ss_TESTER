@@ -91,7 +91,7 @@ const styles = {
   },
   profileIcon: {
     textDecoration: 'none',
-    color: '#19a0a4',
+    color: '#ffffff',
     fontSize: '2rem',
     marginLeft: '1rem',
   },
