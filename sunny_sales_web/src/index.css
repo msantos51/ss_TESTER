@@ -32,7 +32,7 @@ header a {
 }
 
 header a:last-child {
-  color: var(--secondary-color) !important;
+  color: #FFFFFF !important;
 
 }
 
