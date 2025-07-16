@@ -23,12 +23,14 @@ body {
   display: flex;
   justify-content: space-between;
   padding: 1.5rem 2rem;
+
   background-color: var(--primary-color);
   align-items: center;
   position: relative;
   z-index: 3000;
   width: 100%;
   box-sizing: border-box;
+
 }
 
 .logo-link {
