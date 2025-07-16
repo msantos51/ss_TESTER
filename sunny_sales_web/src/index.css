@@ -19,30 +19,34 @@ body {
   background-color: var(--bg-color); /* fundo claro neutro */
 }
 
-header {
+.navbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  background-color: var(--primary-color) !important;
   padding: 1.5rem 2rem;
+  background-color: var(--primary-color);
+  align-items: center;
+  position: relative;
+  z-index: 3000;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-header a {
-  color: #FFFFFF !important;
-}
-
-header a:last-child {
-  color: #FFFFFF !important;
-
-}
-
-header h1 {
-  margin: 0;
+.logo-link {
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: bold;
   font-size: 2.5rem;
-
-  color: #FFFFFF;
-
 }
+
+.profile-icon {
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 2rem;
+  margin-left: 1rem;
+  display: flex;
+  align-items: center;
+}
+
 
 .btn-top {
   background: var(--secondary-color);
