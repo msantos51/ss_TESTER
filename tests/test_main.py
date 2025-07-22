@@ -91,6 +91,18 @@ def get_client_token(client, email="client@example.com", password="Secret123"):
     assert resp.status_code == 200
     return resp.json()["access_token"]
 
+def make_oauth_token(email="oauth@example.com", name="OAuth Client", sub="gid123"):
+    from backend.app.main import _b64
+    header = {"alg": "none"}
+    payload = {"email": email, "name": name, "sub": sub}
+    return f"{_b64(header)}.{_b64(payload)}."
+
+def get_oauth_token(client, provider="google", email="oauth@example.com", sub="gid123"):
+    token = make_oauth_token(email=email, sub=sub)
+    resp = client.post("/client-oauth", data={"provider": provider, "token": token})
+    assert resp.status_code == 200
+    return resp.json()["access_token"]
+
 
 def test_token_generation(client):
     register_vendor(client)
@@ -397,4 +409,16 @@ def test_client_profile_update(client):
 
     resp = client.patch(f"/clients/{client_id}/profile", data={"name": "Fail"})
     assert resp.status_code == 401
+
+
+def test_client_oauth_login(client):
+    token = get_oauth_token(client)
+    assert token
+    from backend.app.main import decode_token
+    payload = decode_token(token)
+    assert payload["type"] == "client"
+    cid = payload["sub"]
+    resp = client.get(f"/clients/{cid}")
+    assert resp.status_code == 200
+    assert resp.json()["email"] == "oauth@example.com"
 

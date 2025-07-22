@@ -45,6 +45,8 @@ class Client(Base):
     confirmation_token = Column(String, nullable=True, index=True)
     password_reset_token = Column(String, nullable=True, index=True)
     password_reset_expires = Column(DateTime, nullable=True)
+    google_id = Column(String, unique=True, index=True, nullable=True)
+    apple_id = Column(String, unique=True, index=True, nullable=True)
 
     favorites = relationship("Favorite", back_populates="client")
     reviews = relationship("Review", back_populates="client")

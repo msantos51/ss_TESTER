@@ -37,6 +37,7 @@ scripts/    Utilidades auxiliares
 - **Estatísticas**: painel no aplicativo mostra gráfico das distâncias diárias percorridas.
 - **Favoritos**: clientes podem marcar vendedores favoritos para receber notificações de proximidade.
 - **Respostas a reviews**: vendedores podem responder ou ocultar avaliações via API.
+- **Login social**: clientes podem registar-se com contas Google ou Apple.
 - **Tradução e acessibilidade**: interface com suporte a português e inglês e elementos com labels acessíveis.
    A variável `BASE_URL` em `mobile/config.js` deve apontar para o endereço do backend.
 
