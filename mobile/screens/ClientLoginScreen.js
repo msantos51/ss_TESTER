@@ -19,6 +19,12 @@ export default function ClientLoginScreen({ navigation }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // JWTs simulados para fluxos de login social de exemplo
+  const GOOGLE_TOKEN =
+    'eyJhbGciOiJub25lIn0.eyJlbWFpbCI6Im9hdXRoQGV4YW1wbGUuY29tIiwibmFtZSI6Ik9BdXRoIENsaWVudCIsInN1YiI6ImdpZDEyMyJ9.';
+  const APPLE_TOKEN =
+    'eyJhbGciOiJub25lIn0.eyJlbWFpbCI6Im9hdXRoQGV4YW1wbGUuY29tIiwibmFtZSI6Ik9BdXRoIENsaWVudCIsInN1YiI6ImFpZDEyMyJ9.';
+
   // getIdFromToken
   const getIdFromToken = (token) => {
     try {
@@ -71,6 +77,37 @@ export default function ClientLoginScreen({ navigation }) {
     }
   };
 
+  // Efetua login social simulando um token JWT válido
+  const oauthLogin = async (provider) => {
+    const token = provider === 'google' ? GOOGLE_TOKEN : APPLE_TOKEN;
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      params.append('provider', provider);
+      params.append('token', token);
+      const resp = await axios.post(
+        `${BASE_URL}/client-oauth`,
+        params
+      );
+      const access = resp.data.access_token;
+      await AsyncStorage.setItem('clientToken', access);
+      const clientId = getIdFromToken(access);
+      let client = { id: clientId };
+      if (clientId) {
+        const details = await axios.get(`${BASE_URL}/clients/${clientId}`);
+        client = details.data;
+      }
+      await AsyncStorage.setItem('client', JSON.stringify(client));
+      navigation.navigate('ClientDashboard');
+    } catch (err) {
+      console.error(err);
+      setError('Falha no login social');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <BackButton style={styles.back} />
@@ -113,9 +150,12 @@ export default function ClientLoginScreen({ navigation }) {
         <Button
           mode="outlined"
           icon="google"
+          onPress={() => oauthLogin('google')}
+=======
           onPress={() =>
             Alert.alert('Login com Google', 'Funcionalidade em desenvolvimento')
           }
+
         >
           <Text>Entrar com Google</Text>
         </Button>
@@ -123,9 +163,7 @@ export default function ClientLoginScreen({ navigation }) {
         <Button
           mode="outlined"
           icon="apple"
-          onPress={() =>
-            Alert.alert('Login com Apple', 'Funcionalidade em desenvolvimento')
-          }
+
         >
           <Text>Entrar com Apple</Text>
         </Button>

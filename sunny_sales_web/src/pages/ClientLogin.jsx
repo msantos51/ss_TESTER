@@ -15,6 +15,12 @@ export default function ClientLogin() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Tokens JWT de demonstração para login social
+  const GOOGLE_TOKEN =
+    'eyJhbGciOiJub25lIn0.eyJlbWFpbCI6Im9hdXRoQGV4YW1wbGUuY29tIiwibmFtZSI6Ik9BdXRoIENsaWVudCIsInN1YiI6ImdpZDEyMyJ9.';
+  const APPLE_TOKEN =
+    'eyJhbGciOiJub25lIn0.eyJlbWFpbCI6Im9hdXRoQGV4YW1wbGUuY29tIiwibmFtZSI6Ik9BdXRoIENsaWVudCIsInN1YiI6ImFpZDEyMyJ9.';
+
   // (em português) Função para extrair o ID do token JWT
   const getIdFromToken = (token) => {
     try {
@@ -67,6 +73,30 @@ export default function ClientLogin() {
     }
   };
 
+  // Login social usando tokens de exemplo
+  const oauthLogin = async (provider) => {
+    const token = provider === 'google' ? GOOGLE_TOKEN : APPLE_TOKEN;
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      params.append('provider', provider);
+      params.append('token', token);
+      const resp = await axios.post(`${BASE_URL}/client-oauth`, params);
+      const access = resp.data.access_token;
+      localStorage.setItem('clientToken', access);
+      const clientId = getIdFromToken(access);
+      const { data: client } = await axios.get(`${BASE_URL}/clients/${clientId}`);
+      localStorage.setItem('client', JSON.stringify(client));
+      navigate('/dashboard');
+    } catch (err) {
+      console.error(err);
+      setError('Falha no login social');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="form-box">
       <h2 className="title">Login do Cliente</h2>
@@ -112,18 +142,20 @@ export default function ClientLogin() {
           <button
             type="button"
             className="google-login-button"
+
+            onClick={() => oauthLogin('google')}
+
             onClick={() =>
               alert('Login com Google ainda não disponível')
             }
+
           >
             <FaGoogle className="google-icon" /> Entrar com Google
           </button>
           <button
             type="button"
             className="apple-login-button"
-            onClick={() =>
-              alert('Login com Apple ainda não disponível')
-            }
+
           >
             <FaApple className="apple-icon" /> Entrar com Apple
           </button>
