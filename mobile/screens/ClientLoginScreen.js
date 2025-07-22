@@ -151,6 +151,11 @@ export default function ClientLoginScreen({ navigation }) {
           mode="outlined"
           icon="google"
           onPress={() => oauthLogin('google')}
+=======
+          onPress={() =>
+            Alert.alert('Login com Google', 'Funcionalidade em desenvolvimento')
+          }
+
         >
           <Text>Entrar com Google</Text>
         </Button>
@@ -158,7 +163,7 @@ export default function ClientLoginScreen({ navigation }) {
         <Button
           mode="outlined"
           icon="apple"
-          onPress={() => oauthLogin('apple')}
+
         >
           <Text>Entrar com Apple</Text>
         </Button>

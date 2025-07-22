@@ -142,14 +142,20 @@ export default function ClientLogin() {
           <button
             type="button"
             className="google-login-button"
+
             onClick={() => oauthLogin('google')}
+
+            onClick={() =>
+              alert('Login com Google ainda não disponível')
+            }
+
           >
             <FaGoogle className="google-icon" /> Entrar com Google
           </button>
           <button
             type="button"
             className="apple-login-button"
-            onClick={() => oauthLogin('apple')}
+
           >
             <FaApple className="apple-icon" /> Entrar com Apple
           </button>
