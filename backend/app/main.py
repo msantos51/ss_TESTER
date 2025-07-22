@@ -383,6 +383,54 @@ def confirm_client_email(token: str, db: Session = Depends(get_db)):
     return {"message": "Email confirmado"}
 
 
+@app.post("/client-oauth")
+# client_oauth
+async def client_oauth(
+    provider: str = Form(...),
+    token: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    if provider not in ("google", "apple"):
+        raise HTTPException(status_code=400, detail="Invalid provider")
+    try:
+        _, payload_b64, _ = token.split(".")
+        payload = json.loads(_b64decode(payload_b64))
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid token")
+    sub = payload.get("sub")
+    email = payload.get("email")
+    name = payload.get("name") or email
+    if not sub or not email:
+        raise HTTPException(status_code=400, detail="Invalid token payload")
+    query = db.query(models.Client)
+    if provider == "google":
+        client = query.filter(models.Client.google_id == sub).first()
+    else:
+        client = query.filter(models.Client.apple_id == sub).first()
+    if not client:
+        client = query.filter(models.Client.email == email).first()
+    if client:
+        if provider == "google":
+            client.google_id = sub
+        else:
+            client.apple_id = sub
+    else:
+        client = models.Client(
+            name=name,
+            email=email,
+            hashed_password="",
+            profile_photo="",
+            email_confirmed=True,
+            google_id=sub if provider == "google" else None,
+            apple_id=sub if provider == "apple" else None,
+        )
+        db.add(client)
+    db.commit()
+    db.refresh(client)
+    token = create_access_token({"sub": client.id, "type": "client"})
+    return {"access_token": token, "token_type": "bearer"}
+
+
 @app.post("/client-token")
 # generate_client_token
 def generate_client_token(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
