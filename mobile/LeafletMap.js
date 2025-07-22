@@ -64,9 +64,9 @@ const LeafletMap = forwardRef((props, ref) => {
             ${initialPosition.latitude},
             ${initialPosition.longitude}
           ], ${initialZoom});
-          L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://carto.com/">Carto</a>, &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-            subdomains: 'abcd',
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+            subdomains: 'abc',
             maxZoom: 19
           }).addTo(map);
           var markers = ${JSON.stringify(markers)};
