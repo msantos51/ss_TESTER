@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaGoogle, FaApple } from 'react-icons/fa';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import LoadingDots from '../components/LoadingDots';
@@ -106,6 +107,27 @@ export default function ClientLogin() {
         >
           Registar
         </button>
+
+        <div className="buttons-container">
+          <button
+            type="button"
+            className="google-login-button"
+            onClick={() =>
+              alert('Login com Google ainda não disponível')
+            }
+          >
+            <FaGoogle className="google-icon" /> Entrar com Google
+          </button>
+          <button
+            type="button"
+            className="apple-login-button"
+            onClick={() =>
+              alert('Login com Apple ainda não disponível')
+            }
+          >
+            <FaApple className="apple-icon" /> Entrar com Apple
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 // Tela de login do cliente de praia
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import {
   TextInput,
   Button,
@@ -108,6 +108,28 @@ export default function ClientLoginScreen({ navigation }) {
       <Button mode="outlined" onPress={() => navigation.navigate('ClientRegister')}>
         <Text>Registar</Text>
       </Button>
+
+      <View style={styles.socialButtons}>
+        <Button
+          mode="outlined"
+          icon="google"
+          onPress={() =>
+            Alert.alert('Login com Google', 'Funcionalidade em desenvolvimento')
+          }
+        >
+          <Text>Entrar com Google</Text>
+        </Button>
+        <View style={{ marginTop: 8 }} />
+        <Button
+          mode="outlined"
+          icon="apple"
+          onPress={() =>
+            Alert.alert('Login com Apple', 'Funcionalidade em desenvolvimento')
+          }
+        >
+          <Text>Entrar com Apple</Text>
+        </Button>
+      </View>
     </View>
   );
 }
@@ -118,4 +140,5 @@ const styles = StyleSheet.create({
   input: { marginBottom: 12 },
   error: { color: 'red', marginBottom: 12, textAlign: 'center' },
   back: { position: 'absolute', top: 16, left: 16 },
+  socialButtons: { marginTop: 20 },
 });
