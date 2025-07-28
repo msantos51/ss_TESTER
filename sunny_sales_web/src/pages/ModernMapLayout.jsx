@@ -74,18 +74,6 @@ export default function ModernMapLayout() {
   return (
     <div className="modern-layout">
       <aside className="sidebar">
-        <h1 className="app-name">Sunny Sales</h1>
-        <div className="login-buttons">
-          <button
-            className="login-btn"
-            onClick={() => navigate('/vendor-login')}
-          >
-            Login Vendedor
-          </button>
-          <button className="login-btn" onClick={() => navigate('/login')}>
-            Login Cliente
-          </button>
-        </div>
 
         <div className="filters">
           <h2 className="filters-title">Filtros</h2>
