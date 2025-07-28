@@ -96,7 +96,7 @@ export default function VendorLogin() {
         <button
           type="button"
           className="outlined-button"
-          onClick={() => navigate('/register')}
+          onClick={() => navigate('/vendor-register')}
         >
           Registar
         </button>
