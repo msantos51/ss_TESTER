@@ -21,6 +21,9 @@ import Invoices from './pages/Invoices';
 import Dashboard from './pages/Dashboard';
 import ModernMapLayout from './pages/ModernMapLayout';
 import LoginSelection from './pages/LoginSelection';
+import SobreProjeto from './pages/SobreProjeto';
+import Sustentabilidade from './pages/Sustentabilidade';
+import ImplementarScreen from './pages/ImplementarScreen';
 import './index.css'; // (em português) Importa os estilos globais
 
 // Componente principal que define as rotas da aplicação web
@@ -46,6 +49,9 @@ export default function App() {
           {/* (em português) Página principal com layout moderno */}
           <Route path="/" element={<ModernMapLayout />} />
           <Route path="/about" element={<About />} />
+          <Route path="/sobre-projeto" element={<SobreProjeto />} />
+          <Route path="/sustentabilidade" element={<Sustentabilidade />} />
+          <Route path="/implementacao" element={<ImplementarScreen />} />
           <Route path="/settings" element={<AccountSettings />} />
           <Route path="/login" element={<ClientLogin />} />
           <Route path="/register" element={<ClientRegister />} />
