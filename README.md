@@ -1,18 +1,18 @@
 # Sunny Sales
 
-Aplicação composta por backend em **FastAPI** e app móvel em **React Native** que permite aos vendedores de praia registar a sua atividade e aos clientes acompanharem a localização dos vendedores em tempo real.
+Aplicação composta por backend em **FastAPI** e interface web em **React** que permite aos vendedores de praia registar a sua atividade e aos clientes acompanharem a localização dos vendedores em tempo real.
 
 ## Estrutura
 
 ```
-backend/    Código do servidor FastAPI
-mobile/     Aplicação React Native (Expo)
-scripts/    Utilidades auxiliares
+backend/        Código do servidor FastAPI
+sunny_sales_web/ Aplicação web (React + Vite)
+scripts/        Utilidades auxiliares
 ```
 
 ## Configuração Rápida
 
-1. **Requisitos**: Python 3.10+, Node.js e Expo CLI.
+1. **Requisitos**: Python 3.10+ e Node.js.
 2. Instale as dependências Python:
    ```bash
    pip install -r requirements.txt
@@ -26,10 +26,10 @@ scripts/    Utilidades auxiliares
    ```bash
    uvicorn backend.app.main:app --reload
    ```
-5. Na pasta `mobile` instale pacotes e inicie o Expo:
+5. Na pasta `sunny_sales_web` instale pacotes e inicie o Vite:
    ```bash
    npm install
-   npx expo start
+   npm run dev
    ```
 
 ## Novidades
@@ -38,8 +38,8 @@ scripts/    Utilidades auxiliares
 - **Favoritos**: clientes podem marcar vendedores favoritos para receber notificações de proximidade.
 - **Respostas a reviews**: vendedores podem responder ou ocultar avaliações via API.
 - **Login social**: clientes podem registar-se com contas Google ou Apple.
-- **Tradução e acessibilidade**: interface com suporte a português e inglês e elementos com labels acessíveis.
-   A variável `BASE_URL` em `mobile/config.js` deve apontar para o endereço do backend.
+  - **Tradução e acessibilidade**: interface com suporte a português e inglês e elementos com labels acessíveis.
+    A variável `BASE_URL` em `sunny_sales_web/src/config.js` deve apontar para o endereço do backend.
 
 ## Testes
 
@@ -66,7 +66,7 @@ npm ci can only install packages when your package.json and package-lock.json ar
 ```
 
 Isso significa que as versões listadas em `package.json` não coincidem com o
-`package-lock.json`. Entre na pasta `mobile` e rode:
+`package-lock.json`. Entre na pasta `sunny_sales_web` e rode:
 
 ```bash
 npm install
