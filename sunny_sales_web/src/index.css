@@ -1,14 +1,14 @@
 /* (em português) Estilo moderno inspirado em praia */
 
 :root {
-  /* Tema default */
+  /* Estilo Nimo inspirado em gradientes roxo e azul */
 
-  --primary-color: #ffffff;
-  --secondary-color: #F3D250;
-  --bg-color: #fcc707;
+  --primary-color: #5433ff;
+  --secondary-color: #20bdff;
+  --bg-color: #ffffff;
 
-  --text-color: #292929;
-  font-family: 'Segoe UI', sans-serif;
+  --text-color: #333333;
+  font-family: 'Poppins', sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
 }
@@ -18,9 +18,14 @@ body {
   padding: 0;
   background: linear-gradient(
       -45deg,
+      var(--primary-color),
+      var(--secondary-color),
+      var(--primary-color),
+
       var(--bg-color),
       var(--secondary-color),
       var(--bg-color),
+
       var(--secondary-color)
     );
   background-size: 400% 400%;
@@ -183,8 +188,8 @@ align-items: center;
   margin: 0;
   text-align: end;
 
-  color: #F3D250;
-  text-decoration-color: #F3D250;
+  color: var(--secondary-color);
+  text-decoration-color: var(--secondary-color);
 
 }
 
@@ -197,7 +202,7 @@ align-items: center;
 }
 
 .page-link-label:hover {
-  color: #F3D250;
+  color: var(--secondary-color);
 }
 
 .form-btn {
@@ -266,16 +271,13 @@ align-items: center;
 }
 
 .apple-login-button {
-
-  background-color: #F3D250;
+  background-color: var(--secondary-color);
   color: #FFFFFF;
-  border: 2px solid #F3D250;
-
-
+  border: 2px solid var(--secondary-color);
 }
 
 .google-login-button {
-  border: 2px solid #F3D250;
+  border: 2px solid var(--secondary-color);
   color: #333333;
 }
 
@@ -283,16 +285,14 @@ align-items: center;
 .google-icon {
   font-size: 18px;
   margin-bottom: 1px;
-  color: #F3D250;
+  color: var(--secondary-color);
 }
 
 /* === Estilo para botoes === */
 button {
-  --primary-color: #F3D250;
+  --primary-color: var(--secondary-color);
   --secondary-color: #FFFFFF;
-
-
-  --hover-color: #F3D250;
+  --hover-color: var(--primary-color);
   --arrow-width: 10px;
   --arrow-stroke: 2px;
   box-sizing: border-box;
@@ -352,8 +352,7 @@ button:hover .arrow:before {
 
 /* === Estilo para checkboxes === */
 input[type='checkbox'] {
-
-  accent-color: #F3D250;
+  accent-color: var(--secondary-color);
 }
 
 @media (max-width: 768px) {
