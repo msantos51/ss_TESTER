@@ -1,7 +1,8 @@
 // (em português) Componente principal da aplicação Web com rotas
 
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { FiLogIn, FiUserPlus, FiUser } from 'react-icons/fi'; // adiciona FiUser
+import { FiLogIn, FiUserPlus, FiUser, FiMenu } from 'react-icons/fi'; // adiciona FiUser
+import { useState } from 'react';
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
 import ClientLogin from './pages/ClientLogin';
@@ -30,6 +31,7 @@ import './index.css'; // (em português) Importa os estilos globais
 export default function App() {
   const isLoggedIn = localStorage.getItem('user') || localStorage.getItem('client');
   const profileLink = isLoggedIn ? '/dashboard' : '/login-selection';
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <Router>
@@ -37,15 +39,35 @@ export default function App() {
       <header className="navbar">
         <Link className="logo-link" to="/">Sunny Sales</Link>
 
+        <button
+          className="menu-toggle"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Menu"
+        >
+          <FiMenu />
+        </button>
+
         {/* (em português) Links de navegação para as páginas informativas */}
-        <nav className="nav-links">
-          <Link className="nav-link" to="/sobre-projeto">
+        <nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
+          <Link
+            className="nav-link"
+            to="/sobre-projeto"
+            onClick={() => setMenuOpen(false)}
+          >
             Sobre o Projeto
           </Link>
-          <Link className="nav-link" to="/sustentabilidade">
+          <Link
+            className="nav-link"
+            to="/sustentabilidade"
+            onClick={() => setMenuOpen(false)}
+          >
             Sustentabilidade
           </Link>
-          <Link className="nav-link" to="/implementacao">
+          <Link
+            className="nav-link"
+            to="/implementacao"
+            onClick={() => setMenuOpen(false)}
+          >
             Implementar
           </Link>
         </nav>
