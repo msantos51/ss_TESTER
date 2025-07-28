@@ -35,7 +35,7 @@ body {
 
 .logo-link {
   text-decoration: none;
-  color: #ffffff;
+  color: var(--text-color);
   font-weight: bold;
   font-size: 2.5rem;
 }
@@ -47,7 +47,7 @@ body {
 }
 
 .nav-link {
-  color: #ffffff;
+  color: var(--text-color);
   text-decoration: none;
   font-size: 1rem;
   font-weight: bold;
@@ -55,7 +55,7 @@ body {
 
 .profile-icon {
   text-decoration: none;
-  color: #ffffff;
+  color: var(--text-color);
   font-size: 2rem;
   margin-left: 1rem;
   display: flex;
@@ -66,7 +66,7 @@ body {
   display: none;
   background: none;
   border: none;
-  color: #ffffff;
+  color: var(--text-color);
   font-size: 2rem;
 }
 
