@@ -21,6 +21,11 @@ body {
       var(--primary-color),
       var(--secondary-color),
       var(--primary-color),
+
+      var(--bg-color),
+      var(--secondary-color),
+      var(--bg-color),
+
       var(--secondary-color)
     );
   background-size: 400% 400%;
