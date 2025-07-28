@@ -39,13 +39,14 @@ body {
 
 .login-btn {
   background: var(--secondary-color);
-
   color: #FFFFFF;
-
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
   cursor: pointer;
+  /* Ensure the login buttons are always visible */
+  display: inline-block;
+  opacity: 1 !important;
 }
 
 .filters {
