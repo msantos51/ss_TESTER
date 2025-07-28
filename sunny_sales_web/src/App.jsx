@@ -37,6 +37,19 @@ export default function App() {
       <header className="navbar">
         <Link className="logo-link" to="/">Sunny Sales</Link>
 
+        {/* (em português) Links de navegação para as páginas informativas */}
+        <nav className="nav-links">
+          <Link className="nav-link" to="/sobre-projeto">
+            Sobre o Projeto
+          </Link>
+          <Link className="nav-link" to="/sustentabilidade">
+            Sustentabilidade
+          </Link>
+          <Link className="nav-link" to="/implementacao">
+            Implementar
+          </Link>
+        </nav>
+
         {/* (em português) Ícone de perfil com cor branca */}
         <Link to={profileLink} className="profile-icon" aria-label="Login">
           <FiUser />
