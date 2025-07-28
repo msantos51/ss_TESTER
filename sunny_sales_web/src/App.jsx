@@ -1,7 +1,8 @@
 // (em português) Componente principal da aplicação Web com rotas
 
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { FiLogIn, FiUserPlus, FiUser, FiMenu } from 'react-icons/fi'; // adiciona FiUser
+import { FiUser, FiMenu, FiSearch } from 'react-icons/fi';
+import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
 import { useState } from 'react';
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
@@ -72,10 +73,26 @@ export default function App() {
           </Link>
         </nav>
 
-        {/* (em português) Ícone de perfil com cor branca */}
-        <Link to={profileLink} className="profile-icon" aria-label="Login">
-          <FiUser />
-        </Link>
+        <div className="nav-icons">
+          <FiSearch className="search-icon" />
+          <div className="social-icons">
+            <a href="#" className="social-icon" aria-label="Facebook">
+              <FaFacebookF />
+            </a>
+            <a href="#" className="social-icon" aria-label="Twitter">
+              <FaTwitter />
+            </a>
+            <a href="#" className="social-icon" aria-label="Instagram">
+              <FaInstagram />
+            </a>
+            <a href="#" className="social-icon" aria-label="LinkedIn">
+              <FaLinkedinIn />
+            </a>
+          </div>
+          <Link to={profileLink} className="profile-icon" aria-label="Login">
+            <FiUser />
+          </Link>
+        </div>
       </header>
 
       {/* (em português) Container central da aplicação */}
