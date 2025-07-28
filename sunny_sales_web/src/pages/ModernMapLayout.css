@@ -97,6 +97,18 @@ body {
   border: 1px solid #dee2e6;
   border-radius: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeSlide 0.3s ease-out;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }
 
 .close-btn {
@@ -180,6 +192,12 @@ body {
   gap: 0.5rem;
   margin-bottom: 0.5rem;
   cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.vendor-entry:hover {
+  background-color: rgba(243, 210, 80, 0.2);
+  border-radius: 6px;
 }
 
 .vendor-avatar {
