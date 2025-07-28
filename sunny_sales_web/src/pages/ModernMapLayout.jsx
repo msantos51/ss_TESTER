@@ -76,7 +76,6 @@ export default function ModernMapLayout() {
       <aside className="sidebar">
 
         <div className="filters">
-          <h2 className="filters-title">Filtros</h2>
           <p className="filters-subtitle">Produto vendido</p>
           {PRODUCTS.map((p) => (
             <label key={p} className="filter-label">
