@@ -62,6 +62,14 @@ body {
   align-items: center;
 }
 
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 2rem;
+}
+
 
 .btn-top {
   background: var(--secondary-color);
@@ -334,4 +342,26 @@ button:hover .arrow:before {
 input[type='checkbox'] {
 
   accent-color: #F3D250;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--primary-color);
+    padding: 1rem 2rem;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
 }
