@@ -3,11 +3,11 @@
 :root {
   /* Tema default */
 
-  --primary-color: #F3D250;
+  --primary-color: #ffffff;
   --secondary-color: #F3D250;
-  --bg-color: #FFFFFF;
+  --bg-color: #fcc707;
 
-  --text-color: #333333;
+  --text-color: #292929;
   font-family: 'Segoe UI', sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -35,7 +35,7 @@ body {
 
 .logo-link {
   text-decoration: none;
-  color: #ffffff;
+  color: var(--text-color);
   font-weight: bold;
   font-size: 2.5rem;
 }
@@ -47,7 +47,7 @@ body {
 }
 
 .nav-link {
-  color: #ffffff;
+  color: var(--text-color);
   text-decoration: none;
   font-size: 1rem;
   font-weight: bold;
@@ -55,7 +55,7 @@ body {
 
 .profile-icon {
   text-decoration: none;
-  color: #ffffff;
+  color: var(--text-color);
   font-size: 2rem;
   margin-left: 1rem;
   display: flex;
@@ -66,7 +66,7 @@ body {
   display: none;
   background: none;
   border: none;
-  color: #ffffff;
+  color: var(--text-color);
   font-size: 2rem;
 }
 
