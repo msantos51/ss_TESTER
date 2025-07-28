@@ -21,6 +21,9 @@ import Invoices from './pages/Invoices';
 import Dashboard from './pages/Dashboard';
 import ModernMapLayout from './pages/ModernMapLayout';
 import LoginSelection from './pages/LoginSelection';
+import SobreProjeto from './pages/SobreProjeto';
+import Sustentabilidade from './pages/Sustentabilidade';
+import ImplementarScreen from './pages/ImplementarScreen';
 import './index.css'; // (em português) Importa os estilos globais
 
 // Componente principal que define as rotas da aplicação web
@@ -34,6 +37,19 @@ export default function App() {
       <header className="navbar">
         <Link className="logo-link" to="/">Sunny Sales</Link>
 
+        {/* (em português) Links de navegação para as páginas informativas */}
+        <nav className="nav-links">
+          <Link className="nav-link" to="/sobre-projeto">
+            Sobre o Projeto
+          </Link>
+          <Link className="nav-link" to="/sustentabilidade">
+            Sustentabilidade
+          </Link>
+          <Link className="nav-link" to="/implementacao">
+            Implementar
+          </Link>
+        </nav>
+
         {/* (em português) Ícone de perfil com cor branca */}
         <Link to={profileLink} className="profile-icon" aria-label="Login">
           <FiUser />
@@ -46,6 +62,9 @@ export default function App() {
           {/* (em português) Página principal com layout moderno */}
           <Route path="/" element={<ModernMapLayout />} />
           <Route path="/about" element={<About />} />
+          <Route path="/sobre-projeto" element={<SobreProjeto />} />
+          <Route path="/sustentabilidade" element={<Sustentabilidade />} />
+          <Route path="/implementacao" element={<ImplementarScreen />} />
           <Route path="/settings" element={<AccountSettings />} />
           <Route path="/login" element={<ClientLogin />} />
           <Route path="/register" element={<ClientRegister />} />
