@@ -3,11 +3,11 @@
 :root {
   /* Tema default */
 
-  --primary-color: #F3D250;
+  --primary-color: #ffffff;
   --secondary-color: #F3D250;
-  --bg-color: #FFFFFF;
+  --bg-color: #fcc707;
 
-  --text-color: #333333;
+  --text-color: #292929;
   font-family: 'Segoe UI', sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
