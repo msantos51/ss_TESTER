@@ -5,7 +5,9 @@
 
   --primary-color: #5433ff;
   --secondary-color: #20bdff;
+
   --bg-color: #F0C241;
+
 
   --text-color: #333333;
   font-family: 'Poppins', sans-serif;
@@ -16,6 +18,7 @@
 body {
   margin: 0;
   padding: 0;
+
   background-color: var(--bg-color);
 }
 
@@ -35,18 +38,22 @@ body {
   left: 24px;
   top: 50%;
   transform: translateY(-50%);
+
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
+
   align-items: center;
   padding: 12px 24px;
   background-color: #333;
   border-radius: 40px;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+
   max-width: 800px;
   margin: 0 auto;
+
 }
 
 .logo-link {
@@ -69,12 +76,16 @@ body {
   text-decoration: none;
   font-size: 1rem;
   font-weight: bold;
+
   text-transform: uppercase;
+
   transition: color 0.3s;
 }
 
 .nav-link:hover {
+
   color: #FFD54F;
+
 }
 
 .profile-icon {
@@ -84,6 +95,34 @@ body {
   margin-left: 1rem;
   display: flex;
   align-items: center;
+}
+
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-icon {
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.social-icons {
+  display: flex;
+  gap: 8px;
+}
+
+.social-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  background-color: #fff;
+  border-radius: 50%;
+  color: #F0C241;
+  font-size: 14px;
 }
 
 .menu-toggle {
@@ -379,5 +418,9 @@ input[type='checkbox'] {
 
   .menu-toggle {
     display: block;
+  }
+
+  .social-icons {
+    display: none;
   }
 }
