@@ -1,7 +1,7 @@
 // (em português) Componente principal da aplicação Web com rotas
 
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { FiLogIn, FiUserPlus, FiUser, FiMenu } from 'react-icons/fi'; // adiciona FiUser
+import { FiUser, FiMenu } from 'react-icons/fi';
 import { useState } from 'react';
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
@@ -36,46 +36,46 @@ export default function App() {
   return (
     <Router>
       {/* (em português) Barra de navegação */}
-      <header className="navbar">
-        <Link className="logo-link" to="/">Sunny Sales</Link>
-
-        <button
-          className="menu-toggle"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Menu"
-        >
-          <FiMenu />
-        </button>
-
-        {/* (em português) Links de navegação para as páginas informativas */}
-        <nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
-          <Link
-            className="nav-link"
-            to="/sobre-projeto"
-            onClick={() => setMenuOpen(false)}
+      <header className="header-wrapper">
+        <Link className="logo-link logo-outside" to="/">Sunny Sales</Link>
+        <div className="navbar">
+          <button
+            className="menu-toggle"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Menu"
           >
-            Sobre o Projeto
-          </Link>
-          <Link
-            className="nav-link"
-            to="/sustentabilidade"
-            onClick={() => setMenuOpen(false)}
-          >
-            Sustentabilidade
-          </Link>
-          <Link
-            className="nav-link"
-            to="/implementacao"
-            onClick={() => setMenuOpen(false)}
-          >
-            Implementar
-          </Link>
-        </nav>
+            <FiMenu />
+          </button>
 
-        {/* (em português) Ícone de perfil com cor branca */}
-        <Link to={profileLink} className="profile-icon" aria-label="Login">
-          <FiUser />
-        </Link>
+          {/* (em português) Links de navegação para as páginas informativas */}
+          <nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
+            <Link
+              className="nav-link"
+              to="/sobre-projeto"
+              onClick={() => setMenuOpen(false)}
+            >
+              Sobre o Projeto
+            </Link>
+            <Link
+              className="nav-link"
+              to="/sustentabilidade"
+              onClick={() => setMenuOpen(false)}
+            >
+              Sustentabilidade
+            </Link>
+            <Link
+              className="nav-link"
+              to="/implementacao"
+              onClick={() => setMenuOpen(false)}
+            >
+              Implementar
+            </Link>
+          </nav>
+
+          <Link to={profileLink} className="profile-icon" aria-label="Login">
+            <FiUser />
+          </Link>
+        </div>
       </header>
 
       {/* (em português) Container central da aplicação */}
