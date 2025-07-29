@@ -239,7 +239,7 @@ body {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  z-index: 500;
+  z-index: 1100;
 }
 
 .locate-btn:disabled {
