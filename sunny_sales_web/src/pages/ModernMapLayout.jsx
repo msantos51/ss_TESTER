@@ -84,6 +84,7 @@ export default function ModernMapLayout() {
   };
 
   const handleLocate = () => {
+
     if (!navigator.geolocation || !mapRef.current) {
       alert('Geolocalização não suportada.');
       return;
@@ -101,6 +102,7 @@ export default function ModernMapLayout() {
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
+
   };
 
   return (

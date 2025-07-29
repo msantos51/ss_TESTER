@@ -63,14 +63,14 @@ export default function VendorLogin() {
 
   return (
     <div className="form-box">
-      <h2 className="title">Login de Vendedor</h2>
+      <h2 className="title auth-title">Login de Vendedor</h2>
       <p style={{ marginBottom: '1rem', fontStyle: 'italic' }}>
         Esta página destina-se apenas a vendedores.
       </p>
 
       {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
 
-<div className="form login-form">
+<div className="form login-form auth-form">
 
         <div className="form-container login-container">
           <input
@@ -89,13 +89,17 @@ export default function VendorLogin() {
           />
         </div>
 
-        <button onClick={login} disabled={!email || !password || loading}>
+        <button
+          className="black-button"
+          onClick={login}
+          disabled={!email || !password || loading}
+        >
           {loading ? <LoadingDots /> : 'Entrar'}
         </button>
 
         <button
           type="button"
-          className="outlined-button"
+          className="black-button"
           onClick={() => navigate('/vendor-register')}
         >
           Registar
@@ -103,9 +107,9 @@ export default function VendorLogin() {
 
         <button
           type="button"
-          className="outlined-button"
+          className="black-button"
           onClick={() => navigate('/forgot-password')}
-          style={{ background: 'none', border: 'none', color: '#19a0a4', textDecoration: 'underline' }}
+          style={{ textDecoration: 'underline' }}
         >
           Esqueci-me da palavra-passe
         </button>
