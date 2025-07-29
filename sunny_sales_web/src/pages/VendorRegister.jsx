@@ -68,12 +68,12 @@ export default function VendorRegister() {
 
   return (
     <div className="form-box">
-      <h2 className="title">Registo de Vendedor</h2>
+      <h2 className="title auth-title">Registo de Vendedor</h2>
 
       {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
       {success && <p style={{ color: 'green', marginBottom: '1rem' }}>{success}</p>}
 
-      <form onSubmit={handleRegister} className="form login-form">
+      <form onSubmit={handleRegister} className="form login-form auth-form">
         <div className="form-container login-container">
           <input
             type="text"
@@ -109,7 +109,7 @@ export default function VendorRegister() {
 
           <input type="file" onChange={handlePhotoChange} className="input" />
         </div>
-        <button type="submit">Registar</button>
+        <button type="submit" className="black-button">Registar</button>
       </form>
     </div>
   );
