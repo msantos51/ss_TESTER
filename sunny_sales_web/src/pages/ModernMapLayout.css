@@ -9,18 +9,9 @@ body {
 
 .modern-layout {
   display: flex;
-  height: 100vh;
-}
-
-.sidebar {
-  width: 30vw;
-  min-width: 260px;
-  height: 100vh;
-  background: var(--bg-color);
-  border-right: 1px solid #e0e0e0;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  padding: 2rem;
-  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }
 
 .app-name {
@@ -56,7 +47,10 @@ body {
 }
 
 .filters {
-  margin-top: 0.5rem;
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
 }
 
 .filters-title {
@@ -76,11 +70,11 @@ body {
 
 .map-area {
   position: relative;
-  width: 70vw;
-  flex: 1;
+  width: 80vw;
   height: 80vh;
   padding: 1rem;
   box-sizing: border-box;
+  margin: 0 auto;
 }
 
 .map-container {
@@ -225,15 +219,6 @@ body {
 }
 
 @media (max-width: 768px) {
-  .modern-layout {
-    flex-direction: column;
-  }
-  .sidebar {
-    width: 100vw;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid #e0e0e0;
-  }
   .map-area {
     width: 100vw;
     height: calc(80vh - 300px);

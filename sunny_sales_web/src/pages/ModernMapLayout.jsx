@@ -73,52 +73,19 @@ export default function ModernMapLayout() {
 
   return (
     <div className="modern-layout">
-      <aside className="sidebar">
-
-        <div className="filters">
-          <p className="filters-subtitle">Produto vendido</p>
-          {PRODUCTS.map((p) => (
-            <label key={p} className="filter-label">
-              <input
-                type="checkbox"
-                checked={selectedProducts.includes(p)}
-                onChange={() => toggleProduct(p)}
-              />{' '}
-              {p}
-            </label>
-          ))}
-        </div>
-
-        <div className="online-vendors">
-          <h2 className="vendors-title">Vendedores Online</h2>
-          {filteredVendors.map((v) => (
-            <div
-              key={v.id}
-              className="vendor-entry"
-              onClick={() => focusVendor(v)}
-            >
-              {v.profile_photo ? (
-                <img
-                  src={`${BASE_URL}/${v.profile_photo}`}
-                  alt={v.name}
-                  className="vendor-avatar"
-                />
-              ) : (
-                <div
-                  className="vendor-avatar"
-                  style={{ background: v.pin_color || '#ccc' }}
-                />
-              )}
-              <div>
-                <p className="vendor-name">{v.name}</p>
-                <p className="vendor-rating">
-                  ⭐ {v.rating_average ? v.rating_average.toFixed(1) : '--'}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </aside>
+      <div className="filters">
+        <p className="filters-subtitle">Produto vendido</p>
+        {PRODUCTS.map((p) => (
+          <label key={p} className="filter-label">
+            <input
+              type="checkbox"
+              checked={selectedProducts.includes(p)}
+              onChange={() => toggleProduct(p)}
+            />{' '}
+            {p}
+          </label>
+        ))}
+      </div>
 
       <main className="map-area">
         <MapContainer
@@ -195,6 +162,36 @@ export default function ModernMapLayout() {
           </div>
         )}
       </main>
+
+      <div className="online-vendors">
+        <h2 className="vendors-title">Vendedores Online</h2>
+        {filteredVendors.map((v) => (
+          <div
+            key={v.id}
+            className="vendor-entry"
+            onClick={() => focusVendor(v)}
+          >
+            {v.profile_photo ? (
+              <img
+                src={`${BASE_URL}/${v.profile_photo}`}
+                alt={v.name}
+                className="vendor-avatar"
+              />
+            ) : (
+              <div
+                className="vendor-avatar"
+                style={{ background: v.pin_color || '#ccc' }}
+              />
+            )}
+            <div>
+              <p className="vendor-name">{v.name}</p>
+              <p className="vendor-rating">
+                ⭐ {v.rating_average ? v.rating_average.toFixed(1) : '--'}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
