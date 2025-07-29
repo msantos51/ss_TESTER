@@ -6,7 +6,7 @@
   --primary-color: #5433ff;
   --secondary-color: #20bdff;
 
-  --bg-color: #F0C241;
+  --bg-color: #ecd04c;
 
 
   --text-color: #333333;
@@ -86,7 +86,7 @@ body {
 
 .nav-link:hover {
 
-  color: #FFD54F;
+  color: #ecd04c;
 
 }
 
