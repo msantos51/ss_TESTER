@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import HTMLResponse, FileResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from passlib.context import CryptContext
 from . import models, schemas
 import stripe
@@ -234,15 +235,6 @@ def get_current_client(token: str = Depends(oauth2_scheme), db: Session = Depend
         raise HTTPException(status_code=401, detail="Client not found")
     return client
 
-# --------------------------
-# Sessão de base de dados (mantemos o get_db antigo, mas agora já está importado corretamente também)
-# --------------------------
-def get_db_local():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
 
@@ -562,20 +554,27 @@ def password_reset(token: str, new_password: str = Form(...), db: Session = Depe
 # list_vendors
 def list_vendors(db: Session = Depends(get_db)):
     vendors = db.query(models.Vendor).all()
-    for v in vendors:
-        if v.reviews:
-            v.rating_average = sum(r.rating for r in v.reviews) / len(v.reviews)
-        else:
-            v.rating_average = None
 
-        active_route = (
-            db.query(models.Route)
-            .filter(models.Route.vendor_id == v.id, models.Route.end_time == None)
-            .first()
-        )
-        if not active_route:
+    # calcular média de avaliações em único passo
+    ratings = dict(
+        db.query(models.Review.vendor_id, func.avg(models.Review.rating))
+        .filter(models.Review.active == True)
+        .group_by(models.Review.vendor_id)
+        .all()
+    )
+
+    # mapear rotas ativas para evitar uma query por vendedor
+    active_routes = {
+        r.vendor_id: r
+        for r in db.query(models.Route).filter(models.Route.end_time == None).all()
+    }
+
+    for v in vendors:
+        v.rating_average = ratings.get(v.id)
+        if v.id not in active_routes:
             v.current_lat = None
             v.current_lng = None
+
     return vendors
 
 # --------------------------
@@ -612,15 +611,35 @@ def list_favorites(
 ):
     if current_client.id != client_id:
         raise HTTPException(status_code=403, detail="Not authorized")
-    favs = db.query(models.Favorite).filter_by(client_id=client_id).all()
-    vendors = [db.query(models.Vendor).get(f.vendor_id) for f in favs]
+    fav_ids = [f.vendor_id for f in db.query(models.Favorite).filter_by(client_id=client_id).all()]
+
+    if not fav_ids:
+        return []
+
+    vendors = db.query(models.Vendor).filter(models.Vendor.id.in_(fav_ids)).all()
+
+    ratings = dict(
+        db.query(models.Review.vendor_id, func.avg(models.Review.rating))
+        .filter(models.Review.active == True, models.Review.vendor_id.in_(fav_ids))
+        .group_by(models.Review.vendor_id)
+        .all()
+    )
+
+    active_routes = {
+        r.vendor_id: r
+        for r in db.query(models.Route)
+        .filter(models.Route.end_time == None, models.Route.vendor_id.in_(fav_ids))
+        .all()
+    }
+
     for v in vendors:
-        if v.reviews:
-            v.rating_average = sum(r.rating for r in v.reviews) / len(v.reviews)
-        else:
-            v.rating_average = None
+        v.rating_average = ratings.get(v.id)
+        if v.id not in active_routes:
+            v.current_lat = None
+            v.current_lng = None
         if v.last_seen:
             v.last_seen = v.last_seen.isoformat()
+
     return vendors
 
 
