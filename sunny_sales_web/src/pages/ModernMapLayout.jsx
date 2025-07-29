@@ -1,20 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import axios from 'axios';
 import { BASE_URL } from '../config';
+import LocateButton from '../components/LocateButton';
 import './ModernMapLayout.css';
 
 // Layout principal com mapa e lista de vendedores online
 export default function ModernMapLayout() {
-  const navigate = useNavigate();
   const [vendors, setVendors] = useState([]);
   const PRODUCTS = ['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'];
   const [selectedProducts, setSelectedProducts] = useState([...PRODUCTS]);
   const [selected, setSelected] = useState(null);
   const [favorite, setFavorite] = useState(false);
-  const [locating, setLocating] = useState(false);
 
   const [mapReady, setMapReady] = useState(false);
   const [clientPos, setClientPos] = useState(null);
@@ -88,35 +86,6 @@ export default function ModernMapLayout() {
     localStorage.setItem('favorites', JSON.stringify(updated));
   };
 
-  const handleLocate = () => {
-
-    const map = mapRef.current;
-    if (!map) {
-      alert('Mapa não carregado.');
-      return;
-    }
-    setLocating(true);
-
-    const onFound = (e) => {
-      setLocating(false);
-      const { lat, lng } = e.latlng;
-      map.flyTo([lat, lng], 16);
-      map.off('locationfound', onFound);
-      map.off('locationerror', onError);
-    };
-
-    const onError = () => {
-      setLocating(false);
-      alert('Não foi possível obter a localização.');
-      map.off('locationfound', onFound);
-      map.off('locationerror', onError);
-    };
-
-    map.on('locationfound', onFound);
-    map.on('locationerror', onError);
-    map.locate({ enableHighAccuracy: true });
-
-  };
 
   return (
     <div className="modern-layout">
@@ -177,16 +146,8 @@ export default function ModernMapLayout() {
               <Popup>{v.name}</Popup>
             </Marker>
           ))}
+          <LocateButton onLocationFound={setClientPos} />
         </MapContainer>
-
-        <button
-          className="locate-btn"
-          onClick={handleLocate}
-          aria-label="Localizar-me"
-
-        >
-          {locating ? <span className="loader" /> : '📍'}
-        </button>
 
         {selected && (
           <div className="vendor-card">
