@@ -32,7 +32,8 @@ const styles = {
   },
   button: {
     padding: '0.75rem 1.5rem',
-    backgroundColor: '#19a0a4',
+    backgroundColor: '#000',
+    color: '#fff',
     border: 'none',
     cursor: 'pointer',
   },

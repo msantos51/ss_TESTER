@@ -84,7 +84,9 @@ export default function ModernMapLayout() {
       setLocating(false);
       alert('Não foi possível obter a localização.');
     });
+
     map.locate({ enableHighAccuracy: true, timeout: 10000 });
+
   };
 
   return (

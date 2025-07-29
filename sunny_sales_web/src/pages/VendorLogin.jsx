@@ -89,13 +89,17 @@ export default function VendorLogin() {
           />
         </div>
 
-        <button onClick={login} disabled={!email || !password || loading}>
+        <button
+          className="black-button"
+          onClick={login}
+          disabled={!email || !password || loading}
+        >
           {loading ? <LoadingDots /> : 'Entrar'}
         </button>
 
         <button
           type="button"
-          className="outlined-button"
+          className="black-button"
           onClick={() => navigate('/vendor-register')}
         >
           Registar
@@ -103,9 +107,9 @@ export default function VendorLogin() {
 
         <button
           type="button"
-          className="outlined-button"
+          className="black-button"
           onClick={() => navigate('/forgot-password')}
-          style={{ background: 'none', border: 'none', color: '#19a0a4', textDecoration: 'underline' }}
+          style={{ textDecoration: 'underline' }}
         >
           Esqueci-me da palavra-passe
         </button>
