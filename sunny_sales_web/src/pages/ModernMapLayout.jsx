@@ -104,21 +104,30 @@ export default function ModernMapLayout() {
   };
 
   const handleLocate = () => {
-    if (!navigator.geolocation) {
-      alert('Navegador não suporta geolocalização.');
-      return;
-    }
     if (!mapRef.current) {
       alert('Mapa ainda está carregando.');
       return;
     }
+
+    // Se já temos a posição do cliente, apenas centralize e aplique zoom
+    if (clientPos) {
+      mapRef.current.flyTo([clientPos.lat, clientPos.lng], 16);
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      alert('Navegador não suporta geolocalização.');
+      return;
+    }
+
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocating(false);
         const { latitude, longitude } = pos.coords;
-        setClientPos({ lat: latitude, lng: longitude });
-        mapRef.current.flyTo([latitude, longitude], 16);
+        const coords = { lat: latitude, lng: longitude };
+        setClientPos(coords);
+        mapRef.current.flyTo([coords.lat, coords.lng], 16);
       },
       () => {
         setLocating(false);
@@ -126,7 +135,6 @@ export default function ModernMapLayout() {
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
-
   };
 
   return (
