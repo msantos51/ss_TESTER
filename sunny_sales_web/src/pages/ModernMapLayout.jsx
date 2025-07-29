@@ -30,6 +30,17 @@ export default function ModernMapLayout() {
     fetchVendors();
   }, []);
 
+  // Pede permissão para usar a localização quando o layout é carregado
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        () => {},
+        () => {},
+        { enableHighAccuracy: true }
+      );
+    }
+  }, []);
+
   useEffect(() => {
     if (selected) {
       const stored = JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -73,19 +84,24 @@ export default function ModernMapLayout() {
   };
 
   const handleLocate = () => {
-    if (!mapRef.current) return;
-    setLocating(true);
-    const map = mapRef.current;
-    map.once('locationfound', (e) => {
-      setLocating(false);
-      map.flyTo(e.latlng, 16);
-    });
-    map.once('locationerror', () => {
-      setLocating(false);
-      alert('Não foi possível obter a localização.');
-    });
 
-    map.locate({ enableHighAccuracy: true, timeout: 10000 });
+    if (!navigator.geolocation || !mapRef.current) {
+      alert('Geolocalização não suportada.');
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocating(false);
+        const { latitude, longitude } = pos.coords;
+        mapRef.current.flyTo([latitude, longitude], 16);
+      },
+      () => {
+        setLocating(false);
+        alert('Não foi possível obter a localização.');
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
 
   };
 
