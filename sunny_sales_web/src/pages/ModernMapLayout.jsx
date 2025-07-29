@@ -74,6 +74,12 @@ export default function ModernMapLayout() {
     }
   };
 
+  const focusClient = (pos = clientPos) => {
+    if (mapRef.current && pos) {
+      mapRef.current.flyTo([pos.lat, pos.lng], 16);
+    }
+  };
+
   // Marca ou desmarca o vendedor como favorito
   const toggleFavorite = () => {
     if (!selected) return;
@@ -97,7 +103,7 @@ export default function ModernMapLayout() {
 
     // Se já temos a posição do cliente, apenas centralize e aplique zoom
     if (clientPos) {
-      mapRef.current.flyTo([clientPos.lat, clientPos.lng], 16);
+      focusClient(clientPos);
       return;
     }
 
@@ -113,7 +119,7 @@ export default function ModernMapLayout() {
         const { latitude, longitude } = pos.coords;
         const coords = { lat: latitude, lng: longitude };
         setClientPos(coords);
-        mapRef.current.flyTo([coords.lat, coords.lng], 16);
+        focusClient(coords);
       },
       () => {
         setLocating(false);
@@ -163,6 +169,7 @@ export default function ModernMapLayout() {
                 html:
                   '<div style="background:#1976d2;width:24px;height:24px;border-radius:50%;border:2px solid white"></div>',
               })}
+              eventHandlers={{ click: () => focusClient() }}
             >
               <Popup>Você está aqui</Popup>
             </Marker>
