@@ -1,6 +1,7 @@
 # schemas.py - define os formatos de dados para entrada e saída
 from pydantic import BaseModel
 from typing import Optional, Literal
+from datetime import datetime
 
 # UserLogin
 class UserLogin(BaseModel):
@@ -36,7 +37,7 @@ class VendorOut(BaseModel):
     current_lng: Optional[float] = None
     rating_average: Optional[float] = None
     subscription_active: Optional[bool] = None
-    subscription_valid_until: Optional[str] = None
+    subscription_valid_until: Optional[datetime] = None
     last_seen: Optional[str] = None
     # Config
     class Config:
