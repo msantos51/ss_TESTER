@@ -146,7 +146,9 @@ export default function ModernMapLayout() {
               <Popup>{v.name}</Popup>
             </Marker>
           ))}
+
           <LocateButton onLocationFound={setClientPos} />
+
         </MapContainer>
 
         {selected && (

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useMap } from 'react-leaflet';
 
+
 export default function LocateButton({ onLocationFound }) {
+
   const map = useMap();
   const [locating, setLocating] = useState(false);
 
@@ -11,9 +13,11 @@ export default function LocateButton({ onLocationFound }) {
     const onFound = (e) => {
       setLocating(false);
       const { lat, lng } = e.latlng;
+
       if (onLocationFound) {
         onLocationFound({ lat, lng });
       }
+
       map.flyTo([lat, lng], 16);
       map.off('locationfound', onFound);
       map.off('locationerror', onError);
