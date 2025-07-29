@@ -15,8 +15,22 @@ export default function ModernMapLayout() {
   const [selected, setSelected] = useState(null);
   const [favorite, setFavorite] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [clientPos, setClientPos] = useState(null);
+  const [clientData, setClientData] = useState(null);
   const mapRef = useRef(null);
   const loggedIn = !!localStorage.getItem('client');
+
+  // Carrega dados do cliente do localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('client');
+    if (stored) {
+      try {
+        setClientData(JSON.parse(stored));
+      } catch {
+        setClientData(null);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -34,7 +48,12 @@ export default function ModernMapLayout() {
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        () => {},
+        (pos) => {
+          setClientPos({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          });
+        },
         () => {},
         { enableHighAccuracy: true }
       );
@@ -94,6 +113,7 @@ export default function ModernMapLayout() {
       (pos) => {
         setLocating(false);
         const { latitude, longitude } = pos.coords;
+        setClientPos({ lat: latitude, lng: longitude });
         mapRef.current.flyTo([latitude, longitude], 16);
       },
       () => {
@@ -136,6 +156,26 @@ export default function ModernMapLayout() {
             subdomains="abcd"
             maxZoom={19}
           />
+          {clientPos && (
+            <Marker
+              position={[clientPos.lat, clientPos.lng]}
+              icon={
+                clientData?.profile_photo
+                  ? L.icon({
+                      iconUrl: `${BASE_URL}/${clientData.profile_photo}`,
+                      iconSize: [32, 32],
+                      className: 'client-pin',
+                    })
+                  : L.divIcon({
+                      className: 'client-pin',
+                      html:
+                        '<div style="background:#1976d2;width:24px;height:24px;border-radius:50%;border:2px solid white"></div>',
+                    })
+              }
+            >
+              <Popup>Você está aqui</Popup>
+            </Marker>
+          )}
           {filteredVendors.map((v) => (
             <Marker
               key={v.id}
