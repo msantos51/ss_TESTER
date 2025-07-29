@@ -36,7 +36,9 @@ scripts/        Utilidades auxiliares
 
 - **Estatísticas**: painel no aplicativo mostra gráfico das distâncias diárias percorridas.
 - **Respostas a reviews**: vendedores podem responder ou ocultar avaliações via API.
+
 - **Tradução e acessibilidade**: interface com suporte a português e inglês e elementos com labels acessíveis.
+
     A variável `BASE_URL` em `sunny_sales_web/src/config.js` deve apontar para o endereço do backend.
 
 ## Testes

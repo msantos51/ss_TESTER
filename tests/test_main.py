@@ -48,11 +48,12 @@ def register_vendor(client, email="vendor@example.com", password="Secret123", na
 
 
 def activate_subscription(client, vendor_id):
-    event = {
-        "type": "checkout.session.completed",
-        "data": {"object": {"metadata": {"vendor_id": vendor_id}, "url": "http://r"}},
-    }
-    client.post("/stripe/webhook", json=event)
+    token = get_token(client)
+    resp = client.post(
+        f"/vendors/{vendor_id}/activate-subscription",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
 
 
 
