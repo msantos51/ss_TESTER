@@ -43,24 +43,6 @@ class VendorOut(BaseModel):
         orm_mode = True
 
 
-# ClientCreate
-class ClientCreate(BaseModel):
-    name: str
-    email: str
-    password: str
-    profile_photo: str
-
-
-# ClientOut
-class ClientOut(BaseModel):
-    id: int
-    name: str
-    email: str
-    profile_photo: str
-
-    # Config
-    class Config:
-        orm_mode = True
 
 
 # ReviewCreate
