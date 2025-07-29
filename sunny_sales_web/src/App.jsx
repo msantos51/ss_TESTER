@@ -1,8 +1,14 @@
 // (em português) Componente principal da aplicação Web com rotas
 
-import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import {
+  HashRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useLocation,
+} from 'react-router-dom';
 import { FiUser, FiMenu } from 'react-icons/fi';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
 import ClientLogin from './pages/ClientLogin';
@@ -29,12 +35,30 @@ import './index.css'; // (em português) Importa os estilos globais
 
 // Componente principal que define as rotas da aplicação web
 export default function App() {
-  const isLoggedIn = localStorage.getItem('user') || localStorage.getItem('client');
-  const profileLink = isLoggedIn ? '/dashboard' : '/login-selection';
-  const [menuOpen, setMenuOpen] = useState(false);
-
   return (
     <Router>
+      <AppLayout />
+    </Router>
+  );
+}
+
+function AppLayout() {
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem('user') || !!localStorage.getItem('client')
+  );
+
+  useEffect(() => {
+    setIsLoggedIn(
+      !!localStorage.getItem('user') || !!localStorage.getItem('client')
+    );
+  }, [location]);
+
+  const profileLink = isLoggedIn ? '/dashboard' : '/login-selection';
+
+  return (
+    <>
       {/* (em português) Barra de navegação */}
       <header className="header-wrapper">
         <Link className="logo-link logo-outside" to="/">Sunny Sales</Link>
@@ -107,7 +131,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
-    </Router>
+    </>
   );
 }
 
