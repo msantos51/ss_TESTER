@@ -1,14 +1,14 @@
 /* (em português) Estilo moderno inspirado em praia */
 
 :root {
-  /* Tema default */
+  /* Estilo Nimo inspirado em gradientes roxo e azul */
 
-  --primary-color: #ffffff;
-  --secondary-color: #F3D250;
-  --bg-color: #fcc707;
+  --primary-color: #5433ff;
+  --secondary-color: #20bdff;
+  --bg-color: #ecd04c;
 
-  --text-color: #292929;
-  font-family: 'Segoe UI', sans-serif;
+  --text-color: #333333;
+  font-family: 'Poppins', sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
 }
@@ -16,47 +16,71 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--bg-color); /* fundo claro neutro */
+  background-color: var(--bg-color);
+}
+
+.header-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0;
+  background-color: var(--bg-color);
+}
+
+.logo-outside {
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
-  padding: 1.5rem 2rem;
-
-  background-color: var(--primary-color);
   align-items: center;
-  position: relative;
-  z-index: 3000;
-  width: 100%;
-  box-sizing: border-box;
-
+  padding: 12px 24px;
+  background-color: #333;
+  border-radius: 40px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .logo-link {
   text-decoration: none;
-  color: var(--text-color);
-  font-weight: bold;
-  font-size: 2.5rem;
+  color: #fff;
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 .nav-links {
   display: flex;
-  gap: 1rem;
-  margin-right: 1rem;
+  gap: 24px;
+  flex: 1;
+  justify-content: center;
 }
 
 .nav-link {
-  color: var(--text-color);
+  color: #fff;
   text-decoration: none;
   font-size: 1rem;
   font-weight: bold;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: #ecd04c;
 }
 
 .profile-icon {
   text-decoration: none;
-  color: var(--text-color);
-  font-size: 2rem;
+  color: #fff;
+  font-size: 1.5rem;
   margin-left: 1rem;
   display: flex;
   align-items: center;
@@ -66,7 +90,7 @@ body {
   display: none;
   background: none;
   border: none;
-  color: var(--text-color);
+  color: #fff;
   font-size: 2rem;
 }
 
@@ -169,8 +193,8 @@ align-items: center;
   margin: 0;
   text-align: end;
 
-  color: #F3D250;
-  text-decoration-color: #F3D250;
+  color: var(--secondary-color);
+  text-decoration-color: var(--secondary-color);
 
 }
 
@@ -183,7 +207,7 @@ align-items: center;
 }
 
 .page-link-label:hover {
-  color: #F3D250;
+  color: var(--secondary-color);
 }
 
 .form-btn {
@@ -195,9 +219,7 @@ align-items: center;
   border: 0 !important;
   outline: 0 !important;
   background: var(--secondary-color);
-
   color: #FFFFFF;
-=======
 
   cursor: pointer;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -254,16 +276,13 @@ align-items: center;
 }
 
 .apple-login-button {
-
-  background-color: #F3D250;
+  background-color: var(--secondary-color);
   color: #FFFFFF;
-  border: 2px solid #F3D250;
-
-
+  border: 2px solid var(--secondary-color);
 }
 
 .google-login-button {
-  border: 2px solid #F3D250;
+  border: 2px solid var(--secondary-color);
   color: #333333;
 }
 
@@ -271,16 +290,14 @@ align-items: center;
 .google-icon {
   font-size: 18px;
   margin-bottom: 1px;
-  color: #F3D250;
+  color: var(--secondary-color);
 }
 
 /* === Estilo para botoes === */
 button {
-  --primary-color: #F3D250;
+  --primary-color: var(--secondary-color);
   --secondary-color: #FFFFFF;
-
-
-  --hover-color: #F3D250;
+  --hover-color: var(--primary-color);
   --arrow-width: 10px;
   --arrow-stroke: 2px;
   box-sizing: border-box;
@@ -340,8 +357,7 @@ button:hover .arrow:before {
 
 /* === Estilo para checkboxes === */
 input[type='checkbox'] {
-
-  accent-color: #F3D250;
+  accent-color: var(--secondary-color);
 }
 
 @media (max-width: 768px) {
@@ -353,7 +369,7 @@ input[type='checkbox'] {
     top: 100%;
     left: 0;
     width: 100%;
-    background-color: var(--primary-color);
+    background-color: #333;
     padding: 1rem 2rem;
   }
 
