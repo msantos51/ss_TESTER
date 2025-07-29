@@ -63,14 +63,14 @@ export default function VendorLogin() {
 
   return (
     <div className="form-box">
-      <h2 className="title">Login de Vendedor</h2>
+      <h2 className="title auth-title">Login de Vendedor</h2>
       <p style={{ marginBottom: '1rem', fontStyle: 'italic' }}>
         Esta página destina-se apenas a vendedores.
       </p>
 
       {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
 
-<div className="form login-form">
+<div className="form login-form auth-form">
 
         <div className="form-container login-container">
           <input

@@ -99,11 +99,11 @@ export default function ClientLogin() {
 
   return (
     <div className="form-box">
-      <h2 className="title">Login do Cliente</h2>
+      <h2 className="title auth-title">Login do Cliente</h2>
       {error && (
         <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>
       )}
-<div className="form login-form">
+<div className="form login-form auth-form">
 
         <div className="form-container login-container">
           <input

@@ -67,9 +67,9 @@ export default function ClientRegister() {
 
   return (
     <div className="form-box">
-      <h2 className="title">Registo de Cliente</h2>
+      <h2 className="title auth-title">Registo de Cliente</h2>
       {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
-      <div className="form login-form">
+      <div className="form login-form auth-form">
         <div className="form-container login-container">
           <input
             type="text"
@@ -116,7 +116,7 @@ export default function ClientRegister() {
             }}
           />
         )}
-        <button onClick={register} disabled={loading}>
+        <button className="black-button" onClick={register} disabled={loading}>
           {loading ? <LoadingDots /> : 'Registar'}
         </button>
       </div>
