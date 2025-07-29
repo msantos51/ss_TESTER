@@ -411,6 +411,21 @@ input[type='checkbox'] {
 }
 
 @media (max-width: 768px) {
+  .header-wrapper {
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0;
+  }
+
+  .logo-outside {
+    position: static;
+    transform: none;
+    margin-bottom: 8px;
+  }
+
+  .navbar {
+    width: 100%;
+  }
   .nav-links {
     display: none;
     flex-direction: column;
