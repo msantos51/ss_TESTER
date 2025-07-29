@@ -271,3 +271,11 @@ body {
     opacity: 0;
   }
 }
+
+.client-pin img {
+  border-radius: 50%;
+  width: 32px !important;
+  height: 32px !important;
+  object-fit: cover;
+  border: 2px solid white;
+}
