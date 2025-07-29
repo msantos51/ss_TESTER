@@ -7,8 +7,6 @@ import './VendorDetailScreen.css'; // Deves criar este ficheiro com os estilos C
 // Página de detalhes de um vendedor específico
 export default function VendorDetailScreen({ vendor }) {
   const [reviews, setReviews] = useState([]);
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
   const [favorite, setFavorite] = useState(false);
   const [stories, setStories] = useState([]);
   const [storyIndex, setStoryIndex] = useState(null);
@@ -42,26 +40,6 @@ export default function VendorDetailScreen({ vendor }) {
     setFavorite(JSON.parse(storedFavorites).includes(vendor.id));
   }, [vendor.id]);
 
-  // (em português) Envia nova avaliação
-  // Envia uma nova avaliação do cliente
-  const submitReview = async () => {
-    const token = localStorage.getItem('clientToken');
-    if (!token) return alert('Inicie sessão para avaliar');
-
-    try {
-      await axios.post(
-        `${BASE_URL}/vendors/${vendor.id}/reviews`,
-        { rating, comment },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setRating(0);
-      setComment('');
-      loadReviews();
-    } catch (e) {
-      alert('Erro ao enviar avaliação');
-      console.error(e);
-    }
-  };
 
   // (em português) Alterna favoritos
   // Adiciona ou remove o vendedor dos favoritos
@@ -135,20 +113,6 @@ export default function VendorDetailScreen({ vendor }) {
           </div>
         ))}
 
-        <h4>Nova Avaliação</h4>
-        <input
-          type="number"
-          max={5}
-          min={1}
-          value={rating}
-          onChange={(e) => setRating(Number(e.target.value))}
-        />
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Comentário"
-        />
-        <button className="btn" onClick={submitReview}>Enviar</button>
       </div>
     </div>
   );
