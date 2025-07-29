@@ -46,12 +46,13 @@ body {
     font-weight: bold;
 }
 
+/* Map background representa areia */
 .map-wrapper {
     width: 90%;
     margin: 80px auto 40px; /* deixa espaço para o cabeçalho */
     height: 80vh;
 
-    background: #FFFFFF;
+    background: #f7e289; /* cor de areia */
 
     border-radius: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);

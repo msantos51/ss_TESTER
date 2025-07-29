@@ -31,9 +31,9 @@ export default function RouteDetail() {
 
       <MapContainer center={initial} zoom={15} style={styles.map}>
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors"
-          subdomains="abc"
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+          attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
+          subdomains="abcd"
           maxZoom={19}
         />
         <Polyline positions={polyline} color="blue" />
