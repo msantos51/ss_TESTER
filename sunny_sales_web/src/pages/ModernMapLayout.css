@@ -239,13 +239,9 @@ body {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  z-index: 1100;
-}
 
-.locate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+  z-index: 500;
+
 
 /* From Uiverse.io by JaydipPrajapati1910 */
 .loader {
@@ -277,6 +273,7 @@ body {
   }
 }
 
+
 .client-pin img {
   border-radius: 50%;
   width: 32px !important;
@@ -284,3 +281,4 @@ body {
   object-fit: cover;
   border: 2px solid white;
 }
+

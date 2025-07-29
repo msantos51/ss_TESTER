@@ -15,8 +15,10 @@ export default function ModernMapLayout() {
   const [selected, setSelected] = useState(null);
   const [favorite, setFavorite] = useState(false);
   const [locating, setLocating] = useState(false);
+
   const [mapReady, setMapReady] = useState(false);
   const [clientPos, setClientPos] = useState(null);
+
   const mapRef = useRef(null);
 
   useEffect(() => {
@@ -35,12 +37,9 @@ export default function ModernMapLayout() {
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setClientPos({
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-          });
-        },
+
+        () => {},
+
         () => {},
         { enableHighAccuracy: true }
       );
@@ -90,37 +89,33 @@ export default function ModernMapLayout() {
   };
 
   const handleLocate = () => {
-    if (!mapRef.current) {
-      alert('Mapa ainda está carregando.');
+
+    const map = mapRef.current;
+    if (!map) {
+      alert('Mapa não carregado.');
       return;
     }
-
-    // Se já temos a posição do cliente, apenas centralize e aplique zoom
-    if (clientPos) {
-      mapRef.current.flyTo([clientPos.lat, clientPos.lng], 16);
-      return;
-    }
-
-    if (!navigator.geolocation) {
-      alert('Navegador não suporta geolocalização.');
-      return;
-    }
-
     setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocating(false);
-        const { latitude, longitude } = pos.coords;
-        const coords = { lat: latitude, lng: longitude };
-        setClientPos(coords);
-        mapRef.current.flyTo([coords.lat, coords.lng], 16);
-      },
-      () => {
-        setLocating(false);
-        alert('Não foi possível obter a localização.');
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
+
+    const onFound = (e) => {
+      setLocating(false);
+      const { lat, lng } = e.latlng;
+      map.flyTo([lat, lng], 16);
+      map.off('locationfound', onFound);
+      map.off('locationerror', onError);
+    };
+
+    const onError = () => {
+      setLocating(false);
+      alert('Não foi possível obter a localização.');
+      map.off('locationfound', onFound);
+      map.off('locationerror', onError);
+    };
+
+    map.on('locationfound', onFound);
+    map.on('locationerror', onError);
+    map.locate({ enableHighAccuracy: true });
+
   };
 
   return (
@@ -188,7 +183,7 @@ export default function ModernMapLayout() {
           className="locate-btn"
           onClick={handleLocate}
           aria-label="Localizar-me"
-          disabled={locating || !mapReady}
+
         >
           {locating ? <span className="loader" /> : '📍'}
         </button>
