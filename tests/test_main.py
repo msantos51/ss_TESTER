@@ -53,11 +53,12 @@ def register_client(client, email="client@example.com", password="Secret123", na
     return client.post("/clients/", data=data, files=files)
 
 def activate_subscription(client, vendor_id):
-    event = {
-        "type": "checkout.session.completed",
-        "data": {"object": {"metadata": {"vendor_id": vendor_id}, "url": "http://r"}},
-    }
-    client.post("/stripe/webhook", json=event)
+    token = get_token(client)
+    resp = client.post(
+        f"/vendors/{vendor_id}/activate-subscription",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
 
 
 def confirm_latest_client_email(client):

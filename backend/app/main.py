@@ -1182,6 +1182,31 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
             db.commit()
     return {"status": "success"}
 
+
+# --------------------------
+# Endpoint para ativar pagamento manualmente
+# --------------------------
+@app.post("/vendors/{vendor_id}/activate-subscription")
+# activate_subscription_manual
+def activate_subscription_manual(
+    vendor_id: int,
+    db: Session = Depends(get_db),
+    current_vendor: models.Vendor = Depends(get_current_vendor),
+):
+    if current_vendor.id != vendor_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    current_vendor.subscription_active = True
+    current_vendor.subscription_valid_until = datetime.utcnow() + timedelta(days=7)
+    paid = models.PaidWeek(
+        vendor_id=vendor_id,
+        start_date=datetime.utcnow(),
+        end_date=datetime.utcnow() + timedelta(days=7),
+    )
+    db.add(paid)
+    db.commit()
+    return {"status": "activated"}
+
 # --------------------------
 # Admin endpoints simples
 # --------------------------
