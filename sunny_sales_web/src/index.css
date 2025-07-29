@@ -355,6 +355,15 @@ button {
   font-weight: bold;
 }
 
+/* Utilizado para destacar botoes de acoes principais em preto */
+.black-button {
+  --primary-color: #000000;
+  --secondary-color: #FFFFFF;
+  --hover-color: #000000;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+
 button .arrow-wrapper {
   display: flex;
   justify-content: center;

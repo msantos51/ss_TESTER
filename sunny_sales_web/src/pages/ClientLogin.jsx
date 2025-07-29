@@ -127,12 +127,16 @@ export default function ClientLogin() {
             className="input"
           />
         </div>
-        <button onClick={login} disabled={!email || !password || loading}>
+        <button
+          className="black-button"
+          onClick={login}
+          disabled={!email || !password || loading}
+        >
           {loading ? <LoadingDots /> : 'Entrar'}
         </button>
         <button
           type="button"
-          className="outlined-button"
+          className="black-button"
           onClick={() => navigate('/register')}
         >
           Registar
@@ -141,22 +145,12 @@ export default function ClientLogin() {
         <div className="buttons-container">
           <button
             type="button"
-            className="google-login-button"
-
+            className="black-button"
             onClick={() => oauthLogin('google')}
-
-            onClick={() =>
-              alert('Login com Google ainda não disponível')
-            }
-
           >
             <FaGoogle className="google-icon" /> Entrar com Google
           </button>
-          <button
-            type="button"
-            className="apple-login-button"
-
-          >
+          <button type="button" className="black-button">
             <FaApple className="apple-icon" /> Entrar com Apple
           </button>
         </div>
