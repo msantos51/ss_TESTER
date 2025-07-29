@@ -15,6 +15,7 @@ export default function ModernMapLayout() {
   const [selected, setSelected] = useState(null);
   const [favorite, setFavorite] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
   const [clientPos, setClientPos] = useState(null);
   const [clientData, setClientData] = useState(null);
   const mapRef = useRef(null);
@@ -103,9 +104,12 @@ export default function ModernMapLayout() {
   };
 
   const handleLocate = () => {
-
-    if (!navigator.geolocation || !mapRef.current) {
-      alert('Geolocalização não suportada.');
+    if (!navigator.geolocation) {
+      alert('Navegador não suporta geolocalização.');
+      return;
+    }
+    if (!mapRef.current) {
+      alert('Mapa ainda está carregando.');
       return;
     }
     setLocating(true);
@@ -148,6 +152,7 @@ export default function ModernMapLayout() {
           className="map-container"
           whenCreated={(map) => {
             mapRef.current = map;
+            setMapReady(true);
           }}
         >
           <TileLayer
@@ -197,6 +202,7 @@ export default function ModernMapLayout() {
           className="locate-btn"
           onClick={handleLocate}
           aria-label="Localizar-me"
+          disabled={locating || !mapReady}
         >
           {locating ? <span className="loader" /> : '📍'}
         </button>

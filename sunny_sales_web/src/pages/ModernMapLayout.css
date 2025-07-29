@@ -242,6 +242,11 @@ body {
   z-index: 500;
 }
 
+.locate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* From Uiverse.io by JaydipPrajapati1910 */
 .loader {
   width: 24px;
