@@ -1,14 +1,18 @@
 // (em português) Componente principal da aplicação Web com rotas
 
-import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import {
+  HashRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useLocation,
+} from 'react-router-dom';
 import { FiUser, FiMenu } from 'react-icons/fi';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
-import ClientLogin from './pages/ClientLogin';
-import ClientRegister from './pages/ClientRegister';
-import ForgotPassword from './pages/ForgotPassword';
 import VendorLogin from './pages/VendorLogin';
+import ForgotPassword from './pages/ForgotPassword';
 import ManageAccount from './pages/ManageAccount';
 import EditProfileScreen from './pages/EditProfileScreen';
 import PaidWeeksScreen from './pages/PaidWeeksScreen.jsx';
@@ -21,7 +25,6 @@ import VendorDetailScreen from './pages/VendorDetailScreen';
 import Invoices from './pages/Invoices';
 import Dashboard from './pages/Dashboard';
 import ModernMapLayout from './pages/ModernMapLayout';
-import LoginSelection from './pages/LoginSelection';
 import SobreProjeto from './pages/SobreProjeto';
 import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
@@ -29,12 +32,26 @@ import './index.css'; // (em português) Importa os estilos globais
 
 // Componente principal que define as rotas da aplicação web
 export default function App() {
-  const isLoggedIn = localStorage.getItem('user') || localStorage.getItem('client');
-  const profileLink = isLoggedIn ? '/dashboard' : '/login-selection';
-  const [menuOpen, setMenuOpen] = useState(false);
-
   return (
     <Router>
+      <AppLayout />
+    </Router>
+  );
+}
+
+function AppLayout() {
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem('user'));
+  }, [location]);
+
+  const profileLink = isLoggedIn ? '/dashboard' : '/vendor-login';
+
+  return (
+    <>
       {/* (em português) Barra de navegação */}
       <header className="header-wrapper">
         <Link className="logo-link logo-outside" to="/">Sunny Sales</Link>
@@ -88,17 +105,16 @@ export default function App() {
           <Route path="/sustentabilidade" element={<Sustentabilidade />} />
           <Route path="/implementacao" element={<ImplementarScreen />} />
           <Route path="/settings" element={<AccountSettings />} />
-          <Route path="/login" element={<ClientLogin />} />
-          <Route path="/register" element={<ClientRegister />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/login" element={<VendorLogin />} />
           <Route path="/vendor-login" element={<VendorLogin />} />
-          <Route path="/login-selection" element={<LoginSelection />} />
+          <Route path="/vendor-register" element={<VendorRegister />} />
+          <Route path="/register" element={<VendorRegister />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/account" element={<ManageAccount />} />
           <Route path="/edit-profile" element={<EditProfileScreen />} />
           <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/map" element={<ModernMapLayout />} />
-          <Route path="/vendor-register" element={<VendorRegister />} />
           <Route path="/route-detail" element={<RouteDetail />} />
           <Route path="/routes" element={<RoutesScreen />} />
           <Route path="/stats" element={<StatsScreen />} />
@@ -107,7 +123,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
-    </Router>
+    </>
   );
 }
 

@@ -1,6 +1,6 @@
 # Sunny Sales
 
-Aplicação composta por backend em **FastAPI** e interface web em **React** que permite aos vendedores de praia registar a sua atividade e aos clientes acompanharem a localização dos vendedores em tempo real.
+Aplicação composta por backend em **FastAPI** e interface web em **React** que permite aos vendedores de praia registar e acompanhar a sua atividade em tempo real.
 
 ## Estrutura
 
@@ -35,10 +35,10 @@ scripts/        Utilidades auxiliares
 ## Novidades
 
 - **Estatísticas**: painel no aplicativo mostra gráfico das distâncias diárias percorridas.
-- **Favoritos**: clientes podem marcar vendedores favoritos para receber notificações de proximidade.
 - **Respostas a reviews**: vendedores podem responder ou ocultar avaliações via API.
-- **Login social**: clientes podem registar-se com contas Google ou Apple.
-  - **Tradução e acessibilidade**: interface com suporte a português e inglês e elementos com labels acessíveis.
+
+- **Tradução e acessibilidade**: interface com suporte a português e inglês e elementos com labels acessíveis.
+
     A variável `BASE_URL` em `sunny_sales_web/src/config.js` deve apontar para o endereço do backend.
 
 ## Testes

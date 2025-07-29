@@ -15,8 +15,11 @@ export default function ModernMapLayout() {
   const [selected, setSelected] = useState(null);
   const [favorite, setFavorite] = useState(false);
   const [locating, setLocating] = useState(false);
+
+  const [mapReady, setMapReady] = useState(false);
+  const [clientPos, setClientPos] = useState(null);
+
   const mapRef = useRef(null);
-  const loggedIn = !!localStorage.getItem('client');
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -34,7 +37,9 @@ export default function ModernMapLayout() {
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
+
         () => {},
+
         () => {},
         { enableHighAccuracy: true }
       );
@@ -64,7 +69,7 @@ export default function ModernMapLayout() {
   const focusVendor = (v) => {
     setSelected(v);
     if (mapRef.current) {
-      mapRef.current.setView([v.current_lat, v.current_lng], 16);
+      mapRef.current.flyTo([v.current_lat, v.current_lng], 16);
     }
   };
 
@@ -84,6 +89,7 @@ export default function ModernMapLayout() {
   };
 
   const handleLocate = () => {
+
     const map = mapRef.current;
     if (!map) {
       alert('Mapa não carregado.');
@@ -109,6 +115,7 @@ export default function ModernMapLayout() {
     map.on('locationfound', onFound);
     map.on('locationerror', onError);
     map.locate({ enableHighAccuracy: true });
+
   };
 
   return (
@@ -134,6 +141,7 @@ export default function ModernMapLayout() {
           className="map-container"
           whenCreated={(map) => {
             mapRef.current = map;
+            setMapReady(true);
           }}
         >
           <TileLayer
@@ -142,6 +150,18 @@ export default function ModernMapLayout() {
             subdomains="abcd"
             maxZoom={19}
           />
+          {clientPos && (
+            <Marker
+              position={[clientPos.lat, clientPos.lng]}
+              icon={L.divIcon({
+                className: 'client-pin',
+                html:
+                  '<div style="background:#1976d2;width:24px;height:24px;border-radius:50%;border:2px solid white"></div>',
+              })}
+            >
+              <Popup>Você está aqui</Popup>
+            </Marker>
+          )}
           {filteredVendors.map((v) => (
             <Marker
               key={v.id}
@@ -163,6 +183,7 @@ export default function ModernMapLayout() {
           className="locate-btn"
           onClick={handleLocate}
           aria-label="Localizar-me"
+
         >
           {locating ? <span className="loader" /> : '📍'}
         </button>
@@ -202,11 +223,9 @@ export default function ModernMapLayout() {
             <button className="map-btn" onClick={() => focusVendor(selected)}>
               VER NO MAPA
             </button>
-            {loggedIn && (
-              <button className="map-btn" onClick={toggleFavorite}>
-                {favorite ? '★ Remover dos Favoritos' : '☆ Adicionar aos Favoritos'}
-              </button>
-            )}
+            <button className="map-btn" onClick={toggleFavorite}>
+              {favorite ? '★ Remover dos Favoritos' : '☆ Adicionar aos Favoritos'}
+            </button>
           </div>
         )}
       </main>

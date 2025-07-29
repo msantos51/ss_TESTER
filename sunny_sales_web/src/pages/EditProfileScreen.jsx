@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 export default function EditProfileScreen() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [isClient, setIsClient] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [product, setProduct] = useState('');
@@ -16,20 +15,12 @@ export default function EditProfileScreen() {
 
   useEffect(() => {
     const storedVendor = localStorage.getItem('user');
-    const storedClient = localStorage.getItem('client');
     if (storedVendor) {
       const v = JSON.parse(storedVendor);
       setUser(v);
-      setIsClient(false);
       setName(v.name || '');
       setEmail(v.email || '');
       setProduct(v.product || '');
-    } else if (storedClient) {
-      const c = JSON.parse(storedClient);
-      setUser(c);
-      setIsClient(true);
-      setName(c.name || '');
-      setEmail(c.email || '');
     }
   }, []);
 
@@ -47,20 +38,18 @@ export default function EditProfileScreen() {
     const data = new FormData();
     if (name !== user.name) data.append('name', name);
     if (email !== user.email) data.append('email', email);
-    if (!isClient && product !== user.product) data.append('product', product);
+    if (product !== user.product) data.append('product', product);
     if (photo) data.append('profile_photo', photo);
-    const token = localStorage.getItem(isClient ? 'clientToken' : 'token');
+    const token = localStorage.getItem('token');
     try {
-      const url = isClient
-        ? `${BASE_URL}/clients/${user.id}/profile`
-        : `${BASE_URL}/vendors/${user.id}/profile`;
+      const url = `${BASE_URL}/vendors/${user.id}/profile`;
       const res = await axios.patch(url, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
         },
       });
-      localStorage.setItem(isClient ? 'client' : 'user', JSON.stringify(res.data));
+      localStorage.setItem('user', JSON.stringify(res.data));
       navigate('/dashboard');
     } catch {
       setError('Erro ao atualizar');
@@ -89,17 +78,15 @@ export default function EditProfileScreen() {
             onChange={(e) => setEmail(e.target.value)}
             className="input"
           />
-          {!isClient && (
-            <select
-              value={product}
-              onChange={(e) => setProduct(e.target.value)}
-              className="input"
-            >
-              <option value="Bolas de Berlim">Bolas de Berlim</option>
-              <option value="Gelados">Gelados</option>
-              <option value="Acessórios">Acessórios</option>
-            </select>
-          )}
+          <select
+            value={product}
+            onChange={(e) => setProduct(e.target.value)}
+            className="input"
+          >
+            <option value="Bolas de Berlim">Bolas de Berlim</option>
+            <option value="Gelados">Gelados</option>
+            <option value="Acessórios">Acessórios</option>
+          </select>
           <input type="file" onChange={handlePhoto} className="input" />
         </div>
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>

@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import HTMLResponse, FileResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from passlib.context import CryptContext
 from . import models, schemas
 import stripe
@@ -223,26 +224,6 @@ def get_current_vendor(token: str = Depends(oauth2_scheme), db: Session = Depend
         raise HTTPException(status_code=401, detail="Vendor not found")
     return vendor
 
-# get_current_client
-def get_current_client(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    payload = decode_token(token)
-    if payload.get("type") != "client":
-        raise HTTPException(status_code=401, detail="Invalid token")
-    client_id = payload.get("sub")
-    client = db.query(models.Client).filter(models.Client.id == client_id).first()
-    if not client:
-        raise HTTPException(status_code=401, detail="Client not found")
-    return client
-
-# --------------------------
-# Sessão de base de dados (mantemos o get_db antigo, mas agora já está importado corretamente também)
-# --------------------------
-def get_db_local():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
 
@@ -325,131 +306,7 @@ async def generate_token(
     token = create_access_token({"sub": vendor.id})
     return {"access_token": token, "token_type": "bearer"}
 
-# --------------------------
-# Registo de cliente
-# --------------------------
-@app.post("/clients/", response_model=schemas.ClientOut)
-# create_client
-async def create_client(
-    name: str = Form(...),
-    email: str = Form(...),
-    password: str = Form(...),
-    profile_photo: UploadFile = File(...),
-    db: Session = Depends(get_db),
-):
-    db_client = db.query(models.Client).filter(models.Client.email == email).first()
-    if db_client:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    validate_password(password)
-    hashed_password = pwd_context.hash(password)
 
-    ext = os.path.splitext(profile_photo.filename)[1]
-    file_name = f"{uuid4().hex}{ext}"
-    file_path = os.path.join(PROFILE_PHOTO_DIR, file_name)
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(profile_photo.file, buffer)
-
-    public_path = f"profile_photos/{file_name}"
-
-    new_client = models.Client(
-        name=name,
-        email=email,
-        hashed_password=hashed_password,
-        profile_photo=public_path,
-        confirmation_token=token_urlsafe(32),
-    )
-    db.add(new_client)
-    db.commit()
-    db.refresh(new_client)
-
-    confirm_link = f"{os.getenv('BASE_URL', 'http://localhost:8000')}/confirm-client-email/{new_client.confirmation_token}"
-    send_email(
-        new_client.email,
-        "Confirme o seu registro",
-        f"Clique no link para confirmar sua conta:\n{confirm_link}",
-    )
-    return new_client
-
-
-@app.get("/confirm-client-email/{token}")
-# confirm_client_email
-def confirm_client_email(token: str, db: Session = Depends(get_db)):
-    client = db.query(models.Client).filter(models.Client.confirmation_token == token).first()
-    if not client:
-        raise HTTPException(status_code=404, detail="Invalid token")
-    client.email_confirmed = True
-    client.confirmation_token = None
-    db.commit()
-    return {"message": "Email confirmado"}
-
-
-@app.post("/client-oauth")
-# client_oauth
-async def client_oauth(
-    provider: str = Form(...),
-    token: str = Form(...),
-    db: Session = Depends(get_db),
-):
-    if provider not in ("google", "apple"):
-        raise HTTPException(status_code=400, detail="Invalid provider")
-    try:
-        _, payload_b64, _ = token.split(".")
-        payload = json.loads(_b64decode(payload_b64))
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid token")
-    sub = payload.get("sub")
-    email = payload.get("email")
-    name = payload.get("name") or email
-    if not sub or not email:
-        raise HTTPException(status_code=400, detail="Invalid token payload")
-    query = db.query(models.Client)
-    if provider == "google":
-        client = query.filter(models.Client.google_id == sub).first()
-    else:
-        client = query.filter(models.Client.apple_id == sub).first()
-    if not client:
-        client = query.filter(models.Client.email == email).first()
-    if client:
-        if provider == "google":
-            client.google_id = sub
-        else:
-            client.apple_id = sub
-    else:
-        client = models.Client(
-            name=name,
-            email=email,
-            hashed_password="",
-            profile_photo="",
-            email_confirmed=True,
-            google_id=sub if provider == "google" else None,
-            apple_id=sub if provider == "apple" else None,
-        )
-        db.add(client)
-    db.commit()
-    db.refresh(client)
-    token = create_access_token({"sub": client.id, "type": "client"})
-    return {"access_token": token, "token_type": "bearer"}
-
-
-@app.post("/client-token")
-# generate_client_token
-def generate_client_token(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
-    client = db.query(models.Client).filter(models.Client.email == credentials.email).first()
-    if not client or not pwd_context.verify(credentials.password, client.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
-    if not client.email_confirmed:
-        raise HTTPException(status_code=400, detail="Email not confirmed")
-    token = create_access_token({"sub": client.id, "type": "client"})
-    return {"access_token": token, "token_type": "bearer"}
-
-
-@app.get("/clients/{client_id}", response_model=schemas.ClientOut)
-# get_client
-def get_client(client_id: int, db: Session = Depends(get_db)):
-    client = db.query(models.Client).filter(models.Client.id == client_id).first()
-    if not client:
-        raise HTTPException(status_code=404, detail="Client not found")
-    return client
 
 # --------------------------
 # Registo de vendedor
@@ -562,134 +419,29 @@ def password_reset(token: str, new_password: str = Form(...), db: Session = Depe
 # list_vendors
 def list_vendors(db: Session = Depends(get_db)):
     vendors = db.query(models.Vendor).all()
-    for v in vendors:
-        if v.reviews:
-            v.rating_average = sum(r.rating for r in v.reviews) / len(v.reviews)
-        else:
-            v.rating_average = None
 
-        active_route = (
-            db.query(models.Route)
-            .filter(models.Route.vendor_id == v.id, models.Route.end_time == None)
-            .first()
-        )
-        if not active_route:
+    # calcular média de avaliações em único passo
+    ratings = dict(
+        db.query(models.Review.vendor_id, func.avg(models.Review.rating))
+        .filter(models.Review.active == True)
+        .group_by(models.Review.vendor_id)
+        .all()
+    )
+
+    # mapear rotas ativas para evitar uma query por vendedor
+    active_routes = {
+        r.vendor_id: r
+        for r in db.query(models.Route).filter(models.Route.end_time == None).all()
+    }
+
+    for v in vendors:
+        v.rating_average = ratings.get(v.id)
+        if v.id not in active_routes:
             v.current_lat = None
             v.current_lng = None
+
     return vendors
 
-# --------------------------
-# Favoritos de clientes
-# --------------------------
-@app.post("/clients/{client_id}/favorites/{vendor_id}")
-# add_favorite
-def add_favorite(
-    client_id: int,
-    vendor_id: int,
-    db: Session = Depends(get_db),
-    current_client: models.Client = Depends(get_current_client),
-):
-    if current_client.id != client_id:
-        raise HTTPException(status_code=403, detail="Not authorized")
-    exists = (
-        db.query(models.Favorite)
-        .filter_by(client_id=client_id, vendor_id=vendor_id)
-        .first()
-    )
-    if not exists:
-        fav = models.Favorite(client_id=client_id, vendor_id=vendor_id)
-        db.add(fav)
-        db.commit()
-    return {"status": "ok"}
-
-
-@app.get("/clients/{client_id}/favorites", response_model=list[schemas.VendorOut])
-# list_favorites
-def list_favorites(
-    client_id: int,
-    db: Session = Depends(get_db),
-    current_client: models.Client = Depends(get_current_client),
-):
-    if current_client.id != client_id:
-        raise HTTPException(status_code=403, detail="Not authorized")
-    favs = db.query(models.Favorite).filter_by(client_id=client_id).all()
-    vendors = [db.query(models.Vendor).get(f.vendor_id) for f in favs]
-    for v in vendors:
-        if v.reviews:
-            v.rating_average = sum(r.rating for r in v.reviews) / len(v.reviews)
-        else:
-            v.rating_average = None
-        if v.last_seen:
-            v.last_seen = v.last_seen.isoformat()
-    return vendors
-
-
-@app.delete("/clients/{client_id}/favorites/{vendor_id}")
-# remove_favorite
-def remove_favorite(
-    client_id: int,
-    vendor_id: int,
-    db: Session = Depends(get_db),
-    current_client: models.Client = Depends(get_current_client),
-):
-    if current_client.id != client_id:
-        raise HTTPException(status_code=403, detail="Not authorized")
-    fav = (
-        db.query(models.Favorite)
-        .filter_by(client_id=client_id, vendor_id=vendor_id)
-        .first()
-    )
-    if fav:
-        db.delete(fav)
-        db.commit()
-    return {"status": "deleted"}
-
-# --------------------------
-# Atualizar perfil do cliente
-# --------------------------
-@app.patch("/clients/{client_id}/profile", response_model=schemas.ClientOut)
-# update_client_profile
-async def update_client_profile(
-    client_id: int,
-    name: str = Form(None),
-    email: str = Form(None),
-    password: str = Form(None),
-    old_password: str = Form(None),
-    new_password: str = Form(None),
-    profile_photo: UploadFile = File(None),
-    db: Session = Depends(get_db),
-    current_client: models.Client = Depends(get_current_client),
-):
-    client = db.query(models.Client).filter(models.Client.id == client_id).first()
-    if not client:
-        raise HTTPException(status_code=404, detail="Client not found")
-    if current_client.id != client_id:
-        raise HTTPException(status_code=403, detail="Not authorized")
-
-    if name:
-        client.name = name
-    if email:
-        client.email = email
-    # manter compatibilidade com parametro antigo 'password'
-    if new_password or password:
-        new_pass = new_password if new_password is not None else password
-        if not old_password:
-            raise HTTPException(status_code=400, detail="Old password required")
-        if not pwd_context.verify(old_password, client.hashed_password):
-            raise HTTPException(status_code=400, detail="Old password incorrect")
-        validate_password(new_pass)
-        client.hashed_password = pwd_context.hash(new_pass)
-    if profile_photo:
-        ext = os.path.splitext(profile_photo.filename)[1]
-        file_name = f"{uuid4().hex}{ext}"
-        file_path = os.path.join(PROFILE_PHOTO_DIR, file_name)
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(profile_photo.file, buffer)
-        client.profile_photo = f"profile_photos/{file_name}"
-
-    db.commit()
-    db.refresh(client)
-    return client
 
 # --------------------------
 # Atualizar perfil do vendedor (agora com PATCH)
@@ -993,27 +745,6 @@ async def websocket_locations(websocket: WebSocket):
 # --------------------------
 # Reviews dos vendedores
 # --------------------------
-@app.post("/vendors/{vendor_id}/reviews", response_model=schemas.ReviewOut)
-# create_review
-def create_review(
-    vendor_id: int,
-    review: schemas.ReviewCreate,
-    db: Session = Depends(get_db),
-    current_client: models.Client = Depends(get_current_client),
-):
-    vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
-    if not vendor:
-        raise HTTPException(status_code=404, detail="Vendor not found")
-    new_rev = models.Review(
-        vendor_id=vendor_id,
-        client_id=current_client.id,
-        rating=review.rating,
-        comment=review.comment,
-    )
-    db.add(new_rev)
-    db.commit()
-    db.refresh(new_rev)
-    return new_rev
 
 
 
@@ -1162,6 +893,31 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
             db.add(paid)
             db.commit()
     return {"status": "success"}
+
+
+# --------------------------
+# Endpoint para ativar pagamento manualmente
+# --------------------------
+@app.post("/vendors/{vendor_id}/activate-subscription")
+# activate_subscription_manual
+def activate_subscription_manual(
+    vendor_id: int,
+    db: Session = Depends(get_db),
+    current_vendor: models.Vendor = Depends(get_current_vendor),
+):
+    if current_vendor.id != vendor_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    current_vendor.subscription_active = True
+    current_vendor.subscription_valid_until = datetime.utcnow() + timedelta(days=7)
+    paid = models.PaidWeek(
+        vendor_id=vendor_id,
+        start_date=datetime.utcnow(),
+        end_date=datetime.utcnow() + timedelta(days=7),
+    )
+    db.add(paid)
+    db.commit()
+    return {"status": "activated"}
 
 # --------------------------
 # Admin endpoints simples
