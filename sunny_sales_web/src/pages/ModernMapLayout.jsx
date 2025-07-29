@@ -14,6 +14,7 @@ export default function ModernMapLayout() {
   const [selectedProducts, setSelectedProducts] = useState([...PRODUCTS]);
   const [selected, setSelected] = useState(null);
   const [favorite, setFavorite] = useState(false);
+  const [locating, setLocating] = useState(false);
   const mapRef = useRef(null);
   const loggedIn = !!localStorage.getItem('client');
 
@@ -71,6 +72,21 @@ export default function ModernMapLayout() {
     localStorage.setItem('favorites', JSON.stringify(updated));
   };
 
+  const handleLocate = () => {
+    if (!mapRef.current) return;
+    setLocating(true);
+    const map = mapRef.current;
+    map.once('locationfound', (e) => {
+      setLocating(false);
+      map.flyTo(e.latlng, 16);
+    });
+    map.once('locationerror', () => {
+      setLocating(false);
+      alert('Não foi possível obter a localização.');
+    });
+    map.locate();
+  };
+
   return (
     <div className="modern-layout">
       <div className="filters">
@@ -118,6 +134,14 @@ export default function ModernMapLayout() {
             </Marker>
           ))}
         </MapContainer>
+
+        <button
+          className="locate-btn"
+          onClick={handleLocate}
+          aria-label="Localizar-me"
+        >
+          {locating ? <span className="loader" /> : '📍'}
+        </button>
 
         {selected && (
           <div className="vendor-card">
