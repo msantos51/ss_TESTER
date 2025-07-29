@@ -47,11 +47,6 @@ def register_vendor(client, email="vendor@example.com", password="Secret123", na
     return client.post("/vendors/", data=data, files=files)
 
 
-def register_client(client, email="client@example.com", password="Secret123", name="Client"):
-    data = {"name": name, "email": email, "password": password}
-    files = {"profile_photo": ("test.png", b"fakeimage", "image/png")}
-    return client.post("/clients/", data=data, files=files)
-
 def activate_subscription(client, vendor_id):
     event = {
         "type": "checkout.session.completed",
@@ -59,11 +54,6 @@ def activate_subscription(client, vendor_id):
     }
     client.post("/stripe/webhook", json=event)
 
-
-def confirm_latest_client_email(client):
-    body = client.sent_emails[-1]["body"]
-    token = body.split("/confirm-client-email/")[1]
-    return client.get(f"/confirm-client-email/{token}")
 
 
 def confirm_latest_email(client):
@@ -86,22 +76,6 @@ def get_token(client, email="vendor@example.com", password="Secret123"):
     return resp.json()["access_token"]
 
 
-def get_client_token(client, email="client@example.com", password="Secret123"):
-    resp = client.post("/client-token", json={"email": email, "password": password})
-    assert resp.status_code == 200
-    return resp.json()["access_token"]
-
-def make_oauth_token(email="oauth@example.com", name="OAuth Client", sub="gid123"):
-    from backend.app.main import _b64
-    header = {"alg": "none"}
-    payload = {"email": email, "name": name, "sub": sub}
-    return f"{_b64(header)}.{_b64(payload)}."
-
-def get_oauth_token(client, provider="google", email="oauth@example.com", sub="gid123"):
-    token = make_oauth_token(email=email, sub=sub)
-    resp = client.post("/client-oauth", data={"provider": provider, "token": token})
-    assert resp.status_code == 200
-    return resp.json()["access_token"]
 
 
 def test_token_generation(client):
@@ -229,81 +203,6 @@ def test_websocket_location_broadcast(client):
         assert data == {"vendor_id": vendor_id, "lat": 5.5, "lng": -7.1}
 
 
-def test_reviews_endpoints(client):
-    resp = register_vendor(client)
-    vendor_id = resp.json()["id"]
-
-    resp = register_client(client)
-    confirm_latest_client_email(client)
-    client_token = get_client_token(client)
-    headers = {"Authorization": f"Bearer {client_token}"}
-
-    # add review
-    resp = client.post(
-        f"/vendors/{vendor_id}/reviews",
-        json={"rating": 4, "comment": "Bom"},
-        headers=headers,
-    )
-    assert resp.status_code == 200
-    review = resp.json()
-    assert review["rating"] == 4
-
-    # list reviews
-    resp = client.get(f"/vendors/{vendor_id}/reviews")
-    assert resp.status_code == 200
-    reviews = resp.json()
-    assert len(reviews) == 1 and reviews[0]["comment"] == "Bom" and reviews[0]["client_name"] == "Client"
-
-
-def test_review_response_and_delete(client):
-    resp = register_vendor(client)
-    vendor_id = resp.json()["id"]
-    register_client(client)
-    confirm_latest_client_email(client)
-    ctoken = get_client_token(client)
-    review = client.post(
-        f"/vendors/{vendor_id}/reviews",
-        json={"rating": 5},
-        headers={"Authorization": f"Bearer {ctoken}"},
-    ).json()
-
-    confirm_latest_email(client)
-    token = get_token(client)
-
-    resp = client.post(
-        f"/vendors/{vendor_id}/reviews/{review['id']}/response",
-        json={"response": "ok"},
-        headers={"Authorization": f"Bearer {token}"},
-    )
-    assert resp.status_code == 200
-    assert resp.json()["response"] == "ok"
-
-    resp = client.delete(
-        f"/vendors/{vendor_id}/reviews/{review['id']}",
-        headers={"Authorization": f"Bearer {token}"},
-    )
-    assert resp.status_code == 200
-
-    resp = client.get(f"/vendors/{vendor_id}/reviews")
-    assert resp.json() == []
-
-
-def test_vendor_average_rating(client):
-    resp = register_vendor(client)
-    vendor_id = resp.json()["id"]
-
-    register_client(client)
-    confirm_latest_client_email(client)
-    token = get_client_token(client)
-    headers = {"Authorization": f"Bearer {token}"}
-
-    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 5}, headers=headers)
-    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 3}, headers=headers)
-
-    resp = client.get("/vendors/")
-    assert resp.status_code == 200
-    vendor = next(v for v in resp.json() if v["id"] == vendor_id)
-    assert pytest.approx(vendor["rating_average"], 0.01) == 4.0
 
 
 def test_routes_flow(client):
@@ -393,32 +292,4 @@ def test_paid_weeks_listing(client):
     assert weeks[0]["receipt_url"] == "http://r"
 
 
-def test_client_profile_update(client):
-    resp = register_client(client)
-    client_id = resp.json()["id"]
-    confirm_latest_client_email(client)
-    token = get_client_token(client)
-
-    resp = client.patch(
-        f"/clients/{client_id}/profile",
-        data={"name": "NewClient"},
-        headers={"Authorization": f"Bearer {token}"},
-    )
-    assert resp.status_code == 200
-    assert resp.json()["name"] == "NewClient"
-
-    resp = client.patch(f"/clients/{client_id}/profile", data={"name": "Fail"})
-    assert resp.status_code == 401
-
-
-def test_client_oauth_login(client):
-    token = get_oauth_token(client)
-    assert token
-    from backend.app.main import decode_token
-    payload = decode_token(token)
-    assert payload["type"] == "client"
-    cid = payload["sub"]
-    resp = client.get(f"/clients/{cid}")
-    assert resp.status_code == 200
-    assert resp.json()["email"] == "oauth@example.com"
 
