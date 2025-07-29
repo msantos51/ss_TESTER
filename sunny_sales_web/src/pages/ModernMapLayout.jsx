@@ -70,7 +70,7 @@ export default function ModernMapLayout() {
   const focusVendor = (v) => {
     setSelected(v);
     if (mapRef.current) {
-      mapRef.current.setView([v.current_lat, v.current_lng], 16);
+      mapRef.current.flyTo([v.current_lat, v.current_lng], 16);
     }
   };
 
