@@ -11,10 +11,8 @@ import { FiUser, FiMenu } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
-import ClientLogin from './pages/ClientLogin';
-import ClientRegister from './pages/ClientRegister';
-import ForgotPassword from './pages/ForgotPassword';
 import VendorLogin from './pages/VendorLogin';
+import ForgotPassword from './pages/ForgotPassword';
 import ManageAccount from './pages/ManageAccount';
 import EditProfileScreen from './pages/EditProfileScreen';
 import PaidWeeksScreen from './pages/PaidWeeksScreen.jsx';
@@ -27,7 +25,6 @@ import VendorDetailScreen from './pages/VendorDetailScreen';
 import Invoices from './pages/Invoices';
 import Dashboard from './pages/Dashboard';
 import ModernMapLayout from './pages/ModernMapLayout';
-import LoginSelection from './pages/LoginSelection';
 import SobreProjeto from './pages/SobreProjeto';
 import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
@@ -45,17 +42,13 @@ export default function App() {
 function AppLayout() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    !!localStorage.getItem('user') || !!localStorage.getItem('client')
-  );
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
 
   useEffect(() => {
-    setIsLoggedIn(
-      !!localStorage.getItem('user') || !!localStorage.getItem('client')
-    );
+    setIsLoggedIn(!!localStorage.getItem('user'));
   }, [location]);
 
-  const profileLink = isLoggedIn ? '/dashboard' : '/login-selection';
+  const profileLink = isLoggedIn ? '/dashboard' : '/vendor-login';
 
   return (
     <>
@@ -112,17 +105,16 @@ function AppLayout() {
           <Route path="/sustentabilidade" element={<Sustentabilidade />} />
           <Route path="/implementacao" element={<ImplementarScreen />} />
           <Route path="/settings" element={<AccountSettings />} />
-          <Route path="/login" element={<ClientLogin />} />
-          <Route path="/register" element={<ClientRegister />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/login" element={<VendorLogin />} />
           <Route path="/vendor-login" element={<VendorLogin />} />
-          <Route path="/login-selection" element={<LoginSelection />} />
+          <Route path="/vendor-register" element={<VendorRegister />} />
+          <Route path="/register" element={<VendorRegister />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/account" element={<ManageAccount />} />
           <Route path="/edit-profile" element={<EditProfileScreen />} />
           <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/map" element={<ModernMapLayout />} />
-          <Route path="/vendor-register" element={<VendorRegister />} />
           <Route path="/route-detail" element={<RouteDetail />} />
           <Route path="/routes" element={<RoutesScreen />} />
           <Route path="/stats" element={<StatsScreen />} />

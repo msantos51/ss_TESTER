@@ -17,21 +17,7 @@ export default function ModernMapLayout() {
   const [locating, setLocating] = useState(false);
   const [mapReady, setMapReady] = useState(false);
   const [clientPos, setClientPos] = useState(null);
-  const [clientData, setClientData] = useState(null);
   const mapRef = useRef(null);
-  const loggedIn = !!localStorage.getItem('client');
-
-  // Carrega dados do cliente do localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem('client');
-    if (stored) {
-      try {
-        setClientData(JSON.parse(stored));
-      } catch {
-        setClientData(null);
-      }
-    }
-  }, []);
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -172,19 +158,11 @@ export default function ModernMapLayout() {
           {clientPos && (
             <Marker
               position={[clientPos.lat, clientPos.lng]}
-              icon={
-                clientData?.profile_photo
-                  ? L.icon({
-                      iconUrl: `${BASE_URL}/${clientData.profile_photo}`,
-                      iconSize: [32, 32],
-                      className: 'client-pin',
-                    })
-                  : L.divIcon({
-                      className: 'client-pin',
-                      html:
-                        '<div style="background:#1976d2;width:24px;height:24px;border-radius:50%;border:2px solid white"></div>',
-                    })
-              }
+              icon={L.divIcon({
+                className: 'client-pin',
+                html:
+                  '<div style="background:#1976d2;width:24px;height:24px;border-radius:50%;border:2px solid white"></div>',
+              })}
             >
               <Popup>Você está aqui</Popup>
             </Marker>
@@ -250,11 +228,9 @@ export default function ModernMapLayout() {
             <button className="map-btn" onClick={() => focusVendor(selected)}>
               VER NO MAPA
             </button>
-            {loggedIn && (
-              <button className="map-btn" onClick={toggleFavorite}>
-                {favorite ? '★ Remover dos Favoritos' : '☆ Adicionar aos Favoritos'}
-              </button>
-            )}
+            <button className="map-btn" onClick={toggleFavorite}>
+              {favorite ? '★ Remover dos Favoritos' : '☆ Adicionar aos Favoritos'}
+            </button>
           </div>
         )}
       </main>
