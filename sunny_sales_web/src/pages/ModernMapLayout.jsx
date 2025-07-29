@@ -14,6 +14,7 @@ export default function ModernMapLayout() {
   const [selectedProducts, setSelectedProducts] = useState([...PRODUCTS]);
   const [selected, setSelected] = useState(null);
   const [favorite, setFavorite] = useState(false);
+  const [locating, setLocating] = useState(false);
   const mapRef = useRef(null);
   const loggedIn = !!localStorage.getItem('client');
 
@@ -27,6 +28,17 @@ export default function ModernMapLayout() {
       }
     };
     fetchVendors();
+  }, []);
+
+  // Pede permissão para usar a localização quando o layout é carregado
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        () => {},
+        () => {},
+        { enableHighAccuracy: true }
+      );
+    }
   }, []);
 
   useEffect(() => {
@@ -69,6 +81,34 @@ export default function ModernMapLayout() {
       setFavorite(true);
     }
     localStorage.setItem('favorites', JSON.stringify(updated));
+  };
+
+  const handleLocate = () => {
+    const map = mapRef.current;
+    if (!map) {
+      alert('Mapa não carregado.');
+      return;
+    }
+    setLocating(true);
+
+    const onFound = (e) => {
+      setLocating(false);
+      const { lat, lng } = e.latlng;
+      map.flyTo([lat, lng], 16);
+      map.off('locationfound', onFound);
+      map.off('locationerror', onError);
+    };
+
+    const onError = () => {
+      setLocating(false);
+      alert('Não foi possível obter a localização.');
+      map.off('locationfound', onFound);
+      map.off('locationerror', onError);
+    };
+
+    map.on('locationfound', onFound);
+    map.on('locationerror', onError);
+    map.locate({ enableHighAccuracy: true });
   };
 
   return (
@@ -118,6 +158,14 @@ export default function ModernMapLayout() {
             </Marker>
           ))}
         </MapContainer>
+
+        <button
+          className="locate-btn"
+          onClick={handleLocate}
+          aria-label="Localizar-me"
+        >
+          {locating ? <span className="loader" /> : '📍'}
+        </button>
 
         {selected && (
           <div className="vendor-card">
