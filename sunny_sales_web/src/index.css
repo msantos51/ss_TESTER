@@ -59,7 +59,9 @@ body {
 .logo-link {
   text-decoration: none;
   color: #fff;
-  font-size: 22px;
+
+  font-size: 40px;
+
   font-weight: 600;
   letter-spacing: 1px;
 }
