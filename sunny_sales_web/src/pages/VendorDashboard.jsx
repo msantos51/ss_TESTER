@@ -121,7 +121,6 @@ export default function VendorDashboard() {
       </button>
 
       <div style={{ ...styles.sideMenu, ...(menuOpen ? styles.sideMenuOpen : {}) }}>
-        <legend>Menu</legend>
         <ul style={styles.menuList}>
           <li><button style={styles.menuButtonItem} onClick={paySubscription}>Pagar Semanalidade</button></li>
           <li><button style={styles.menuButtonItem} onClick={() => navigate('/paid-weeks')}>Semanas Pagas</button></li>
@@ -178,11 +177,20 @@ export default function VendorDashboard() {
           </>
         )}
 
-        <button className="btn" style={styles.fullButton} onClick={sharing ? stopSharing : startSharing}>
-          {sharing ? 'Desativar Localização' : 'Ativar Localização'}
-        </button>
+        <div style={styles.toggleContainer}>
+          <input
+            id="location-toggle"
+            type="checkbox"
+            className="theme-checkbox"
+            checked={sharing}
+            onChange={sharing ? stopSharing : startSharing}
+          />
+          <label htmlFor="location-toggle">
+            {sharing ? 'Desativar Localização' : 'Ativar Localização'}
+          </label>
+        </div>
 
-        <button className="btn" style={styles.fullButton} onClick={logout}>Sair</button>
+        <button className="btn" style={styles.logoutButton} onClick={logout}>Sair</button>
       </div>
     </div>
   );
@@ -242,12 +250,31 @@ const styles = {
     fontWeight: 'bold',
     color: '#fff',
   },
+  logoutButton: {
+    width: 'auto',
+    alignSelf: 'center',
+    margin: '12px auto',
+    borderRadius: 12,
+    backgroundColor: '#000',
+    border: 'none',
+    padding: '0.5rem 1rem',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  toggleContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    justifyContent: 'center',
+    margin: '12px auto',
+  },
   menuButton: {
     position: 'fixed',
     top: '8rem',
     left: '1rem',
     zIndex: 1100,
-    backgroundColor: '#19a0a4',
+    backgroundColor: '#000',
     color: '#fff',
     border: 'none',
     padding: '0.5rem 1rem',
@@ -285,7 +312,7 @@ const styles = {
   menuButtonItem: {
     width: '100%',
     padding: '0.75rem 1rem',
-    backgroundColor: '#19a0a4',
+    backgroundColor: '#000',
     color: 'white',
     border: 'none',
     borderRadius: '20px',

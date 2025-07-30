@@ -78,7 +78,7 @@ const styles = {
     marginBottom: '1rem',
     background: 'none',
     border: 'none',
-    color: '#19a0a4',
+    color: '#000',
     fontSize: '1rem',
     cursor: 'pointer',
   },
