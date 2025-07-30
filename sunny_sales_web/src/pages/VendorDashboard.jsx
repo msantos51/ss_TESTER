@@ -14,7 +14,6 @@ export default function VendorDashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  // carrega dados do vendedor guardados no localStorage
   useEffect(() => {
     const stored = localStorage.getItem('user');
     if (stored) {
@@ -24,7 +23,6 @@ export default function VendorDashboard() {
     setSharing(share);
   }, []);
 
-  // carrega reviews do vendedor
   useEffect(() => {
     const loadReviews = async () => {
       if (!vendor) return;
@@ -38,14 +36,12 @@ export default function VendorDashboard() {
     loadReviews();
   }, [vendor]);
 
-  // Termina sessão do vendedor
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     navigate('/vendor-login');
   };
 
-  // Ativa partilha de localização
   const startSharing = async () => {
     if (!vendor) return;
     const token = localStorage.getItem('token');
@@ -76,7 +72,6 @@ export default function VendorDashboard() {
     }
   };
 
-  // Desativa partilha de localização
   const stopSharing = async () => {
     if (watchId) {
       navigator.geolocation.clearWatch(watchId);
@@ -98,7 +93,6 @@ export default function VendorDashboard() {
     setSharing(false);
   };
 
-  // Checkout de pagamento da subscrição
   const paySubscription = async () => {
     if (!vendor) return;
     try {
@@ -116,25 +110,29 @@ export default function VendorDashboard() {
 
   return (
     <div style={styles.wrapper}>
-      <button style={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)}>
-        ☰
-      </button>
+      <button style={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)}>☰</button>
 
       <div style={{ ...styles.sideMenu, ...(menuOpen ? styles.sideMenuOpen : {}) }}>
-        <ul style={styles.menuList}>
-          <li><button style={styles.menuButtonItem} onClick={paySubscription}>Pagar Semanalidade</button></li>
-          <li><button style={styles.menuButtonItem} onClick={() => navigate('/paid-weeks')}>Semanas Pagas</button></li>
-          <li><button style={styles.menuButtonItem} onClick={() => navigate('/invoices')}>Faturas</button></li>
-          <hr />
-          <li><button style={styles.menuButtonItem} onClick={() => navigate('/routes')}>Trajetos</button></li>
-          <li><button style={styles.menuButtonItem} onClick={() => navigate('/stats')}>Distância Percorrida</button></li>
-          <hr />
-          <li><button style={styles.menuButtonItem} onClick={() => navigate('/account')}>Atualizar Dados Pessoais</button></li>
-          <li><button style={styles.menuButtonItem} onClick={() => navigate('/account')}>Apagar Conta</button></li>
-          <hr />
-          <li><button style={styles.menuButtonItem} onClick={() => navigate('/terms')}>Termos e Condições</button></li>
-          <li><button style={styles.menuButtonItem} onClick={() => (window.location.href = 'mailto:suporte@sunnysales.com')}>Contactar Suporte</button></li>
-        </ul>
+        <div style={styles.menuList}>
+          <button style={styles.menuButtonItem} onClick={() => { paySubscription(); setMenuOpen(false); }}>Pagar Semanalidade</button>
+          <button style={styles.menuButtonItem} onClick={() => { navigate('/paid-weeks'); setMenuOpen(false); }}>Semanas Pagas</button>
+          <button style={styles.menuButtonItem} onClick={() => { navigate('/invoices'); setMenuOpen(false); }}>Faturas</button>
+
+          <div style={styles.divider} />
+
+          <button style={styles.menuButtonItem} onClick={() => { navigate('/routes'); setMenuOpen(false); }}>Trajetos</button>
+          <button style={styles.menuButtonItem} onClick={() => { navigate('/stats'); setMenuOpen(false); }}>Distância Percorrida</button>
+
+          <div style={styles.divider} />
+
+          <button style={styles.menuButtonItem} onClick={() => { navigate('/account'); setMenuOpen(false); }}>Atualizar Dados Pessoais</button>
+          <button style={styles.menuButtonItem} onClick={() => { navigate('/account'); setMenuOpen(false); }}>Apagar Conta</button>
+
+          <div style={styles.divider} />
+
+          <button style={styles.menuButtonItem} onClick={() => { navigate('/terms'); setMenuOpen(false); }}>Termos e Condições</button>
+          <button style={styles.menuButtonItem} onClick={() => { window.location.href = 'mailto:suporte@sunnysales.com'; setMenuOpen(false); }}>Contactar Suporte</button>
+        </div>
       </div>
 
       <div style={styles.container}>
@@ -238,18 +236,6 @@ const styles = {
     borderBottom: '1px solid #ccc',
     padding: '4px 0',
   },
-  fullButton: {
-    width: 'auto',
-    alignSelf: 'center',
-    margin: '12px auto',
-    borderRadius: 12,
-    backgroundColor: '#19a0a4',
-    border: 'none',
-    padding: '0.5rem 1rem',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    color: '#fff',
-  },
   logoutButton: {
     width: 'auto',
     alignSelf: 'center',
@@ -301,16 +287,12 @@ const styles = {
     transform: 'translateX(0)',
   },
   menuList: {
-    listStyle: 'none',
-    padding: 0,
-    margin: 0,
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5rem',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
   },
   menuButtonItem: {
-    width: '100%',
     padding: '0.75rem 1rem',
     backgroundColor: '#000',
     color: 'white',
@@ -320,4 +302,11 @@ const styles = {
     cursor: 'pointer',
     textAlign: 'left',
   },
+  divider: {
+    height: '1px',
+    backgroundColor: '#ccc',
+    width: '100%',
+    margin: '0.5rem 0',
+  },
 };
+
