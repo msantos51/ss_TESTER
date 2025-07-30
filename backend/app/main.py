@@ -220,6 +220,10 @@ def get_current_vendor(token: str = Depends(oauth2_scheme), db: Session = Depend
     vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
     if not vendor:
         raise HTTPException(status_code=401, detail="Vendor not found")
+    # Se o token armazenado n\u00e3o coincidir, significa que o utilizador iniciou
+    # sess\u00e3o noutro dispositivo e este token foi revogado
+    if vendor.session_token != token:
+        raise HTTPException(status_code=401, detail="Session invalidated")
     return vendor
 
 
@@ -302,6 +306,9 @@ async def generate_token(
     if not vendor.email_confirmed:
         raise HTTPException(status_code=400, detail="Email not confirmed")
     token = create_access_token({"sub": vendor.id})
+    # Guardar o token atual no vendedor para que apenas esta sess\u00e3o seja v\u00e1lida
+    vendor.session_token = token
+    db.commit()
     return {"access_token": token, "token_type": "bearer"}
 
 

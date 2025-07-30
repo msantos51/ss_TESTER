@@ -86,6 +86,33 @@ def test_token_generation(client):
     assert token
 
 
+def test_single_session(client):
+    register_vendor(client, email="single@example.com")
+    confirm_latest_email(client)
+
+    token1 = get_token(client, email="single@example.com")
+    resp = client.get(
+        "/vendors/me",
+        headers={"Authorization": f"Bearer {token1}"},
+    )
+    assert resp.status_code == 200
+
+    # Gerar um novo token que deve invalidar o primeiro
+    token2 = get_token(client, email="single@example.com")
+    resp = client.get(
+        "/vendors/me",
+        headers={"Authorization": f"Bearer {token2}"},
+    )
+    assert resp.status_code == 200
+
+    # Token antigo deve deixar de ser válido
+    resp = client.get(
+        "/vendors/me",
+        headers={"Authorization": f"Bearer {token1}"},
+    )
+    assert resp.status_code == 401
+
+
 def test_login_requires_confirmation(client):
     register_vendor(client, email="new@example.com")
     resp = client.post("/login", json={"email": "new@example.com", "password": "Secret123"})
