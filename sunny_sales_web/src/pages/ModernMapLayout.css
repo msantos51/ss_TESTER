@@ -91,13 +91,14 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 260px;
+  width: 180px;
   padding: 1rem;
   background: var(--bg-color);
   border: 1px solid #dee2e6;
   border-radius: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   animation: fadeSlide 0.3s ease-out;
+  text-align: center;
 }
 
 @keyframes fadeSlide {
@@ -121,61 +122,22 @@ body {
   cursor: pointer;
   color: var(--secondary-color);
 }
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
 .card-photo {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
+  display: block;
+  margin: 0 auto 0.5rem;
 }
 
-.badge {
-  background: var(--primary-color);
-  color: #FFFFFF;
-  font-size: 0.8rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
+
 
 .card-name {
   margin: 0 0 4px 0;
   font-weight: bold;
 }
 
-.card-id {
-  margin: 0 0 8px 0;
-  color: #6c757d;
-  font-size: 0.8rem;
-}
-
-.card-stats {
-  margin: 0 0 1rem 0;
-  font-size: 0.95rem;
-}
-
-.map-btn {
-  background: var(--secondary-color);
-  color: #FFFFFF;
-  border: none;
-  padding: 0.5rem 1rem;
-  width: 100%;
-  cursor: pointer;
-  border-radius: 8px;
-  font-weight: bold;
-  transition: background 0.2s, transform 0.2s;
-}
-
-.map-btn:hover {
-  background: var(--primary-color);
-  transform: scale(1.05);
-}
 
 .online-vendors {
   margin-top: 2rem;

@@ -155,27 +155,19 @@ export default function ModernMapLayout() {
             >
               ×
             </button>
-            <div className="card-header">
-              {selected.profile_photo ? (
-                <img
-                  src={`${BASE_URL}/${selected.profile_photo}`}
-                  alt={selected.name}
-                  className="card-photo"
-                />
-              ) : (
-                <div
-                  className="card-photo"
-                  style={{ background: selected.pin_color || '#ccc' }}
-                />
-              )}
-              <span className="badge">Ativo</span>
-            </div>
+            {selected.profile_photo ? (
+              <img
+                src={`${BASE_URL}/${selected.profile_photo}`}
+                alt={selected.name}
+                className="card-photo"
+              />
+            ) : (
+              <div
+                className="card-photo"
+                style={{ background: selected.pin_color || '#ccc' }}
+              />
+            )}
             <h4 className="card-name">{selected.name}</h4>
-            <p className="card-id">#{selected.id}</p>
-            <p className="card-stats">📍 {selected.locations_count || 0}</p>
-            <button className="map-btn" onClick={() => focusVendor(selected)}>
-              VER NO MAPA
-            </button>
           </div>
         )}
       </main>
