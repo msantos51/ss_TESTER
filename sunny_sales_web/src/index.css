@@ -23,6 +23,21 @@ body {
   overflow-x: hidden;
 }
 
+/* Container central para limitar a largura do conteúdo */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+}
+
 .header-wrapper {
   position: sticky;
   top: 0;
@@ -417,21 +432,26 @@ input[type='checkbox'] {
 
 @media (max-width: 768px) {
   .header-wrapper {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    padding: 8px 0;
+    padding: 6px 0;
   }
 
   .logo-outside {
     position: static;
     transform: none;
-    margin-bottom: 8px;
+    margin: 0;
+    margin-right: auto;
   }
 
   .navbar {
-    width: 100%;
-    padding: 8px 16px;
+    width: auto;
+    flex: 1;
+    padding: 6px 12px;
     border-radius: 20px;
+  }
+  .profile-icon {
+    margin-left: 0;
   }
   .logo-link {
     font-size: 28px;
@@ -454,6 +474,7 @@ input[type='checkbox'] {
 
   .menu-toggle {
     display: block;
+    font-size: 1.5rem;
   }
 
   .social-icons {
