@@ -35,7 +35,6 @@ scripts/        Utilidades auxiliares
 ## Novidades
 
 - **Estatísticas**: painel no aplicativo mostra gráfico das distâncias diárias percorridas.
-- **Respostas a reviews**: vendedores podem responder ou ocultar avaliações via API.
 
 - **Tradução e acessibilidade**: interface com suporte a português e inglês e elementos com labels acessíveis.
 

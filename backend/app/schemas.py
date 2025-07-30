@@ -35,7 +35,6 @@ class VendorOut(BaseModel):
     pin_color: Optional[str] = None
     current_lat: Optional[float] = None
     current_lng: Optional[float] = None
-    rating_average: Optional[float] = None
     subscription_active: Optional[bool] = None
     subscription_valid_until: Optional[datetime] = None
     last_seen: Optional[str] = None
@@ -45,32 +44,6 @@ class VendorOut(BaseModel):
 
 
 
-
-# ReviewCreate
-class ReviewCreate(BaseModel):
-    rating: int
-    comment: Optional[str] = None
-
-
-# ReviewResponse
-class ReviewResponse(BaseModel):
-    response: str
-
-
-# ReviewOut
-class ReviewOut(BaseModel):
-    id: int
-    vendor_id: int
-    client_name: Optional[str] = None
-    client_profile_photo: Optional[str] = None
-    rating: int
-    comment: Optional[str] = None
-    response: Optional[str] = None
-    active: bool
-
-    # Config
-    class Config:
-        orm_mode = True
 
 
 # RoutePoint

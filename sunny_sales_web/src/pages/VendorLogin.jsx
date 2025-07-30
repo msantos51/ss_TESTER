@@ -46,7 +46,6 @@ export default function VendorLogin() {
       // remove any previous client session data
       localStorage.removeItem('client');
       localStorage.removeItem('clientToken');
-      localStorage.removeItem('favorites');
 
       navigate('/dashboard');
     } catch (err) {

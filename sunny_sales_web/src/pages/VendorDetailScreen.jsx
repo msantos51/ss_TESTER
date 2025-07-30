@@ -1,4 +1,4 @@
-// (em português) Versão web da página de detalhes de vendedor com favoritos, reviews e stories
+// (em português) Página de detalhes do vendedor com stories
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
@@ -6,21 +6,8 @@ import './VendorDetailScreen.css'; // Deves criar este ficheiro com os estilos C
 
 // Página de detalhes de um vendedor específico
 export default function VendorDetailScreen({ vendor }) {
-  const [reviews, setReviews] = useState([]);
-  const [favorite, setFavorite] = useState(false);
   const [stories, setStories] = useState([]);
   const [storyIndex, setStoryIndex] = useState(null);
-
-  // (em português) Carrega as reviews do vendedor
-  // Carrega avaliações do vendedor
-  const loadReviews = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/vendors/${vendor.id}/reviews`);
-      setReviews(res.data);
-    } catch (e) {
-      console.error('Erro ao carregar reviews:', e);
-    }
-  };
 
   // (em português) Carrega os stories
   // Obtém os stories publicados pelo vendedor
@@ -34,27 +21,9 @@ export default function VendorDetailScreen({ vendor }) {
   };
 
   useEffect(() => {
-    loadReviews();
     loadStories();
-    const storedFavorites = localStorage.getItem('favorites') || '[]';
-    setFavorite(JSON.parse(storedFavorites).includes(vendor.id));
   }, [vendor.id]);
 
-
-  // (em português) Alterna favoritos
-  // Adiciona ou remove o vendedor dos favoritos
-  const toggleFavorite = () => {
-    const stored = JSON.parse(localStorage.getItem('favorites') || '[]');
-    let updated;
-    if (stored.includes(vendor.id)) {
-      updated = stored.filter(id => id !== vendor.id);
-      setFavorite(false);
-    } else {
-      updated = [...stored, vendor.id];
-      setFavorite(true);
-    }
-    localStorage.setItem('favorites', JSON.stringify(updated));
-  };
 
   const baseUrl = BASE_URL.replace(/\/$/, '');
 
@@ -70,9 +39,6 @@ export default function VendorDetailScreen({ vendor }) {
           />
         )}
         <h2>{vendor.name}</h2>
-        <button className="btn" onClick={toggleFavorite}>
-          {favorite ? '★ Remover dos Favoritos' : '☆ Adicionar aos Favoritos'}
-        </button>
         <p>Produto: {vendor.product}</p>
       </div>
 
@@ -104,16 +70,6 @@ export default function VendorDetailScreen({ vendor }) {
         ))}
       </div>
 
-      <div className="review-section">
-        <h3>Avaliações</h3>
-        {reviews.map(r => (
-          <div key={r.id} className="review-item">
-            <strong>⭐ {r.rating}</strong>
-            <p>{r.comment}</p>
-          </div>
-        ))}
-
-      </div>
     </div>
   );
 }

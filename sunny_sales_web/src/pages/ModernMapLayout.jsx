@@ -12,7 +12,6 @@ export default function ModernMapLayout() {
   const PRODUCTS = ['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'];
   const [selectedProducts, setSelectedProducts] = useState([...PRODUCTS]);
   const [selected, setSelected] = useState(null);
-  const [favorite, setFavorite] = useState(false);
 
   const [mapReady, setMapReady] = useState(false);
   const [clientPos, setClientPos] = useState(null);
@@ -44,12 +43,6 @@ export default function ModernMapLayout() {
     }
   }, []);
 
-  useEffect(() => {
-    if (selected) {
-      const stored = JSON.parse(localStorage.getItem('favorites') || '[]');
-      setFavorite(stored.includes(selected.id));
-    }
-  }, [selected]);
 
   const activeVendors = vendors.filter((v) => v.current_lat && v.current_lng);
   const filteredVendors = activeVendors.filter((v) =>
@@ -69,21 +62,6 @@ export default function ModernMapLayout() {
     if (mapRef.current) {
       mapRef.current.flyTo([v.current_lat, v.current_lng], 16);
     }
-  };
-
-  // Marca ou desmarca o vendedor como favorito
-  const toggleFavorite = () => {
-    if (!selected) return;
-    const stored = JSON.parse(localStorage.getItem('favorites') || '[]');
-    let updated;
-    if (stored.includes(selected.id)) {
-      updated = stored.filter((id) => id !== selected.id);
-      setFavorite(false);
-    } else {
-      updated = [...stored, selected.id];
-      setFavorite(true);
-    }
-    localStorage.setItem('favorites', JSON.stringify(updated));
   };
 
 
@@ -177,17 +155,9 @@ export default function ModernMapLayout() {
             </div>
             <h4 className="card-name">{selected.name}</h4>
             <p className="card-id">#{selected.id}</p>
-            <p className="card-stats">
-              📍 {selected.locations_count || 0} &nbsp; ⭐{' '}
-              {selected.rating_average
-                ? selected.rating_average.toFixed(1)
-                : '--'}
-            </p>
+            <p className="card-stats">📍 {selected.locations_count || 0}</p>
             <button className="map-btn" onClick={() => focusVendor(selected)}>
               VER NO MAPA
-            </button>
-            <button className="map-btn" onClick={toggleFavorite}>
-              {favorite ? '★ Remover dos Favoritos' : '☆ Adicionar aos Favoritos'}
             </button>
           </div>
         )}
@@ -215,9 +185,6 @@ export default function ModernMapLayout() {
             )}
             <div>
               <p className="vendor-name">{v.name}</p>
-              <p className="vendor-rating">
-                ⭐ {v.rating_average ? v.rating_average.toFixed(1) : '--'}
-              </p>
             </div>
           </div>
         ))}
