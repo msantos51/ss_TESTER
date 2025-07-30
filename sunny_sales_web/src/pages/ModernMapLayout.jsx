@@ -76,7 +76,11 @@ export default function ModernMapLayout() {
       const stored = localStorage.getItem('user');
       if (stored) {
         const { id } = JSON.parse(stored);
-        loggedVendor = activeVendors.find((v) => v.id === id) || null;
+
+        const vendorId = Number(id);
+        loggedVendor =
+          activeVendors.find((v) => Number(v.id) === vendorId) || null;
+
       }
     } catch (e) {
       console.error('Erro ao ler vendedor logado:', e);
