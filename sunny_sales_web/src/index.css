@@ -613,6 +613,7 @@ input[type='checkbox'] {
   border-radius: 0.5rem;
   padding: 1rem 0.75rem;
   width: 100%;
+  box-sizing: border-box;
   border: none;
   display: flex;
   align-items: center;
