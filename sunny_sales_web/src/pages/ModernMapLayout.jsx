@@ -162,7 +162,7 @@ export default function ModernMapLayout() {
           )}
 
 
-          <VendorLocateButton vendor={selected || loggedVendor} /
+          <VendorLocateButton vendor={selected || loggedVendor} />
 
         </MapContainer>
 

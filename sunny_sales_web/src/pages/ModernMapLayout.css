@@ -182,8 +182,8 @@ body {
 
 .vendor-locate-btn {
   position: absolute;
-  bottom: 1rem;
-  left: 1rem;
+  bottom: 5rem;
+  right: 1rem;
   width: 44.8px;
   height: 44.8px;
   background: var(--secondary-color);
