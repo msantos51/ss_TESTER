@@ -70,6 +70,19 @@ export default function ModernMapLayout() {
     selectedProducts.includes(v.product)
   );
 
+  let loggedVendor = null;
+  if (isVendorLogged) {
+    try {
+      const stored = localStorage.getItem('user');
+      if (stored) {
+        const { id } = JSON.parse(stored);
+        loggedVendor = activeVendors.find((v) => v.id === id) || null;
+      }
+    } catch (e) {
+      console.error('Erro ao ler vendedor logado:', e);
+    }
+  }
+
   // Alterna a seleção de um produto no filtro
   const toggleProduct = (p) => {
     setSelectedProducts((prev) =>
@@ -149,8 +162,7 @@ export default function ModernMapLayout() {
           )}
 
 
-          <VendorLocateButton vendor={selected} />
-
+          <VendorLocateButton vendor={selected || loggedVendor} /
 
         </MapContainer>
 

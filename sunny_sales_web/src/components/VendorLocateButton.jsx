@@ -6,7 +6,6 @@ export default function VendorLocateButton({ vendor }) {
 
   const handleLocate = () => {
     if (vendor && vendor.current_lat && vendor.current_lng) {
-
       map.flyTo([vendor.current_lat, vendor.current_lng], 16);
     }
   };
