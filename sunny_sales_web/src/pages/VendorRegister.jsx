@@ -71,7 +71,7 @@ export default function VendorRegister() {
       <h2 className="title auth-title">Registo de Vendedor</h2>
 
       {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
-      {success && <p style={{ color: 'green', marginBottom: '1rem' }}>{success}</p>}
+      {success && <p style={{ color: 'black', marginBottom: '1rem' }}>{success}</p>}
 
       <form onSubmit={handleRegister} className="form login-form auth-form">
         <span className="input-span">

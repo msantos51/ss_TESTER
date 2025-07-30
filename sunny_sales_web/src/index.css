@@ -353,6 +353,7 @@ button {
   padding: 0.5em 1.2em;
   background: var(--primary-color);
   display: flex;
+  justify-content: center;
   transition: 0.2s background;
   align-items: center;
   gap: 0.6em;
@@ -543,12 +544,12 @@ input[type='checkbox'] {
 
 /* === Switch de partilha de localização === */
 .theme-checkbox {
-  --toggle-size: 16px;
+  --toggle-size: 14px;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  width: 6.25em;
-  height: 3.125em;
+  width: 4em;
+  height: 2em;
   background: linear-gradient(to right, #ffffff 50%, #000000 50%) no-repeat;
   background-size: 205%;
   background-position: 0;
@@ -561,11 +562,11 @@ input[type='checkbox'] {
 
 .theme-checkbox::before {
   content: "";
-  width: 2.25em;
-  height: 2.25em;
+  width: 1.5em;
+  height: 1.5em;
   position: absolute;
-  top: 0.438em;
-  left: 0.438em;
+  top: 0.25em;
+  left: 0.25em;
   background: linear-gradient(to right, #ffffff 50%, #000000 50%) no-repeat;
   background-size: 205%;
   background-position: 100%;
@@ -574,7 +575,7 @@ input[type='checkbox'] {
 }
 
 .theme-checkbox:checked::before {
-  left: calc(100% - 2.25em - 0.438em);
+  left: calc(100% - 1.5em - 0.25em);
   background-position: 0;
 }
 
@@ -586,7 +587,7 @@ input[type='checkbox'] {
 .form {
   --bg-light: #efefef;
   --bg-dark: #707070;
-  --clr: #58bc82;
+  --clr: #000000;
   --clr-alpha: #9c9c9c60;
   display: flex;
   flex-direction: column;

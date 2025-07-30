@@ -88,7 +88,7 @@ export default function ManageAccount() {
       <h2 className="title">Definições de Conta</h2>
       <form onSubmit={handleUpdate} className="form">
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        {success && <p style={{ color: 'green' }}>{success}</p>}
+        {success && <p style={{ color: 'black' }}>{success}</p>}
         <span className="input-span">
           <label className="label">Nome</label>
           <input
@@ -143,6 +143,7 @@ export default function ManageAccount() {
             value={pinColor}
             onChange={(e) => setPinColor(e.target.value)}
           />
+          <span>{pinColor}</span>
         </span>
         <span className="input-span">
           <label className="label">Foto</label>
