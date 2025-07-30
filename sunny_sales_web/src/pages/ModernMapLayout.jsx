@@ -166,7 +166,10 @@ export default function ModernMapLayout() {
           )}
 
 
-          <VendorLocateButton vendor={selected || loggedVendor} />
+          {isVendorLogged && loggedVendor && (
+            <VendorLocateButton vendor={loggedVendor} />
+          )}
+
 
         </MapContainer>
 
