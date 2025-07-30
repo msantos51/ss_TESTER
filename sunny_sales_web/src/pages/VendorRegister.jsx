@@ -74,42 +74,50 @@ export default function VendorRegister() {
       {success && <p style={{ color: 'green', marginBottom: '1rem' }}>{success}</p>}
 
       <form onSubmit={handleRegister} className="form login-form auth-form">
-        <div className="form-container login-container">
+        <span className="input-span">
+          <label className="label">Nome</label>
           <input
             type="text"
             placeholder="Nome"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="input"
           />
+        </span>
+        <span className="input-span">
+          <label className="label">Email</label>
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input"
           />
+        </span>
+        <span className="input-span">
+          <label className="label">Palavra-passe</label>
           <input
             type="password"
             placeholder="Palavra-passe"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="input"
           />
+        </span>
+        <span className="input-span">
+          <label className="label">Produto</label>
           <select
             value={product}
             onChange={(e) => setProduct(e.target.value)}
-            className="input"
           >
             <option value="">Selecione um produto</option>
             <option value="Bolas de Berlim">Bolas de Berlim</option>
             <option value="Gelados">Gelados</option>
             <option value="Acessórios">Acessórios</option>
           </select>
-
-          <input type="file" onChange={handlePhotoChange} className="input" />
-        </div>
-        <button type="submit" className="black-button">Registar</button>
+        </span>
+        <span className="input-span">
+          <label className="label">Foto</label>
+          <input type="file" onChange={handlePhotoChange} />
+        </span>
+        <button type="submit" className="submit">Registar</button>
       </form>
     </div>
   );

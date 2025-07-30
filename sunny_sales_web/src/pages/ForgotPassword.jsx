@@ -34,16 +34,16 @@ export default function ForgotPassword() {
       {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
       {message && <p style={{ color: 'green', marginBottom: '1rem' }}>{message}</p>}
       <div className="form">
-        <div className="form-container">
+        <span className="input-span">
+          <label className="label">Email</label>
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input"
           />
-        </div>
-        <button onClick={requestReset} disabled={loading || !email}>
+        </span>
+        <button className="submit" onClick={requestReset} disabled={loading || !email}>
           {loading ? <LoadingDots /> : 'Enviar'}
         </button>
       </div>
