@@ -50,7 +50,7 @@ const styles = {
     border: 'none',
     cursor: 'pointer',
     fontSize: '1rem',
-    color: '#19a0a4',
+    color: '#000',
   },
   title: {
     fontSize: '1.8rem',

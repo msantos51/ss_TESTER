@@ -312,7 +312,7 @@ const styles = {
   menuButtonItem: {
     width: '100%',
     padding: '0.75rem 1rem',
-    backgroundColor: '#19a0a4',
+    backgroundColor: '#000',
     color: 'white',
     border: 'none',
     borderRadius: '20px',
