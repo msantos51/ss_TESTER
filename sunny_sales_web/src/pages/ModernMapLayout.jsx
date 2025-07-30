@@ -135,9 +135,7 @@ export default function ModernMapLayout() {
               eventHandlers={{
                 click: () => focusVendor(v),
               }}
-            >
-              <Popup>{v.name}</Popup>
-            </Marker>
+            />
           ))}
 
           {!isVendorLogged && (
