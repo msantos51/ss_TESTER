@@ -15,6 +15,9 @@ export default function ModernMapLayout() {
 
   const [mapReady, setMapReady] = useState(false);
   const [clientPos, setClientPos] = useState(null);
+  // Verifica se o utilizador autenticado é um vendedor. Se sim, ocultamos o
+  // pin de cliente para evitar marcadores duplicados no mapa.
+  const isVendorLogged = !!localStorage.getItem('user');
 
   const mapRef = useRef(null);
 
@@ -30,18 +33,18 @@ export default function ModernMapLayout() {
     fetchVendors();
   }, []);
 
-  // Pede permissão para usar a localização quando o layout é carregado
+  // Pede permissão para usar a localização apenas se o utilizador não estiver
+  // autenticado como vendedor. Assim evitamos mostrar o pin de cliente para
+  // quem já está identificado como vendedor.
   useEffect(() => {
-    if (navigator.geolocation) {
+    if (!isVendorLogged && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-
         () => {},
-
         () => {},
         { enableHighAccuracy: true }
       );
     }
-  }, []);
+  }, [isVendorLogged]);
 
 
   const activeVendors = vendors.filter((v) => v.current_lat && v.current_lng);
@@ -97,7 +100,7 @@ export default function ModernMapLayout() {
             subdomains="abcd"
             maxZoom={19}
           />
-          {clientPos && (
+          {!isVendorLogged && clientPos && (
             <Marker
               position={[clientPos.lat, clientPos.lng]}
               icon={L.divIcon({
@@ -125,7 +128,9 @@ export default function ModernMapLayout() {
             </Marker>
           ))}
 
-          <LocateButton onLocationFound={setClientPos} />
+          {!isVendorLogged && (
+            <LocateButton onLocationFound={setClientPos} />
+          )}
 
         </MapContainer>
 
