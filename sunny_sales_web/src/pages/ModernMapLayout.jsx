@@ -148,7 +148,9 @@ export default function ModernMapLayout() {
             <LocateButton onLocationFound={setClientPos} />
           )}
 
+
           <VendorLocateButton vendor={selected} />
+
 
         </MapContainer>
 
