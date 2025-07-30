@@ -24,6 +24,7 @@ export default function VendorDashboard() {
 
 
   const logout = () => {
+    stopSharing();
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     navigate('/vendor-login');
@@ -242,7 +243,7 @@ const styles = {
     boxSizing: 'border-box',
     transform: 'translateX(-100%)',
     transition: 'transform 0.3s ease-in-out',
-    zIndex: 1000,
+    zIndex: 1200,
   },
   sideMenuOpen: {
     transform: 'translateX(0)',

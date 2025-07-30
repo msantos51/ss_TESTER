@@ -33,18 +33,30 @@ export default function ModernMapLayout() {
     fetchVendors();
   }, []);
 
-  // Pede permissão para usar a localização apenas se o utilizador não estiver
-  // autenticado como vendedor. Assim evitamos mostrar o pin de cliente para
-  // quem já está identificado como vendedor.
+  // Sempre que o mapa estiver pronto, acompanha a posição do utilizador
+  // (vendedor ou cliente) e mantém o mapa centrado nessa localização.
   useEffect(() => {
-    if (!isVendorLogged && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        () => {},
-        () => {},
+    let watcher;
+    if (mapReady && navigator.geolocation) {
+      watcher = navigator.geolocation.watchPosition(
+        (pos) => {
+          const coords = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          };
+          setClientPos(coords);
+          if (mapRef.current) {
+            mapRef.current.setView([coords.lat, coords.lng]);
+          }
+        },
+        (err) => console.error('Erro localização:', err),
         { enableHighAccuracy: true }
       );
     }
-  }, [isVendorLogged]);
+    return () => {
+      if (watcher) navigator.geolocation.clearWatch(watcher);
+    };
+  }, [mapReady]);
 
 
   const activeVendors = vendors.filter((v) => v.current_lat && v.current_lng);
