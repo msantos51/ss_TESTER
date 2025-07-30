@@ -37,16 +37,21 @@ export default function ModernMapLayout() {
   // (vendedor ou cliente) e mantém o mapa centrado nessa localização.
   useEffect(() => {
     let watcher;
+    let lastUpdate = 0;
     if (mapReady && navigator.geolocation) {
       watcher = navigator.geolocation.watchPosition(
         (pos) => {
-          const coords = {
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-          };
-          setClientPos(coords);
-          if (mapRef.current) {
-            mapRef.current.setView([coords.lat, coords.lng]);
+          const now = Date.now();
+          if (now - lastUpdate >= 1000) {
+            lastUpdate = now;
+            const coords = {
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+            };
+            setClientPos(coords);
+            if (mapRef.current) {
+              mapRef.current.setView([coords.lat, coords.lng]);
+            }
           }
         },
         (err) => console.error('Erro localização:', err),

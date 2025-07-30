@@ -6,6 +6,7 @@ import { BASE_URL } from '../config';
 import axios from 'axios';
 
 let watchId = null;
+let lastSent = 0;
 
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
@@ -41,11 +42,15 @@ export default function VendorDashboard() {
       watchId = navigator.geolocation.watchPosition(
         async (pos) => {
           try {
-            await axios.put(
-              `${BASE_URL}/vendors/${vendor.id}/location`,
-              { lat: pos.coords.latitude, lng: pos.coords.longitude },
-              { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const now = Date.now();
+            if (now - lastSent >= 1000) {
+              lastSent = now;
+              await axios.put(
+                `${BASE_URL}/vendors/${vendor.id}/location`,
+                { lat: pos.coords.latitude, lng: pos.coords.longitude },
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+            }
           } catch (err) {
             console.log('Erro ao enviar localização:', err);
           }
@@ -64,6 +69,7 @@ export default function VendorDashboard() {
     if (watchId) {
       navigator.geolocation.clearWatch(watchId);
       watchId = null;
+      lastSent = 0;
     }
     if (vendor) {
       const token = localStorage.getItem('token');
