@@ -20,6 +20,7 @@ body {
   padding: 0;
 
   background-color: var(--bg-color);
+  overflow-x: hidden;
 }
 
 .header-wrapper {
@@ -451,6 +452,13 @@ input[type='checkbox'] {
 
   .social-icons {
     display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container,
+  .form-container.login-container {
+    width: 90%;
   }
 }
 
