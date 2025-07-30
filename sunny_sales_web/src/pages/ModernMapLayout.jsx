@@ -4,6 +4,7 @@ import L from 'leaflet';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import LocateButton from '../components/LocateButton';
+import VendorLocateButton from '../components/VendorLocateButton';
 import './ModernMapLayout.css';
 
 // Layout principal com mapa e lista de vendedores online
@@ -68,6 +69,21 @@ export default function ModernMapLayout() {
   const filteredVendors = activeVendors.filter((v) =>
     selectedProducts.includes(v.product)
   );
+
+  let loggedVendor = null;
+  if (isVendorLogged) {
+    try {
+      const stored = localStorage.getItem('user');
+      if (stored) {
+        const { id } = JSON.parse(stored);
+        const vendorId = Number(id);
+        loggedVendor =
+          activeVendors.find((v) => Number(v.id) === vendorId) || null;
+      }
+    } catch (e) {
+      console.error('Erro ao ler vendedor logado:', e);
+    }
+  }
 
   // Alterna a seleção de um produto no filtro
   const toggleProduct = (p) => {
@@ -145,6 +161,10 @@ export default function ModernMapLayout() {
 
           {!isVendorLogged && (
             <LocateButton onLocationFound={setClientPos} />
+          )}
+
+          {isVendorLogged && loggedVendor && (
+            <VendorLocateButton vendor={loggedVendor} />
           )}
 
         </MapContainer>
