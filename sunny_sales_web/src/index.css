@@ -425,26 +425,26 @@ input[type='checkbox'] {
   accent-color: var(--secondary-color);
 }
 
-@media (max-width: 768px) {
-  .header-wrapper {
-    flex-direction: row;
-    align-items: center;
-    padding: 6px 0;
-  }
+  @media (max-width: 768px) {
+    .header-wrapper {
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 6px 0;
+    }
 
-  .logo-outside {
-    position: static;
-    transform: none;
-    margin: 0;
-    margin-right: auto;
-  }
+    .logo-outside {
+      position: static;
+      transform: none;
+      margin: 0 1rem 0 0;
+    }
 
-  .navbar {
-    width: auto;
-    flex: 1;
-    padding: 6px 12px;
-    border-radius: 20px;
-  }
+    .navbar {
+      width: auto;
+      flex: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
   .profile-icon {
     margin-left: 0;
   }
