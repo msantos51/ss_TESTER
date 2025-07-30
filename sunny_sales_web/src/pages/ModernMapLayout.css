@@ -212,12 +212,6 @@ body {
   font-weight: bold;
 }
 
-.vendor-rating {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--text-color);
-}
-
 @media (max-width: 768px) {
   .map-area {
     width: 100vw;

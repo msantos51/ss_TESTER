@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import HTMLResponse, FileResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 from passlib.context import CryptContext
 from . import models, schemas
 import stripe
@@ -420,14 +419,6 @@ def password_reset(token: str, new_password: str = Form(...), db: Session = Depe
 def list_vendors(db: Session = Depends(get_db)):
     vendors = db.query(models.Vendor).all()
 
-    # calcular média de avaliações em único passo
-    ratings = dict(
-        db.query(models.Review.vendor_id, func.avg(models.Review.rating))
-        .filter(models.Review.active == True)
-        .group_by(models.Review.vendor_id)
-        .all()
-    )
-
     # mapear rotas ativas para evitar uma query por vendedor
     active_routes = {
         r.vendor_id: r
@@ -435,7 +426,6 @@ def list_vendors(db: Session = Depends(get_db)):
     }
 
     for v in vendors:
-        v.rating_average = ratings.get(v.id)
         if v.id not in active_routes:
             v.current_lat = None
             v.current_lng = None
@@ -741,77 +731,6 @@ async def websocket_locations(websocket: WebSocket):
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-
-# --------------------------
-# Reviews dos vendedores
-# --------------------------
-
-
-
-@app.get("/vendors/{vendor_id}/reviews", response_model=list[schemas.ReviewOut])
-# list_reviews
-def list_reviews(vendor_id: int, db: Session = Depends(get_db)):
-    reviews = (
-        db.query(models.Review)
-        .filter(models.Review.vendor_id == vendor_id, models.Review.active == True)
-        .all()
-    )
-    return reviews
-
-
-
-
-
-
-
-@app.post("/vendors/{vendor_id}/reviews/{review_id}/response", response_model=schemas.ReviewOut)
-# respond_review
-def respond_review(
-    vendor_id: int,
-    review_id: int,
-    data: schemas.ReviewResponse,
-    db: Session = Depends(get_db),
-    current_vendor: models.Vendor = Depends(get_current_vendor),
-):
-    if current_vendor.id != vendor_id:
-        raise HTTPException(status_code=403, detail="Not authorized")
-
-    review = (
-        db.query(models.Review)
-        .filter(models.Review.id == review_id, models.Review.vendor_id == vendor_id)
-        .first()
-    )
-    if not review:
-        raise HTTPException(status_code=404, detail="Review not found")
-
-    review.response = data.response
-    db.commit()
-    db.refresh(review)
-    return review
-
-
-
-@app.delete("/vendors/{vendor_id}/reviews/{review_id}")
-# delete_review
-def delete_review(
-    vendor_id: int,
-    review_id: int,
-    db: Session = Depends(get_db),
-    current_vendor: models.Vendor = Depends(get_current_vendor),
-):
-    if current_vendor.id != vendor_id:
-        raise HTTPException(status_code=403, detail="Not authorized")
-    review = (
-        db.query(models.Review)
-        .filter(models.Review.id == review_id, models.Review.vendor_id == vendor_id)
-        .first()
-    )
-    if not review:
-        raise HTTPException(status_code=404, detail="Review not found")
-    review.active = False
-    db.commit()
-    return {"status": "deleted"}
-
 
 @app.post("/vendors/{vendor_id}/stories", response_model=schemas.StoryOut)
 # create_story
