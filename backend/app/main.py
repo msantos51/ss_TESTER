@@ -10,7 +10,7 @@ from passlib.context import CryptContext
 from . import models, schemas
 import stripe
 from datetime import datetime, timedelta
-from .database import SessionLocal, engine, get_db
+from .database import engine, get_db
 import os
 from pathlib import Path
 import shutil
@@ -21,7 +21,6 @@ from email import policy
 import smtplib
 import time
 import json
-import asyncio
 import base64
 import hmac
 import hashlib

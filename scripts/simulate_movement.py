@@ -1,6 +1,6 @@
 # Script para simular deslocamento de um vendedor enviando localizacoes
 import os
-import time
+import asyncio
 import httpx
 
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000")
@@ -31,10 +31,9 @@ async def main():
             )
             lat += 0.0005
             lng += 0.0005
-            time.sleep(1)
+            await asyncio.sleep(1)
 
         await client.post(f"{BASE_URL}/vendors/{VENDOR_ID}/routes/stop", headers=headers)
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())
