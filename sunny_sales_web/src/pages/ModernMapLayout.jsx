@@ -172,32 +172,6 @@ export default function ModernMapLayout() {
         )}
       </main>
 
-      <div className="online-vendors">
-        <h2 className="vendors-title">Vendedores Online</h2>
-        {filteredVendors.map((v) => (
-          <div
-            key={v.id}
-            className="vendor-entry"
-            onClick={() => focusVendor(v)}
-          >
-            {v.profile_photo ? (
-              <img
-                src={`${BASE_URL}/${v.profile_photo}`}
-                alt={v.name}
-                className="vendor-avatar"
-              />
-            ) : (
-              <div
-                className="vendor-avatar"
-                style={{ background: v.pin_color || '#ccc' }}
-              />
-            )}
-            <div>
-              <p className="vendor-name">{v.name}</p>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
