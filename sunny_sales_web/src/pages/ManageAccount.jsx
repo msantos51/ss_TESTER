@@ -143,7 +143,10 @@ export default function ManageAccount() {
             value={pinColor}
             onChange={(e) => setPinColor(e.target.value)}
           />
-          <span>{pinColor}</span>
+          <span
+            className="color-preview"
+            style={{ backgroundColor: pinColor }}
+          />
         </span>
         <span className="input-span">
           <label className="label">Foto</label>

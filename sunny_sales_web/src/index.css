@@ -666,3 +666,13 @@ input[type='checkbox'] {
 .span a {
   color: var(--clr);
 }
+
+.color-preview {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--bg-dark);
+  margin-left: 8px;
+  vertical-align: middle;
+}
