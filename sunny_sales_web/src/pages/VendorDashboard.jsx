@@ -127,7 +127,7 @@ export default function VendorDashboard() {
         <h2 style={styles.title}>Painel do Vendedor</h2>
 
         {vendor && (
-          <>
+          <div style={styles.infoBox}>
             {vendor.profile_photo && (
               <img
                 src={`${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}`}
@@ -147,7 +147,7 @@ export default function VendorDashboard() {
               {vendor.subscription_active ? 'ativa' : 'inativa'}
             </p>
 
-          </>
+          </div>
         )}
 
         <div style={styles.toggleContainer}>
@@ -197,6 +197,12 @@ const styles = {
     borderRadius: '50%',
     marginLeft: 8,
     verticalAlign: 'middle',
+  },
+  infoBox: {
+    backgroundColor: '#fff9c4',
+    padding: '1rem',
+    borderRadius: '12px',
+    marginBottom: '1rem',
   },
   logoutButton: {
     width: 'auto',
