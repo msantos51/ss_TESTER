@@ -53,26 +53,25 @@ export default function AccountSettings() {
       <h2 className="title">Definições da Conta</h2>
 
       <div className="form">
-        <div className="form-container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'center' }}>
-            <span>Notificações Ativas</span>
-            <label className="checkbox-container">
-              <input type="checkbox" checked={enabled} onChange={toggleNotifications} />
-              <span className="checkmark"></span>
-            </label>
-          </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'center' }}>
+          <span>Notificações Ativas</span>
+          <label className="checkbox-container">
+            <input type="checkbox" checked={enabled} onChange={toggleNotifications} />
+            <span className="checkmark"></span>
+          </label>
+        </div>
 
-          <label style={{ display: 'block', marginBottom: '0.5rem' }}>Raio de Alertas (metros):</label>
+        <span className="input-span">
+          <label className="label">Raio de Alertas (metros):</label>
           <select
             value={radius}
             onChange={(e) => changeRadius(e.target.value)}
-            className="input"
           >
             <option value="20">20</option>
             <option value="50">50</option>
             <option value="100">100</option>
           </select>
-        </div>
+        </span>
       </div>
     </div>
   );

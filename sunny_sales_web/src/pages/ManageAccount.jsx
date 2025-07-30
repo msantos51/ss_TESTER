@@ -87,56 +87,68 @@ export default function ManageAccount() {
     <div className="form-box">
       <h2 className="title">Definições de Conta</h2>
       <form onSubmit={handleUpdate} className="form">
-        <div className="form-container">
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          {success && <p style={{ color: 'green' }}>{success}</p>}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {success && <p style={{ color: 'green' }}>{success}</p>}
+        <span className="input-span">
+          <label className="label">Nome</label>
           <input
             type="text"
             placeholder="Nome"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="input"
           />
+        </span>
+        <span className="input-span">
+          <label className="label">Email</label>
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input"
           />
+        </span>
+        <span className="input-span">
+          <label className="label">Palavra-passe atual</label>
           <input
             type="password"
             placeholder="Palavra-passe atual"
             value={oldPassword}
             onChange={(e) => setOldPassword(e.target.value)}
-            className="input"
           />
+        </span>
+        <span className="input-span">
+          <label className="label">Nova palavra-passe</label>
           <input
             type="password"
             placeholder="Nova palavra-passe"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="input"
           />
+        </span>
+        <span className="input-span">
+          <label className="label">Produto</label>
           <select
             value={product}
             onChange={(e) => setProduct(e.target.value)}
-            className="input"
           >
             <option value="Bolas de Berlim">Bolas de Berlim</option>
             <option value="Gelados">Gelados</option>
             <option value="Acessórios">Acessórios</option>
           </select>
-          <label style={{ marginTop: '0.5rem' }}>Cor do Pin:</label>
+        </span>
+        <span className="input-span">
+          <label className="label">Cor do Pin</label>
           <input
             type="color"
             value={pinColor}
             onChange={(e) => setPinColor(e.target.value)}
-            className="input"
           />
-          <input type="file" onChange={handlePhotoChange} className="input" />
-        </div>
-        <button type="submit">Guardar</button>
+        </span>
+        <span className="input-span">
+          <label className="label">Foto</label>
+          <input type="file" onChange={handlePhotoChange} />
+        </span>
+        <button type="submit" className="submit">Guardar</button>
       </form>
     </div>
   );

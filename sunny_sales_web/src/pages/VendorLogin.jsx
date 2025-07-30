@@ -70,27 +70,28 @@ export default function VendorLogin() {
 
       {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
 
-<div className="form login-form auth-form">
-
-        <div className="form-container login-container">
+      <div className="form login-form auth-form">
+        <span className="input-span">
+          <label className="label">Email</label>
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => { setEmail(e.target.value); setError(null); }}
-            className="input"
           />
+        </span>
+        <span className="input-span">
+          <label className="label">Palavra-passe</label>
           <input
             type="password"
             placeholder="Palavra-passe"
             value={password}
             onChange={(e) => { setPassword(e.target.value); setError(null); }}
-            className="input"
           />
-        </div>
+        </span>
 
         <button
-          className="black-button"
+          className="submit"
           onClick={login}
           disabled={!email || !password || loading}
         >
@@ -99,7 +100,7 @@ export default function VendorLogin() {
 
         <button
           type="button"
-          className="black-button"
+          className="submit"
           onClick={() => navigate('/vendor-register')}
         >
           Registar
@@ -107,7 +108,7 @@ export default function VendorLogin() {
 
         <button
           type="button"
-          className="black-button"
+          className="submit"
           onClick={() => navigate('/forgot-password')}
           style={{ textDecoration: 'underline' }}
         >

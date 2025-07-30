@@ -63,35 +63,42 @@ export default function EditProfileScreen() {
       <h2 className="title">Editar Perfil</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={save} className="form">
-        <div className="form-container">
+        <span className="input-span">
+          <label className="label">Nome</label>
           <input
             type="text"
             placeholder="Nome"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="input"
           />
+        </span>
+        <span className="input-span">
+          <label className="label">Email</label>
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input"
           />
+        </span>
+        <span className="input-span">
+          <label className="label">Produto</label>
           <select
             value={product}
             onChange={(e) => setProduct(e.target.value)}
-            className="input"
           >
             <option value="Bolas de Berlim">Bolas de Berlim</option>
             <option value="Gelados">Gelados</option>
             <option value="Acessórios">Acessórios</option>
           </select>
-          <input type="file" onChange={handlePhoto} className="input" />
-        </div>
+        </span>
+        <span className="input-span">
+          <label className="label">Foto</label>
+          <input type="file" onChange={handlePhoto} />
+        </span>
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-          <button type="submit">Guardar</button>
-          <button type="button" onClick={() => navigate('/dashboard')}>Cancelar</button>
+          <button type="submit" className="submit">Guardar</button>
+          <button type="button" className="submit" onClick={() => navigate('/dashboard')}>Cancelar</button>
         </div>
       </form>
     </div>
