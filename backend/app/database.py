@@ -1,6 +1,6 @@
 # database.py - configuração da conexão ao PostgreSQL
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
@@ -34,3 +34,14 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+# Pequena migração automática para adicionar colunas recentes
+def ensure_latest_schema():
+    inspector = inspect(engine)
+    if "vendors" in inspector.get_table_names():
+        columns = [c["name"] for c in inspector.get_columns("vendors")]
+        if "session_token" not in columns:
+            with engine.connect() as conn:
+                conn.execute(text("ALTER TABLE vendors ADD COLUMN session_token TEXT"))
+                conn.commit()

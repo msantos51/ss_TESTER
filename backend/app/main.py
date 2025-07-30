@@ -10,7 +10,7 @@ from passlib.context import CryptContext
 from . import models, schemas
 import stripe
 from datetime import datetime, timedelta
-from .database import engine, get_db
+from .database import engine, get_db, ensure_latest_schema
 import os
 from pathlib import Path
 import shutil
@@ -80,6 +80,7 @@ if WEB_DIST.is_dir():
 
 # Criar as tabelas na base de dados
 models.Base.metadata.create_all(bind=engine)
+ensure_latest_schema()
 
 # Contexto para hash de password
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
