@@ -25,6 +25,9 @@ class Vendor(Base):
     confirmation_token = Column(String, nullable=True, index=True)
     password_reset_token = Column(String, nullable=True, index=True)
     password_reset_expires = Column(DateTime, nullable=True)
+    # Token da sessão atualmente ativa. Quando um novo token é gerado,
+    # o valor anterior é substituído para garantir apenas uma sessão por vendedor
+    session_token = Column(String, nullable=True, index=True)
 
     routes = relationship("Route", back_populates="vendor")
 
