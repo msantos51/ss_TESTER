@@ -4,6 +4,7 @@ import L from 'leaflet';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import LocateButton from '../components/LocateButton';
+import VendorLocateButton from '../components/VendorLocateButton';
 import './ModernMapLayout.css';
 
 // Layout principal com mapa e lista de vendedores online
@@ -146,6 +147,8 @@ export default function ModernMapLayout() {
           {!isVendorLogged && (
             <LocateButton onLocationFound={setClientPos} />
           )}
+
+          <VendorLocateButton vendor={selected} />
 
         </MapContainer>
 

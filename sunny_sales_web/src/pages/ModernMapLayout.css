@@ -180,6 +180,23 @@ body {
   z-index: 500;
 }
 
+.vendor-locate-btn {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  width: 44.8px;
+  height: 44.8px;
+  background: var(--secondary-color);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 500;
+}
+
 
 /* From Uiverse.io by JaydipPrajapati1910 */
 .loader {
