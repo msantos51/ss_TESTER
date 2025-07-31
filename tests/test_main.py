@@ -150,6 +150,22 @@ def test_vendor_listing(client):
         assert "current_lat" in v and "current_lng" in v
 
 
+def test_vendor_listing_authenticated_vendor(client):
+    resp = register_vendor(client, email="auth1@example.com", name="Auth1")
+    vid = resp.json()["id"]
+    confirm_latest_email(client)
+
+    register_vendor(client, email="auth2@example.com", name="Auth2")
+    confirm_latest_email(client)
+
+    token = get_token(client, email="auth1@example.com")
+    resp = client.get("/vendors/", headers={"Authorization": f"Bearer {token}"})
+    assert resp.status_code == 200
+    vendors = resp.json()
+    assert len(vendors) == 1
+    assert vendors[0]["id"] == vid
+
+
 def test_protected_routes(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
