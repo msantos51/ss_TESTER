@@ -25,7 +25,12 @@ export default function ModernMapLayout() {
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/vendors/`);
+        const headers = {};
+        if (isVendorLogged) {
+          const token = localStorage.getItem('token');
+          if (token) headers.Authorization = `Bearer ${token}`;
+        }
+        const res = await axios.get(`${BASE_URL}/vendors/`, { headers });
         setVendors(res.data);
       } catch (err) {
         console.error('Erro ao carregar vendedores:', err);

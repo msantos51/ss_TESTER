@@ -228,6 +228,23 @@ def get_current_vendor(token: str = Depends(oauth2_scheme), db: Session = Depend
     return vendor
 
 
+# get_current_vendor_optional
+def get_current_vendor_optional(request: Request, db: Session = Depends(get_db)):
+    """Return the authenticated vendor if token is provided, otherwise None."""
+    auth = request.headers.get("Authorization")
+    if auth and auth.lower().startswith("bearer "):
+        token = auth.split(" ", 1)[1]
+        try:
+            payload = decode_token(token)
+            vendor_id = payload.get("sub")
+            vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
+            if vendor and vendor.session_token == token:
+                return vendor
+        except HTTPException:
+            pass
+    return None
+
+
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
 
 # get_admin
@@ -423,8 +440,14 @@ def password_reset(token: str, new_password: str = Form(...), db: Session = Depe
 # --------------------------
 @app.get("/vendors/", response_model=list[schemas.VendorOut])
 # list_vendors
-def list_vendors(db: Session = Depends(get_db)):
-    vendors = db.query(models.Vendor).all()
+def list_vendors(
+    current_vendor: models.Vendor | None = Depends(get_current_vendor_optional),
+    db: Session = Depends(get_db),
+):
+    if current_vendor:
+        vendors = [current_vendor]
+    else:
+        vendors = db.query(models.Vendor).all()
 
     # mapear rotas ativas para evitar uma query por vendedor
     active_routes = {
