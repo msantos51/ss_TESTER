@@ -111,14 +111,15 @@ export default function ModernMapLayout() {
   return (
     <div className="modern-layout">
       <div className="filters">
-        <p className="filters-subtitle">Produto vendido</p>
+        <p className="filters-subtitle">Vendedores:</p>
         {PRODUCTS.map((p) => (
-          <label key={p} className="filter-label">
+          <label key={p} className="filter-label custom-checkbox">
             <input
               type="checkbox"
               checked={selectedProducts.includes(p)}
               onChange={() => toggleProduct(p)}
-            />{' '}
+            />
+            <span className="checkmark"></span>
             {p}
           </label>
         ))}

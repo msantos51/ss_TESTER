@@ -76,6 +76,59 @@ body {
   margin: 0 0.5rem 0 0;
 }
 
+/* Custom checkbox styling for product filters */
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.custom-checkbox {
+  position: relative;
+  cursor: pointer;
+  font-size: 20px;
+  user-select: none;
+}
+
+.custom-checkbox .checkmark {
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 1.3em;
+  width: 1.3em;
+  background-color: #ccc;
+  border-radius: 0.25em;
+  box-shadow: 0.1em 0.1em 0.1em 0.1em rgb(41, 40, 40) inset;
+  margin-right: 0.25em;
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: rgb(41, 40, 40);
+  border-radius: 0.25em;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.custom-checkbox .checkmark:after {
+  left: 0.45em;
+  top: 0.25em;
+  width: 0.25em;
+  height: 0.5em;
+  border: solid white;
+  border-width: 0 0.15em 0.15em 0;
+  transform: rotate(45deg);
+}
+
 .map-area {
   position: relative;
   width: 100%;
