@@ -162,7 +162,9 @@ body {
 .map-area {
   position: relative;
   width: 100%;
-  height: 80vh;
+
+  height: 70vh;
+
   padding: 0.5rem;
   box-sizing: border-box;
   margin: 0;
@@ -235,7 +237,7 @@ body {
 @media (max-width: 768px) {
   .map-area {
     width: 100%;
-    height: 65vh;
+    height: 60vh;
     margin: 0;
     margin-left: 0;
   }
