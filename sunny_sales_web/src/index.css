@@ -61,7 +61,7 @@ body {
 
 .header-wrapper {
   position: sticky;
-  top: 0;
+  top: 30px;
   z-index: 1000;
   display: flex;
   justify-content: center;
