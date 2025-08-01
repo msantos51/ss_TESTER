@@ -69,8 +69,8 @@ class RouteOut(BaseModel):
 # PaidWeekOut
 class PaidWeekOut(BaseModel):
     id: int
-    start_date: str
-    end_date: str
+    start_date: datetime
+    end_date: datetime
     receipt_url: Optional[str] = None
 
     # Config
