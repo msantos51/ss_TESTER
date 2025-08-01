@@ -54,7 +54,7 @@ function AppLayout() {
     <div className="wrapper">
       {/* (em português) Barra de navegação */}
       <header className="header-wrapper">
-        <Link className="logo-link logo-outside" to="/">Sunny Sales</Link>
+        <Link className="logo-link" to="/">Sunny Sales</Link>
         <div className="navbar">
           <button
             className="menu-toggle"
