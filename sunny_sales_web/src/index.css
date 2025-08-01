@@ -27,15 +27,34 @@ body {
 /* Container central para limitar a largura do conteúdo */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: none;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 0.5rem;
   box-sizing: border-box;
+}
+
+/* Envolve o cabeçalho e o mapa */
+.wrapper {
+  max-width: none;
+  margin: 0 auto;
+
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+
+  }
 }
 
 @media (max-width: 768px) {
   .container {
-    padding: 0 0.5rem;
+    padding: 0 0.25rem;
   }
 }
 
@@ -52,7 +71,7 @@ body {
 
 .logo-outside {
   position: absolute;
-  left: 24px;
+  left: 2rem;
   top: 50%;
   transform: translateY(-50%);
 
@@ -70,9 +89,12 @@ body {
 
   max-width: 1600px;
 
-  width: 50%;
 
-  margin: 0 auto;
+  width: 80%;
+n
+
+  margin-left: auto;
+  margin-right: 0;
 
 }
 
