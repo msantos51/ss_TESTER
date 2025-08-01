@@ -190,6 +190,8 @@ def _b64decode(segment: str) -> bytes:
 def create_access_token(payload: dict, expires_sec: int = 604800) -> str:
     data = payload.copy()
     data["exp"] = int(time.time()) + expires_sec
+    # Identificador único para garantir tokens diferentes a cada chamada
+    data["jti"] = uuid4().hex
     header = {"alg": "HS256", "typ": "JWT"}
     segments = [_b64(header), _b64(data)]
     signing_input = ".".join(segments)
@@ -821,10 +823,14 @@ def list_stories(vendor_id: int, db: Session = Depends(get_db)):
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     payload = await request.body()
     sig = request.headers.get("stripe-signature")
-    try:
-        event = stripe.Webhook.construct_event(payload, sig, STRIPE_WEBHOOK_SECRET)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid webhook")
+    if STRIPE_WEBHOOK_SECRET:
+        try:
+            event = stripe.Webhook.construct_event(payload, sig, STRIPE_WEBHOOK_SECRET)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid webhook")
+    else:
+        # Sem segredo definido, interpretar payload como JSON bruto
+        event = json.loads(payload)
 
     if event.get("type") == "checkout.session.completed":
         session = event["data"]["object"]
