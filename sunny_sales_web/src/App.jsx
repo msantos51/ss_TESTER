@@ -51,7 +51,7 @@ function AppLayout() {
   const profileLink = isLoggedIn ? '/dashboard' : '/vendor-login';
 
   return (
-    <>
+    <div className="wrapper">
       {/* (em português) Barra de navegação */}
       <header className="header-wrapper">
         <Link className="logo-link logo-outside" to="/">Sunny Sales</Link>
@@ -123,7 +123,7 @@ function AppLayout() {
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
-    </>
+    </div>
   );
 }
 

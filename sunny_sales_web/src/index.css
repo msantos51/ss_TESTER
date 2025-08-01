@@ -33,6 +33,21 @@ body {
   box-sizing: border-box;
 }
 
+/* Envolve o cabeçalho e o mapa */
+.wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 0.5rem;
@@ -52,7 +67,7 @@ body {
 
 .logo-outside {
   position: absolute;
-  left: 24px;
+  left: 2rem;
   top: 50%;
   transform: translateY(-50%);
 
