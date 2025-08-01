@@ -59,26 +59,21 @@ body {
   }
 }
 
+
 .header-wrapper {
   position: sticky;
   top: 0;
   z-index: 1000;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 8px 0;
   background-color: var(--bg-color);
-  width: 80%;
+  width: 100%;
   margin: 0 auto;
 }
 
-.logo-outside {
-  position: absolute;
-  left: 2rem;
-  top: 50%;
-  transform: translateY(-50%);
-
-}
 
 .navbar {
   display: flex;
@@ -91,11 +86,8 @@ body {
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
 
   max-width: 1600px;
-
-  /* Decrease width and align to the right so the logo sits outside */
   width: 80%;
-  margin-left: auto;
-  margin-right: 0;
+  margin: 0 auto;
 
 
 }
@@ -108,6 +100,7 @@ body {
 
   font-weight: 600;
   letter-spacing: 1px;
+  margin-bottom: 0.5rem;
 }
 
 .nav-links {
@@ -451,25 +444,20 @@ input[type='checkbox'] {
 
   @media (max-width: 768px) {
     .header-wrapper {
-      flex-direction: row;
+      flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       padding: 6px 0;
       width: 100%;
       margin: 0;
     }
 
-    .logo-outside {
-      position: static;
-      transform: none;
-      margin: 0 1rem 0 0;
-    }
-
     .navbar {
-      width: auto;
+      width: 100%;
       flex: none;
       padding: 6px 12px;
       border-radius: 20px;
+      margin: 0 auto;
     }
   .profile-icon {
     margin-left: 0;
