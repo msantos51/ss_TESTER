@@ -86,30 +86,38 @@ body {
 }
 
 .custom-checkbox {
+
   display: block;
   position: relative;
   cursor: pointer;
   font-size: 1.5rem;
+
   user-select: none;
 }
 
 .custom-checkbox .checkmark {
+
   --clr: #000;
+
   position: relative;
   top: 0;
   left: 0;
   height: 1.3em;
   width: 1.3em;
   background-color: #ccc;
+
   border-radius: 50%;
   transition: 300ms;
+
   margin-right: 0.25em;
 }
 
 .custom-checkbox input:checked ~ .checkmark {
+
   background-color: var(--clr);
   border-radius: .5rem;
   animation: pulse 500ms ease-in-out;
+
 }
 
 .checkmark:after {
@@ -150,27 +158,21 @@ body {
     rotate: 0;
   }
 }
+
 .map-area {
   position: relative;
-  /*
-   * Align the map with the header.
-   * Left edge should start aligned with the "S" of "Sunny Sales" (24px).
-   * Right edge should end at the right side of the black navigation box
-   * which sits at 75% of the viewport width.
-   */
-  width: calc(75vw - 24px);
+  width: 100%;
   height: 80vh;
-  padding: 1rem;
+  padding: 0.5rem;
   box-sizing: border-box;
   margin: 0;
-  margin-left: 24px;
 }
 
 .map-container {
   width: 100%;
   height: 100%;
   /* Only keep rounded corners at the bottom to merge with the header */
-  border-radius: 0 0 16px 16px;
+  border-radius: 0 0 12px 12px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
   background: var(--secondary-color);
 }
