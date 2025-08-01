@@ -66,8 +66,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 12px 0;
+  padding: 8px 0;
   background-color: var(--bg-color);
+  width: 80%;
+  margin: 0 auto;
 }
 
 .logo-outside {
@@ -91,9 +93,8 @@ body {
   max-width: 1600px;
 
 
-  width: 80%;
-  margin-left: auto;
-  margin-right: 0;
+  width: 100%;
+  margin: 0;
 
 }
 
@@ -452,6 +453,8 @@ input[type='checkbox'] {
       align-items: center;
       justify-content: flex-start;
       padding: 6px 0;
+      width: 100%;
+      margin: 0;
     }
 
     .logo-outside {
