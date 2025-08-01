@@ -78,17 +78,25 @@ body {
 
 .map-area {
   position: relative;
-  width: 80vw;
+  /*
+   * Align the map with the header.
+   * Left edge should start aligned with the "S" of "Sunny Sales" (24px).
+   * Right edge should end at the right side of the black navigation box
+   * which sits at 75% of the viewport width.
+   */
+  width: calc(75vw - 24px);
   height: 80vh;
   padding: 1rem;
   box-sizing: border-box;
-  margin: 0 auto;
+  margin: 0;
+  margin-left: 24px;
 }
 
 .map-container {
   width: 100%;
   height: 100%;
-  border-radius: 16px;
+  /* Only keep rounded corners at the bottom to merge with the header */
+  border-radius: 0 0 16px 16px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
   background: var(--secondary-color);
 }
@@ -152,7 +160,8 @@ body {
   .map-area {
     width: 100%;
     height: 65vh;
-    margin: 0 auto;
+    margin: 0;
+    margin-left: 0;
   }
 }
 
