@@ -92,9 +92,9 @@ body {
 
   max-width: 1600px;
 
-
-  width: 100%;
-  margin: 0;
+  /* Decrease width so the logo sits outside the bar */
+  width: 80%;
+  margin: 0 auto;
 
 }
 
