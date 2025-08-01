@@ -27,30 +27,30 @@ body {
 /* Container central para limitar a largura do conteúdo */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: none;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 0.5rem;
   box-sizing: border-box;
 }
 
 /* Envolve o cabeçalho e o mapa */
 .wrapper {
-  max-width: 1200px;
+  max-width: none;
   margin: 0 auto;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 @media (max-width: 768px) {
   .wrapper {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 }
 
 @media (max-width: 768px) {
   .container {
-    padding: 0 0.5rem;
+    padding: 0 0.25rem;
   }
 }
 
@@ -85,7 +85,7 @@ body {
 
   max-width: 1600px;
 
-  width: 70%;
+  width: 90%;
 
   margin-left: auto;
   margin-right: 0;
