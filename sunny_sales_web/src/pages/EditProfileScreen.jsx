@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
+import ImageCropper from '../components/ImageCropper';
 
 // Ecrã para edição dos dados do utilizador autenticado
 export default function EditProfileScreen() {
@@ -10,7 +11,8 @@ export default function EditProfileScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [product, setProduct] = useState('');
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState(null); // blob da foto
+  const [cropSrc, setCropSrc] = useState(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -24,11 +26,23 @@ export default function EditProfileScreen() {
     }
   }, []);
 
-  // Guarda a foto selecionada pelo utilizador
+  // Abre recorte ao escolher uma foto
   const handlePhoto = (e) => {
     if (e.target.files && e.target.files[0]) {
-      setPhoto(e.target.files[0]);
+      const url = URL.createObjectURL(e.target.files[0]);
+      setCropSrc(url);
     }
+  };
+
+  const handleCropCancel = () => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  };
+
+  const handleCropComplete = (blob) => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+    setPhoto(blob);
   };
 
   // Envia as alterações de perfil para o servidor
@@ -39,7 +53,10 @@ export default function EditProfileScreen() {
     if (name !== user.name) data.append('name', name);
     if (email !== user.email) data.append('email', email);
     if (product !== user.product) data.append('product', product);
-    if (photo) data.append('profile_photo', photo);
+    if (photo) {
+      const file = new File([photo], 'profile.jpg', { type: 'image/jpeg' });
+      data.append('profile_photo', file);
+    }
     const token = localStorage.getItem('token');
     try {
       const url = `${BASE_URL}/vendors/${user.id}/profile`;
@@ -101,6 +118,14 @@ export default function EditProfileScreen() {
           <button type="button" className="submit" onClick={() => navigate('/dashboard')}>Cancelar</button>
         </div>
       </form>
+
+      {cropSrc && (
+        <ImageCropper
+          src={cropSrc}
+          onCancel={handleCropCancel}
+          onComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
+import ImageCropper from '../components/ImageCropper';
 
 // Página para o vendedor atualizar ou remover a sua conta
 export default function ManageAccount() {
@@ -11,7 +12,8 @@ export default function ManageAccount() {
   const [email, setEmail] = useState('');
   const [product, setProduct] = useState('');
   const [pinColor, setPinColor] = useState('#FFB6C1');
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState(null); // blob da foto cortada
+  const [cropSrc, setCropSrc] = useState(null);
   const [password, setPassword] = useState('');
   const [oldPassword, setOldPassword] = useState('');
   const [error, setError] = useState('');
@@ -29,9 +31,24 @@ export default function ManageAccount() {
     }
   }, []);
 
-  // Guarda a foto enviada no formulário
+  // Abre a interface de corte ao selecionar uma imagem
   const handlePhotoChange = (e) => {
-    setPhoto(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setCropSrc(url);
+    }
+  };
+
+  const handleCropCancel = () => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  };
+
+  const handleCropComplete = (blob) => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+    setPhoto(blob);
   };
 
   // Envia as alterações do formulário para o backend
@@ -49,7 +66,10 @@ export default function ManageAccount() {
       if (product !== vendor.product) data.append('product', product);
       if (pinColor !== (vendor.pin_color || '#FFB6C1'))
         data.append('pin_color', pinColor);
-      if (photo) data.append('profile_photo', photo);
+      if (photo) {
+        const file = new File([photo], 'profile.jpg', { type: 'image/jpeg' });
+        data.append('profile_photo', file);
+      }
       const token = localStorage.getItem('token');
       const res = await axios.patch(
         `${BASE_URL}/vendors/${vendor.id}/profile`,
@@ -69,6 +89,7 @@ export default function ManageAccount() {
       setOldPassword('');
       setPhoto(null);
     } catch (err) {
+      console.error(err);
       setError('Erro ao atualizar');
       setSuccess('');
     }
@@ -154,6 +175,14 @@ export default function ManageAccount() {
         </span>
         <button type="submit" className="submit">Guardar</button>
       </form>
+
+      {cropSrc && (
+        <ImageCropper
+          src={cropSrc}
+          onCancel={handleCropCancel}
+          onComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 }
