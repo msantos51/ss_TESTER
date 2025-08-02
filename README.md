@@ -5,9 +5,10 @@ Aplicação composta por backend em **FastAPI** e interface web em **React** que
 ## Estrutura
 
 ```
-backend/        Código do servidor FastAPI
-sunny_sales_web/ Aplicação web (React + Vite)
-scripts/        Utilidades auxiliares
+backend/            Código do servidor FastAPI
+sunny_sales_web/    Aplicação web (React + Vite)
+sunny_sales_mobile/ Aplicação mobile (Expo/React Native)
+scripts/            Utilidades auxiliares
 ```
 
 ## Configuração Rápida
@@ -31,6 +32,11 @@ scripts/        Utilidades auxiliares
    npm install
    npm run dev
    ```
+6. Para a aplicação mobile navegue até `sunny_sales_mobile` e inicie o Expo:
+   ```bash
+   npm install
+   npm start
+   ```
 
 ## Novidades
 
@@ -38,7 +44,7 @@ scripts/        Utilidades auxiliares
 
 - **Tradução e acessibilidade**: interface com suporte a português e inglês e elementos com labels acessíveis.
 
-    A variável `BASE_URL` em `sunny_sales_web/src/config.js` deve apontar para o endereço do backend.
+    A variável `BASE_URL` em `sunny_sales_web/src/config.js` e `EXPO_PUBLIC_BASE_URL` em `sunny_sales_mobile` devem apontar para o endereço do backend.
 
 ## Testes
 
