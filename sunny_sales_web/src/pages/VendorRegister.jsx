@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
+import ImageCropper from '../components/ImageCropper';
 
 // Formulário de registo para novos vendedores
 export default function VendorRegister() {
@@ -9,13 +10,29 @@ export default function VendorRegister() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [product, setProduct] = useState('');
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState(null); // blob da foto cortada
+  const [cropSrc, setCropSrc] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Guarda a imagem de perfil selecionada
+  // Abre o recorte ao selecionar uma foto
   const handlePhotoChange = (e) => {
-    setPhoto(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setCropSrc(url);
+    }
+  };
+
+  const handleCropCancel = () => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  };
+
+  const handleCropComplete = (blob) => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+    setPhoto(blob);
   };
 
   // Envia os dados de registo do vendedor
@@ -41,7 +58,8 @@ export default function VendorRegister() {
     formData.append('product', product);
 
     if (photo) {
-      formData.append('profile_photo', photo);
+      const file = new File([photo], 'profile.jpg', { type: 'image/jpeg' });
+      formData.append('profile_photo', file);
     }
 
     try {
@@ -119,6 +137,14 @@ export default function VendorRegister() {
         </span>
         <button type="submit" className="submit">Registar</button>
       </form>
+
+      {cropSrc && (
+        <ImageCropper
+          src={cropSrc}
+          onCancel={handleCropCancel}
+          onComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 }

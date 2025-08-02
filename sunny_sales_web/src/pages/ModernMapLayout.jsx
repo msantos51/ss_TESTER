@@ -37,7 +37,7 @@ export default function ModernMapLayout() {
       }
     };
     fetchVendors();
-  }, []);
+  }, [isVendorLogged]);
 
   // Sempre que o mapa estiver pronto, acompanha a posição do utilizador
   // (vendedor ou cliente) e mantém o mapa centrado nessa localização.
@@ -45,6 +45,23 @@ export default function ModernMapLayout() {
     let watcher;
     let lastUpdate = 0;
     if (mapReady && navigator.geolocation) {
+      // Obtém a posição atual assim que o mapa é criado
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const coords = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          };
+          setClientPos(coords);
+          if (mapRef.current) {
+            mapRef.current.setView([coords.lat, coords.lng]);
+          }
+        },
+        (err) => console.error('Erro localização:', err),
+        { enableHighAccuracy: true }
+      );
+
+      // Continua a acompanhar a posição para manter o mapa centrado
       watcher = navigator.geolocation.watchPosition(
         (pos) => {
           const now = Date.now();
@@ -159,7 +176,7 @@ export default function ModernMapLayout() {
               position={[v.current_lat, v.current_lng]}
               icon={L.divIcon({
                 className: 'vendor-pin',
-                html: `<div style=\"background:${v.pin_color || '#FFB6C1'};width:16px;height:16px;border-radius:50%;\"></div>`,
+                html: `<div style="background:${v.pin_color || '#FFB6C1'};width:16px;height:16px;border-radius:50%;"></div>`,
               })}
               eventHandlers={{
                 click: () => focusVendor(v),
