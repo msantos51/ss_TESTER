@@ -5,8 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
 
-let watchId = null;
-let lastSent = 0;
+let intervalId = null;
 
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
@@ -39,25 +38,23 @@ export default function VendorDashboard() {
       await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/start`, null, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      watchId = navigator.geolocation.watchPosition(
-        async (pos) => {
-          try {
-            const now = Date.now();
-            if (now - lastSent >= 1000) {
-              lastSent = now;
+      intervalId = setInterval(() => {
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            try {
               await axios.put(
                 `${BASE_URL}/vendors/${vendor.id}/location`,
                 { lat: pos.coords.latitude, lng: pos.coords.longitude },
                 { headers: { Authorization: `Bearer ${token}` } }
               );
+            } catch (err) {
+              console.log('Erro ao enviar localização:', err);
             }
-          } catch (err) {
-            console.log('Erro ao enviar localização:', err);
-          }
-        },
-        (err) => console.log('Erro localização:', err),
-        { enableHighAccuracy: true }
-      );
+          },
+          (err) => console.log('Erro localização:', err),
+          { enableHighAccuracy: true }
+        );
+      }, 1000);
       localStorage.setItem('sharingLocation', 'true');
       setSharing(true);
     } catch (err) {
@@ -66,10 +63,9 @@ export default function VendorDashboard() {
   };
 
   const stopSharing = async () => {
-    if (watchId) {
-      navigator.geolocation.clearWatch(watchId);
-      watchId = null;
-      lastSent = 0;
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
     }
     if (vendor) {
       const token = localStorage.getItem('token');
