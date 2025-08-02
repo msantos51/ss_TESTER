@@ -23,6 +23,7 @@ export default function ModernMapLayout() {
   const mapRef = useRef(null);
 
   useEffect(() => {
+    let interval;
     const fetchVendors = async () => {
       try {
         const headers = {};
@@ -37,6 +38,10 @@ export default function ModernMapLayout() {
       }
     };
     fetchVendors();
+    interval = setInterval(fetchVendors, 1000);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [isVendorLogged]);
 
   // Sempre que o mapa estiver pronto, acompanha a posição do utilizador
