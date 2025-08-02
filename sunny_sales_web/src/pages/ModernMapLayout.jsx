@@ -42,10 +42,8 @@ export default function ModernMapLayout() {
   // Sempre que o mapa estiver pronto, acompanha a posição do utilizador
   // (vendedor ou cliente) e mantém o mapa centrado nessa localização.
   useEffect(() => {
-    let watcher;
-    let lastUpdate = 0;
-    if (mapReady && navigator.geolocation) {
-      // Obtém a posição atual assim que o mapa é criado
+    let interval;
+    const updatePosition = () => {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const coords = {
@@ -60,29 +58,13 @@ export default function ModernMapLayout() {
         (err) => console.error('Erro localização:', err),
         { enableHighAccuracy: true }
       );
-
-      // Continua a acompanhar a posição para manter o mapa centrado
-      watcher = navigator.geolocation.watchPosition(
-        (pos) => {
-          const now = Date.now();
-          if (now - lastUpdate >= 1000) {
-            lastUpdate = now;
-            const coords = {
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
-            };
-            setClientPos(coords);
-            if (mapRef.current) {
-              mapRef.current.setView([coords.lat, coords.lng]);
-            }
-          }
-        },
-        (err) => console.error('Erro localização:', err),
-        { enableHighAccuracy: true }
-      );
+    };
+    if (mapReady && navigator.geolocation) {
+      updatePosition();
+      interval = setInterval(updatePosition, 1000);
     }
     return () => {
-      if (watcher) navigator.geolocation.clearWatch(watcher);
+      if (interval) clearInterval(interval);
     };
   }, [mapReady]);
 

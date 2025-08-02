@@ -50,22 +50,25 @@ export default function App() {
       setError('Permissão de localização em background negada');
       return;
     }
-    const watcherSub = await Location.watchPositionAsync(
-      {
-        accuracy: Location.Accuracy.High,
-        timeInterval: 10000,
-        distanceInterval: 5,
-      },
-      (location) => {
-        const { latitude, longitude } = location.coords;
-        axios.put(
-          `${BASE_URL}/vendors/${vendorId}/location`,
-          { lat: latitude, lng: longitude },
-          { headers: { Authorization: `Bearer ${token}` } }
-        ).catch(() => {});
+    const intervalId = setInterval(async () => {
+      try {
+        const { coords } = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+        });
+        const { latitude, longitude } = coords;
+        await axios
+          .put(
+            `${BASE_URL}/vendors/${vendorId}/location`,
+            { lat: latitude, lng: longitude },
+            { headers: { Authorization: `Bearer ${token}` } }
+          )
+          .catch(() => {});
+      } catch {
+        // ignore errors retrieving location
       }
-    );
-    setWatcher(watcherSub);
+    }, 1000);
+
+    setWatcher({ remove: () => clearInterval(intervalId) });
   };
 
   return (
