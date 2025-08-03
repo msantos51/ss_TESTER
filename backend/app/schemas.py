@@ -5,7 +5,15 @@ from datetime import datetime
 
 # UserLogin
 class UserLogin(BaseModel):
-    email: str
+    """Schema usado para autenticação de vendedores.
+
+    Aceita tanto o campo tradicional ``email`` como ``username``
+    (alias utilizado por algumas bibliotecas OAuth2). Um dos dois
+    deve ser fornecido juntamente com a palavra‑passe.
+    """
+
+    email: Optional[str] = None
+    username: Optional[str] = None
     password: str
 
 # VendorProfileUpdate
