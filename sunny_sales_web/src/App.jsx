@@ -29,6 +29,7 @@ import SobreProjeto from './pages/SobreProjeto';
 import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
 import WelcomePopup from './components/WelcomePopup';
+import Footer from './components/Footer';
 import './index.css'; // (em português) Importa os estilos globais
 
 // Componente principal que define as rotas da aplicação web
@@ -126,6 +127,7 @@ function AppLayout() {
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
+      <Footer />
     </div>
   );
 }
