@@ -124,6 +124,19 @@ def test_login_requires_confirmation(client):
     assert resp.status_code == 200
 
 
+def test_login_accepts_username_field(client):
+    """O endpoint /login deve aceitar o campo 'username' como alias de email."""
+
+    register_vendor(client, email="alias@example.com")
+    confirm_latest_email(client)
+
+    resp = client.post(
+        "/login",
+        json={"username": "alias@example.com", "password": "Secret123"},
+    )
+    assert resp.status_code == 200
+
+
 def test_password_reset_flow(client):
     register_vendor(client)
     confirm_latest_email(client)

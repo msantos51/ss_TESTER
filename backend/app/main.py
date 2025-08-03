@@ -274,7 +274,13 @@ def verify_active_subscription(vendor: models.Vendor, db: Session):
 @app.post("/login", response_model=schemas.VendorOut)
 # login
 def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
-    vendor = db.query(models.Vendor).filter(models.Vendor.email == credentials.email).first()
+    """Autentica um vendedor a partir do email ou username."""
+
+    email = credentials.email or credentials.username
+    if not email or not credentials.password:
+        raise HTTPException(status_code=400, detail="Email and password required")
+
+    vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
     if not vendor or not pwd_context.verify(credentials.password, vendor.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     if not vendor.email_confirmed:
