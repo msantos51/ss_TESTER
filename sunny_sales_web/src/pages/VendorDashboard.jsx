@@ -13,22 +13,6 @@ export default function VendorDashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const stored = localStorage.getItem('user');
-    if (stored) {
-      setVendor(JSON.parse(stored));
-    }
-    const share = localStorage.getItem('sharingLocation') === 'true';
-    setSharing(share);
-  }, []);
-
-  useEffect(() => {
-    if (sharing && vendor && watchId === null) {
-      startSharing();
-    }
-  }, [sharing, vendor, startSharing]);
-
-
   const logout = () => {
     stopSharing();
     localStorage.removeItem('user');
@@ -53,18 +37,33 @@ export default function VendorDashboard() {
               { headers: { Authorization: `Bearer ${token}` } }
             );
           } catch (err) {
-            console.log('Erro ao enviar localização:', err);
+            console.error('Erro ao enviar localização:', err);
           }
         },
-        (err) => console.log('Erro localização:', err),
+        (err) => console.error('Erro localização:', err),
         { enableHighAccuracy: true, maximumAge: 0 }
       );
       localStorage.setItem('sharingLocation', 'true');
       setSharing(true);
     } catch (err) {
-      console.log('Erro ao ativar localização:', err);
+      console.error('Erro ao ativar localização:', err);
     }
   }, [vendor]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      setVendor(JSON.parse(stored));
+    }
+    const share = localStorage.getItem('sharingLocation') === 'true';
+    setSharing(share);
+  }, []);
+
+  useEffect(() => {
+    if (sharing && vendor && watchId === null) {
+      startSharing();
+    }
+  }, [sharing, vendor, startSharing]);
 
   const stopSharing = async () => {
     if (watchId !== null) {
@@ -79,7 +78,7 @@ export default function VendorDashboard() {
             headers: { Authorization: `Bearer ${token}` },
           });
         } catch (err) {
-          console.log('Erro ao parar localização:', err);
+          console.error('Erro ao parar localização:', err);
         }
       }
     }
@@ -98,7 +97,7 @@ export default function VendorDashboard() {
       );
       if (res.data.checkout_url) window.open(res.data.checkout_url, '_blank');
     } catch (err) {
-      console.log('Erro no pagamento:', err);
+      console.error('Erro no pagamento:', err);
     }
   };
 
@@ -120,7 +119,6 @@ export default function VendorDashboard() {
           <div style={styles.divider} />
 
           <button style={styles.menuButtonItem} onClick={() => { navigate('/account'); setMenuOpen(false); }}>Atualizar Dados Pessoais</button>
-          <button style={styles.menuButtonItem} onClick={() => { navigate('/account'); setMenuOpen(false); }}>Apagar Conta</button>
 
           <div style={styles.divider} />
 

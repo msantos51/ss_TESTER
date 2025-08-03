@@ -9,18 +9,15 @@ export default function VendorDetailScreen({ vendor }) {
   const [stories, setStories] = useState([]);
   const [storyIndex, setStoryIndex] = useState(null);
 
-  // (em português) Carrega os stories
-  // Obtém os stories publicados pelo vendedor
-  const loadStories = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/vendors/${vendor.id}/stories`);
-      setStories(res.data);
-    } catch (e) {
-      console.error('Erro ao carregar stories:', e);
-    }
-  };
-
   useEffect(() => {
+    const loadStories = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/vendors/${vendor.id}/stories`);
+        setStories(res.data);
+      } catch (e) {
+        console.error('Erro ao carregar stories:', e);
+      }
+    };
     loadStories();
   }, [vendor.id]);
 
