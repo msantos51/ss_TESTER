@@ -137,6 +137,19 @@ def test_login_accepts_username_field(client):
     assert resp.status_code == 200
 
 
+def test_login_with_vendor_name(client):
+    """Permite autenticar usando o nome do vendedor."""
+
+    register_vendor(client, email="nome@example.com", name="vendedor1")
+    confirm_latest_email(client)
+
+    resp = client.post(
+        "/login",
+        json={"username": "vendedor1", "password": "Secret123"},
+    )
+    assert resp.status_code == 200
+
+
 def test_password_reset_flow(client):
     register_vendor(client)
     confirm_latest_email(client)
