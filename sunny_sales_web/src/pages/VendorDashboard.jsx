@@ -205,7 +205,7 @@ const styles = {
     verticalAlign: 'middle',
   },
   infoBox: {
-    backgroundColor: '#fff9c4',
+    backgroundColor: '#fff',
     padding: '1rem',
     borderRadius: '12px',
     marginBottom: '1rem',
