@@ -1,11 +1,11 @@
 // (em português) Painel principal do vendedor com partilha de localização e menu lateral
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
 
-let intervalId = null;
+let watchId = null;
 
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
@@ -22,6 +22,12 @@ export default function VendorDashboard() {
     setSharing(share);
   }, []);
 
+  useEffect(() => {
+    if (sharing && vendor && watchId === null) {
+      startSharing();
+    }
+  }, [sharing, vendor, startSharing]);
+
 
   const logout = () => {
     stopSharing();
@@ -30,7 +36,7 @@ export default function VendorDashboard() {
     navigate('/vendor-login');
   };
 
-  const startSharing = async () => {
+  const startSharing = useCallback(async () => {
     if (!vendor) return;
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -38,34 +44,32 @@ export default function VendorDashboard() {
       await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/start`, null, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      intervalId = setInterval(() => {
-        navigator.geolocation.getCurrentPosition(
-          async (pos) => {
-            try {
-              await axios.put(
-                `${BASE_URL}/vendors/${vendor.id}/location`,
-                { lat: pos.coords.latitude, lng: pos.coords.longitude },
-                { headers: { Authorization: `Bearer ${token}` } }
-              );
-            } catch (err) {
-              console.log('Erro ao enviar localização:', err);
-            }
-          },
-          (err) => console.log('Erro localização:', err),
-          { enableHighAccuracy: true }
-        );
-      }, 1000);
+      watchId = navigator.geolocation.watchPosition(
+        async (pos) => {
+          try {
+            await axios.put(
+              `${BASE_URL}/vendors/${vendor.id}/location`,
+              { lat: pos.coords.latitude, lng: pos.coords.longitude },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+          } catch (err) {
+            console.log('Erro ao enviar localização:', err);
+          }
+        },
+        (err) => console.log('Erro localização:', err),
+        { enableHighAccuracy: true, maximumAge: 0 }
+      );
       localStorage.setItem('sharingLocation', 'true');
       setSharing(true);
     } catch (err) {
       console.log('Erro ao ativar localização:', err);
     }
-  };
+  }, [vendor]);
 
   const stopSharing = async () => {
-    if (intervalId) {
-      clearInterval(intervalId);
-      intervalId = null;
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
     }
     if (vendor) {
       const token = localStorage.getItem('token');
