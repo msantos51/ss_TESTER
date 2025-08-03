@@ -32,7 +32,7 @@ export default function LocateButton({ onLocationFound }) {
 
     map.on('locationfound', onFound);
     map.on('locationerror', onError);
-    map.locate({ enableHighAccuracy: true });
+    map.locate({ enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 });
   };
 
   return (

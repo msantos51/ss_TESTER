@@ -49,17 +49,25 @@ export default function ModernMapLayout() {
   useEffect(() => {
     let watchId;
     if (mapReady && navigator.geolocation) {
+      const updatePosition = (pos) => {
+        const coords = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        };
+        setClientPos(coords);
+        if (mapRef.current) {
+          mapRef.current.setView([coords.lat, coords.lng]);
+        }
+      };
+
+      navigator.geolocation.getCurrentPosition(
+        updatePosition,
+        (err) => console.error('Erro localização inicial:', err),
+        { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
+      );
+
       watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          const coords = {
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-          };
-          setClientPos(coords);
-          if (mapRef.current) {
-            mapRef.current.setView([coords.lat, coords.lng]);
-          }
-        },
+        updatePosition,
         (err) => console.error('Erro localização:', err),
         { enableHighAccuracy: true, maximumAge: 0 }
       );
