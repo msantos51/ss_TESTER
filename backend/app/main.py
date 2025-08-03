@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import HTMLResponse, FileResponse
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from . import models, schemas
@@ -276,11 +277,20 @@ def verify_active_subscription(vendor: models.Vendor, db: Session):
 def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     """Autentica um vendedor a partir do email ou username."""
 
-    email = credentials.email or credentials.username
-    if not email or not credentials.password:
+    identifier = credentials.email or credentials.username
+    if not identifier or not credentials.password:
         raise HTTPException(status_code=400, detail="Email and password required")
 
-    vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
+    vendor = (
+        db.query(models.Vendor)
+        .filter(
+            or_(
+                models.Vendor.email == identifier,
+                models.Vendor.name == identifier,
+            )
+        )
+        .first()
+    )
     if not vendor or not pwd_context.verify(credentials.password, vendor.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     if not vendor.email_confirmed:
