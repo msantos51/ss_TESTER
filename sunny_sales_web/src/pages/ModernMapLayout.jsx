@@ -75,9 +75,6 @@ export default function ModernMapLayout() {
 
 
   const activeVendors = vendors.filter((v) => v.current_lat && v.current_lng);
-  const filteredVendors = activeVendors.filter((v) =>
-    selectedProducts.includes(v.product)
-  );
 
   let loggedVendor = null;
   if (isVendorLogged) {
@@ -94,6 +91,15 @@ export default function ModernMapLayout() {
     } catch (e) {
       console.error('Erro ao ler vendedor logado:', e);
     }
+  }
+
+  let filteredVendors = [];
+  if (isVendorLogged) {
+    filteredVendors = loggedVendor ? [loggedVendor] : [];
+  } else {
+    filteredVendors = activeVendors.filter((v) =>
+      selectedProducts.includes(v.product)
+    );
   }
 
   // Alterna a seleção de um produto no filtro
@@ -114,20 +120,22 @@ export default function ModernMapLayout() {
 
   return (
     <div className="modern-layout">
-      <div className="filters">
-        <p className="filters-subtitle">Vendedores:</p>
-        {PRODUCTS.map((p) => (
-          <label key={p} className="filter-label custom-checkbox">
-            <input
-              type="checkbox"
-              checked={selectedProducts.includes(p)}
-              onChange={() => toggleProduct(p)}
-            />
-            <span className="checkmark"></span>
-            {p}
-          </label>
-        ))}
-      </div>
+      {!isVendorLogged && (
+        <div className="filters">
+          <p className="filters-subtitle">Vendedores:</p>
+          {PRODUCTS.map((p) => (
+            <label key={p} className="filter-label custom-checkbox">
+              <input
+                type="checkbox"
+                checked={selectedProducts.includes(p)}
+                onChange={() => toggleProduct(p)}
+              />
+              <span className="checkmark"></span>
+              {p}
+            </label>
+          ))}
+        </div>
+      )}
 
       <main className="map-area">
         <MapContainer
