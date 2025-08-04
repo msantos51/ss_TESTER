@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import * as Location from 'expo-location';
 import axios from 'axios';
 import { BASE_URL } from './src/config';
@@ -23,14 +23,41 @@ export default function App() {
     }
   };
 
+  const attemptLogin = async (force = false) => {
+    const payload = { email, password };
+    if (force) payload.force = true;
+    const resp = await axios.post(`${BASE_URL}/token`, payload);
+    const tok = resp.data.access_token;
+    setToken(tok);
+    setVendorId(decodeId(tok));
+  };
+
   const login = async () => {
     try {
-      const resp = await axios.post(`${BASE_URL}/token`, { email, password });
-      const tok = resp.data.access_token;
-      setToken(tok);
-      setVendorId(decodeId(tok));
+      await attemptLogin();
     } catch (e) {
-      setError('Falha no login');
+      if (e.response?.status === 409) {
+        Alert.alert(
+          'Sessão ativa',
+          'Já existe uma sessão ativa. Terminar sessão anterior?',
+          [
+            { text: 'Não', style: 'cancel' },
+            {
+              text: 'Sim',
+              onPress: async () => {
+                try {
+                  await attemptLogin(true);
+                } catch {
+                  setError('Falha no login');
+                }
+              },
+            },
+          ],
+          { cancelable: true }
+        );
+      } else {
+        setError('Falha no login');
+      }
     }
   };
 

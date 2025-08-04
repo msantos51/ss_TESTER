@@ -54,6 +54,7 @@ def activate_subscription(client, vendor_id):
         headers={"Authorization": f"Bearer {token}"},
     )
     assert resp.status_code == 200
+    return token
 
 
 
@@ -71,8 +72,11 @@ def test_vendor_registration(client):
     assert payload["product"] == "Bolas de Berlim"
 
 
-def get_token(client, email="vendor@example.com", password="Secret123"):
-    resp = client.post("/token", json={"email": email, "password": password})
+def get_token(client, email="vendor@example.com", password="Secret123", force=False):
+    payload = {"email": email, "password": password}
+    if force:
+        payload["force"] = True
+    resp = client.post("/token", json=payload)
     assert resp.status_code == 200
     return resp.json()["access_token"]
 
@@ -97,8 +101,15 @@ def test_single_session(client):
     )
     assert resp.status_code == 200
 
-    # Gerar um novo token que deve invalidar o primeiro
-    token2 = get_token(client, email="single@example.com")
+    # Tentar gerar um novo token sem forçar deve falhar
+    resp = client.post(
+        "/token",
+        json={"email": "single@example.com", "password": "Secret123"},
+    )
+    assert resp.status_code == 409
+
+    # Gerar um novo token forçando o logout anterior
+    token2 = get_token(client, email="single@example.com", force=True)
     resp = client.get(
         "/vendors/me",
         headers={"Authorization": f"Bearer {token2}"},
@@ -196,8 +207,7 @@ def test_protected_routes(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
-    activate_subscription(client, vendor_id)
-    token = get_token(client)
+    token = activate_subscription(client, vendor_id)
 
     # update profile with auth
     resp = client.patch(
@@ -229,8 +239,7 @@ def test_location_update_fields(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
-    activate_subscription(client, vendor_id)
-    token = get_token(client)
+    token = activate_subscription(client, vendor_id)
 
     client.post(
         f"/vendors/{vendor_id}/routes/start",
@@ -255,8 +264,7 @@ def test_websocket_location_broadcast(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
-    activate_subscription(client, vendor_id)
-    token = get_token(client)
+    token = activate_subscription(client, vendor_id)
 
     client.post(
         f"/vendors/{vendor_id}/routes/start",
@@ -279,8 +287,7 @@ def test_routes_flow(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
-    activate_subscription(client, vendor_id)
-    token = get_token(client)
+    token = activate_subscription(client, vendor_id)
 
     # start route
     resp = client.post(
