@@ -1,3 +1,4 @@
+// (em português) Componente de pop-up de boas-vindas com mensagem mais concisa
 import './WelcomePopup.css';
 
 export default function WelcomePopup({ onClose }) {
@@ -9,16 +10,14 @@ export default function WelcomePopup({ onClose }) {
         </button>
         <h2>🌞 Bem-vindo à Sunny Sales!</h2>
         <p>
-          A Sunny Sales é uma plataforma inovadora que mostra em tempo real onde
-          estão os vendedores de praia — como os que vendem bolas de Berlim,
-          gelados e acessórios de verão.
+          Veja em tempo real onde estão os vendedores de praia.
         </p>
         <p>
-          📍 Veja no mapa os vendedores ativos
+          📍 Mapa com vendedores ativos
           <br />
-          🛍️ Filtre por produto que procura
+          🛍️ Filtro por tipo de produto
         </p>
-        <p>Não precisa de se registar!</p>
+        <p><strong>Sem necessidade de registo!</strong></p>
       </div>
     </div>
   );
