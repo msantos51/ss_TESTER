@@ -651,7 +651,6 @@ input[type='checkbox'] {
 .form input[type="password"],
 .form input[type="text"],
 .form input[type="file"],
-.form input[type="color"],
 .form select {
   border-radius: 0.5rem;
   padding: 1rem 0.75rem;
@@ -669,8 +668,21 @@ input[type='checkbox'] {
 .form input[type="password"]:focus,
 .form input[type="text"]:focus,
 .form input[type="file"]:focus,
-.form input[type="color"]:focus,
 .form select:focus {
+  outline: 2px solid var(--clr);
+}
+
+.form input[type="color"] {
+  border-radius: 0.5rem;
+  padding: 0;
+  width: 100%;
+  height: 3rem;
+  border: none;
+  background: none;
+  outline: 2px solid var(--bg-dark);
+}
+
+.form input[type="color"]:focus {
   outline: 2px solid var(--clr);
 }
 
@@ -710,12 +722,3 @@ input[type='checkbox'] {
   color: var(--clr);
 }
 
-.color-preview {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 1px solid var(--bg-dark);
-  margin-left: 8px;
-  vertical-align: middle;
-}
