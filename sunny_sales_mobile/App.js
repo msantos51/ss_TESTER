@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import * as Location from 'expo-location';
 import axios from 'axios';
 import { BASE_URL } from './src/config';
+import VendorRegister from './VendorRegister';
 
 export default function App() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ export default function App() {
   const [vendorId, setVendorId] = useState(null);
   const [watcher, setWatcher] = useState(null);
   const [error, setError] = useState(null);
+  const [showRegister, setShowRegister] = useState(false);
 
   const decodeId = (t) => {
     try {
@@ -73,7 +75,9 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {!token ? (
+      {showRegister ? (
+        <VendorRegister onBack={() => setShowRegister(false)} />
+      ) : !token ? (
         <>
           <Text style={styles.title}>Login do Vendedor</Text>
           <TextInput
@@ -90,6 +94,7 @@ export default function App() {
             onChangeText={setPassword}
           />
           <Button title="Entrar" onPress={login} />
+          <Button title="Registar" onPress={() => setShowRegister(true)} />
           {error && <Text style={styles.error}>{error}</Text>}
         </>
       ) : (
