@@ -8,7 +8,7 @@ export default function WelcomePopup({ onClose }) {
         <button className="popup-close" onClick={onClose} aria-label="Fechar">
           &times;
         </button>
-        <h2>🌞 Bem-vindo à Sunny Sales!</h2>
+        <h2>Bem-vindo à Sunny Sales!</h2>
         <p>
           Veja em tempo real onde estão os vendedores de praia.
         </p>
