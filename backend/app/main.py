@@ -309,6 +309,7 @@ async def generate_token(
     """Allow token generation using either JSON or form-encoded data."""
     email = None
     password = None
+    force = False
 
 
     content_type = request.headers.get("content-type", "").lower()
@@ -317,20 +318,24 @@ async def generate_token(
         data = await request.json()
         email = data.get("email") or data.get("username")
         password = data.get("password")
+        force = bool(data.get("force"))
     elif "application/x-www-form-urlencoded" in content_type or "multipart/form-data" in content_type:
         form = await request.form()
         email = form.get("email") or form.get("username")
         password = form.get("password")
+        force = str(form.get("force", "")).lower() in {"1", "true", "on"}
     else:
         # fallback: tentar json primeiro, depois form
         try:
             data = await request.json()
             email = data.get("email") or data.get("username")
             password = data.get("password")
+            force = bool(data.get("force"))
         except Exception:
             form = await request.form()
             email = form.get("email") or form.get("username")
             password = form.get("password")
+            force = str(form.get("force", "")).lower() in {"1", "true", "on"}
 
 
     if not email or not password:
@@ -341,6 +346,17 @@ async def generate_token(
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     if not vendor.email_confirmed:
         raise HTTPException(status_code=400, detail="Email not confirmed")
+
+    # Se j\u00e1 existir uma sess\u00e3o ativa e n\u00e3o for solicitado for\u00e7ar, avisar
+    if vendor.session_token and not force:
+        try:
+            decode_token(vendor.session_token)
+        except HTTPException:
+            # Token anterior est\u00e1 expirado ou inv\u00e1lido; prosseguir com novo login
+            vendor.session_token = None
+        else:
+            raise HTTPException(status_code=409, detail="Active session exists")
+
     token = create_access_token({"sub": vendor.id})
     # Guardar o token atual no vendedor para que apenas esta sess\u00e3o seja v\u00e1lida
     vendor.session_token = token
