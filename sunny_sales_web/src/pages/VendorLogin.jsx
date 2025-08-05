@@ -25,6 +25,28 @@ export default function VendorLogin() {
     }
   };
 
+  // Realiza o fluxo completo de autenticação (obtenção do token e dados do vendedor)
+  const attemptLogin = async (force = false) => {
+    const payload = { email, password };
+    if (force) payload.force = true;
+    const tokenRes = await axios.post(`${BASE_URL}/token`, payload);
+    const token = tokenRes.data.access_token;
+    localStorage.setItem('token', token);
+
+    const vendorId = getVendorIdFromToken(token);
+    if (vendorId) {
+      localStorage.setItem('vendorId', vendorId.toString());
+    }
+
+    const userRes = await axios.post(`${BASE_URL}/login`, { email, password });
+    localStorage.setItem('user', JSON.stringify(userRes.data));
+    // remove any previous client session data
+    localStorage.removeItem('client');
+    localStorage.removeItem('clientToken');
+
+    navigate('/dashboard');
+  };
+
   // login
   // Realiza a autenticação do vendedor
   const login = async () => {
@@ -32,25 +54,25 @@ export default function VendorLogin() {
     setLoading(true);
     setError(null);
     try {
-      const tokenRes = await axios.post(`${BASE_URL}/token`, { email, password });
-      const token = tokenRes.data.access_token;
-      localStorage.setItem('token', token);
-
-      const vendorId = getVendorIdFromToken(token);
-      if (vendorId) {
-        localStorage.setItem('vendorId', vendorId.toString());
-      }
-
-      const userRes = await axios.post(`${BASE_URL}/login`, { email, password });
-      localStorage.setItem('user', JSON.stringify(userRes.data));
-      // remove any previous client session data
-      localStorage.removeItem('client');
-      localStorage.removeItem('clientToken');
-
-      navigate('/dashboard');
+      await attemptLogin();
     } catch (err) {
       console.error(err);
-      if (err.response?.data?.detail) {
+      if (err.response?.status === 409) {
+        const confirmLogout = window.confirm(
+          'Já existe uma sessão ativa. Terminar sessão anterior?'
+        );
+        if (confirmLogout) {
+          try {
+            await attemptLogin(true);
+            return;
+          } catch (err2) {
+            console.error(err2);
+            setError(err2.response?.data?.detail || 'Falha no login');
+          }
+        } else {
+          setError('Sessão já iniciada noutro dispositivo');
+        }
+      } else if (err.response?.data?.detail) {
         setError(err.response.data.detail);
       } else {
         setError('Falha no login');
