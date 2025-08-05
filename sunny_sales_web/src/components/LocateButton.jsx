@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { useMap } from 'react-leaflet';
 
 
-export default function LocateButton({ onLocationFound }) {
+export default function LocateButton({ onLocationFound, onClick }) {
 
   const map = useMap();
   const [locating, setLocating] = useState(false);
 
   const handleLocate = () => {
+    if (onClick) onClick();
     setLocating(true);
 
     const onFound = (e) => {
