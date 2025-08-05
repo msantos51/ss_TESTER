@@ -9,6 +9,8 @@ import {
 } from 'react-router-dom';
 import { FiUser, FiMenu } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { BASE_URL } from './config';
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
 import VendorLogin from './pages/VendorLogin';
@@ -46,7 +48,25 @@ function AppLayout() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
 
   useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
+    if (!token) {
+      localStorage.removeItem('user');
+      setIsLoggedIn(false);
+      return;
+    }
+    axios
+      .get(`${BASE_URL}/vendors/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        localStorage.setItem('user', JSON.stringify(res.data));
+        setIsLoggedIn(true);
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setIsLoggedIn(false);
+      });
   }, [location]);
 
   const profileLink = isLoggedIn ? '/dashboard' : '/vendor-login';
