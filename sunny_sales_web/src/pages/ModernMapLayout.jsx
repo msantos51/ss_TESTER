@@ -60,16 +60,10 @@ export default function ModernMapLayout() {
         }
       };
 
-      navigator.geolocation.getCurrentPosition(
-        updatePosition,
-        (err) => console.error('Erro localização inicial:', err),
-        { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
-      );
-
       watchId = navigator.geolocation.watchPosition(
         updatePosition,
         (err) => console.error('Erro localização:', err),
-        { enableHighAccuracy: true, maximumAge: 0 }
+        { enableHighAccuracy: true, maximumAge: 1000 }
       );
     }
     return () => {
