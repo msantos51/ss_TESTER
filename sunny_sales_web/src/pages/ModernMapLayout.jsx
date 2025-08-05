@@ -5,6 +5,7 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import LocateButton from '../components/LocateButton';
 import VendorLocateButton from '../components/VendorLocateButton';
+import LocateHint from '../components/LocateHint';
 import './ModernMapLayout.css';
 
 // Layout principal com mapa e lista de vendedores online
@@ -16,11 +17,22 @@ export default function ModernMapLayout() {
 
   const [mapReady, setMapReady] = useState(false);
   const [clientPos, setClientPos] = useState(null);
+  const [showLocateHint, setShowLocateHint] = useState(false);
   // Verifica se o utilizador autenticado é um vendedor. Se sim, ocultamos o
   // pin de cliente para evitar marcadores duplicados no mapa.
   const isVendorLogged = !!localStorage.getItem('user');
 
   const mapRef = useRef(null);
+
+  useEffect(() => {
+    if (!isVendorLogged) {
+      const seen = localStorage.getItem('locate_hint_seen');
+      if (!seen) {
+        setShowLocateHint(true);
+        localStorage.setItem('locate_hint_seen', 'true');
+      }
+    }
+  }, [isVendorLogged]);
 
   useEffect(() => {
     let interval;
@@ -178,7 +190,15 @@ export default function ModernMapLayout() {
           ))}
 
           {!isVendorLogged && (
-            <LocateButton onLocationFound={setClientPos} />
+            <>
+              <LocateButton
+                onLocationFound={setClientPos}
+                onClick={() => setShowLocateHint(false)}
+              />
+              {showLocateHint && (
+                <LocateHint onClose={() => setShowLocateHint(false)} />
+              )}
+            </>
           )}
 
 

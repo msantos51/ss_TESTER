@@ -28,7 +28,6 @@ import ModernMapLayout from './pages/ModernMapLayout';
 import SobreProjeto from './pages/SobreProjeto';
 import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
-import WelcomePopup from './components/WelcomePopup';
 import Footer from './components/Footer';
 import './index.css'; // (em português) Importa os estilos globais
 
@@ -45,7 +44,6 @@ function AppLayout() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
-  const [showPopup, setShowPopup] = useState(true);
 
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem('user'));
@@ -55,7 +53,6 @@ function AppLayout() {
 
   return (
     <div className="wrapper">
-      {showPopup && <WelcomePopup onClose={() => setShowPopup(false)} />}
       {/* (em português) Barra de navegação */}
       <header className="header-wrapper">
         <Link className="logo-link" to="/">Sunny Sales</Link>
