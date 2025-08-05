@@ -304,39 +304,26 @@ def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
 # generate_token
 async def generate_token(
     request: Request,
+    credentials: schemas.UserLogin | None = Body(None),
     db: Session = Depends(get_db),
 ):
-    """Allow token generation using either JSON or form-encoded data."""
-    email = None
-    password = None
-    force = False
+    """Gerar um token de acesso a partir das credenciais fornecidas.
 
+    Suporta tanto ``application/json`` quanto ``application/x-www-form-urlencoded``
+    para compatibilidade com o botão *Authorize* do Swagger.
+    """
 
-    content_type = request.headers.get("content-type", "").lower()
-
-    if "application/json" in content_type:
-        data = await request.json()
-        email = data.get("email") or data.get("username")
-        password = data.get("password")
-        force = bool(data.get("force"))
-    elif "application/x-www-form-urlencoded" in content_type or "multipart/form-data" in content_type:
+    if credentials is None:
         form = await request.form()
-        email = form.get("email") or form.get("username")
-        password = form.get("password")
-        force = str(form.get("force", "")).lower() in {"1", "true", "on"}
-    else:
-        # fallback: tentar json primeiro, depois form
-        try:
-            data = await request.json()
-            email = data.get("email") or data.get("username")
-            password = data.get("password")
-            force = bool(data.get("force"))
-        except Exception:
-            form = await request.form()
-            email = form.get("email") or form.get("username")
-            password = form.get("password")
-            force = str(form.get("force", "")).lower() in {"1", "true", "on"}
+        credentials = schemas.UserLogin(
+            username=form.get("username"),
+            password=form.get("password") or "",
+            force=form.get("force") in {"true", "1", True},
+        )
 
+    email = credentials.email or credentials.username
+    password = credentials.password
+    force = credentials.force
 
     if not email or not password:
         raise HTTPException(status_code=400, detail="Email and password required")
