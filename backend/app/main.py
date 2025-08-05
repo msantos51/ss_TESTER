@@ -3,7 +3,7 @@
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form, Body, WebSocket, WebSocketDisconnect, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import HTMLResponse, FileResponse
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
@@ -174,7 +174,7 @@ manager = ConnectionManager()
 # Autenticação JWT simples
 # --------------------------
 SECRET_KEY = os.getenv("SECRET_KEY", "secret")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+bearer_scheme = HTTPBearer(auto_error=False)
 
 # _b64
 def _b64(data: dict | bytes) -> str:
@@ -218,7 +218,13 @@ def decode_token(token: str) -> dict:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 # get_current_vendor
-def get_current_vendor(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def get_current_vendor(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    db: Session = Depends(get_db),
+):
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    token = credentials.credentials
     payload = decode_token(token)
     vendor_id = payload.get("sub")
     vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
@@ -322,6 +328,9 @@ async def generate_token(
             force=form.get("force") in {"true", "1", True},
         )
 
+    email = credentials.email or credentials.username
+    password = credentials.password
+    force = credentials.force
 
     email = credentials.email or credentials.username
     password = credentials.password
