@@ -303,6 +303,7 @@ def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
 @app.post("/token")
 # generate_token
 async def generate_token(
+
     request: Request,
     credentials: schemas.UserLogin | None = Body(None),
     db: Session = Depends(get_db),
@@ -320,6 +321,7 @@ async def generate_token(
             password=form.get("password") or "",
             force=form.get("force") in {"true", "1", True},
         )
+
 
     email = credentials.email or credentials.username
     password = credentials.password
