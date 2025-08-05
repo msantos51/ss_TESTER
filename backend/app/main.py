@@ -303,10 +303,26 @@ def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
 @app.post("/token")
 # generate_token
 async def generate_token(
-    credentials: schemas.UserLogin,
+
+    request: Request,
+    credentials: schemas.UserLogin | None = Body(None),
     db: Session = Depends(get_db),
 ):
-    """Gerar um token de acesso a partir das credenciais fornecidas."""
+    """Gerar um token de acesso a partir das credenciais fornecidas.
+
+    Suporta tanto ``application/json`` quanto ``application/x-www-form-urlencoded``
+    para compatibilidade com o botão *Authorize* do Swagger.
+    """
+
+    if credentials is None:
+        form = await request.form()
+        credentials = schemas.UserLogin(
+            username=form.get("username"),
+            password=form.get("password") or "",
+            force=form.get("force") in {"true", "1", True},
+        )
+
+
     email = credentials.email or credentials.username
     password = credentials.password
     force = credentials.force
