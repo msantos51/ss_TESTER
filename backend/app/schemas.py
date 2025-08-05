@@ -15,6 +15,7 @@ class UserLogin(BaseModel):
     email: Optional[str] = None
     username: Optional[str] = None
     password: str
+    force: bool = False
 
 # VendorProfileUpdate
 class VendorProfileUpdate(BaseModel):
