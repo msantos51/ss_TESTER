@@ -3,7 +3,7 @@
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form, Body, WebSocket, WebSocketDisconnect, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import HTMLResponse, FileResponse
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
@@ -174,7 +174,7 @@ manager = ConnectionManager()
 # Autenticação JWT simples
 # --------------------------
 SECRET_KEY = os.getenv("SECRET_KEY", "secret")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+bearer_scheme = HTTPBearer(auto_error=False)
 
 # _b64
 def _b64(data: dict | bytes) -> str:
@@ -218,7 +218,13 @@ def decode_token(token: str) -> dict:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 # get_current_vendor
-def get_current_vendor(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def get_current_vendor(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    db: Session = Depends(get_db),
+):
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    token = credentials.credentials
     payload = decode_token(token)
     vendor_id = payload.get("sub")
     vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
@@ -304,39 +310,26 @@ def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
 # generate_token
 async def generate_token(
     request: Request,
+    credentials: schemas.UserLogin | None = Body(None),
     db: Session = Depends(get_db),
 ):
-    """Allow token generation using either JSON or form-encoded data."""
-    email = None
-    password = None
-    force = False
+    """Gerar um token de acesso a partir das credenciais fornecidas.
 
+    Suporta tanto ``application/json`` quanto ``application/x-www-form-urlencoded``
+    para compatibilidade com o botão *Authorize* do Swagger.
+    """
 
-    content_type = request.headers.get("content-type", "").lower()
-
-    if "application/json" in content_type:
-        data = await request.json()
-        email = data.get("email") or data.get("username")
-        password = data.get("password")
-        force = bool(data.get("force"))
-    elif "application/x-www-form-urlencoded" in content_type or "multipart/form-data" in content_type:
+    if credentials is None:
         form = await request.form()
-        email = form.get("email") or form.get("username")
-        password = form.get("password")
-        force = str(form.get("force", "")).lower() in {"1", "true", "on"}
-    else:
-        # fallback: tentar json primeiro, depois form
-        try:
-            data = await request.json()
-            email = data.get("email") or data.get("username")
-            password = data.get("password")
-            force = bool(data.get("force"))
-        except Exception:
-            form = await request.form()
-            email = form.get("email") or form.get("username")
-            password = form.get("password")
-            force = str(form.get("force", "")).lower() in {"1", "true", "on"}
+        credentials = schemas.UserLogin(
+            username=form.get("username"),
+            password=form.get("password") or "",
+            force=form.get("force") in {"true", "1", True},
+        )
 
+    email = credentials.email or credentials.username
+    password = credentials.password
+    force = credentials.force
 
     if not email or not password:
         raise HTTPException(status_code=400, detail="Email and password required")
