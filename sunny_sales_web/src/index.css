@@ -528,7 +528,7 @@ input[type='checkbox'] {
   display: flex;
   align-items: center;
   padding-left: 30px;
-  color: #fff;
+  color: #FDF38A;
 }
 
 .auth-title::before,

@@ -72,7 +72,7 @@ export default function VendorRegister({ onBack }) {
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 20, marginBottom: 20 },
+  title: { fontSize: 20, marginBottom: 20, color: '#FDF38A' },
   input: { borderWidth: 1, marginBottom: 10, padding: 8 },
   error: { color: 'red', marginTop: 10 },
   success: { color: 'green', marginTop: 10 },
