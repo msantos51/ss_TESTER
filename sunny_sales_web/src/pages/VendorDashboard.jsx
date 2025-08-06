@@ -22,6 +22,14 @@ export default function VendorDashboard() {
 
   const startSharing = useCallback(async () => {
     if (!vendor) return;
+    // Prevent enabling location when subscription is not active
+    const expires = vendor.subscription_valid_until
+      ? new Date(vendor.subscription_valid_until)
+      : null;
+    if (!vendor.subscription_active || (expires && expires < new Date())) {
+      alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
+      return;
+    }
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
@@ -46,7 +54,11 @@ export default function VendorDashboard() {
       localStorage.setItem('sharingLocation', 'true');
       setSharing(true);
     } catch (err) {
-      console.error('Erro ao ativar localização:', err);
+      if (err.response && err.response.status === 403) {
+        alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
+      } else {
+        console.error('Erro ao ativar localização:', err);
+      }
     }
   }, [vendor]);
 
@@ -148,7 +160,16 @@ export default function VendorDashboard() {
             </p>
             <p>
               <strong>Subscrição:</strong>{' '}
-              {vendor.subscription_active ? 'ativa' : 'inativa'}
+              {vendor.subscription_active ? (
+                <>
+                  ativa
+                  {vendor.subscription_valid_until && (
+                    <> (Termina a: {new Date(vendor.subscription_valid_until).toLocaleDateString('pt-PT')})</>
+                  )}
+                </>
+              ) : (
+                'inativa'
+              )}
             </p>
 
           </div>
@@ -207,6 +228,7 @@ const styles = {
     padding: '1rem',
     borderRadius: '12px',
     marginBottom: '1rem',
+    textAlign: 'left',
   },
   logoutButton: {
     width: 'auto',
