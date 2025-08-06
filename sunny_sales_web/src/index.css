@@ -5,8 +5,8 @@
 :root {
   /* Cores principais da aplicação */
 
-  --primary-color: #F79D65; /* laranja */
-  --secondary-color: #FDF38A; /* amarelo */
+  --primary-color: #fdc500; /* amarelo */
+  --secondary-color: #fdc500; /* amarelo */
 
 
   --bg-color: #ffffff; /* fundo branco */
@@ -169,7 +169,7 @@
 
 .menu-toggle {
   display: none;
-  background-color: #fccc34;
+  background-color: #fdc500;
   border: none;
   color: #fff;
   font-size: 2rem;
@@ -262,7 +262,7 @@ align-items: center;
   margin-bottom: 15px;
 }
 
-.input {  border: 1px solid #F79D65;
+.input {  border: 1px solid #fdc500;
   outline: 0 !important;
   box-sizing: border-box;
   padding: 12px 15px;
@@ -370,9 +370,9 @@ align-items: center;
 
 /* === Estilo para botoes === */
 button {
-  --primary-color: #fccc34 !important;
+  --primary-color: #fdc500 !important;
   --secondary-color: #fff !important;
-  --hover-color: #FDF38A;
+  --hover-color: #fdc500;
   --arrow-width: 10px;
   --arrow-stroke: 2px;
   box-sizing: border-box;
@@ -392,9 +392,9 @@ button {
 
 /* Utilizado para destacar botoes de acoes principais em laranja */
 .black-button {
-  --primary-color: #fccc34;
+  --primary-color: #fdc500;
   --secondary-color: #FFFFFF;
-  --hover-color: #FDF38A;
+  --hover-color: #fdc500;
   background-color: var(--primary-color);
   color: var(--secondary-color);
 }
@@ -475,7 +475,7 @@ input[type='checkbox'] {
     top: 100%;
     left: 0;
     width: 100%;
-    background-color: #fccc34;
+    background-color: #fdc500;
     padding: 1rem 2rem;
   }
 
@@ -517,7 +517,7 @@ input[type='checkbox'] {
   position: relative;
   background-color: #fff;
   color: #000;
-  border: 1px solid #F79D65;
+  border: 1px solid #fdc500;
 }
 
 .auth-title {
@@ -528,7 +528,7 @@ input[type='checkbox'] {
   display: flex;
   align-items: center;
   padding-left: 30px;
-  color: #FDF38A;
+  color: #fdc500;
 }
 
 .auth-title::before,
@@ -539,7 +539,7 @@ input[type='checkbox'] {
   width: 16px;
   border-radius: 50%;
   left: 0px;
-  background-color: #FDF38A;
+  background-color: #fdc500;
 }
 
 .auth-title::before {
@@ -559,7 +559,7 @@ input[type='checkbox'] {
   width: 100%;
   padding: 20px 5px 5px 10px;
   outline: 0;
-  border: 1px solid #F79D65;
+  border: 1px solid #fdc500;
   border-radius: 10px;
 }
 
@@ -568,7 +568,7 @@ input[type='checkbox'] {
   outline: none;
   padding: 10px;
   border-radius: 10px;
-  background-color: #F79D65;
+  background-color: #fdc500;
   color: #fff;
   font-size: 16px;
   transition: 0.3s ease;
@@ -593,7 +593,7 @@ input[type='checkbox'] {
   appearance: none;
   width: 4em;
   height: 2em;
-  background: linear-gradient(to right, #ffffff 50%, #F79D65 50%) no-repeat;
+  background: linear-gradient(to right, #ffffff 50%, #fdc500 50%) no-repeat;
   background-size: 205%;
   background-position: 0;
   transition: 0.4s;
@@ -610,7 +610,7 @@ input[type='checkbox'] {
   position: absolute;
   top: 0.25em;
   left: 0.25em;
-  background: linear-gradient(to right, #ffffff 50%, #F79D65 50%) no-repeat;
+  background: linear-gradient(to right, #ffffff 50%, #fdc500 50%) no-repeat;
   background-size: 205%;
   background-position: 100%;
   border-radius: 50%;
@@ -669,7 +669,7 @@ input[type='checkbox'] {
 .form input[type="text"]:focus,
 .form input[type="file"]:focus,
 .form select:focus {
-  outline: 2px solid #F79D65;
+  outline: 2px solid #fdc500;
 }
 
 .form input[type="color"] {
@@ -683,7 +683,7 @@ input[type='checkbox'] {
 }
 
 .form input[type="color"]:focus {
-  outline: 2px solid #F79D65;
+  outline: 2px solid #fdc500;
 }
 
 .label {
@@ -709,7 +709,7 @@ input[type='checkbox'] {
 }
 
 .form .submit:hover {
-  background-color: #F79D65;
+  background-color: #fdc500;
   color: var(--bg-dark);
 }
 
