@@ -22,7 +22,7 @@ export default function RoutesScreen() {
       });
       setRoutes(res.data);
     } catch (e) {
-      console.log('Erro ao carregar trajetos:', e);
+      console.error('Erro ao carregar trajetos:', e);
     }
   };
 
