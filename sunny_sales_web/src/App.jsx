@@ -31,6 +31,7 @@ import SobreProjeto from './pages/SobreProjeto';
 import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
 import Footer from './components/Footer';
+import navbarWave from './assets/navbar-wave.svg';
 import './index.css'; // (em português) Importa os estilos globais
 
 // Componente principal que define as rotas da aplicação web
@@ -76,6 +77,7 @@ function AppLayout() {
       {/* (em português) Barra de navegação */}
       <header className="header-wrapper">
         <div className="navbar">
+          <Link className="nav-logo" to="/">Sunny Sales</Link>
           <button
             className="menu-toggle"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -113,9 +115,8 @@ function AppLayout() {
             <FiUser />
           </Link>
         </div>
+        <img src={navbarWave} alt="" className="navbar-wave" />
       </header>
-
-      <Link className="logo-link" to="/">Sunny Sales</Link>
 
       {/* (em português) Container central da aplicação */}
       <div className="container">
