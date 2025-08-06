@@ -136,7 +136,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 20 },
-  title: { fontSize: 20, marginBottom: 20 },
+  title: { fontSize: 20, marginBottom: 20, color: '#FDF38A' },
   input: { borderWidth: 1, marginBottom: 10, padding: 8 },
   error: { color: 'red', marginTop: 10 },
 });

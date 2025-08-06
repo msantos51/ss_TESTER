@@ -102,7 +102,6 @@ export default function VendorRegister() {
           />
         </span>
         <span className="input-span">
-          <label className="label">Email</label>
           <input
             type="email"
             placeholder="Email"
@@ -111,7 +110,6 @@ export default function VendorRegister() {
           />
         </span>
         <span className="input-span">
-          <label className="label">Palavra-passe</label>
           <input
             type="password"
             placeholder="Palavra-passe"
