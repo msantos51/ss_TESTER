@@ -76,6 +76,7 @@ function AppLayout() {
     <div className="wrapper">
       {/* (em português) Barra de navegação */}
       <header className="header-wrapper">
+        <img src={navbarWave} alt="" className="navbar-wave" />
         <div className="navbar">
           <Link className="nav-logo" to="/">Sunny Sales</Link>
           <button
@@ -115,10 +116,6 @@ function AppLayout() {
             <FiUser />
           </Link>
         </div>
-        <div
-          className="navbar-wave"
-          style={{ backgroundImage: `url(${navbarWave})` }}
-        />
       </header>
 
       {/* (em português) Container central da aplicação */}
