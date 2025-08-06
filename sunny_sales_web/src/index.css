@@ -8,7 +8,7 @@
   --primary-color: #F79D65; /* laranja */
   --secondary-color: #FDF38A; /* amarelo */
 
-  --bg-color: #FDF38A; /* fundo amarelo */
+  --bg-color: #fccc34; /* fundo amarelo */
 
 
   --text-color: #000000;
@@ -82,7 +82,7 @@ body {
   align-items: center;
   box-sizing: border-box;
   padding: 12px 24px;
-  background-color: #F79D65;
+  background-color: #8424e8;
   border-radius: 40px;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
 
@@ -167,7 +167,7 @@ body {
 
 .menu-toggle {
   display: none;
-  background: none;
+  background-color: #8424e8;
   border: none;
   color: #fff;
   font-size: 2rem;
@@ -474,7 +474,7 @@ input[type='checkbox'] {
     top: 100%;
     left: 0;
     width: 100%;
-    background-color: #F79D65;
+    background-color: #8424e8;
     padding: 1rem 2rem;
   }
 
