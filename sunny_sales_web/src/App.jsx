@@ -75,7 +75,6 @@ function AppLayout() {
     <div className="wrapper">
       {/* (em português) Barra de navegação */}
       <header className="header-wrapper">
-        <Link className="logo-link" to="/">Sunny Sales</Link>
         <div className="navbar">
           <button
             className="menu-toggle"
@@ -115,6 +114,8 @@ function AppLayout() {
           </Link>
         </div>
       </header>
+
+      <Link className="logo-link" to="/">Sunny Sales</Link>
 
       {/* (em português) Container central da aplicação */}
       <div className="container">
