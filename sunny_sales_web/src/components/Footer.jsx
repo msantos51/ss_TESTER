@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import footerWave from '../assets/navbar-wave.svg';
 import './Footer.css';
 
 const messages = [
@@ -64,6 +65,11 @@ export default function Footer() {
     return () => clearInterval(interval);
   }, []);
 
-  return <footer className="footer">{messages[index]}</footer>;
+  return (
+    <footer className="footer-wrapper">
+      <img src={footerWave} alt="" className="footer-wave" />
+      <div className="footer-message">{messages[index]}</div>
+    </footer>
+  );
 }
 
