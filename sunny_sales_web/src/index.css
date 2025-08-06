@@ -8,7 +8,9 @@
   --primary-color: #F79D65; /* laranja */
   --secondary-color: #FDF38A; /* amarelo */
 
-  --bg-color: #fccc34; /* fundo amarelo */
+
+  --bg-color: #ffffff; /* fundo branco */
+
 
 
   --text-color: #000000;
@@ -368,18 +370,18 @@ align-items: center;
 
 /* === Estilo para botoes === */
 button {
-  --primary-color: #F79D65;
-  --secondary-color: #fff;
+  --primary-color: #fccc34 !important;
+  --secondary-color: #fff !important;
   --hover-color: #FDF38A;
   --arrow-width: 10px;
   --arrow-stroke: 2px;
   box-sizing: border-box;
   border: 0;
   border-radius: 20px;
-  color: var(--secondary-color);
+  color: var(--secondary-color) !important;
   font-size: 1rem;
   padding: 0.5em 1.2em;
-  background: var(--primary-color);
+  background-color: var(--primary-color) !important;
   display: flex;
   justify-content: center;
   transition: 0.2s background;
@@ -390,7 +392,7 @@ button {
 
 /* Utilizado para destacar botoes de acoes principais em laranja */
 .black-button {
-  --primary-color: #F79D65;
+  --primary-color: #fccc34;
   --secondary-color: #FFFFFF;
   --hover-color: #FDF38A;
   background-color: var(--primary-color);
