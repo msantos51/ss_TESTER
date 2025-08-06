@@ -8,7 +8,7 @@
   --primary-color: #F79D65; /* laranja */
   --secondary-color: #FDF38A; /* amarelo */
 
-  --bg-color: #FDF38A; /* fundo amarelo */
+  --bg-color: #ffffff; /* fundo branco */
 
 
   --text-color: #000000;
@@ -82,7 +82,7 @@ body {
   align-items: center;
   box-sizing: border-box;
   padding: 12px 24px;
-  background-color: #F79D65;
+  background-color: #8424e8;
   border-radius: 40px;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
 
@@ -167,7 +167,7 @@ body {
 
 .menu-toggle {
   display: none;
-  background: none;
+  background-color: #8424e8;
   border: none;
   color: #fff;
   font-size: 2rem;
@@ -368,18 +368,18 @@ align-items: center;
 
 /* === Estilo para botoes === */
 button {
-  --primary-color: #F79D65;
-  --secondary-color: #fff;
+  --primary-color: #fccc34 !important;
+  --secondary-color: #fff !important;
   --hover-color: #FDF38A;
   --arrow-width: 10px;
   --arrow-stroke: 2px;
   box-sizing: border-box;
   border: 0;
   border-radius: 20px;
-  color: var(--secondary-color);
+  color: var(--secondary-color) !important;
   font-size: 1rem;
   padding: 0.5em 1.2em;
-  background: var(--primary-color);
+  background-color: var(--primary-color) !important;
   display: flex;
   justify-content: center;
   transition: 0.2s background;
@@ -390,7 +390,7 @@ button {
 
 /* Utilizado para destacar botoes de acoes principais em laranja */
 .black-button {
-  --primary-color: #F79D65;
+  --primary-color: #fccc34;
   --secondary-color: #FFFFFF;
   --hover-color: #FDF38A;
   background-color: var(--primary-color);
@@ -474,7 +474,7 @@ input[type='checkbox'] {
     top: 100%;
     left: 0;
     width: 100%;
-    background-color: #F79D65;
+    background-color: #8424e8;
     padding: 1rem 2rem;
   }
 
