@@ -35,21 +35,7 @@ body {
   margin: 0 auto;
   padding: 0 0.5rem;
   box-sizing: border-box;
-  background: linear-gradient(
-    to right,
-    #ffffff 0%,
-    #ffffff 20%,
-    #fccc34 20%,
-    #fccc34 40%,
-    #ffffff 40%,
-    #ffffff 60%,
-    #fccc34 60%,
-    #fccc34 80%,
-    #ffffff 80%,
-    #ffffff 100%
-  );
-  background-size: 160px 100%;
-  background-repeat: repeat;
+  background-color: #ffffff;
 }
 
 /* Envolve o cabeçalho e o mapa */
@@ -94,7 +80,7 @@ body {
   align-items: center;
   box-sizing: border-box;
   padding: 20px 40px;
-  background-color: #8424e8;
+  background-color: #fccc34;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
   width: 100%;
   position: relative;
@@ -187,7 +173,7 @@ body {
 
 .menu-toggle {
   display: none;
-  background-color: #8424e8;
+  background-color: #fccc34;
   border: none;
   color: #fff;
   font-size: 2rem;
@@ -493,7 +479,7 @@ input[type='checkbox'] {
     top: 100%;
     left: 0;
     width: 100%;
-    background-color: #8424e8;
+    background-color: #fccc34;
     padding: 1rem 2rem;
   }
 
