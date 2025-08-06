@@ -1,6 +1,6 @@
 // (em português) Painel principal do vendedor com partilha de localização e menu lateral
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
@@ -11,6 +11,8 @@ export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef(null);
+  const sideMenuRef = useRef(null);
   const navigate = useNavigate();
 
   const logout = () => {
@@ -113,11 +115,36 @@ export default function VendorDashboard() {
     }
   };
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClickOutside = (e) => {
+      if (
+        sideMenuRef.current &&
+        !sideMenuRef.current.contains(e.target) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(e.target)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [menuOpen]);
+
   return (
     <div style={styles.wrapper}>
-      <button style={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)}>☰</button>
+      <button
+        ref={menuButtonRef}
+        style={styles.menuButton}
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        ☰
+      </button>
 
-      <div style={{ ...styles.sideMenu, ...(menuOpen ? styles.sideMenuOpen : {}) }}>
+      <div
+        ref={sideMenuRef}
+        style={{ ...styles.sideMenu, ...(menuOpen ? styles.sideMenuOpen : {}) }}
+      >
         <div style={styles.menuList}>
           <button style={styles.menuButtonItem} onClick={() => { paySubscription(); setMenuOpen(false); }}>Pagar Semanalidade</button>
           <button style={styles.menuButtonItem} onClick={() => { navigate('/paid-weeks'); setMenuOpen(false); }}>Semanas Pagas</button>
@@ -264,18 +291,17 @@ const styles = {
   },
   sideMenu: {
     position: 'fixed',
-    top: 0,
+    top: '100px',
     left: 0,
-    height: '100%',
+    height: 'calc(100% - 100px)',
     width: '250px',
     backgroundColor: '#f8f8f8',
     boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
     padding: '1rem',
-    paddingTop: '9rem',
     boxSizing: 'border-box',
     transform: 'translateX(-100%)',
     transition: 'transform 0.3s ease-in-out',
-    zIndex: 1200,
+    zIndex: 900,
   },
   sideMenuOpen: {
     transform: 'translateX(0)',
