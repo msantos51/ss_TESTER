@@ -31,6 +31,7 @@ import SobreProjeto from './pages/SobreProjeto';
 import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
 import Footer from './components/Footer';
+import navbarWave from './assets/navbar-wave.svg';
 import './index.css'; // (em português) Importa os estilos globais
 
 // Componente principal que define as rotas da aplicação web
@@ -114,6 +115,7 @@ function AppLayout() {
             <FiUser />
           </Link>
         </div>
+        <img src={navbarWave} alt="" className="navbar-wave" />
       </header>
 
       {/* (em português) Container central da aplicação */}
