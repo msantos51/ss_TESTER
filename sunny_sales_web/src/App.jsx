@@ -115,7 +115,10 @@ function AppLayout() {
             <FiUser />
           </Link>
         </div>
-        <img src={navbarWave} alt="" className="navbar-wave" />
+        <div
+          className="navbar-wave"
+          style={{ backgroundImage: `url(${navbarWave})` }}
+        />
       </header>
 
       {/* (em português) Container central da aplicação */}
