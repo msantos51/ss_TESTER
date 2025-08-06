@@ -98,16 +98,11 @@ body {
   pointer-events: none;
 }
 
-.logo-link {
+.nav-logo {
   text-decoration: none;
-  color: #fccc34;
-  font-size: 40px;
+  color: #fff;
+  font-size: 1.5rem;
   font-weight: 600;
-  letter-spacing: 1px;
-  margin-top: 120px;
-  margin-bottom: 0.5rem;
-  display: block;
-  text-align: center;
 }
 
 .nav-links {
@@ -468,7 +463,7 @@ input[type='checkbox'] {
   .profile-icon {
     margin-left: 0;
   }
-  .logo-link {
+  .nav-logo {
     font-size: 28px;
   }
   .nav-links {
@@ -502,7 +497,7 @@ input[type='checkbox'] {
   .form-container.login-container {
     width: 90%;
   }
-  .logo-link {
+  .nav-logo {
     font-size: 24px;
   }
   .navbar {
