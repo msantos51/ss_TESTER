@@ -741,9 +741,10 @@ async def show_password_reset_form(token: str):
     <html>
     <head>
         <meta charset="UTF-8">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
         <title>Redefinir Senha</title>
     </head>
-    <body style="font-family: Arial; background: #ffffff; padding: 30px;">
+    <body style="font-family: 'Roboto', sans-serif; background: #ffffff; padding: 30px;">
         <h2>Redefinir Senha</h2>
         <form action="/password-reset/{token}" method="post">
             <input type="password" name="new_password" placeholder="Nova senha" required style="padding: 8px; width: 200px;"><br><br>
