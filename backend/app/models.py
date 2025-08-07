@@ -30,6 +30,24 @@ class Vendor(Base):
     session_token = Column(String, nullable=True, index=True)
 
     routes = relationship("Route", back_populates="vendor")
+    sessions = relationship(
+        "VendorSession", back_populates="vendor", cascade="all, delete-orphan"
+    )
+
+
+# VendorSession
+class VendorSession(Base):
+    """Sessões ativas de cada vendedor."""
+
+    __tablename__ = "vendor_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vendor_id = Column(Integer, ForeignKey("vendors.id"), index=True)
+    token = Column(String, unique=True, index=True)
+    user_agent = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    vendor = relationship("Vendor", back_populates="sessions")
 
 
 # Client
