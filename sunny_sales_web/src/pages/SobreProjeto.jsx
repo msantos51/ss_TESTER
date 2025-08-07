@@ -5,30 +5,30 @@ export default function SobreProjeto() {
   const navigate = useNavigate();
   return (
     <div style={styles.container}>
-      <button onClick={() => navigate(-1)} style={styles.back}>⬅ Voltar</button>
+      <button onClick={() => navigate(-1)} style={styles.back}>Voltar</button>
       <h2 style={styles.title}>Sobre o Projeto</h2>
       <p style={styles.text}>
-        <strong>Sunny Sales</strong> é uma plataforma inovadora que liga vendedores
-        ambulantes de produtos tradicionais de praia (como bolas de Berlim,
-        gelados e acessórios) a banhistas, através de um mapa interactivo em
+        <strong>Sunny Sales</strong> é uma plataforma que conecta vendedores
+        ambulantes de produtos tradicionais de praia, como bolas de Berlim,
+        gelados e acessórios, a banhistas por meio de um mapa interativo em
         tempo real.
       </p>
-      <h3 style={styles.sectionTitle}>🏖️ Porquê criámos este projecto?</h3>
+      <h3 style={styles.sectionTitle}>Motivação</h3>
       <p style={styles.text}>
-        Todos já passámos pela experiência de querer comprar algo na praia e não
-        saber onde encontrar o vendedor. Com o Sunny Sales, os utilizadores podem
-        visualizar num mapa os vendedores mais próximos, os produtos disponíveis e
-        até avaliações deixadas por outros clientes.
+        Consumidores frequentemente enfrentam dificuldade para localizar
+        vendedores na praia. O Sunny Sales apresenta num mapa os vendedores
+        mais próximos, os produtos disponíveis e as avaliações de outros
+        clientes.
       </p>
-      <h3 style={styles.sectionTitle}>🎯 O que resolvemos:</h3>
+      <h3 style={styles.sectionTitle}>Principais benefícios</h3>
       <ul style={styles.list}>
-        <li>Os banhistas deixam de ter de esperar ou procurar os vendedores.</li>
-        <li>Os vendedores poupam tempo e esforço, chegando directamente a quem os procura.</li>
-        <li>As praias tornam-se mais organizadas e sustentáveis.</li>
+        <li>Elimina a necessidade de procurar vendedores pela praia.</li>
+        <li>Reduz o tempo e o esforço dos vendedores ao direcioná-los para o público interessado.</li>
+        <li>Contribui para a organização e a sustentabilidade das zonas balneares.</li>
       </ul>
       <p style={styles.text}>
-        O Sunny Sales é uma ponte entre tradição e tecnologia, com foco na
-        praticidade, sustentabilidade e valorização do comércio local.
+        O Sunny Sales integra tradição e tecnologia para promover praticidade,
+        sustentabilidade e valorização do comércio local.
       </p>
     </div>
   );
