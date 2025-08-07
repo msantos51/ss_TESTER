@@ -90,33 +90,39 @@ def test_token_generation(client):
     assert token
 
 
-def test_single_session(client):
+def test_session_management(client):
     register_vendor(client, email="single@example.com")
     confirm_latest_email(client)
 
     token1 = get_token(client, email="single@example.com")
+    token2 = get_token(client, email="single@example.com")
+
     resp = client.get(
         "/vendors/me",
         headers={"Authorization": f"Bearer {token1}"},
     )
     assert resp.status_code == 200
 
-    # Tentar gerar um novo token sem forçar deve falhar
-    resp = client.post(
-        "/token",
-        json={"email": "single@example.com", "password": "Secret123"},
-    )
-    assert resp.status_code == 409
-
-    # Gerar um novo token forçando o logout anterior
-    token2 = get_token(client, email="single@example.com", force=True)
     resp = client.get(
         "/vendors/me",
         headers={"Authorization": f"Bearer {token2}"},
     )
     assert resp.status_code == 200
 
-    # Token antigo deve deixar de ser válido
+    resp = client.get(
+        "/vendors/me/sessions",
+        headers={"Authorization": f"Bearer {token2}"},
+    )
+    sessions = resp.json()
+    assert len(sessions) == 2
+    target = [s for s in sessions if not s["current"]][0]
+
+    resp = client.delete(
+        f"/vendors/me/sessions/{target['id']}",
+        headers={"Authorization": f"Bearer {token2}"},
+    )
+    assert resp.status_code == 200
+
     resp = client.get(
         "/vendors/me",
         headers={"Authorization": f"Bearer {token1}"},

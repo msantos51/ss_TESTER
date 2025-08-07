@@ -30,6 +30,7 @@ import ModernMapLayout from './pages/ModernMapLayout';
 import SobreProjeto from './pages/SobreProjeto';
 import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
+import Sessions from './pages/Sessions';
 import Footer from './components/Footer';
 import navbarWave from './assets/navbar-wave.svg';
 import './index.css'; // (em português) Importa os estilos globais
@@ -141,6 +142,7 @@ function AppLayout() {
           <Route path="/route-detail" element={<RouteDetail />} />
           <Route path="/routes" element={<RoutesScreen />} />
           <Route path="/stats" element={<StatsScreen />} />
+          <Route path="/sessions" element={<Sessions />} />
           <Route path="/terms" element={<TermsScreen />} />
           <Route path="/vendors/:id" element={<VendorDetailScreen />} />
           <Route path="/dashboard" element={<Dashboard />} />

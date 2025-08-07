@@ -154,6 +154,7 @@ export default function VendorDashboard() {
 
           <button style={styles.menuButtonItem} onClick={() => { navigate('/routes'); setMenuOpen(false); }}>Trajetos</button>
           <button style={styles.menuButtonItem} onClick={() => { navigate('/stats'); setMenuOpen(false); }}>Distância Percorrida</button>
+          <button style={styles.menuButtonItem} onClick={() => { navigate('/sessions'); setMenuOpen(false); }}>Sessões</button>
 
           <div style={styles.divider} />
 

@@ -230,9 +230,12 @@ def get_current_vendor(
     vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
     if not vendor:
         raise HTTPException(status_code=401, detail="Vendor not found")
-    # Se o token armazenado n\u00e3o coincidir, significa que o utilizador iniciou
-    # sess\u00e3o noutro dispositivo e este token foi revogado
-    if vendor.session_token != token:
+    session = (
+        db.query(models.VendorSession)
+        .filter(models.VendorSession.vendor_id == vendor.id, models.VendorSession.token == token)
+        .first()
+    )
+    if not session:
         raise HTTPException(status_code=401, detail="Session invalidated")
     return vendor
 
@@ -247,8 +250,14 @@ def get_current_vendor_optional(request: Request, db: Session = Depends(get_db))
             payload = decode_token(token)
             vendor_id = payload.get("sub")
             vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
-            if vendor and vendor.session_token == token:
-                return vendor
+            if vendor:
+                session = (
+                    db.query(models.VendorSession)
+                        .filter(models.VendorSession.vendor_id == vendor.id, models.VendorSession.token == token)
+                        .first()
+                )
+                if session:
+                    return vendor
         except HTTPException:
             pass
     return None
@@ -344,23 +353,55 @@ async def generate_token(
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     if not vendor.email_confirmed:
         raise HTTPException(status_code=400, detail="Email not confirmed")
-
-    # Se j\u00e1 existir uma sess\u00e3o ativa e n\u00e3o for solicitado for\u00e7ar, avisar
-    if vendor.session_token and not force:
-        try:
-            decode_token(vendor.session_token)
-        except HTTPException:
-            # Token anterior est\u00e1 expirado ou inv\u00e1lido; prosseguir com novo login
-            vendor.session_token = None
-        else:
-            raise HTTPException(status_code=409, detail="Active session exists")
-
     token = create_access_token({"sub": vendor.id})
-    # Guardar o token atual no vendedor para que apenas esta sess\u00e3o seja v\u00e1lida
-    vendor.session_token = token
+    session = models.VendorSession(
+        vendor_id=vendor.id, token=token, user_agent=request.headers.get("user-agent")
+    )
+    db.add(session)
     db.commit()
     return {"access_token": token, "token_type": "bearer"}
+# --------------------------
+# Gestao de sessões
+# --------------------------
+@app.get("/vendors/me/sessions")
+def list_sessions(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    current: models.Vendor = Depends(get_current_vendor),
+    db: Session = Depends(get_db),
+):
+    token = credentials.credentials
+    sessions = (
+        db.query(models.VendorSession)
+        .filter(models.VendorSession.vendor_id == current.id)
+        .all()
+    )
+    return [
+        {
+            "id": s.id,
+            "user_agent": s.user_agent,
+            "created_at": s.created_at.isoformat(),
+            "current": s.token == token,
+        }
+        for s in sessions
+    ]
 
+
+@app.delete("/vendors/me/sessions/{session_id}")
+def delete_session(
+    session_id: int,
+    current: models.Vendor = Depends(get_current_vendor),
+    db: Session = Depends(get_db),
+):
+    session_obj = (
+        db.query(models.VendorSession)
+        .filter(models.VendorSession.id == session_id, models.VendorSession.vendor_id == current.id)
+        .first()
+    )
+    if not session_obj:
+        raise HTTPException(status_code=404, detail="Session not found")
+    db.delete(session_obj)
+    db.commit()
+    return {"status": "ok"}
 
 
 # --------------------------
