@@ -6,6 +6,9 @@
     "sdkVersion": "50.0.0",
     "platforms": ["android", "ios"],
     "orientation": "portrait",
-    "userInterfaceStyle": "light"
+    "userInterfaceStyle": "light",
+    "android": {
+      "permissions": ["android.permission.DETECT_SCREEN_CAPTURE"]
+    }
   }
 }
