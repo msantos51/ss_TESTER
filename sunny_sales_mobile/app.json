@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "SunnySalesMobile",
+    "slug": "sunny-sales-mobile",
+    "version": "0.1.0",
+    "sdkVersion": "50.0.0",
+    "platforms": ["android", "ios"],
+    "orientation": "portrait",
+    "userInterfaceStyle": "light"
+  }
+}
