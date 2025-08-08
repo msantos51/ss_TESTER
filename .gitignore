@@ -4,3 +4,8 @@ __pycache__/
 .env.*
 !.env.example
 profile_photos/
+
+# React Native/Expo
+sunny_sales_mobile/node_modules/
+sunny_sales_mobile/.expo/
+sunny_sales_mobile/dist/
