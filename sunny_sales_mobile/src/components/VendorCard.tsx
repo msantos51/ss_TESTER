@@ -1,6 +1,6 @@
 // src/components/VendorCard.tsx
 import { View, Text, StyleSheet, Image } from 'react-native';
-import { Vendor } from '@/types';
+import { Vendor } from '../types';
 export default function VendorCard({ vendor }: { vendor: Vendor }) {
   return (
     <View style={styles.card}>
