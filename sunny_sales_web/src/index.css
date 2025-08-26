@@ -8,24 +8,22 @@
   --primary-color: #fdc500; /* amarelo */
   --secondary-color: #fdc500; /* amarelo */
 
-
-  --bg-color: #dbd0c4; /* fundo padrão do site */
-
-
+  /* Cores de fundo superior e inferior */
+  --bg-top-color: #ff9720; /* laranja */
+  --bg-color: transparent;
 
   --text-color: #000000;
   font-family: 'Roboto', sans-serif;
-  background-color: var(--bg-color);
   color: var(--text-color);
 }
 
-  body {
-    margin: 0;
-    padding: 0;
-
-    background-color: var(--bg-color);
-    overflow-x: hidden;
-  }
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #166c6c;
+  background-image: url("https://www.transparenttextures.com/patterns/dust.png");
+  overflow-x: hidden;
+}
 
 /* Container central para limitar a largura do conteúdo */
   .container {
@@ -35,7 +33,7 @@
     margin: 0 auto;
     padding: 100px 0.5rem 0;
     box-sizing: border-box;
-    background-color: var(--bg-color);
+    background: transparent;
   }
 
 /* Envolve o cabeçalho e o mapa */
@@ -73,7 +71,7 @@
   height: 100px;
   z-index: 1000;
   overflow: hidden;
-  background-color: #0099ff;
+  background-color: var(--bg-top-color);
 }
 
 .navbar {
