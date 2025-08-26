@@ -6,7 +6,7 @@
   width: 100%;
   height: 40px;
   overflow: hidden;
-  background-color: var(--bg-top-color);
+  background-color: var(--footer-color);
 }
 
 .footer-message {
