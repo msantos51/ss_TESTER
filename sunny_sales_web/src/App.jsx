@@ -32,7 +32,6 @@ import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
 import Sessions from './pages/Sessions';
 import Footer from './components/Footer';
-import navbarWave from './assets/navbar-wave.svg';
 import './index.css'; // (em português) Importa os estilos globais
 
 // Componente principal que define as rotas da aplicação web
@@ -77,7 +76,6 @@ function AppLayout() {
     <div className="wrapper">
       {/* (em português) Barra de navegação */}
       <header className="header-wrapper">
-        <img src={navbarWave} alt="" className="navbar-wave" />
         <div className="navbar">
           <Link className="nav-logo" to="/">Sunny Sales</Link>
           <button
