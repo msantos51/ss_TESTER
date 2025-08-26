@@ -8,8 +8,9 @@
   --primary-color: #fdc500; /* amarelo */
   --secondary-color: #fdc500; /* amarelo */
 
-  /* Cores de fundo superior e inferior */
-  --bg-top-color: #ff9720; /* laranja */
+  /* Cores do cabeçalho e rodapé */
+  --header-color: #4090ab; /* azul */
+  --footer-color: #e29f6c; /* laranja */
 
   --bg-color: transparent;
 
@@ -22,8 +23,10 @@ body {
   margin: 0;
   padding: 0;
 
-  background-color: #166c6c;
-  background-image: url("https://www.transparenttextures.com/patterns/dust.png");
+  background-color: var(--footer-color);
+  background-image: url('./assets/background.svg');
+  background-repeat: no-repeat;
+  background-size: cover;
 
   overflow-x: hidden;
 }
@@ -75,7 +78,7 @@ body {
   z-index: 1000;
   overflow: hidden;
 
-  background-color: var(--bg-top-color);
+  background-color: var(--header-color);
 
 }
 
