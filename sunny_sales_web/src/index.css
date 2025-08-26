@@ -23,8 +23,10 @@ body {
   margin: 0;
   padding: 0;
 
+
   background-color: #e29f6c;
   background-image: url('/background.svg');
+
   background-repeat: no-repeat;
   background-size: cover;
 
@@ -78,7 +80,9 @@ body {
   z-index: 1000;
   overflow: hidden;
 
+
   background-color: #4090ab;
+
 
 }
 

@@ -77,7 +77,9 @@ function AppLayout() {
       {/* (em português) Barra de navegação */}
       <header
         className="header-wrapper"
+
         style={{ backgroundColor: '#4090ab' }}
+
       >
         <div className="navbar">
           <Link className="nav-logo" to="/">Sunny Sales</Link>
