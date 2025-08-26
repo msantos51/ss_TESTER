@@ -136,7 +136,11 @@ body {
   /* Only keep rounded corners at the bottom to merge with the header */
   border-radius: 0 0 12px 12px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
-  background: var(--secondary-color);
+  background: transparent;
+}
+
+.leaflet-container {
+  background: transparent;
 }
 
 .vendor-card {

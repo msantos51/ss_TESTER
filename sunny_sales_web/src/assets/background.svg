@@ -1,11 +1,11 @@
-<svg class="border shadow-md dark:border-slate-700" viewBox="0 0 748 748" style="width: 748px; height: 748px;" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><rect class="bg" id="bg" x="0" y="0" width="748" height="748" fill="#e29f6c"></rect><g transform="rotate(0 374 374)"><path d="M -249.33 458.00 S -134.67 453.00
-            0.00 458.00 114.67 277.00
-            249.33 458.00 247.67 302.00
-            498.67 458.00 609.00 437.00
-            748.00 458.00 862.67 382.00
-            997.33 458.00 h 110 V 1348 H -249.33 Z" fill="#4090AB"></path><path d="M -249.33 315.00 S -137.00 113.00
-            0.00 315.00 42.33 167.50
-            249.33 315.00 364.00 167.50
-            498.67 315.00 613.33 167.50
-            748.00 315.00 786.33 85.00
-            997.33 315.00 h 110 V -600 H -249.33 Z" fill="#E29F6C"></path></g></svg>
+<svg class="border shadow-md dark:border-slate-700" viewBox="0 0 748 748" style="width: 748px; height: 748px;" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><rect class="bg" id="bg" x="0" y="0" width="748" height="748" fill="#d7ebff"></rect><g transform="rotate(15 374 374)"><path d="M -249.33 558.00 S -189.00 440.00
+            0.00 558.00 114.67 535.00
+            249.33 558.00 330.67 453.00
+            498.67 558.00 541.00 491.00
+            748.00 558.00 744.33 414.00
+            997.33 558.00 h 110 V 1348 H -249.33 Z" fill="none" stroke="#FDC500" stroke-width="10"></path><path d="M -249.33 215.00 S -134.67 117.50
+            0.00 215.00 114.67 117.50
+            249.33 215.00 342.67 105.00
+            498.67 215.00 613.33 81.00
+            748.00 215.00 836.33 87.00
+            997.33 215.00 h 110 V -600 H -249.33 Z" fill="none" stroke="#FDC500" stroke-width="10"></path></g></svg>

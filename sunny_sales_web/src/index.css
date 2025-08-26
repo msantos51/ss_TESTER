@@ -9,10 +9,10 @@
   --secondary-color: #fdc500; /* amarelo */
 
   /* Cores do cabeçalho e rodapé */
-  --header-color: #4090ab; /* azul */
-  --footer-color: #e29f6c; /* laranja */
+  --header-color: #fdc500; /* amarelo */
+  --footer-color: #fdc500; /* amarelo */
 
-  --bg-color: transparent;
+  --bg-color: #d7ebff; /* azul claro de fundo */
 
   --text-color: #000000;
   font-family: 'Roboto', sans-serif;
@@ -22,9 +22,9 @@
 body {
   margin: 0;
   padding: 0;
+  
 
-
-  background-color: var(--footer-color);
+  background-color: var(--bg-color);
   background-image: url('./assets/background.svg');
 
   background-repeat: no-repeat;
