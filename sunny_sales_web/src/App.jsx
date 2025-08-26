@@ -75,7 +75,10 @@ function AppLayout() {
   return (
     <div className="wrapper">
       {/* (em português) Barra de navegação */}
-      <header className="header-wrapper">
+      <header
+        className="header-wrapper"
+        style={{ backgroundColor: 'var(--header-color)' }}
+      >
         <div className="navbar">
           <Link className="nav-logo" to="/">Sunny Sales</Link>
           <button

@@ -23,7 +23,9 @@ body {
   margin: 0;
   padding: 0;
 
-  background-color: #e29f6c;
+
+  background-color: var(--footer-color);
+
   background-image: url('./assets/background.svg');
   background-repeat: no-repeat;
   background-size: cover;
