@@ -9,7 +9,7 @@
   --secondary-color: #fdc500; /* amarelo */
 
 
-  --bg-color: #ffffff; /* fundo branco */
+  --bg-color: #dbd0c4; /* fundo padrão do site */
 
 
 
@@ -35,7 +35,7 @@
     margin: 0 auto;
     padding: 100px 0.5rem 0;
     box-sizing: border-box;
-    background-color: #ffffff;
+    background-color: var(--bg-color);
   }
 
 /* Envolve o cabeçalho e o mapa */

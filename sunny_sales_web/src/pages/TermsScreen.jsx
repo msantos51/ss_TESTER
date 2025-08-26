@@ -69,7 +69,7 @@ const styles = {
     padding: '2rem',
     maxWidth: 800,
     margin: '0 auto',
-    backgroundColor: '#fdc500',
+      backgroundColor: 'var(--bg-color)',
     borderRadius: '8px',
     fontFamily: 'sans-serif',
     color: '#333',

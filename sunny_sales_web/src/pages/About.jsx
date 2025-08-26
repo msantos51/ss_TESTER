@@ -8,8 +8,8 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     padding: '2rem',
-    minHeight: '100vh',
-    backgroundColor: '#f6f6f6',
+      minHeight: '100vh',
+      backgroundColor: 'var(--bg-color)',
   },
   card: {
     background: 'white',
