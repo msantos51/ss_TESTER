@@ -24,8 +24,8 @@ body {
   padding: 0;
 
 
-  background-color: #e29f6c;
-  background-image: url('/background.svg');
+  background-color: var(--footer-color);
+  background-image: url('./assets/background.svg');
 
   background-repeat: no-repeat;
   background-size: cover;
@@ -81,7 +81,7 @@ body {
   overflow: hidden;
 
 
-  background-color: #4090ab;
+  background-color: var(--header-color);
 
 
 }
