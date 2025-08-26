@@ -65,7 +65,10 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="footer-wrapper">
+    <footer
+      className="footer-wrapper"
+      style={{ backgroundColor: '#e29f6c' }}
+    >
       <div className="footer-message">{messages[index]}</div>
     </footer>
   );
