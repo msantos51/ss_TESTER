@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from . import models, schemas
 import stripe
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from .database import engine, get_db, ensure_latest_schema
 import os
 from pathlib import Path
@@ -37,6 +37,11 @@ os.makedirs(STORY_DIR, exist_ok=True)
 
 # Inicializar app
 app = FastAPI()
+
+
+def utcnow():
+    """Return current UTC time as a naive datetime."""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 # Endpoint de verificação de funcionamento da API
 @app.get("/api/status")
@@ -277,7 +282,11 @@ def get_admin(request: Request):
 # --------------------------
 def verify_active_subscription(vendor: models.Vendor, db: Session):
     """Ensure subscription is active and not expired."""
-    if vendor.subscription_active and vendor.subscription_valid_until and vendor.subscription_valid_until < datetime.utcnow():
+    if (
+        vendor.subscription_active
+        and vendor.subscription_valid_until
+        and vendor.subscription_valid_until < utcnow()
+    ):
         vendor.subscription_active = False
         db.commit()
         db.refresh(vendor)
@@ -484,7 +493,7 @@ async def password_reset_request(
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found")
     vendor.password_reset_token = token_urlsafe(32)
-    vendor.password_reset_expires = datetime.utcnow() + timedelta(hours=1)
+    vendor.password_reset_expires = utcnow() + timedelta(hours=1)
     db.commit()
     reset_link = f"{os.getenv('BASE_URL', 'http://localhost:8000')}/password-reset/{vendor.password_reset_token}"
     send_email(
@@ -499,7 +508,11 @@ async def password_reset_request(
 # password_reset
 def password_reset(token: str, new_password: str = Form(...), db: Session = Depends(get_db)):
     vendor = db.query(models.Vendor).filter(models.Vendor.password_reset_token == token).first()
-    if not vendor or not vendor.password_reset_expires or vendor.password_reset_expires < datetime.utcnow():
+    if (
+        not vendor
+        or not vendor.password_reset_expires
+        or vendor.password_reset_expires < utcnow()
+    ):
         raise HTTPException(status_code=400, detail="Invalid or expired token")
     validate_password(new_password)
     vendor.hashed_password = pwd_context.hash(new_password)
@@ -625,7 +638,7 @@ async def update_vendor_location(
 
     if active_route:
         points = json.loads(active_route.points or "[]")
-        points.append({"lat": lat, "lng": lng, "t": datetime.utcnow().isoformat()})
+        points.append({"lat": lat, "lng": lng, "t": utcnow().isoformat()})
         active_route.points = json.dumps(points)
         db.commit()
 
@@ -659,7 +672,7 @@ def start_route(
         for p1, p2 in zip(pts, pts[1:]):
             dist += haversine(p1["lat"], p1["lng"], p2["lat"], p2["lng"])
         r.distance_m = dist
-        r.end_time = datetime.utcnow()
+        r.end_time = utcnow()
 
     route = models.Route(vendor_id=vendor_id, points="[]")
     db.add(route)
@@ -701,7 +714,7 @@ async def stop_route(
         for p1, p2 in zip(pts, pts[1:]):
             dist += haversine(p1["lat"], p1["lng"], p2["lat"], p2["lng"])
         r.distance_m = dist
-        r.end_time = datetime.utcnow()
+        r.end_time = utcnow()
 
     # Clear vendor's current location so clients remove it from the map
     current_vendor.current_lat = None
@@ -851,7 +864,7 @@ async def create_story(
     file_path = os.path.join(STORY_DIR, file_name)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-    created = datetime.utcnow()
+    created = utcnow()
     story = models.Story(
         vendor_id=vendor_id,
         media_path=f"stories/{file_name}",
@@ -871,7 +884,7 @@ async def create_story(
 @app.get("/vendors/{vendor_id}/stories", response_model=list[schemas.StoryOut])
 # list_stories
 def list_stories(vendor_id: int, db: Session = Depends(get_db)):
-    now = datetime.utcnow()
+    now = utcnow()
     stories = (
         db.query(models.Story)
         .filter(models.Story.vendor_id == vendor_id, models.Story.expires_at > now)
@@ -910,11 +923,11 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
         if vendor:
             vendor.subscription_active = True
-            vendor.subscription_valid_until = datetime.utcnow() + timedelta(days=7)
+            vendor.subscription_valid_until = utcnow() + timedelta(days=7)
             paid = models.PaidWeek(
                 vendor_id=vendor_id,
-                start_date=datetime.utcnow(),
-                end_date=datetime.utcnow() + timedelta(days=7),
+                start_date=utcnow(),
+                end_date=utcnow() + timedelta(days=7),
                 receipt_url=session.get("receipt_url") or session.get("url"),
             )
             db.add(paid)
@@ -936,11 +949,11 @@ def activate_subscription_manual(
         raise HTTPException(status_code=403, detail="Not authorized")
 
     current_vendor.subscription_active = True
-    current_vendor.subscription_valid_until = datetime.utcnow() + timedelta(days=7)
+    current_vendor.subscription_valid_until = utcnow() + timedelta(days=7)
     paid = models.PaidWeek(
         vendor_id=vendor_id,
-        start_date=datetime.utcnow(),
-        end_date=datetime.utcnow() + timedelta(days=7),
+        start_date=utcnow(),
+        end_date=utcnow() + timedelta(days=7),
     )
     db.add(paid)
     db.commit()

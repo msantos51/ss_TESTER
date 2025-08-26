@@ -1,8 +1,13 @@
 # models.py - define as tabelas no PostgreSQL
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean, DateTime
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 from .database import Base
+
+
+def utcnow():
+    """Return current UTC time as a naive datetime."""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 # Vendor
 class Vendor(Base):
@@ -45,7 +50,7 @@ class VendorSession(Base):
     vendor_id = Column(Integer, ForeignKey("vendors.id"), index=True)
     token = Column(String, unique=True, index=True)
     user_agent = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
     vendor = relationship("Vendor", back_populates="sessions")
 
@@ -78,7 +83,7 @@ class Route(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     vendor_id = Column(Integer, ForeignKey("vendors.id"))
-    start_time = Column(DateTime, default=datetime.utcnow)
+    start_time = Column(DateTime, default=utcnow)
     end_time = Column(DateTime, nullable=True)
     points = Column(String)
     distance_m = Column(Float, default=0.0)
@@ -94,7 +99,7 @@ class PaidWeek(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     vendor_id = Column(Integer, ForeignKey("vendors.id"))
-    start_date = Column(DateTime, default=datetime.utcnow)
+    start_date = Column(DateTime, default=utcnow)
     end_date = Column(DateTime)
     receipt_url = Column(String, nullable=True)
 
@@ -110,7 +115,7 @@ class Story(Base):
     id = Column(Integer, primary_key=True, index=True)
     vendor_id = Column(Integer, ForeignKey("vendors.id"))
     media_path = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
     expires_at = Column(DateTime)
 
     vendor = relationship("Vendor")
