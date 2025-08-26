@@ -67,7 +67,9 @@ export default function Footer() {
   return (
     <footer
       className="footer-wrapper"
-      style={{ backgroundColor: 'var(--footer-color)' }}
+
+      style={{ backgroundColor: '#e29f6c' }}
+
     >
       <div className="footer-message">{messages[index]}</div>
     </footer>
