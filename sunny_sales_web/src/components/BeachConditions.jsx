@@ -43,7 +43,7 @@ export default function BeachConditions() {
     if (!userCoords) return;
     const fetchBeaches = async () => {
       try {
-        const overpass = `https://overpass-api.de/api/interpreter?data=[out:json];node(around:5000,${userCoords.lat},${userCoords.lon})[natural=beach];out;`;
+        const overpass = `https://overpass-api.de/api/interpreter?data=[out:json];node(around:25000,${userCoords.lat},${userCoords.lon})[natural=beach];out;`;
         const res = await fetch(overpass);
         const data = await res.json();
         const list = data.elements
