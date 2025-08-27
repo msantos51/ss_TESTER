@@ -133,7 +133,7 @@ export default function BeachConditions() {
   return (
     <View style={styles.container}>
 
-      {beaches.length > 1 && (
+      {beaches.length > 0 && (
         <Picker
           selectedValue={selected?.id}
           onValueChange={(val) =>

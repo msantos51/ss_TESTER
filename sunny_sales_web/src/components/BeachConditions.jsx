@@ -124,7 +124,7 @@ export default function BeachConditions() {
   return (
     <div className="bc-container">
 
-      {beaches.length > 1 && (
+      {beaches.length > 0 && (
         <div className="bc-selector">
           <select
             value={selected?.id || ''}
