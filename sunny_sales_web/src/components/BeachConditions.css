@@ -1,0 +1,43 @@
+
+.bc-container {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  width: 80%;
+  font-size: 0.9rem;
+  background: #fff;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.bc-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bc-weather,
+.bc-tides {
+  flex: 1;
+}
+
+.bc-tides ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bc-tides li {
+  margin: 0.25rem 0;
+}
+
+.bc-warning {
+  font-size: 0.75rem;
+  color: #555;
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .bc-content {
+    flex-direction: row;
+  }
+}
