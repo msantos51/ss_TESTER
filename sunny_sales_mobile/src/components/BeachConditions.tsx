@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, ActivityIndicator } from 'react-native';
+
 import { Picker } from '@react-native-picker/picker';
+
 import * as Location from 'expo-location';
 
 // Widget "Condições de Praia" para mobile
 export default function BeachConditions() {
+
   const [userCoords, setUserCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [beaches, setBeaches] = useState<any[]>([]);
   const [selected, setSelected] = useState<any | null>(null);
+
   const [weather, setWeather] = useState<any>(null);
   const [tides, setTides] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +27,9 @@ export default function BeachConditions() {
         return;
       }
       const loc = await Location.getCurrentPositionAsync({});
+
       setUserCoords({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
+
       setError(null);
     } catch (e) {
       setError('Erro ao obter localização.');
@@ -36,6 +42,7 @@ export default function BeachConditions() {
   }, []);
 
   useEffect(() => {
+
     if (!userCoords) return;
     const fetchBeaches = async () => {
       try {
@@ -66,6 +73,7 @@ export default function BeachConditions() {
       try {
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${selected.latitude}&longitude=${selected.longitude}&current=temperature_2m,wind_speed_10m,relative_humidity_2m&daily=uv_index_max&forecast_days=1&timezone=auto`;
         const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${selected.latitude}&longitude=${selected.longitude}&hourly=sea_level&length=1&timezone=auto`;
+
         const [wRes, mRes] = await Promise.all([
           fetch(weatherUrl),
           fetch(marineUrl),
@@ -81,7 +89,9 @@ export default function BeachConditions() {
         });
         const tideEvents = calcTides(
           mData.hourly?.time || [],
+
           mData.hourly?.sea_level || []
+
         );
         setTides(tideEvents);
       } catch (e) {
@@ -91,7 +101,9 @@ export default function BeachConditions() {
       }
     };
     fetchData();
+
   }, [selected]);
+
 
   const fmt = (t: string) =>
     new Date(t).toLocaleTimeString('pt-PT', {
@@ -120,6 +132,7 @@ export default function BeachConditions() {
 
   return (
     <View style={styles.container}>
+
       {beaches.length > 1 && (
         <Picker
           selectedValue={selected?.id}
@@ -132,6 +145,7 @@ export default function BeachConditions() {
           ))}
         </Picker>
       )}
+
       <View style={styles.block}>
         <Text>Temperatura: {weather.temperature}°C</Text>
         <Text>Vento: {weather.wind} km/h</Text>
@@ -140,6 +154,7 @@ export default function BeachConditions() {
       </View>
       <View style={styles.block}>
         <Text>Marés de hoje:</Text>
+
         {tides.length ? (
           tides.map((t) => (
             <Text key={t.time}>
@@ -149,6 +164,7 @@ export default function BeachConditions() {
         ) : (
           <Text>Sem dados</Text>
         )}
+in
       </View>
       <Text style={styles.warning}>
         Estimativa para uso recreativo; não usar para navegação.

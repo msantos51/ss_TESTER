@@ -3,9 +3,11 @@ import './BeachConditions.css';
 
 // Widget "Condições de Praia" baseado na localização do utilizador
 export default function BeachConditions() {
+
   const [userCoords, setUserCoords] = useState(null);
   const [beaches, setBeaches] = useState([]);
   const [selected, setSelected] = useState(null);
+
   const [weather, setWeather] = useState(null);
   const [tides, setTides] = useState([]);
   const [error, setError] = useState(null);
@@ -20,7 +22,9 @@ export default function BeachConditions() {
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+
         setUserCoords({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+
         setError(null);
       },
       () => {
@@ -35,6 +39,7 @@ export default function BeachConditions() {
   }, []);
 
   useEffect(() => {
+
     if (!userCoords) return;
     const fetchBeaches = async () => {
       try {
@@ -66,6 +71,7 @@ export default function BeachConditions() {
       try {
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${selected.lat}&longitude=${selected.lon}&current=temperature_2m,wind_speed_10m,relative_humidity_2m&daily=uv_index_max&forecast_days=1&timezone=auto`;
         const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${selected.lat}&longitude=${selected.lon}&hourly=sea_level&length=1&timezone=auto`;
+
         const [wRes, mRes] = await Promise.all([
           fetch(weatherUrl),
           fetch(marineUrl),
@@ -81,7 +87,9 @@ export default function BeachConditions() {
         });
         const tideEvents = calcTides(
           mData.hourly?.time || [],
+
           mData.hourly?.sea_level || []
+
         );
         setTides(tideEvents);
       } catch (e) {
@@ -91,7 +99,9 @@ export default function BeachConditions() {
       }
     };
     fetchData();
+
   }, [selected]);
+
 
   const fmt = (t) =>
     new Date(t).toLocaleTimeString('pt-PT', {
@@ -113,6 +123,7 @@ export default function BeachConditions() {
 
   return (
     <div className="bc-container">
+
       {beaches.length > 1 && (
         <div className="bc-selector">
           <select
@@ -129,6 +140,7 @@ export default function BeachConditions() {
           </select>
         </div>
       )}
+
       <div className="bc-content">
         <div className="bc-weather">
           <div>Temperatura: {weather.temperature}&deg;C</div>
@@ -139,6 +151,7 @@ export default function BeachConditions() {
         <div className="bc-tides">
           <p>Marés de hoje:</p>
           <ul>
+
             {tides.length ? (
               tides.map((t) => (
                 <li key={t.time}>
@@ -150,6 +163,7 @@ export default function BeachConditions() {
             )}
           </ul>
         </div>
+
       </div>
       <p className="bc-warning">
         Estimativa para uso recreativo; não usar para navegação.
