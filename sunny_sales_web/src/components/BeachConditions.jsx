@@ -37,7 +37,9 @@ export default function BeachConditions() {
     const fetchData = async () => {
       try {
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,wind_speed_10m,relative_humidity_2m&daily=uv_index_max&forecast_days=1&timezone=auto`;
-        const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${coords.lat}&longitude=${coords.lon}&hourly=sea_level_height&length=1&timezone=auto`;
+
+        const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${coords.lat}&longitude=${coords.lon}&hourly=sea_level&length=1&timezone=auto`;
+
         const [wRes, mRes] = await Promise.all([
           fetch(weatherUrl),
           fetch(marineUrl),
@@ -53,7 +55,9 @@ export default function BeachConditions() {
         });
         const tideEvents = calcTides(
           mData.hourly?.time || [],
-          mData.hourly?.sea_level_height || []
+
+          mData.hourly?.sea_level || []
+
         );
         setTides(tideEvents);
       } catch (e) {
@@ -96,11 +100,16 @@ export default function BeachConditions() {
         <div className="bc-tides">
           <p>Marés de hoje:</p>
           <ul>
-            {tides.map((t) => (
-              <li key={t.time}>
-                {t.type === 'high' ? 'Alta' : 'Baixa'} {fmt(t.time)}
-              </li>
-            ))}
+
+            {tides.length ? (
+              tides.map((t) => (
+                <li key={t.time}>
+                  {t.type === 'high' ? 'Alta' : 'Baixa'} {fmt(t.time)}
+                </li>
+              ))
+            ) : (
+              <li>Sem dados</li>
+            )}
           </ul>
         </div>
 
