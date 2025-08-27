@@ -10,9 +10,9 @@
 
   /* Cores do cabeçalho e rodapé */
   --header-color: transparent;
-  --footer-color: #7BC5C1;
+  --footer-color: #FCB454;
 
-  --bg-color: #F3CC91;
+  --bg-color: #FFFFFF;
 
   --text-color: #000000;
   font-family: 'Roboto', sans-serif;
@@ -86,7 +86,7 @@ body {
 
 .nav-logo {
   text-decoration: none;
-  color: #7BC5C1;
+  color: #FCB454;
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -99,7 +99,7 @@ body {
 }
 
 .nav-link {
-  color: #7BC5C1;
+  color: #FCB454;
   text-decoration: none;
   font-size: 1rem;
   font-weight: bold;
@@ -115,7 +115,7 @@ body {
 
 .profile-icon {
   text-decoration: none;
-  color: #7BC5C1;
+  color: #FCB454;
   font-size: 1.5rem;
   margin-left: 1rem;
   display: flex;
@@ -154,7 +154,7 @@ body {
   display: none;
   background-color: transparent;
   border: none;
-  color: #7BC5C1;
+  color: #FCB454;
   font-size: 2rem;
 }
 
