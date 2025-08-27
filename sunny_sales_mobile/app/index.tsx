@@ -1,6 +1,7 @@
 // app/index.tsx
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Link } from 'expo-router';
+import BeachConditions from '../src/components/BeachConditions';
 
 export default function HomeScreen() {
   return (
@@ -15,6 +16,7 @@ export default function HomeScreen() {
       <Link href="/(vendor)/dashboard" asChild>
         <TouchableOpacity style={styles.btn}><Text>Dashboard Vendedor</Text></TouchableOpacity>
       </Link>
+      <BeachConditions />
     </View>
   );
 }

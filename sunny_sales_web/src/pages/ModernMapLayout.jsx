@@ -6,6 +6,7 @@ import { BASE_URL } from '../config';
 import LocateButton from '../components/LocateButton';
 import VendorLocateButton from '../components/VendorLocateButton';
 import LocateHint from '../components/LocateHint';
+import BeachConditions from '../components/BeachConditions';
 import './ModernMapLayout.css';
 
 // Layout principal com mapa e lista de vendedores online
@@ -130,8 +131,8 @@ export default function ModernMapLayout() {
 
   return (
     <div className="modern-layout">
-      {!isVendorLogged && (
-        <div className="filters">
+    {!isVendorLogged && (
+      <div className="filters">
           <p className="filters-subtitle">Vendedores:</p>
           {PRODUCTS.map((p) => (
             <label key={p} className="filter-label custom-checkbox">
@@ -234,7 +235,7 @@ export default function ModernMapLayout() {
           </div>
         )}
       </main>
-
+      <BeachConditions />
     </div>
   );
 }
