@@ -131,8 +131,10 @@ export default function ModernMapLayout() {
 
   return (
     <div className="modern-layout">
+
     {!isVendorLogged && (
       <div className="filters">
+
           <p className="filters-subtitle">Vendedores:</p>
           {PRODUCTS.map((p) => (
             <label key={p} className="filter-label custom-checkbox">

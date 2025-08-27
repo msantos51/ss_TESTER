@@ -37,7 +37,9 @@ export default function BeachConditions() {
     const fetchData = async () => {
       try {
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&current=temperature_2m,wind_speed_10m,relative_humidity_2m&daily=uv_index_max&forecast_days=1&timezone=auto`;
+
         const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${coords.latitude}&longitude=${coords.longitude}&hourly=sea_level&length=1&timezone=auto`;
+
         const [wRes, mRes] = await Promise.all([
           fetch(weatherUrl),
           fetch(marineUrl),
@@ -53,7 +55,9 @@ export default function BeachConditions() {
         });
         const tideEvents = calcTides(
           mData.hourly?.time || [],
+
           mData.hourly?.sea_level || []
+
         );
         setTides(tideEvents);
       } catch (e) {
@@ -100,6 +104,7 @@ export default function BeachConditions() {
       </View>
       <View style={styles.block}>
         <Text>Marés de hoje:</Text>
+
         {tides.length ? (
           tides.map((t) => (
             <Text key={t.time}>
@@ -109,6 +114,7 @@ export default function BeachConditions() {
         ) : (
           <Text>Sem dados</Text>
         )}
+
       </View>
       <Text style={styles.warning}>
         Estimativa para uso recreativo; não usar para navegação.
