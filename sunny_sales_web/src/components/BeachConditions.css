@@ -1,16 +1,27 @@
+
+
 .bc-container {
   border: 1px solid #ccc;
   padding: 1rem;
-  max-width: 320px;
-  width: 100%;
+  width: 80%;
   font-size: 0.9rem;
   background: #fff;
   border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.bc-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
 }
 
 .bc-weather,
 .bc-tides {
-  margin-bottom: 0.5rem;
+
+  flex: 1;
+
 }
 
 .bc-tides ul {
@@ -30,8 +41,9 @@
 }
 
 @media (min-width: 640px) {
-  .bc-container {
-    display: flex;
-    flex-direction: column;
+
+  .bc-content {
+    flex-direction: row;
+
   }
 }

@@ -85,21 +85,25 @@ export default function BeachConditions() {
 
   return (
     <div className="bc-container">
-      <div className="bc-weather">
-        <div>Temperatura: {weather.temperature}&deg;C</div>
-        <div>Vento: {weather.wind} km/h</div>
-        <div>Humidade: {weather.humidity}%</div>
-        <div>UV máx: {weather.uvMax}</div>
-      </div>
-      <div className="bc-tides">
-        <p>Marés de hoje:</p>
-        <ul>
-          {tides.map((t) => (
-            <li key={t.time}>
-              {t.type === 'high' ? 'Alta' : 'Baixa'} {fmt(t.time)}
-            </li>
-          ))}
-        </ul>
+
+      <div className="bc-content">
+        <div className="bc-weather">
+          <div>Temperatura: {weather.temperature}&deg;C</div>
+          <div>Vento: {weather.wind} km/h</div>
+          <div>Humidade: {weather.humidity}%</div>
+          <div>UV máx: {weather.uvMax}</div>
+        </div>
+        <div className="bc-tides">
+          <p>Marés de hoje:</p>
+          <ul>
+            {tides.map((t) => (
+              <li key={t.time}>
+                {t.type === 'high' ? 'Alta' : 'Baixa'} {fmt(t.time)}
+              </li>
+            ))}
+          </ul>
+        </div>
+
       </div>
       <p className="bc-warning">
         Estimativa para uso recreativo; não usar para navegação.
