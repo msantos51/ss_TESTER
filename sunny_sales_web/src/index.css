@@ -9,10 +9,10 @@
   --secondary-color: #fdc500; /* amarelo */
 
   /* Cores do cabeçalho e rodapé */
-  --header-color: #fdc500; /* amarelo */
-  --footer-color: #fdc500; /* amarelo */
+  --header-color: transparent;
+  --footer-color: #7BC5C1;
 
-  --bg-color: #d7ebff; /* azul claro de fundo */
+  --bg-color: #F3CC91;
 
   --text-color: #000000;
   font-family: 'Roboto', sans-serif;
@@ -25,11 +25,9 @@ body {
   
 
   background-color: var(--bg-color);
-  background-image: url('./assets/background.svg');
-
+  background-image: none;
   background-repeat: no-repeat;
   background-size: cover;
-
   overflow-x: hidden;
 }
 
@@ -71,38 +69,24 @@ body {
 
 
 
-.header-wrapper {
+.navbar {
   position: fixed;
-  top: 0;
+  top: 40px;
   left: 0;
   width: 100%;
-  height: 100px;
-  z-index: 1000;
-  overflow: hidden;
-
-
-  background-color: var(--header-color);
-
-
-}
-
-.navbar {
+  height: 60px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
   padding: 10px 20px;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
+  background: transparent;
+  z-index: 1000;
 }
 
 .nav-logo {
   text-decoration: none;
-  color: #fff;
+  color: #7BC5C1;
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -115,13 +99,11 @@ body {
 }
 
 .nav-link {
-  color: #fff;
+  color: #7BC5C1;
   text-decoration: none;
   font-size: 1rem;
   font-weight: bold;
-
   text-transform: uppercase;
-
   transition: color 0.3s;
 }
 
@@ -133,7 +115,7 @@ body {
 
 .profile-icon {
   text-decoration: none;
-  color: #fff;
+  color: #7BC5C1;
   font-size: 1.5rem;
   margin-left: 1rem;
   display: flex;
@@ -170,9 +152,9 @@ body {
 
 .menu-toggle {
   display: none;
-  background-color: #fdc500;
+  background-color: transparent;
   border: none;
-  color: #fff;
+  color: #7BC5C1;
   font-size: 2rem;
 }
 
@@ -476,7 +458,7 @@ input[type='checkbox'] {
     top: 100%;
     left: 0;
     width: 100%;
-    background-color: #fdc500;
+    background-color: transparent;
     padding: 1rem 2rem;
   }
 
