@@ -28,21 +28,8 @@
 
 }
 
-.bc-weather,
-.bc-tides {
-
+.bc-weather {
   flex: 1;
-
-}
-
-.bc-tides ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.bc-tides li {
-  margin: 0.25rem 0;
 }
 
 .bc-warning {
