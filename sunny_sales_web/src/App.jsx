@@ -74,50 +74,46 @@ function AppLayout() {
 
   return (
     <div className="wrapper">
-      {/* (em português) Barra de navegação */}
-      <header
-        className="header-wrapper"
-      >
-        <div className="navbar">
-          <Link className="nav-logo" to="/">Sunny Sales</Link>
-          <button
-            className="menu-toggle"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
+      {/* (em português) Links de navegação sobre o fundo */}
+      <nav className="navbar">
+        <Link className="nav-logo" to="/">Sunny Sales</Link>
+        <button
+          className="menu-toggle"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Menu"
+        >
+          <FiMenu />
+        </button>
+
+        {/* (em português) Links de navegação para as páginas informativas */}
+        <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
+          <Link
+            className="nav-link"
+            to="/sobre-projeto"
+            onClick={() => setMenuOpen(false)}
           >
-            <FiMenu />
-          </button>
-
-          {/* (em português) Links de navegação para as páginas informativas */}
-          <nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
-            <Link
-              className="nav-link"
-              to="/sobre-projeto"
-              onClick={() => setMenuOpen(false)}
-            >
-              Sobre o Projeto
-            </Link>
-            <Link
-              className="nav-link"
-              to="/sustentabilidade"
-              onClick={() => setMenuOpen(false)}
-            >
-              Sustentabilidade
-            </Link>
-            <Link
-              className="nav-link"
-              to="/implementacao"
-              onClick={() => setMenuOpen(false)}
-            >
-              Implementar
-            </Link>
-          </nav>
-
-          <Link to={profileLink} className="profile-icon" aria-label="Login">
-            <FiUser />
+            Sobre o Projeto
+          </Link>
+          <Link
+            className="nav-link"
+            to="/sustentabilidade"
+            onClick={() => setMenuOpen(false)}
+          >
+            Sustentabilidade
+          </Link>
+          <Link
+            className="nav-link"
+            to="/implementacao"
+            onClick={() => setMenuOpen(false)}
+          >
+            Implementar
           </Link>
         </div>
-      </header>
+
+        <Link to={profileLink} className="profile-icon" aria-label="Login">
+          <FiUser />
+        </Link>
+      </nav>
 
       {/* (em português) Container central da aplicação */}
       <div className="container">
