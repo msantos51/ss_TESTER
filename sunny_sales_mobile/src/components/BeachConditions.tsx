@@ -141,9 +141,12 @@ export default function BeachConditions() {
       {beaches.length > 0 && (
         <Picker
           selectedValue={selected?.id}
-          onValueChange={(val) =>
-            setSelected(beaches.find((b) => String(b.id) === String(val)))
-          }
+          onValueChange={(val) => {
+            setLoading(true);
+            setError(null);
+            const b = beaches.find((b) => String(b.id) === String(val));
+            setSelected(b);
+          }}
         >
           {beaches.map((b) => (
             <Picker.Item label={b.name} value={b.id} key={b.id} />
@@ -169,7 +172,6 @@ export default function BeachConditions() {
         ) : (
           <Text>Sem dados</Text>
         )}
-in
       </View>
       <Text style={styles.warning}>
         Estimativa para uso recreativo; não usar para navegação.

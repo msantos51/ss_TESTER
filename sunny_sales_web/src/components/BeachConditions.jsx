@@ -135,9 +135,12 @@ export default function BeachConditions() {
         <div className="bc-selector">
           <select
             value={selected?.id || ''}
-            onChange={(e) =>
-              setSelected(beaches.find((b) => String(b.id) === e.target.value))
-            }
+            onChange={(e) => {
+              setLoading(true);
+              setError(null);
+              const b = beaches.find((b) => String(b.id) === e.target.value);
+              setSelected(b);
+            }}
           >
             {beaches.map((b) => (
               <option key={b.id} value={b.id}>
