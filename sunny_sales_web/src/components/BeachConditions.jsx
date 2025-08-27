@@ -3,7 +3,11 @@ import './BeachConditions.css';
 
 // Widget "Condições de Praia" baseado na localização do utilizador
 export default function BeachConditions() {
-  const [coords, setCoords] = useState(null);
+
+  const [userCoords, setUserCoords] = useState(null);
+  const [beaches, setBeaches] = useState([]);
+  const [selected, setSelected] = useState(null);
+
   const [weather, setWeather] = useState(null);
   const [tides, setTides] = useState([]);
   const [error, setError] = useState(null);
@@ -18,7 +22,9 @@ export default function BeachConditions() {
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        setCoords({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+
+        setUserCoords({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+
         setError(null);
       },
       () => {
@@ -33,12 +39,38 @@ export default function BeachConditions() {
   }, []);
 
   useEffect(() => {
-    if (!coords) return;
+
+    if (!userCoords) return;
+    const fetchBeaches = async () => {
+      try {
+        const overpass = `https://overpass-api.de/api/interpreter?data=[out:json];node(around:5000,${userCoords.lat},${userCoords.lon})[natural=beach];out;`;
+        const res = await fetch(overpass);
+        const data = await res.json();
+        const list = data.elements
+          ?.filter((e) => e.tags?.name)
+          .map((e) => ({ id: e.id, name: e.tags.name, lat: e.lat, lon: e.lon })) || [];
+        const withCurrent = [
+          { id: 'current', name: 'Localização atual', lat: userCoords.lat, lon: userCoords.lon },
+          ...list,
+        ];
+        setBeaches(withCurrent);
+        setSelected(withCurrent[0]);
+      } catch {
+        setBeaches([
+          { id: 'current', name: 'Localização atual', lat: userCoords.lat, lon: userCoords.lon },
+        ]);
+        setSelected({ id: 'current', name: 'Localização atual', lat: userCoords.lat, lon: userCoords.lon });
+      }
+    };
+    fetchBeaches();
+  }, [userCoords]);
+
+  useEffect(() => {
+    if (!selected) return;
     const fetchData = async () => {
       try {
-        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,wind_speed_10m,relative_humidity_2m&daily=uv_index_max&forecast_days=1&timezone=auto`;
-
-        const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${coords.lat}&longitude=${coords.lon}&hourly=sea_level&length=1&timezone=auto`;
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${selected.lat}&longitude=${selected.lon}&current=temperature_2m,wind_speed_10m,relative_humidity_2m&daily=uv_index_max&forecast_days=1&timezone=auto`;
+        const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${selected.lat}&longitude=${selected.lon}&hourly=sea_level&length=1&timezone=auto`;
 
         const [wRes, mRes] = await Promise.all([
           fetch(weatherUrl),
@@ -67,7 +99,9 @@ export default function BeachConditions() {
       }
     };
     fetchData();
-  }, [coords]);
+
+  }, [selected]);
+
 
   const fmt = (t) =>
     new Date(t).toLocaleTimeString('pt-PT', {
@@ -89,6 +123,23 @@ export default function BeachConditions() {
 
   return (
     <div className="bc-container">
+
+      {beaches.length > 1 && (
+        <div className="bc-selector">
+          <select
+            value={selected?.id || ''}
+            onChange={(e) =>
+              setSelected(beaches.find((b) => String(b.id) === e.target.value))
+            }
+          >
+            {beaches.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="bc-content">
         <div className="bc-weather">
