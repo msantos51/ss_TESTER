@@ -77,7 +77,7 @@ export default function BeachConditions() {
     const fetchData = async () => {
       try {
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${selected.lat}&longitude=${selected.lon}&current=temperature_2m,wind_speed_10m,relative_humidity_2m&daily=uv_index_max&forecast_days=1&timezone=auto`;
-        const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${selected.lat}&longitude=${selected.lon}&hourly=sea_level&length=1&timezone=auto`;
+        const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${selected.lat}&longitude=${selected.lon}&hourly=sea_level&length=2&timezone=auto`;
 
         const [wRes, mRes] = await Promise.all([
           fetch(weatherUrl),
@@ -95,7 +95,9 @@ export default function BeachConditions() {
         const tideEvents = calcTides(
           mData.hourly?.time || [],
 
-          mData.hourly?.sea_level || []
+          mData.hourly?.sea_level || [],
+
+          mData.timezone || 'UTC'
 
         );
         setTides(tideEvents);
@@ -182,14 +184,16 @@ export default function BeachConditions() {
   );
 }
 
-function calcTides(times, levels) {
+function calcTides(times, levels, timezone) {
   const events = [];
   for (let i = 1; i < levels.length - 1; i++) {
     const prev = levels[i - 1];
     const curr = levels[i];
     const next = levels[i + 1];
-    if (curr > prev && curr > next) events.push({ type: 'high', time: times[i] });
-    if (curr < prev && curr < next) events.push({ type: 'low', time: times[i] });
+    const rising = curr - prev;
+    const falling = next - curr;
+    if (rising >= 0 && falling <= 0) events.push({ type: 'high', time: times[i] });
+    if (rising <= 0 && falling >= 0) events.push({ type: 'low', time: times[i] });
   }
   events.sort((a, b) => new Date(a.time) - new Date(b.time));
   const unique = [];
@@ -199,5 +203,8 @@ function calcTides(times, levels) {
       unique.push(ev);
     }
   }
-  return unique;
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: timezone });
+  return unique.filter(
+    (ev) => new Date(ev.time).toLocaleDateString('en-CA', { timeZone: timezone }) === today
+  );
 }
