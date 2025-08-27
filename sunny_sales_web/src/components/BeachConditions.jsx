@@ -85,6 +85,7 @@ export default function BeachConditions() {
 
   return (
     <div className="bc-container">
+
       <div className="bc-content">
         <div className="bc-weather">
           <div>Temperatura: {weather.temperature}&deg;C</div>
@@ -102,6 +103,7 @@ export default function BeachConditions() {
             ))}
           </ul>
         </div>
+
       </div>
       <p className="bc-warning">
         Estimativa para uso recreativo; não usar para navegação.
