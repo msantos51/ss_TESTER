@@ -46,12 +46,17 @@ export default function BeachConditions() {
     if (!userCoords) return;
     const fetchBeaches = async () => {
       try {
-        const overpass = `https://overpass-api.de/api/interpreter?data=[out:json];node(around:5000,${userCoords.latitude},${userCoords.longitude})[natural=beach];out;`;
+        const overpass = `https://overpass-api.de/api/interpreter?data=[out:json];(node(around:25000,${userCoords.latitude},${userCoords.longitude})[natural=beach];way(around:25000,${userCoords.latitude},${userCoords.longitude})[natural=beach];relation(around:25000,${userCoords.latitude},${userCoords.longitude})[natural=beach];);out center;`;
         const res = await fetch(overpass);
         const data = await res.json();
         const list = data.elements
-          ?.filter((e: any) => e.tags?.name)
-          .map((e: any) => ({ id: e.id, name: e.tags.name, latitude: e.lat, longitude: e.lon })) || [];
+          ?.filter((e: any) => e.tags?.name && (e.lat || e.center))
+          .map((e: any) => ({
+            id: e.id,
+            name: e.tags.name,
+            latitude: e.lat || e.center.lat,
+            longitude: e.lon || e.center.lon,
+          })) || [];
         const withCurrent = [
           { id: 'current', name: 'Localização atual', latitude: userCoords.latitude, longitude: userCoords.longitude },
           ...list,
@@ -133,12 +138,15 @@ export default function BeachConditions() {
   return (
     <View style={styles.container}>
 
-      {beaches.length > 1 && (
+      {beaches.length > 0 && (
         <Picker
           selectedValue={selected?.id}
-          onValueChange={(val) =>
-            setSelected(beaches.find((b) => String(b.id) === String(val)))
-          }
+          onValueChange={(val) => {
+            setLoading(true);
+            setError(null);
+            const b = beaches.find((b) => String(b.id) === String(val));
+            setSelected(b);
+          }}
         >
           {beaches.map((b) => (
             <Picker.Item label={b.name} value={b.id} key={b.id} />
@@ -164,7 +172,6 @@ export default function BeachConditions() {
         ) : (
           <Text>Sem dados</Text>
         )}
-in
       </View>
       <Text style={styles.warning}>
         Estimativa para uso recreativo; não usar para navegação.

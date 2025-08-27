@@ -43,12 +43,17 @@ export default function BeachConditions() {
     if (!userCoords) return;
     const fetchBeaches = async () => {
       try {
-        const overpass = `https://overpass-api.de/api/interpreter?data=[out:json];node(around:5000,${userCoords.lat},${userCoords.lon})[natural=beach];out;`;
+        const overpass = `https://overpass-api.de/api/interpreter?data=[out:json];(node(around:25000,${userCoords.lat},${userCoords.lon})[natural=beach];way(around:25000,${userCoords.lat},${userCoords.lon})[natural=beach];relation(around:25000,${userCoords.lat},${userCoords.lon})[natural=beach];);out center;`;
         const res = await fetch(overpass);
         const data = await res.json();
         const list = data.elements
-          ?.filter((e) => e.tags?.name)
-          .map((e) => ({ id: e.id, name: e.tags.name, lat: e.lat, lon: e.lon })) || [];
+          ?.filter((e) => e.tags?.name && (e.lat || e.center))
+          .map((e) => ({
+            id: e.id,
+            name: e.tags.name,
+            lat: e.lat || e.center.lat,
+            lon: e.lon || e.center.lon,
+          })) || [];
         const withCurrent = [
           { id: 'current', name: 'Localização atual', lat: userCoords.lat, lon: userCoords.lon },
           ...list,
@@ -124,13 +129,16 @@ export default function BeachConditions() {
   return (
     <div className="bc-container">
 
-      {beaches.length > 1 && (
+      {beaches.length > 0 && (
         <div className="bc-selector">
           <select
             value={selected?.id || ''}
-            onChange={(e) =>
-              setSelected(beaches.find((b) => String(b.id) === e.target.value))
-            }
+            onChange={(e) => {
+              setLoading(true);
+              setError(null);
+              const b = beaches.find((b) => String(b.id) === e.target.value);
+              setSelected(b);
+            }}
           >
             {beaches.map((b) => (
               <option key={b.id} value={b.id}>
