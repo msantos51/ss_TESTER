@@ -93,14 +93,14 @@ body {
   cursor: pointer;
 }
 
-.custom-checkbox .checkmark {
-  width: 1rem;
-  height: 1rem;
-  background-color: #fdc500;
-  border-radius: 0.2rem;
-  margin-right: 0.25em;
-  position: relative;
-}
+  .custom-checkbox .checkmark {
+    width: 1rem;
+    height: 1rem;
+    background-color: #FCB454;
+    border-radius: 0.2rem;
+    margin-right: 0.25em;
+    position: relative;
+  }
 
 .custom-checkbox .checkmark:after {
   content: "";
