@@ -11,11 +11,32 @@ const LOCATION_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTY5NzY
 let watchId = null;
 
 export default function VendorDashboard() {
-  const [vendor, setVendor] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuButtonRef = useRef(null);
-  const sideMenuRef = useRef(null);
-  const navigate = useNavigate();
+
+  const [vendor, setVendor] = useState(null); // (em português) Dados do vendedor guardados em estado
+  const [sharing, setSharing] = useState(false); // (em português) Indica se a localização está a ser partilhada
+  const [menuOpen, setMenuOpen] = useState(false); // (em português) Controla a abertura do menu lateral
+  const menuButtonRef = useRef(null); // (em português) Referência ao botão de menu
+  const sideMenuRef = useRef(null); // (em português) Referência ao menu lateral
+  const navigate = useNavigate(); // (em português) Navegador para redirecionar o utilizador
+
+  const stopSharing = useCallback(async () => {
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
+    }
+    if (vendor) {
+      // (em português) Envia pedido para parar a partilha de localização
+      try {
+        await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/stop`, null, {
+          headers: { Authorization: `Bearer ${LOCATION_TOKEN}` },
+        });
+      } catch (err) {
+        console.error('Erro ao parar localização:', err);
+      }
+    }
+    setSharing(false); // (em português) Atualiza o estado para indicar que parou de partilhar
+  }, [vendor]);
+
 
   const stopSharing = useCallback(async () => {
     if (watchId !== null) {
@@ -35,7 +56,7 @@ export default function VendorDashboard() {
   }, [vendor]);
 
   const logout = () => {
-    stopSharing();
+    stopSharing(); // (em português) Garante que a partilha termina ao fazer logout
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     navigate('/vendor-login');
@@ -43,7 +64,7 @@ export default function VendorDashboard() {
 
   const startSharing = useCallback(async () => {
     if (!vendor) return;
-    // Impede ativar a localização quando a subscrição não está ativa
+    // (em português) Verifica se a subscrição está ativa antes de iniciar
     const expires = vendor.subscription_valid_until
       ? new Date(vendor.subscription_valid_until)
       : null;
@@ -52,8 +73,7 @@ export default function VendorDashboard() {
       return;
     }
 
-    // Utiliza o token JWT fixo para autenticar as requisições ao backend
-    if (!LOCATION_TOKEN) return;
+    if (!LOCATION_TOKEN) return; // (em português) Garante que o token existe
 
     try {
       await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/start`, null, {
@@ -74,6 +94,9 @@ export default function VendorDashboard() {
         (err) => console.error('Erro localização:', err),
         { enableHighAccuracy: true, maximumAge: 0 }
       );
+
+      setSharing(true); // (em português) Atualiza o estado para indicar que começou a partilhar
+
     } catch (err) {
       if (err.response && err.response.status === 403) {
         alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
@@ -91,13 +114,12 @@ export default function VendorDashboard() {
   }, []);
 
   useEffect(() => {
-    if (vendor) {
-      startSharing();
-      return () => {
-        stopSharing();
-      };
-    }
-  }, [vendor, startSharing, stopSharing]);
+
+    return () => {
+      stopSharing(); // (em português) Para partilha quando o componente é desmontado
+    };
+  }, [stopSharing]);
+
 
   const paySubscription = async () => {
     if (!vendor) return;
@@ -201,8 +223,18 @@ export default function VendorDashboard() {
           </div>
         )}
 
-          <button className="btn" style={styles.logoutButton} onClick={logout}>Sair</button>
-        </div>
+        {vendor && (
+          <button
+            className="btn"
+            style={styles.shareButton}
+            onClick={sharing ? stopSharing : startSharing}
+          >
+            {sharing ? 'Parar Localização' : 'Iniciar Localização'}
+          </button>
+        )}
+
+        <button className="btn" style={styles.logoutButton} onClick={logout}>Sair</button>
+
       </div>
     );
   }
@@ -243,6 +275,19 @@ const styles = {
     marginBottom: '1rem',
     textAlign: 'left',
   },
+  shareButton: {
+    width: 'auto',
+    alignSelf: 'center',
+    margin: '12px auto',
+    borderRadius: 12,
+    backgroundColor: '#FCB454',
+    border: 'none',
+    padding: '0.5rem 1rem',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+
   logoutButton: {
     width: 'auto',
     alignSelf: 'center',
@@ -255,6 +300,7 @@ const styles = {
     fontWeight: 'bold',
     color: '#fff',
   },
+
   menuButton: {
     position: 'fixed',
     top: '8rem',
