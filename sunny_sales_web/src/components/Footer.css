@@ -1,13 +1,13 @@
+/* (em português) Estilos do rodapé fixo com mensagens de sustentabilidade */
 .footer-wrapper {
   position: fixed;
-  z-index: 9999;
-  top: 0;
+  z-index: 500; /* (em português) Abaixo do cabeçalho para não o sobrepor */
+  bottom: 0; /* (em português) Mantém o rodapé no fundo da página */
   left: 0;
   width: 100%;
   height: 40px;
   overflow: hidden;
   background-color: var(--footer-color);
-
 }
 
 .footer-message {

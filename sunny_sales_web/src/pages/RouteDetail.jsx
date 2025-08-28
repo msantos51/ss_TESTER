@@ -1,13 +1,13 @@
 // (em português) Página Web com os detalhes de um trajeto com mapa e informações
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { MapContainer, TileLayer, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import BackHomeButton from '../components/BackHomeButton';
 
 // Mostra no mapa o percurso detalhado do trajeto selecionado
 export default function RouteDetail() {
   const location = useLocation();
-  const navigate = useNavigate();
   const route = location.state?.route;
 
   if (!route) {
@@ -27,7 +27,7 @@ export default function RouteDetail() {
 
   return (
     <div style={styles.container}>
-      <button onClick={() => navigate(-1)} style={styles.back}>⬅ Voltar</button>
+      <BackHomeButton />
 
       <MapContainer center={initial} zoom={15} style={styles.map}>
         <TileLayer
@@ -52,14 +52,6 @@ export default function RouteDetail() {
 // estilos simples
 const styles = {
   container: { padding: '1rem', maxWidth: '800px', margin: '0 auto' },
-  back: {
-    marginBottom: '1rem',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    color: '#000',
-  },
   map: { height: '400px', width: '100%', marginBottom: '1rem' },
   info: { padding: '1rem', backgroundColor: '#f0f0f0', borderRadius: '8px' },
 };

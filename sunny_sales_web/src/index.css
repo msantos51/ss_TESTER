@@ -37,7 +37,7 @@ body {
     height: 100%;
     max-width: none;
     margin: 0 auto;
-    padding: 100px 0.5rem 0;
+    padding: 100px 0.5rem 60px; /* (em português) Espaço extra no fundo para não ocultar o conteúdo pelo rodapé fixo */
     box-sizing: border-box;
     background: transparent;
   }
@@ -63,7 +63,7 @@ body {
 
   @media (max-width: 768px) {
     .container {
-      padding: 100px 0.25rem 0;
+      padding: 100px 0.25rem 60px; /* (em português) Mesma margem inferior em ecrãs pequenos */
     }
   }
 
@@ -71,7 +71,7 @@ body {
 
 .navbar {
   position: fixed;
-  top: 40px;
+  top: 0;
   left: 0;
   width: 100%;
   height: 60px;
@@ -80,7 +80,7 @@ body {
   align-items: center;
   box-sizing: border-box;
   padding: 10px 20px;
-  background: transparent;
+  background-color: var(--bg-color);
   z-index: 1000;
 }
 
@@ -705,3 +705,56 @@ input[type='checkbox'] {
   color: var(--clr);
 }
 
+
+/* (em português) Estilos do botão de localização do vendedor */
+.location-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.location-switch input {
+  display: none;
+}
+
+.location-switch .track {
+  width: 80px;
+  height: 40px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, #fde047, #fb923c);
+  transition: background 0.5s;
+  position: relative;
+}
+
+.location-switch .track::after {
+  content: '☀️';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 32px;
+  height: 32px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: transform 0.5s;
+  font-size: 20px;
+}
+
+.location-switch input:checked + .track {
+  background: linear-gradient(to right, #60a5fa, #6366f1);
+}
+
+.location-switch input:checked + .track::after {
+  content: '🌙';
+  transform: translateX(40px);
+}
+
+.location-switch .label {
+  margin-left: 12px;
+  font-size: 14px;
+  color: #111;
+}

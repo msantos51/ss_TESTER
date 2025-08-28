@@ -2,12 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
-import { useNavigate } from 'react-router-dom';
+import BackHomeButton from '../components/BackHomeButton';
 
 // Lista as semanas pagas e respetivas faturas
 export default function Invoices() {
   const [weeks, setWeeks] = useState([]);
-  const navigate = useNavigate();
 
   // Obtém do backend as semanas já pagas
   const loadWeeks = async () => {
@@ -31,7 +30,7 @@ export default function Invoices() {
 
   return (
     <div style={styles.container}>
-      <button onClick={() => navigate(-1)} style={styles.back}>⬅ Voltar</button>
+      <BackHomeButton />
       <h2>Faturas Pagas</h2>
       <ul style={styles.list}>
         {weeks.map((item) => {
@@ -73,13 +72,5 @@ const styles = {
     textDecoration: 'none',
     color: '#19a0a4',
     fontWeight: 'bold',
-  },
-  back: {
-    marginBottom: '1rem',
-    background: 'none',
-    border: 'none',
-    color: '#000',
-    fontSize: '1rem',
-    cursor: 'pointer',
   },
 };
