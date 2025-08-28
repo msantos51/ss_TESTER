@@ -12,7 +12,6 @@ let watchId = null;
 
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null); // (em português) Dados do vendedor guardados em estado
-  const [sharing, setSharing] = useState(false); // (em português) Indica se a localização está a ser partilhada
   const [menuOpen, setMenuOpen] = useState(false); // (em português) Controla a abertura do menu lateral
   const menuButtonRef = useRef(null); // (em português) Referência ao botão de menu
   const sideMenuRef = useRef(null); // (em português) Referência ao menu lateral
@@ -33,7 +32,6 @@ export default function VendorDashboard() {
         console.error('Erro ao parar localização:', err);
       }
     }
-    setSharing(false); // (em português) Atualiza o estado para indicar que parou de partilhar
   }, [vendor]);
 
   const logout = () => {
@@ -75,7 +73,6 @@ export default function VendorDashboard() {
         (err) => console.error('Erro localização:', err),
         { enableHighAccuracy: true, maximumAge: 0 }
       );
-      setSharing(true); // (em português) Atualiza o estado para indicar que começou a partilhar
     } catch (err) {
       if (err.response && err.response.status === 403) {
         alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
@@ -93,10 +90,12 @@ export default function VendorDashboard() {
   }, []);
 
   useEffect(() => {
+    if (!vendor) return;
+    startSharing(); // (em português) Inicia a partilha assim que o vendedor é carregado
     return () => {
       stopSharing(); // (em português) Para partilha quando o componente é desmontado
     };
-  }, [stopSharing]);
+  }, [vendor, startSharing, stopSharing]);
 
   const paySubscription = async () => {
     if (!vendor) return;
@@ -199,16 +198,6 @@ export default function VendorDashboard() {
             </p>
           </div>
         )}
-        {vendor && (
-          <button
-            className="btn"
-            style={styles.shareButton}
-            onClick={sharing ? stopSharing : startSharing}
-          >
-            {sharing ? 'Parar Localização' : 'Iniciar Localização'}
-          </button>
-        )}
-
         <button className="btn" style={styles.logoutButton} onClick={logout}>Sair</button>
       </div>
     </div>
@@ -250,18 +239,6 @@ const styles = {
     borderRadius: '12px',
     marginBottom: '1rem',
     textAlign: 'left',
-  },
-  shareButton: {
-    width: 'auto',
-    alignSelf: 'center',
-    margin: '12px auto',
-    borderRadius: 12,
-    backgroundColor: '#FCB454',
-    border: 'none',
-    padding: '0.5rem 1rem',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    color: '#fff',
   },
   logoutButton: {
     width: 'auto',
