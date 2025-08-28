@@ -1,11 +1,10 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import BackHomeButton from '../components/BackHomeButton';
 
 export default function SobreProjeto() {
-  const navigate = useNavigate();
   return (
     <div style={styles.container}>
-      <button onClick={() => navigate(-1)} style={styles.back}>Voltar</button>
+      <BackHomeButton />
       <h2 style={styles.title}>Sobre o Projeto</h2>
       <p style={styles.text}>
         <strong>Sunny Sales</strong> é uma plataforma que conecta vendedores
@@ -43,14 +42,6 @@ const styles = {
     borderRadius: '8px',
     fontFamily: 'sans-serif',
     color: '#333',
-  },
-  back: {
-    marginBottom: '1rem',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    color: '#000',
   },
   title: {
     fontSize: '1.8rem',

@@ -1,15 +1,13 @@
 // (em português) Página Web com os Termos e Condições da aplicação Sunny Sales
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import BackHomeButton from '../components/BackHomeButton';
 
 // Exibe os termos e condições de utilização
 export default function TermsScreen() {
-  const navigate = useNavigate();
-
   return (
     <div style={styles.container}>
-      <button onClick={() => navigate(-1)} style={styles.back}>⬅ Voltar</button>
+      <BackHomeButton />
       <h2 style={styles.title}>Termos e Condições</h2>
 
       <h3 style={styles.sectionTitle}>1. Aceitação dos Termos</h3>
@@ -73,14 +71,6 @@ const styles = {
     borderRadius: '8px',
     fontFamily: 'sans-serif',
     color: '#333',
-  },
-  back: {
-    marginBottom: '1rem',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    color: '#000',
   },
   title: {
     fontSize: '1.8rem',

@@ -3,12 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
-import { Link, useNavigate } from 'react-router-dom';
+import BackHomeButton from '../components/BackHomeButton';
 
 // Mostra ao vendedor as semanas já pagas
 export default function PaidWeeksScreen() {
   const [weeks, setWeeks] = useState([]);
-  const navigate = useNavigate();
 
   // Carrega as semanas pagas do vendedor
   const loadWeeks = async () => {
@@ -32,7 +31,7 @@ export default function PaidWeeksScreen() {
 
   return (
     <div style={styles.container}>
-      <button onClick={() => navigate(-1)} style={styles.back}>⬅ Voltar</button>
+      <BackHomeButton />
       <h2>Semanas Pagas</h2>
       <ul style={styles.list}>
         {weeks.map((item) => {
@@ -75,13 +74,5 @@ const styles = {
     textDecoration: 'none',
     color: '#19a0a4',
     fontWeight: 'bold',
-  },
-  back: {
-    marginBottom: '1rem',
-    background: 'none',
-    border: 'none',
-    color: '#000',
-    fontSize: '1rem',
-    cursor: 'pointer',
   },
 };
