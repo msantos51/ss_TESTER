@@ -13,7 +13,7 @@ let watchId = null;
 export default function VendorDashboard() {
 
   const [vendor, setVendor] = useState(null); // (em português) Dados do vendedor guardados em estado
-  const [sharing, setSharing] = useState(false); // (em português) Indica se a localização está a ser partilhada
+
   const [menuOpen, setMenuOpen] = useState(false); // (em português) Controla a abertura do menu lateral
   const menuButtonRef = useRef(null); // (em português) Referência ao botão de menu
   const sideMenuRef = useRef(null); // (em português) Referência ao menu lateral
@@ -34,25 +34,7 @@ export default function VendorDashboard() {
         console.error('Erro ao parar localização:', err);
       }
     }
-    setSharing(false); // (em português) Atualiza o estado para indicar que parou de partilhar
-  }, [vendor]);
 
-
-  const stopSharing = useCallback(async () => {
-    if (watchId !== null) {
-      navigator.geolocation.clearWatch(watchId);
-      watchId = null;
-    }
-    if (vendor) {
-      // Utiliza o mesmo token JWT fixo para encerrar a partilha
-      try {
-        await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/stop`, null, {
-          headers: { Authorization: `Bearer ${LOCATION_TOKEN}` },
-        });
-      } catch (err) {
-        console.error('Erro ao parar localização:', err);
-      }
-    }
   }, [vendor]);
 
   const logout = () => {
@@ -95,8 +77,6 @@ export default function VendorDashboard() {
         { enableHighAccuracy: true, maximumAge: 0 }
       );
 
-      setSharing(true); // (em português) Atualiza o estado para indicar que começou a partilhar
-
     } catch (err) {
       if (err.response && err.response.status === 403) {
         alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
@@ -115,10 +95,12 @@ export default function VendorDashboard() {
 
   useEffect(() => {
 
+    if (!vendor) return;
+    startSharing(); // (em português) Inicia a partilha assim que o vendedor é carregado
     return () => {
       stopSharing(); // (em português) Para partilha quando o componente é desmontado
     };
-  }, [stopSharing]);
+  }, [vendor, startSharing, stopSharing]);
 
 
   const paySubscription = async () => {
@@ -223,16 +205,6 @@ export default function VendorDashboard() {
           </div>
         )}
 
-        {vendor && (
-          <button
-            className="btn"
-            style={styles.shareButton}
-            onClick={sharing ? stopSharing : startSharing}
-          >
-            {sharing ? 'Parar Localização' : 'Iniciar Localização'}
-          </button>
-        )}
-
         <button className="btn" style={styles.logoutButton} onClick={logout}>Sair</button>
 
       </div>
@@ -276,19 +248,6 @@ const styles = {
     textAlign: 'left',
   },
   shareButton: {
-    width: 'auto',
-    alignSelf: 'center',
-    margin: '12px auto',
-    borderRadius: 12,
-    backgroundColor: '#FCB454',
-    border: 'none',
-    padding: '0.5rem 1rem',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-
-  logoutButton: {
     width: 'auto',
     alignSelf: 'center',
     margin: '12px auto',
