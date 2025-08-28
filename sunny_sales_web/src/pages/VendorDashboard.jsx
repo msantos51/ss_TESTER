@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
 
-// (em português) Token JWT para endpoints de localização (fornecido pelo cliente)
-const LOCATION_TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTY5NzYxNTksImp0aSI6IjRhZGVkZWQ5ZTgzMDQ4YzU4MTI5NDk2OGZhNjQwZWExIiwic3ViIjoxfQ.Elsk92DJnIzFyYLbROkBK1lIVN00v7wlOC6_oVuM3w0';
+// (em português) Função auxiliar que devolve o cabeçalho de autenticação
+const authHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 // (em português) Estilos do ecrã do vendedor
 const styles = {
@@ -150,7 +152,7 @@ export default function VendorDashboard() {
       }
       if (vendor) {
         await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/stop`, null, {
-          headers: { Authorization: `Bearer ${LOCATION_TOKEN}` },
+          headers: authHeaders(),
         });
       }
     } catch (err) {
@@ -179,14 +181,9 @@ export default function VendorDashboard() {
       return;
     }
 
-    if (!LOCATION_TOKEN) {
-      console.warn('LOCATION_TOKEN ausente.');
-      return;
-    }
-
     try {
       await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/start`, null, {
-        headers: { Authorization: `Bearer ${LOCATION_TOKEN}` },
+        headers: authHeaders(),
       });
 
       if (!navigator?.geolocation?.watchPosition) {
@@ -200,7 +197,7 @@ export default function VendorDashboard() {
             await axios.put(
               `${BASE_URL}/vendors/${vendor.id}/location`,
               { lat: pos.coords.latitude, lng: pos.coords.longitude },
-              { headers: { Authorization: `Bearer ${LOCATION_TOKEN}` } }
+              { headers: authHeaders() }
             );
           } catch (err) {
             console.error('Erro ao enviar localização:', err);
