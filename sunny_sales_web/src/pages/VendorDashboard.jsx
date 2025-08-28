@@ -12,11 +12,27 @@ let watchId = null;
 
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
-  const [sharing, setSharing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef(null);
   const sideMenuRef = useRef(null);
   const navigate = useNavigate();
+
+  const stopSharing = useCallback(async () => {
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
+    }
+    if (vendor) {
+      // Utiliza o mesmo token JWT fixo para encerrar a partilha
+      try {
+        await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/stop`, null, {
+          headers: { Authorization: `Bearer ${LOCATION_TOKEN}` },
+        });
+      } catch (err) {
+        console.error('Erro ao parar localização:', err);
+      }
+    }
+  }, [vendor]);
 
   const logout = () => {
     stopSharing();
@@ -58,8 +74,6 @@ export default function VendorDashboard() {
         (err) => console.error('Erro localização:', err),
         { enableHighAccuracy: true, maximumAge: 0 }
       );
-      localStorage.setItem('sharingLocation', 'true');
-      setSharing(true);
     } catch (err) {
       if (err.response && err.response.status === 403) {
         alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
@@ -74,36 +88,16 @@ export default function VendorDashboard() {
     if (stored) {
       setVendor(JSON.parse(stored));
     }
-    const share = localStorage.getItem('sharingLocation') === 'true';
-    setSharing(share);
   }, []);
 
   useEffect(() => {
-    if (sharing && vendor && watchId === null) {
-      startSharing();
-    }
-  }, [sharing, vendor, startSharing]);
-
-  const stopSharing = async () => {
-    if (watchId !== null) {
-      navigator.geolocation.clearWatch(watchId);
-      watchId = null;
-    }
     if (vendor) {
-
-      // Utiliza o mesmo token JWT fixo para encerrar a partilha
-      try {
-        await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/stop`, null, {
-          headers: { Authorization: `Bearer ${LOCATION_TOKEN}` },
-
-        });
-      } catch (err) {
-        console.error('Erro ao parar localização:', err);
-      }
+      startSharing();
+      return () => {
+        stopSharing();
+      };
     }
-    localStorage.setItem('sharingLocation', 'false');
-    setSharing(false);
-  };
+  }, [vendor, startSharing, stopSharing]);
 
   const paySubscription = async () => {
     if (!vendor) return;
@@ -207,23 +201,11 @@ export default function VendorDashboard() {
           </div>
         )}
 
-        <div style={styles.toggleContainer}>
-          <label className="location-switch">
-            <input
-              type="checkbox"
-              checked={sharing}
-              onChange={sharing ? stopSharing : startSharing}
-            />
-            <div className="track"></div>
-            <span className="label">{sharing ? 'Localização Ligada' : 'Localização Desligada'}</span>
-          </label>
+          <button className="btn" style={styles.logoutButton} onClick={logout}>Sair</button>
         </div>
-
-        <button className="btn" style={styles.logoutButton} onClick={logout}>Sair</button>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
 const styles = {
   wrapper: {
@@ -272,13 +254,6 @@ const styles = {
     cursor: 'pointer',
     fontWeight: 'bold',
     color: '#fff',
-  },
-  toggleContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    justifyContent: 'center',
-    margin: '12px auto',
   },
   menuButton: {
     position: 'fixed',
