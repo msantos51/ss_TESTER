@@ -1,3 +1,4 @@
+// (em português) Componente de rodapé que apresenta mensagens rotativas de sensibilização ambiental
 import { useState, useEffect } from 'react';
 import './Footer.css';
 
@@ -57,6 +58,7 @@ const messages = [
 export default function Footer() {
   const [index, setIndex] = useState(0);
 
+  // (em português) A cada 10 segundos muda para a próxima mensagem
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prevIndex) => (prevIndex + 1) % messages.length);
