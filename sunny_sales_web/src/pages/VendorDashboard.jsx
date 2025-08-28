@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
 
+// Token JWT fixo fornecido pelo cliente para autenticar as requisições de localização
+const LOCATION_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTY5NzYxNTksImp0aSI6IjRhZGVkZWQ5ZTgzMDQ4YzU4MTI5NDk2OGZhNjQwZWExIiwic3ViIjoxfQ.Elsk92DJnIzFyYLbROkBK1lIVN00v7wlOC6_oVuM3w0';
+
 let watchId = null;
 
 export default function VendorDashboard() {
@@ -32,12 +35,13 @@ export default function VendorDashboard() {
       alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
       return;
     }
-    // Token JWT fornecido para autenticação nas requisições de localização
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTY5NzYxNTksImp0aSI6IjRhZGVkZWQ5ZTgzMDQ4YzU4MTI5NDk2OGZhNjQwZWExIiwic3ViIjoxfQ.Elsk92DJnIzFyYLbROkBK1lIVN00v7wlOC6_oVuM3w0';
-    if (!token) return;
+
+    // Utiliza o token JWT fixo para autenticar as requisições ao backend
+    if (!LOCATION_TOKEN) return;
+
     try {
       await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/start`, null, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${LOCATION_TOKEN}` },
       });
       watchId = navigator.geolocation.watchPosition(
         async (pos) => {
@@ -45,7 +49,7 @@ export default function VendorDashboard() {
             await axios.put(
               `${BASE_URL}/vendors/${vendor.id}/location`,
               { lat: pos.coords.latitude, lng: pos.coords.longitude },
-              { headers: { Authorization: `Bearer ${token}` } }
+              { headers: { Authorization: `Bearer ${LOCATION_TOKEN}` } }
             );
           } catch (err) {
             console.error('Erro ao enviar localização:', err);
@@ -86,11 +90,12 @@ export default function VendorDashboard() {
       watchId = null;
     }
     if (vendor) {
-      // Mesmo token JWT utilizado para autenticar o encerramento da partilha
-      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTY5NzYxNTksImp0aSI6IjRhZGVkZWQ5ZTgzMDQ4YzU4MTI5NDk2OGZhNjQwZWExIiwic3ViIjoxfQ.Elsk92DJnIzFyYLbROkBK1lIVN00v7wlOC6_oVuM3w0';
+
+      // Utiliza o mesmo token JWT fixo para encerrar a partilha
       try {
         await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/stop`, null, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${LOCATION_TOKEN}` },
+
         });
       } catch (err) {
         console.error('Erro ao parar localização:', err);

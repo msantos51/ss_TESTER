@@ -746,7 +746,7 @@ input[type='checkbox'] {
 
 .location-switch input:checked + .track {
 
-  background: linear-gradient(to right, #60a5fa, #6366f1);
+  background: #FCB454; /* Laranja igual ao header ao ativar a partilha */
 
 }
 
