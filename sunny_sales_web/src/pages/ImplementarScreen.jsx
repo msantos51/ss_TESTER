@@ -1,11 +1,10 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import BackHomeButton from '../components/BackHomeButton';
 
 export default function ImplementarScreen() {
-  const navigate = useNavigate();
   return (
     <div style={styles.container}>
-      <button onClick={() => navigate(-1)} style={styles.back}>Voltar</button>
+      <BackHomeButton />
       <h2 style={styles.title}>Implementação do Sunny Sales</h2>
       <p style={styles.text}>
         O Sunny Sales é uma solução tecnológica para o comércio ambulante de
@@ -55,14 +54,6 @@ const styles = {
     borderRadius: '8px',
     fontFamily: 'sans-serif',
     color: '#333',
-  },
-  back: {
-    marginBottom: '1rem',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    color: '#000',
   },
   title: {
     fontSize: '1.8rem',

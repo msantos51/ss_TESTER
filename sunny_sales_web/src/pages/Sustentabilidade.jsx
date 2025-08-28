@@ -1,11 +1,10 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import BackHomeButton from '../components/BackHomeButton';
 
 export default function Sustentabilidade() {
-  const navigate = useNavigate();
   return (
     <div style={styles.container}>
-      <button onClick={() => navigate(-1)} style={styles.back}>Voltar</button>
+      <BackHomeButton />
       <h2 style={styles.title}>Sustentabilidade</h2>
       <p style={styles.text}>
         Acreditamos que o futuro do comércio de praia deve ser mais
@@ -49,14 +48,6 @@ const styles = {
     borderRadius: '8px',
     fontFamily: 'sans-serif',
     color: '#333',
-  },
-  back: {
-    marginBottom: '1rem',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    color: '#000',
   },
   title: {
     fontSize: '1.8rem',

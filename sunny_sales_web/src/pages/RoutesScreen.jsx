@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../config';
+import BackHomeButton from '../components/BackHomeButton';
 
 // Lista os trajetos registados pelo vendedor
 export default function RoutesScreen() {
@@ -32,7 +33,7 @@ export default function RoutesScreen() {
 
   return (
     <div style={styles.container}>
-      <button onClick={() => navigate(-1)} style={styles.back}>⬅ Voltar</button>
+      <BackHomeButton />
       <h2>Histórico de Trajetos</h2>
       <ul style={styles.list}>
         {routes.map((route) => {
@@ -60,14 +61,6 @@ export default function RoutesScreen() {
 // estilos
 const styles = {
   container: { padding: '1rem', maxWidth: '800px', margin: '0 auto' },
-  back: {
-    marginBottom: '1rem',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    color: '#000',
-  },
   list: { listStyle: 'none', padding: 0 },
   item: {
     padding: '12px',

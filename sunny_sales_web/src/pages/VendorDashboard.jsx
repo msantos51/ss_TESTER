@@ -199,20 +199,18 @@ export default function VendorDashboard() {
                 'inativa'
               )}
             </p>
-
           </div>
         )}
 
         <div style={styles.toggleContainer}>
-          <input
-            id="location-toggle"
-            type="checkbox"
-            className="theme-checkbox"
-            checked={sharing}
-            onChange={sharing ? stopSharing : startSharing}
-          />
-          <label htmlFor="location-toggle">
-            {sharing ? 'Desativar Localização' : 'Ativar Localização'}
+          <label className="location-switch">
+            <input
+              type="checkbox"
+              checked={sharing}
+              onChange={sharing ? stopSharing : startSharing}
+            />
+            <div className="track"></div>
+            <span className="label">{sharing ? 'Localização Ligada' : 'Localização Desligada'}</span>
           </label>
         </div>
 
@@ -330,4 +328,3 @@ const styles = {
     margin: '0.5rem 0',
   },
 };
-
