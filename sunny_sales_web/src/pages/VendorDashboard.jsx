@@ -11,6 +11,7 @@ const LOCATION_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTY5NzY
 let watchId = null;
 
 export default function VendorDashboard() {
+
   const [vendor, setVendor] = useState(null); // (em português) Dados do vendedor guardados em estado
   const [sharing, setSharing] = useState(false); // (em português) Indica se a localização está a ser partilhada
   const [menuOpen, setMenuOpen] = useState(false); // (em português) Controla a abertura do menu lateral
@@ -34,6 +35,24 @@ export default function VendorDashboard() {
       }
     }
     setSharing(false); // (em português) Atualiza o estado para indicar que parou de partilhar
+  }, [vendor]);
+
+
+  const stopSharing = useCallback(async () => {
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
+    }
+    if (vendor) {
+      // Utiliza o mesmo token JWT fixo para encerrar a partilha
+      try {
+        await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/stop`, null, {
+          headers: { Authorization: `Bearer ${LOCATION_TOKEN}` },
+        });
+      } catch (err) {
+        console.error('Erro ao parar localização:', err);
+      }
+    }
   }, [vendor]);
 
   const logout = () => {
@@ -75,7 +94,9 @@ export default function VendorDashboard() {
         (err) => console.error('Erro localização:', err),
         { enableHighAccuracy: true, maximumAge: 0 }
       );
+
       setSharing(true); // (em português) Atualiza o estado para indicar que começou a partilhar
+
     } catch (err) {
       if (err.response && err.response.status === 403) {
         alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
@@ -93,10 +114,12 @@ export default function VendorDashboard() {
   }, []);
 
   useEffect(() => {
+
     return () => {
       stopSharing(); // (em português) Para partilha quando o componente é desmontado
     };
   }, [stopSharing]);
+
 
   const paySubscription = async () => {
     if (!vendor) return;
@@ -199,6 +222,7 @@ export default function VendorDashboard() {
             </p>
           </div>
         )}
+
         {vendor && (
           <button
             className="btn"
@@ -210,10 +234,10 @@ export default function VendorDashboard() {
         )}
 
         <button className="btn" style={styles.logoutButton} onClick={logout}>Sair</button>
+
       </div>
-    </div>
-  );
-}
+    );
+  }
 
 const styles = {
   wrapper: {
@@ -263,6 +287,7 @@ const styles = {
     fontWeight: 'bold',
     color: '#fff',
   },
+
   logoutButton: {
     width: 'auto',
     alignSelf: 'center',
@@ -275,6 +300,7 @@ const styles = {
     fontWeight: 'bold',
     color: '#fff',
   },
+
   menuButton: {
     position: 'fixed',
     top: '8rem',
