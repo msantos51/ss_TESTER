@@ -1,12 +1,13 @@
+// Botão que localiza o utilizador e centraliza o mapa
 import React, { useState } from 'react';
 import { useMap } from 'react-leaflet';
 
-
+// Componente que apresenta um botão para obter a localização do cliente
 export default function LocateButton({ onLocationFound, onClick }) {
-
   const map = useMap();
   const [locating, setLocating] = useState(false);
 
+  // Função que solicita a localização e centraliza o mapa
   const handleLocate = () => {
     if (onClick) onClick();
     setLocating(true);
@@ -20,22 +21,19 @@ export default function LocateButton({ onLocationFound, onClick }) {
       }
 
       map.flyTo([lat, lng], 16);
-      map.off('locationfound', onFound);
-      map.off('locationerror', onError);
     };
 
     const onError = () => {
       setLocating(false);
       alert('Não foi possível obter a sua localização.');
-      map.off('locationfound', onFound);
-      map.off('locationerror', onError);
     };
 
-    map.on('locationfound', onFound);
-    map.on('locationerror', onError);
+    map.once('locationfound', onFound);
+    map.once('locationerror', onError);
     map.locate({ enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 });
   };
 
+  // Renderização do botão de localização
   return (
     <button className="locate-btn" onClick={handleLocate} aria-label="Localizar-me">
       {locating ? <span className="loader" /> : '📍'}

@@ -1,14 +1,14 @@
-// (em português) Página de detalhes do vendedor com stories
+// Página de detalhes do vendedor com stories
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
-import './VendorDetailScreen.css'; // Deves criar este ficheiro com os estilos CSS
 
 // Página de detalhes de um vendedor específico
 export default function VendorDetailScreen({ vendor }) {
   const [stories, setStories] = useState([]);
   const [storyIndex, setStoryIndex] = useState(null);
 
+  // Carrega as stories do vendedor quando o componente é montado
   useEffect(() => {
     const loadStories = async () => {
       try {
@@ -21,9 +21,10 @@ export default function VendorDetailScreen({ vendor }) {
     loadStories();
   }, [vendor.id]);
 
-
+  // Base URL sem a barra final para compor caminhos de ficheiros
   const baseUrl = BASE_URL.replace(/\/$/, '');
 
+  // Renderização da página com detalhes e stories do vendedor
   return (
     <div className="vendor-container">
       <div className="vendor-header">
@@ -40,13 +41,16 @@ export default function VendorDetailScreen({ vendor }) {
       </div>
 
       {stories.length > 0 && storyIndex !== null && (
-        <div className="story-modal" onClick={() => {
-          if (storyIndex < stories.length - 1) {
-            setStoryIndex(storyIndex + 1);
-          } else {
-            setStoryIndex(null);
-          }
-        }}>
+        <div
+          className="story-modal"
+          onClick={() => {
+            if (storyIndex < stories.length - 1) {
+              setStoryIndex(storyIndex + 1);
+            } else {
+              setStoryIndex(null);
+            }
+          }}
+        >
           <img
             className="story-full"
             src={`${baseUrl}/${stories[storyIndex].media_url}`}
@@ -66,7 +70,6 @@ export default function VendorDetailScreen({ vendor }) {
           />
         ))}
       </div>
-
     </div>
   );
 }
