@@ -24,7 +24,7 @@ export default function VendorDashboard() {
 
   const startSharing = useCallback(async () => {
     if (!vendor) return;
-    // Prevent enabling location when subscription is not active
+    // Impede ativar a localização quando a subscrição não está ativa
     const expires = vendor.subscription_valid_until
       ? new Date(vendor.subscription_valid_until)
       : null;
@@ -32,7 +32,8 @@ export default function VendorDashboard() {
       alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
       return;
     }
-    const token = localStorage.getItem('token');
+    // Token JWT fornecido para autenticação nas requisições de localização
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTY5NzYxNTksImp0aSI6IjRhZGVkZWQ5ZTgzMDQ4YzU4MTI5NDk2OGZhNjQwZWExIiwic3ViIjoxfQ.Elsk92DJnIzFyYLbROkBK1lIVN00v7wlOC6_oVuM3w0';
     if (!token) return;
     try {
       await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/start`, null, {
@@ -85,15 +86,14 @@ export default function VendorDashboard() {
       watchId = null;
     }
     if (vendor) {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/stop`, null, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-        } catch (err) {
-          console.error('Erro ao parar localização:', err);
-        }
+      // Mesmo token JWT utilizado para autenticar o encerramento da partilha
+      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTY5NzYxNTksImp0aSI6IjRhZGVkZWQ5ZTgzMDQ4YzU4MTI5NDk2OGZhNjQwZWExIiwic3ViIjoxfQ.Elsk92DJnIzFyYLbROkBK1lIVN00v7wlOC6_oVuM3w0';
+      try {
+        await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/stop`, null, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (err) {
+        console.error('Erro ao parar localização:', err);
       }
     }
     localStorage.setItem('sharingLocation', 'false');
