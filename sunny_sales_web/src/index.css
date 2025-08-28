@@ -37,7 +37,7 @@ body {
     height: 100%;
     max-width: none;
     margin: 0 auto;
-    padding: 100px 0.5rem 0;
+    padding: 100px 0.5rem 60px; /* (em português) Espaço extra no fundo para não ocultar o conteúdo pelo rodapé fixo */
     box-sizing: border-box;
     background: transparent;
   }
@@ -63,7 +63,7 @@ body {
 
   @media (max-width: 768px) {
     .container {
-      padding: 100px 0.25rem 0;
+      padding: 100px 0.25rem 60px; /* (em português) Mesma margem inferior em ecrãs pequenos */
     }
   }
 
@@ -745,7 +745,9 @@ input[type='checkbox'] {
 }
 
 .location-switch input:checked + .track {
+
   background: #FCB454; /* Laranja igual ao header ao ativar a partilha */
+
 }
 
 .location-switch input:checked + .track::after {

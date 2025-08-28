@@ -35,8 +35,10 @@ export default function VendorDashboard() {
       alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
       return;
     }
+
     // Utiliza o token JWT fixo para autenticar as requisições ao backend
     if (!LOCATION_TOKEN) return;
+
     try {
       await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/start`, null, {
         headers: { Authorization: `Bearer ${LOCATION_TOKEN}` },
@@ -88,10 +90,12 @@ export default function VendorDashboard() {
       watchId = null;
     }
     if (vendor) {
+
       // Utiliza o mesmo token JWT fixo para encerrar a partilha
       try {
         await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/stop`, null, {
           headers: { Authorization: `Bearer ${LOCATION_TOKEN}` },
+
         });
       } catch (err) {
         console.error('Erro ao parar localização:', err);
