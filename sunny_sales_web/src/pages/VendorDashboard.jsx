@@ -11,7 +11,9 @@ const LOCATION_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTY5NzY
 let watchId = null;
 
 export default function VendorDashboard() {
+
   const [vendor, setVendor] = useState(null); // (em português) Dados do vendedor guardados em estado
+
   const [menuOpen, setMenuOpen] = useState(false); // (em português) Controla a abertura do menu lateral
   const menuButtonRef = useRef(null); // (em português) Referência ao botão de menu
   const sideMenuRef = useRef(null); // (em português) Referência ao menu lateral
@@ -32,6 +34,7 @@ export default function VendorDashboard() {
         console.error('Erro ao parar localização:', err);
       }
     }
+
   }, [vendor]);
 
   const logout = () => {
@@ -73,6 +76,7 @@ export default function VendorDashboard() {
         (err) => console.error('Erro localização:', err),
         { enableHighAccuracy: true, maximumAge: 0 }
       );
+
     } catch (err) {
       if (err.response && err.response.status === 403) {
         alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
@@ -90,12 +94,14 @@ export default function VendorDashboard() {
   }, []);
 
   useEffect(() => {
+
     if (!vendor) return;
     startSharing(); // (em português) Inicia a partilha assim que o vendedor é carregado
     return () => {
       stopSharing(); // (em português) Para partilha quando o componente é desmontado
     };
   }, [vendor, startSharing, stopSharing]);
+
 
   const paySubscription = async () => {
     if (!vendor) return;
@@ -198,11 +204,12 @@ export default function VendorDashboard() {
             </p>
           </div>
         )}
+
         <button className="btn" style={styles.logoutButton} onClick={logout}>Sair</button>
+
       </div>
-    </div>
-  );
-}
+    );
+  }
 
 const styles = {
   wrapper: {
@@ -240,7 +247,7 @@ const styles = {
     marginBottom: '1rem',
     textAlign: 'left',
   },
-  logoutButton: {
+  shareButton: {
     width: 'auto',
     alignSelf: 'center',
     margin: '12px auto',
@@ -252,6 +259,7 @@ const styles = {
     fontWeight: 'bold',
     color: '#fff',
   },
+
   menuButton: {
     position: 'fixed',
     top: '8rem',
