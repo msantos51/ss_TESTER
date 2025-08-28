@@ -119,6 +119,14 @@ const styles = {
     width: '100%',
     margin: '0.5rem 0',
   },
+  // (em português) Estilo do contentor do toggle de localização
+  toggleWrapper: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '0.5rem',
+    marginTop: '1rem',
+  },
 };
 
 // (em português) watchId global simples para gerir o watchPosition
@@ -128,6 +136,7 @@ let watchId = null;
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sharingLocation, setSharingLocation] = useState(true); // (em português) estado da partilha de localização
   const menuButtonRef = useRef(null);
   const sideMenuRef = useRef(null);
   const navigate = useNavigate();
@@ -209,6 +218,23 @@ export default function VendorDashboard() {
     }
   }, [vendor]);
 
+  // (em português) Atualiza a partilha quando o toggle muda
+  useEffect(() => {
+    if (!vendor) return;
+    if (sharingLocation) {
+      startSharing();
+      return () => {
+        stopSharing();
+      };
+    }
+    stopSharing();
+  }, [vendor, sharingLocation, startSharing, stopSharing]);
+
+  // (em português) Alterna o valor do toggle
+  const handleToggleLocation = () => {
+    setSharingLocation((prev) => !prev);
+  };
+
   // (em português) Carrega o vendedor do localStorage
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -220,16 +246,6 @@ export default function VendorDashboard() {
       }
     }
   }, []);
-
-  // (em português) Inicia/para a partilha conforme o ciclo de vida do componente
-  useEffect(() => {
-    if (!vendor) return;
-    startSharing();
-    return () => {
-      stopSharing();
-    };
-  }, [vendor, startSharing, stopSharing]);
-
   // (em português) Pagamento da subscrição semanal
   const paySubscription = async () => {
     if (!vendor) return;
@@ -424,6 +440,17 @@ export default function VendorDashboard() {
             </p>
           </div>
         )}
+
+        <div style={styles.toggleWrapper}>
+          <label>
+            <input
+              type="checkbox"
+              checked={sharingLocation}
+              onChange={handleToggleLocation}
+            />
+            Partilhar Localização
+          </label>
+        </div>
 
         <button className="btn" style={styles.logoutButton} onClick={logout}>
           Sair
