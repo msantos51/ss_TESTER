@@ -34,8 +34,8 @@ const config: ExpoConfig = {
       'ACCESS_COARSE_LOCATION',
       'FOREGROUND_SERVICE',
       'ACCESS_BACKGROUND_LOCATION',
-      // Permissão para detetar captura de ecrã (Android 14+)
-      'DETECT_SCREEN_CAPTURE'
+      // Permissão necessária para observar capturas de ecrã (Android 14+)
+      'android.permission.DETECT_SCREEN_CAPTURE'
     ]
   },
   // Plugins Expo utilizados pela aplicação
