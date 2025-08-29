@@ -1,44 +1,46 @@
 // app.config.ts
-// Configuração principal da aplicação Expo
 import { ExpoConfig } from 'expo/config';
 
-// Objeto de configuração exportado para definir metadados e permissões
 const config: ExpoConfig = {
-  // Nome apresentado da aplicação
   name: 'Sunny Sales',
-  // Identificador amigável utilizado pelo Expo
   slug: 'sunny-sales',
-  // Versão da aplicação
   version: '0.1.0',
-  // Esquema de URI para deep linking
   scheme: 'sunnysales',
-  // Orientação padrão do ecrã
   orientation: 'portrait',
-  // Ícone da aplicação
   icon: './assets/icon.png',
-  // Tema visual global
   userInterfaceStyle: 'light',
-  // Variáveis extras partilhadas com a aplicação
   extra: {
-    EXPO_PUBLIC_BASE_URL: process.env.EXPO_PUBLIC_BASE_URL ?? 'https://ss-tester.onrender.com'
+    EXPO_PUBLIC_BASE_URL: process.env.EXPO_PUBLIC_BASE_URL ?? 'https://ss-tester.onrender.com',
   },
-  // Configurações específicas para iOS
-  ios: { supportsTablet: false },
-  // Configurações específicas para Android
+  ios: {
+    supportsTablet: false,
+    // (se usares localização em background no iOS, adiciona os strings aqui)
+    // infoPlist: {
+    //   NSLocationWhenInUseUsageDescription: 'Usamos a sua localização para mostrar vendedores próximos.',
+    //   NSLocationAlwaysAndWhenInUseUsageDescription: 'Partilhamos localização em tempo real quando ativa o modo vendedor.',
+    // },
+  },
   android: {
-    // Identificador do pacote Android
     package: 'com.sunny.sales',
-    // Lista de permissões necessárias para o funcionamento da app
     permissions: [
       'ACCESS_FINE_LOCATION',
       'ACCESS_COARSE_LOCATION',
       'FOREGROUND_SERVICE',
-      'ACCESS_BACKGROUND_LOCATION',
-    ]
+      'ACCESS_BACKGROUND_LOCATION', // ok se precisares de localização em 2º plano
+      // 👇 REMOVIDO (NÃO usar — causa crash no Android 14)
+      // 'android.permission.DETECT_SCREEN_CAPTURE',
+    ],
+    // (se fizeres tracking em 1º plano contínuo, define a notificação do serviço)
+    // foregroundService: {
+    //   notificationTitle: 'Sunny Sales',
+    //   notificationBody: 'A atualizar a sua localização…',
+    // },
   },
-  // Plugins Expo utilizados pela aplicação
-  plugins: ['expo-router', 'expo-location']
+  plugins: [
+    'expo-router',
+    'expo-location',
+    // NÃO adicionar expo-screen-capture aqui (a menos que protejas as chamadas por versão)
+  ],
 };
 
-// Exporta a configuração para ser utilizada pelo Expo
 export default config;
