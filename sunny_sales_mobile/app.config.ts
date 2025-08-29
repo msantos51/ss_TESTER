@@ -34,8 +34,7 @@ const config: ExpoConfig = {
       'ACCESS_COARSE_LOCATION',
       'FOREGROUND_SERVICE',
       'ACCESS_BACKGROUND_LOCATION',
-  
-        ]
+    ]
   },
   // Plugins Expo utilizados pela aplicação
   plugins: ['expo-router', 'expo-location']
