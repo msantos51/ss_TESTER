@@ -3,12 +3,15 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useHeaderHeight } from '@react-navigation/elements';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { api } from '../../src/services/api';
 import { Vendor } from '../../src/types';
 
 export default function PublicMap() {
+  // altura do cabeçalho de navegação
+  const headerHeight = useHeaderHeight();
   // estado com lista de vendedores vindos do backend
   const [vendors, setVendors] = useState<Vendor[]>([]);
   // lista de produtos possíveis para filtrar
@@ -75,7 +78,7 @@ export default function PublicMap() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: headerHeight }] }>
       <View style={styles.filters}>
         {PRODUCTS.map((p) => (
           <Pressable
