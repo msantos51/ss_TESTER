@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
+import './VendorDashboard.css';
 
 let watchId = null;
 
@@ -202,16 +203,19 @@ export default function VendorDashboard() {
           </div>
         )}
 
+        {/* (em português) Bloco que contém o switch para ativar/desativar a partilha de localização */}
         <div style={styles.toggleContainer}>
-          <label className="location-switch">
+          <label className="vendor-switch">
             <input
               type="checkbox"
               checked={sharing}
               onChange={sharing ? stopSharing : startSharing}
             />
-            <div className="track"></div>
-            <span className="label">{sharing ? 'Localização Ligada' : 'Localização Desligada'}</span>
+            <span className="slider" />
           </label>
+          <span style={styles.switchLabel}>
+            {sharing ? 'Localização Ligada' : 'Localização Desligada'}
+          </span>
         </div>
 
         <button className="btn" style={styles.logoutButton} onClick={logout}>Sair</button>
@@ -274,6 +278,10 @@ const styles = {
     gap: '0.5rem',
     justifyContent: 'center',
     margin: '12px auto',
+  },
+  // (em português) Texto que mostra o estado atual da localização
+  switchLabel: {
+    fontWeight: 'bold',
   },
   menuButton: {
     position: 'fixed',
