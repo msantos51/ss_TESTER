@@ -131,26 +131,33 @@ export default function ModernMapLayout() {
 
   return (
     <div className="modern-layout">
+      <div className="map-wrapper">
+        {!isVendorLogged && (
+          <div className="filters">
+            <p className="filters-subtitle">Vendedores:</p>
+            {PRODUCTS.map((p, idx) => (
+              <div key={p} className="checkbox-wrapper-46">
+                <input
+                  id={`filter-${idx}`}
+                  type="checkbox"
+                  className="inp-cbx"
+                  checked={selectedProducts.includes(p)}
+                  onChange={() => toggleProduct(p)}
+                />
+                <label htmlFor={`filter-${idx}`} className="cbx">
+                  <span>
+                    <svg viewBox="0 0 12 10">
+                      <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                    </svg>
+                  </span>
+                  <span>{p}</span>
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
 
-    {!isVendorLogged && (
-      <div className="filters">
-
-          <p className="filters-subtitle">Vendedores:</p>
-          {PRODUCTS.map((p) => (
-            <label key={p} className="filter-label custom-checkbox">
-              <input
-                type="checkbox"
-                checked={selectedProducts.includes(p)}
-                onChange={() => toggleProduct(p)}
-              />
-              <span className="checkmark"></span>
-              {p}
-            </label>
-          ))}
-        </div>
-      )}
-
-      <main className="map-area">
+        <main className="map-area">
         <MapContainer
           center={[38.7169, -9.1399]}
           zoom={13}
@@ -237,7 +244,8 @@ export default function ModernMapLayout() {
           </div>
         )}
       </main>
-      <BeachConditions />
     </div>
+    <BeachConditions />
+  </div>
   );
 }

@@ -8,6 +8,7 @@ body {
 }
 
 .modern-layout {
+  /* Layout principal em coluna; o mapa e os filtros são agrupados noutra div */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -47,15 +48,19 @@ body {
   transform: scale(1.05);
 }
 
-.filters {
-  margin-top: 0.25rem;
+.map-wrapper {
+  /* Agrupa filtros e mapa lado a lado */
   display: flex;
+  width: 100%;
+}
+
+.filters {
+  /* Coloca os filtros na coluna esquerda */
+  display: flex;
+  flex-direction: column;
   gap: 0.75rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  align-items: center;
-  overflow-x: auto;
-  padding: 0 0.5rem;
+  width: 200px;
+  padding: 1rem;
 }
 
 .filters-title {
@@ -69,63 +74,90 @@ body {
   white-space: nowrap;
 }
 
-.filter-label {
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  margin: 0 0.5rem 0 0;
+/* Estilos para os novos checkboxes dos filtros */
+.checkbox-wrapper-46 input[type="checkbox"] {
+  display: none;
+  visibility: hidden;
 }
 
-/* Custom checkbox styling for product filters */
-.custom-checkbox input {
-  position: absolute;
-  opacity: 0;
-
-  height: 0;
-  width: 0;
-}
-
-.custom-checkbox {
-
-  position: relative;
-  display: flex;
-  align-items: center;
+.checkbox-wrapper-46 .cbx {
+  margin: auto;
+  -webkit-user-select: none;
+  user-select: none;
   cursor: pointer;
 }
-
-  .custom-checkbox .checkmark {
-    width: 1rem;
-    height: 1rem;
-    background-color: #FCB454;
-    border-radius: 0.2rem;
-    margin-right: 0.25em;
-    position: relative;
-  }
-
-.custom-checkbox .checkmark:after {
-  content: "";
+.checkbox-wrapper-46 .cbx span {
+  display: inline-block;
+  vertical-align: middle;
+  transform: translate3d(0, 0, 0);
+}
+.checkbox-wrapper-46 .cbx span:first-child {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  transform: scale(1);
+  vertical-align: middle;
+  border: 1px solid #fcb454;
+  transition: all 0.2s ease;
+}
+.checkbox-wrapper-46 .cbx span:first-child svg {
   position: absolute;
-  display: none;
-  left: 0.25rem;
-  top: 0.05rem;
-  width: 0.25rem;
-  height: 0.5rem;
-  border: solid #fff;
-  border-width: 0 0.15rem 0.15rem 0;
-  transform: rotate(45deg);
-
+  top: 3px;
+  left: 2px;
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 16px;
+  stroke-dashoffset: 16px;
+  transition: all 0.3s ease;
+  transition-delay: 0.1s;
+  transform: translate3d(0, 0, 0);
+}
+.checkbox-wrapper-46 .cbx span:first-child:before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: #fcb454;
+  display: block;
+  transform: scale(0);
+  opacity: 1;
+  border-radius: 50%;
+}
+.checkbox-wrapper-46 .cbx span:last-child {
+  padding-left: 8px;
+}
+.checkbox-wrapper-46 .cbx:hover span:first-child {
+  border-color: #fcb454;
 }
 
-.custom-checkbox input:checked ~ .checkmark:after {
-  display: block;
+.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child {
+  background: #fcb454;
+  border-color: #fcb454;
+  animation: wave-46 0.4s ease;
+}
+.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child svg {
+  stroke-dashoffset: 0;
+}
+.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child:before {
+  transform: scale(3.5);
+  opacity: 0;
+  transition: all 0.6s ease;
+}
+
+@keyframes wave-46 {
+  50% {
+    transform: scale(0.9);
+  }
 }
 
 .map-area {
+  /* Área do mapa ocupa o espaço restante à direita */
   position: relative;
-  width: 80%;
-  margin: 0 auto;
+  flex: 1;
   height: 70vh;
-
   padding: 0.5rem;
   box-sizing: border-box;
 }
@@ -199,10 +231,19 @@ body {
 
 
 @media (max-width: 768px) {
+  .map-wrapper {
+    flex-direction: column;
+  }
+  .filters {
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
   .map-area {
     width: 100%;
     height: 60vh;
-    margin: 0 auto;
+    margin: 0;
   }
 }
 
