@@ -57,6 +57,36 @@ export default function ModernMapLayout() {
     };
   }, [isVendorLogged]);
 
+  useEffect(() => {
+    // Constrói o URL do WebSocket substituindo http por ws
+    const wsUrl = BASE_URL.replace(/^http/, 'ws') + '/ws/locations';
+    const ws = new WebSocket(wsUrl);
+
+    // Recebe atualizações de localização em tempo real e atualiza o estado
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setVendors((prev) => {
+        if (data.remove) {
+          return prev.map((v) =>
+            v.id === data.vendor_id
+              ? { ...v, current_lat: null, current_lng: null }
+              : v
+          );
+        }
+        return prev.map((v) =>
+          v.id === data.vendor_id
+            ? { ...v, current_lat: data.lat, current_lng: data.lng }
+            : v
+        );
+      });
+    };
+
+    // Fecha a ligação quando o componente é desmontado
+    return () => {
+      ws.close();
+    };
+  }, []);
+
   // Sempre que o mapa estiver pronto, acompanha a posição do utilizador
   // (vendedor ou cliente) e mantém o mapa centrado nessa localização.
   useEffect(() => {
