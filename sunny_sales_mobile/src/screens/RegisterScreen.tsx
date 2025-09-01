@@ -39,7 +39,8 @@ export default function RegisterScreen({ navigation }: any) {
         throw new Error('É necessária uma foto de perfil.');
       }
       await register(name, email, password, product, photo);
-      // Após registo, o token é guardado e o utilizador fica autenticado
+      // Após registo, volta ao mapa
+      navigation.navigate('Map');
     } catch (error) {
       console.error('Erro no registo:', error);
     }

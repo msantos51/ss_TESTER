@@ -18,7 +18,8 @@ export default function LoginScreen({ navigation }: any) {
   const handleLogin = async () => {
     try {
       await login(email, password);
-      // A navegação pós-login é gerida pelo App através do token no contexto
+      // Após login, volta ao mapa
+      navigation.navigate('Map');
     } catch (error) {
       console.error('Erro no login:', error);
     }
