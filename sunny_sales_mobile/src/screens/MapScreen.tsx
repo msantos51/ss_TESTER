@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
-import MapView, { Marker, Callout, Region, UrlTile } from 'react-native-maps';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
 import api, { BASE_URL } from '../services/api';
 
@@ -19,9 +19,10 @@ interface VendorMarker extends Vendor {
 }
 
 export default function MapScreen() {
-  const [region, setRegion] = useState<Region | null>(null);
+  const [region, setRegion] = useState<{ latitude: number; longitude: number } | null>(null);
   const [markers, setMarkers] = useState<Record<number, VendorMarker>>({});
   const vendorInfo = useRef<Record<number, Vendor>>({});
+  const webViewRef = useRef<WebView>(null);
 
   // Obter permissões e localização inicial
   useEffect(() => {
@@ -35,12 +36,7 @@ export default function MapScreen() {
         const loc = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.High,
         });
-        setRegion({
-          latitude: loc.coords.latitude,
-          longitude: loc.coords.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        });
+        setRegion({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
       } catch (error: any) {
         console.warn('⚠️ Erro ao obter localização. Verifica se o GPS está ligado.', error.message);
       }
@@ -102,6 +98,92 @@ export default function MapScreen() {
     return () => ws.close();
   }, []);
 
+  // Enviar localização para o WebView
+  useEffect(() => {
+    if (region && webViewRef.current) {
+      webViewRef.current.postMessage(
+        JSON.stringify({ type: 'region', data: region })
+      );
+    }
+  }, [region]);
+
+  // Enviar marcadores sempre que forem atualizados
+  useEffect(() => {
+    if (webViewRef.current) {
+      const payload = Object.values(markers).map((m) => ({
+        ...m,
+        profile_photo: `${BASE_URL}/${m.profile_photo}`,
+      }));
+      webViewRef.current.postMessage(
+        JSON.stringify({ type: 'markers', data: payload })
+      );
+    }
+  }, [markers]);
+
+  // Conteúdo HTML com Leaflet
+  const mapHtml = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        />
+        <style>
+          html, body, #map { height: 100%; margin: 0; padding: 0; }
+          .marker-img { border-radius: 20px; }
+          .popup { text-align: center; }
+          .active { color: green; }
+          .inactive { color: red; }
+        </style>
+      </head>
+      <body>
+        <div id="map"></div>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
+          var map = L.map('map').setView([0,0], 13);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+          var markers = {};
+          function updateMarkers(data) {
+            var ids = new Set();
+            data.forEach(function(m){
+              ids.add(m.id);
+              var icon = L.icon({
+                iconUrl: m.profile_photo,
+                iconSize: [40,40],
+                className: 'marker-img'
+              });
+              if (markers[m.id]) {
+                markers[m.id].setLatLng([m.latitude, m.longitude]);
+              } else {
+                var marker = L.marker([m.latitude, m.longitude], { icon: icon }).addTo(map);
+                var statusClass = m.subscription_active ? 'active' : 'inactive';
+                marker.bindPopup('<div class="popup"><div>'+m.product+'</div><div class="'+statusClass+'">'+(m.subscription_active ? 'Ativo' : 'Inativo')+'</div></div>');
+                markers[m.id] = marker;
+              }
+            });
+            for (var id in markers) {
+              if (!ids.has(Number(id))) {
+                map.removeLayer(markers[id]);
+                delete markers[id];
+              }
+            }
+          }
+          document.addEventListener('message', function(event){
+            var msg = JSON.parse(event.data);
+            if (msg.type === 'region') {
+              map.setView([msg.data.latitude, msg.data.longitude], 15);
+            } else if (msg.type === 'markers') {
+              updateMarkers(msg.data);
+            }
+          });
+        </script>
+      </body>
+    </html>
+  `;
+
   if (!region) {
     return (
       <View style={styles.center}>
@@ -111,54 +193,15 @@ export default function MapScreen() {
   }
 
   return (
-    <MapView
+    <WebView
+      ref={webViewRef}
+      originWhitelist={['*']}
+      source={{ html: mapHtml }}
       style={styles.map}
-      initialRegion={region}
-      showsUserLocation
-      provider={null} // evita dependência de provider específico
-      mapType="none" // 👈 remove os mapas base para mostrar apenas o OpenStreetMap
-    >
-      {/* Renderiza tiles do OpenStreetMap */}
-      <UrlTile
-        urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        maximumZ={19}
-      />
-
-      {Object.values(markers).map((vendor) => (
-        <Marker
-          key={vendor.id}
-          coordinate={{ latitude: vendor.latitude, longitude: vendor.longitude }}
-        >
-          <Image
-            source={{ uri: `${BASE_URL}/${vendor.profile_photo}` }}
-            style={styles.markerImage}
-          />
-          <Callout>
-            <View style={styles.callout}>
-              <Text style={styles.product}>{vendor.product}</Text>
-              <Text
-                style={[
-                  styles.status,
-                  vendor.subscription_active ? styles.active : styles.inactive,
-                ]}
-              >
-                {vendor.subscription_active ? 'Ativo' : 'Inativo'}
-              </Text>
-            </View>
-          </Callout>
-        </Marker>
-      ))}
-    </MapView>
   );
 }
 
 const styles = StyleSheet.create({
   map: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  markerImage: { width: 40, height: 40, borderRadius: 20 },
-  callout: { alignItems: 'center' },
-  product: { fontWeight: 'bold' },
-  status: { marginTop: 4 },
-  active: { color: 'green' },
-  inactive: { color: 'red' },
 });
