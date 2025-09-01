@@ -7,7 +7,6 @@ Aplicação composta por backend em **FastAPI** e interface web em **React** que
 ```
 backend/            Código do servidor FastAPI
 sunny_sales_web/    Aplicação web (React + Vite)
-sunny_sales_mobile/ Aplicação mobile (Expo/React Native)
 scripts/            Utilidades auxiliares
 ```
 
@@ -32,11 +31,6 @@ scripts/            Utilidades auxiliares
    npm install
    npm run dev
    ```
-6. Para a aplicação mobile navegue até `sunny_sales_mobile` e inicie o Expo:
-   ```bash
-   npm install
-   npm start
-   ```
 
 ## Novidades
 
@@ -44,7 +38,7 @@ scripts/            Utilidades auxiliares
 
 - **Tradução e acessibilidade**: interface com suporte a português e inglês e elementos com labels acessíveis.
 
-    A variável `BASE_URL` em `sunny_sales_web/src/config.js` e `EXPO_PUBLIC_BASE_URL` em `sunny_sales_mobile` devem apontar para o endereço do backend.
+    A variável `BASE_URL` em `sunny_sales_web/src/config.js` deve apontar para o endereço do backend.
 
 ## Testes
 
@@ -70,15 +64,13 @@ Ao executar `npm ci` em ambientes como o EAS Build pode surgir o erro:
 npm ci can only install packages when your package.json and package-lock.json are in sync
 ```
 
-Isso significa que as versões listadas em `package.json` não coincidem com o
-`package-lock.json`. Entre na pasta `sunny_sales_web` e rode:
+Isso significa que as versões listadas em `package.json` não coincidem com o `package-lock.json`. Entre na pasta `sunny_sales_web` e rode:
 
 ```bash
 npm install
 ```
 
-Em seguida commite o `package-lock.json` atualizado para que a build use as
-mesmas dependências do projeto.
+Em seguida commite o `package-lock.json` atualizado para que a build use as mesmas dependências do projeto.
 
 ## Licença
 
