@@ -115,7 +115,7 @@ export default function MapScreen() {
       style={styles.map}
       initialRegion={region}
       showsUserLocation
-      provider={null} // 👈 impede uso explícito do Google Maps
+      provider={null} // evita dependência de provider específico
       mapType="none" // 👈 remove os mapas base para mostrar apenas o OpenStreetMap
     >
       {/* Renderiza tiles do OpenStreetMap */}
