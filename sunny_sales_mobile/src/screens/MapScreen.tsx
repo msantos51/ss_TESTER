@@ -198,7 +198,6 @@ export default function MapScreen() {
       originWhitelist={['*']}
       source={{ html: mapHtml }}
       style={styles.map}
-    />
   );
 }
 
