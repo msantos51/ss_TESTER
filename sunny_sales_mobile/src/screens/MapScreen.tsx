@@ -115,9 +115,10 @@ export default function MapScreen() {
       style={styles.map}
       initialRegion={region}
       showsUserLocation
-      provider={null} // 👈 impede uso do Google Maps
+      provider={null} // 👈 impede uso explícito do Google Maps
+      mapType="none" // 👈 remove os mapas base para mostrar apenas o OpenStreetMap
     >
-      {/* Tiles do OpenStreetMap */}
+      {/* Renderiza tiles do OpenStreetMap */}
       <UrlTile
         urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
         maximumZ={19}
