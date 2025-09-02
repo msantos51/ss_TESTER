@@ -184,24 +184,26 @@ export default function MapScreen() {
     </html>
   `;
 
-  if (!region) {
-    return (
-      <View style={styles.center}>
-        <Text>A obter localização...</Text>
-      </View>
-    );
-  }
-
+if (!region) {
   return (
-    <WebView
-      ref={webViewRef}
-      originWhitelist={['*']}
-      source={{ html: mapHtml }}
-      style={styles.map}
+    <View style={styles.center}>
+      <Text>A obter localização...</Text>
+    </View>
   );
 }
+
+return (
+  <WebView
+    ref={webViewRef}
+    originWhitelist={['*']}
+    source={{ html: mapHtml }}
+    style={styles.map}
+  />
+);
+}  // ✅ aqui fecha a função MapScreen
 
 const styles = StyleSheet.create({
   map: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });
+
