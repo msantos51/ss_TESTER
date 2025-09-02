@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
+import { Ionicons } from '@expo/vector-icons';
 import api, { BASE_URL } from '../services/api';
 
 /** Interface com os dados principais de um vendedor. */
@@ -23,6 +24,21 @@ export default function MapScreen() {
   const [markers, setMarkers] = useState<Record<number, VendorMarker>>({});
   const vendorInfo = useRef<Record<number, Vendor>>({});
   const webViewRef = useRef<WebView>(null);
+
+  /**
+   * Obtém a localização atual e atualiza o estado para recentrar o mapa.
+   * Também envia a nova região para o WebView através do useEffect existente.
+   */
+  const handleLocate = async () => {
+    try {
+      const loc = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+      setRegion({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
+    } catch (error: any) {
+      console.warn('⚠️ Não foi possível obter a localização atual.', error.message);
+    }
+  };
 
   // Obter permissões e localização inicial
   useEffect(() => {
@@ -146,6 +162,7 @@ export default function MapScreen() {
           var map = L.map('map').setView([0,0], 13);
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
           var markers = {};
+          var userMarker = null;
           function updateMarkers(data) {
             var ids = new Set();
             data.forEach(function(m){
@@ -175,6 +192,16 @@ export default function MapScreen() {
             var msg = JSON.parse(event.data);
             if (msg.type === 'region') {
               map.setView([msg.data.latitude, msg.data.longitude], 15);
+              if (userMarker) {
+                userMarker.setLatLng([msg.data.latitude, msg.data.longitude]);
+              } else {
+                userMarker = L.marker([msg.data.latitude, msg.data.longitude], {
+                  icon: L.divIcon({
+                    className: 'client-pin',
+                    html: '<div style="background:#1976d2;width:24px;height:24px;border-radius:50%;border:2px solid white"></div>'
+                  })
+                }).addTo(map);
+              }
             } else if (msg.type === 'markers') {
               updateMarkers(msg.data);
             }
@@ -193,17 +220,39 @@ if (!region) {
 }
 
 return (
-  <WebView
-    ref={webViewRef}
-    originWhitelist={['*']}
-    source={{ html: mapHtml }}
-    style={styles.map}
-  />
+  <View style={styles.container}>
+    <WebView
+      ref={webViewRef}
+      originWhitelist={['*']}
+      source={{ html: mapHtml }}
+      style={styles.map}
+    />
+    <TouchableOpacity
+      style={styles.locateButton}
+      onPress={handleLocate}
+      accessibilityLabel="Ir para a minha localização"
+    >
+      <Ionicons name="locate" size={24} color="#fff" />
+    </TouchableOpacity>
+  </View>
 );
 }  // ✅ aqui fecha a função MapScreen
 
 const styles = StyleSheet.create({
+  container: { flex: 1 },
   map: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  locateButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#1976d2',
+    width: 45,
+    height: 45,
+    borderRadius: 22.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5,
+  },
 });
 
