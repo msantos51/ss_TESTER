@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import MapScreen from '../screens/MapScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
+import DashboardScreen from '../screens/DashboardScreen';
 import { AuthContext } from '../context/AuthContext';
 
 // Cria uma stack para ecrãs principais
@@ -12,31 +13,30 @@ const Stack = createNativeStackNavigator();
 
 /**
  * Componente que define as rotas principais da aplicação.
- * O mapa é o ecrã inicial e o login é acedido através de um ícone no canto superior direito.
+ * O mapa é o ecrã inicial e o perfil é acedido através de um ícone no canto superior direito.
  */
 export default function AppNavigator() {
-  // Obtém token e função de logout a partir do contexto
-  const { token, logout } = useContext(AuthContext);
+  // Obtém token para verificar se o vendedor está autenticado
+  const { token } = useContext(AuthContext);
 
   return (
     // Stack.Navigator organiza os ecrãs principais
     <Stack.Navigator initialRouteName="Map">
-      {/* Ecrã do mapa com ícone de login/logout no topo direito */}
+      {/* Ecrã do mapa com ícone de perfil no topo direito */}
       <Stack.Screen
         name="Map"
         component={MapScreen}
         options={({ navigation }) => ({
           title: 'Sunny Sales',
-          headerRight: () =>
-            token ? (
-              <TouchableOpacity onPress={logout}>
-                <Ionicons name="log-out-outline" size={24} />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Ionicons name="log-in-outline" size={24} />
-              </TouchableOpacity>
-            ),
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate(token ? 'Dashboard' : 'Login')
+              }
+            >
+              <Ionicons name="person-circle-outline" size={24} />
+            </TouchableOpacity>
+          ),
         })}
       />
       {/* Ecrã de login */}
@@ -50,6 +50,12 @@ export default function AppNavigator() {
         name="Register"
         component={RegisterScreen}
         options={{ title: 'Register' }}
+      />
+      {/* Ecrã do dashboard do vendedor */}
+      <Stack.Screen
+        name="Dashboard"
+        component={DashboardScreen}
+        options={{ title: 'Dashboard' }}
       />
     </Stack.Navigator>
   );
