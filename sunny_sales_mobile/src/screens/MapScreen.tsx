@@ -20,6 +20,9 @@ interface VendorMarker extends Vendor {
 }
 
 export default function MapScreen() {
+  /** Produtos disponíveis para filtragem. */
+  const PRODUCTS = ['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'];
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([...PRODUCTS]);
   const [region, setRegion] = useState<{ latitude: number; longitude: number } | null>(null);
   const [markers, setMarkers] = useState<Record<number, VendorMarker>>({});
   const vendorInfo = useRef<Record<number, Vendor>>({});
@@ -38,6 +41,15 @@ export default function MapScreen() {
     } catch (error: any) {
       console.warn('⚠️ Não foi possível obter a localização atual.', error.message);
     }
+  };
+
+  /**
+   * Alterna a presença de um produto na lista de filtragem.
+   */
+  const toggleProduct = (product: string) => {
+    setSelectedProducts((prev) =>
+      prev.includes(product) ? prev.filter((p) => p !== product) : [...prev, product]
+    );
   };
 
   // Obter permissões e localização inicial
@@ -123,18 +135,20 @@ export default function MapScreen() {
     }
   }, [region]);
 
-  // Enviar marcadores sempre que forem atualizados
+  // Enviar marcadores filtrados para o WebView
   useEffect(() => {
     if (webViewRef.current) {
-      const payload = Object.values(markers).map((m) => ({
-        ...m,
-        profile_photo: `${BASE_URL}/${m.profile_photo}`,
-      }));
+      const payload = Object.values(markers)
+        .filter((m) => selectedProducts.includes(m.product))
+        .map((m) => ({
+          ...m,
+          profile_photo: `${BASE_URL}/${m.profile_photo}`,
+        }));
       webViewRef.current.postMessage(
         JSON.stringify({ type: 'markers', data: payload })
       );
     }
-  }, [markers]);
+  }, [markers, selectedProducts]);
 
   // Conteúdo HTML com Leaflet
   const mapHtml = `
@@ -227,6 +241,31 @@ return (
       source={{ html: mapHtml }}
       style={styles.map}
     />
+    <View style={styles.filtersContainer}>
+      <Text style={styles.filterTitle}>Vendedores:</Text>
+      <View style={styles.filterList}>
+        {PRODUCTS.map((p) => (
+          <TouchableOpacity
+            key={p}
+            style={[
+              styles.filterButton,
+              selectedProducts.includes(p) && styles.filterButtonActive,
+            ]}
+            onPress={() => toggleProduct(p)}
+            accessibilityLabel={`Filtrar ${p}`}
+          >
+            <Text
+              style={[
+                styles.filterText,
+                selectedProducts.includes(p) && styles.filterTextActive,
+              ]}
+            >
+              {p}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
     <TouchableOpacity
       style={styles.locateButton}
       onPress={handleLocate}
@@ -242,6 +281,32 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  filtersContainer: {
+    position: 'absolute',
+    top: 20,
+    left: 10,
+    right: 10,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: 8,
+    padding: 8,
+  },
+  filterTitle: { fontWeight: 'bold', marginBottom: 4, textAlign: 'center' },
+  filterList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  filterButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#1976d2',
+    margin: 4,
+  },
+  filterButtonActive: { backgroundColor: '#1976d2' },
+  filterText: { color: '#1976d2', fontSize: 12 },
+  filterTextActive: { color: '#fff' },
   locateButton: {
     position: 'absolute',
     bottom: 20,
