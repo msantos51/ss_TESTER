@@ -1,5 +1,5 @@
 # schemas.py - define os formatos de dados para entrada e saída
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional, Literal
 from datetime import datetime
 
@@ -47,9 +47,8 @@ class VendorOut(BaseModel):
     subscription_active: Optional[bool] = None
     subscription_valid_until: Optional[datetime] = None
     last_seen: Optional[str] = None
-    # Config
-    class Config:
-        orm_mode = True
+    # Configuração para permitir criação a partir de objetos ORM
+    model_config = ConfigDict(from_attributes=True)
 
 
 
@@ -70,9 +69,8 @@ class RouteOut(BaseModel):
     distance_m: float
     points: list[RoutePoint]
 
-    # Config
-    class Config:
-        orm_mode = True
+    # Configuração para permitir criação a partir de objetos ORM
+    model_config = ConfigDict(from_attributes=True)
 
 
 # PaidWeekOut
@@ -82,9 +80,8 @@ class PaidWeekOut(BaseModel):
     end_date: datetime
     receipt_url: Optional[str] = None
 
-    # Config
-    class Config:
-        orm_mode = True
+    # Configuração para permitir criação a partir de objetos ORM
+    model_config = ConfigDict(from_attributes=True)
 
 
 # StoryOut
@@ -93,6 +90,5 @@ class StoryOut(BaseModel):
     media_url: str
     created_at: str
 
-    # Config
-    class Config:
-        orm_mode = True
+    # Configuração para permitir criação a partir de objetos ORM
+    model_config = ConfigDict(from_attributes=True)
