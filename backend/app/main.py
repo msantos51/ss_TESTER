@@ -27,6 +27,20 @@ import hmac
 import hashlib
 from math import radians, sin, cos, sqrt, atan2
 
+ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
+ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
+ALLOWED_STORY_TYPES = ALLOWED_IMAGE_TYPES | {"video/mp4", "video/webm"}
+ALLOWED_STORY_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS | {".mp4", ".webm"}
+
+
+def validate_upload(file: UploadFile, allowed_types: set, allowed_exts: set, label: str = "ficheiro"):
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in allowed_exts or (file.content_type and file.content_type not in allowed_types):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Tipo de {label} inválido. Permitidos: {', '.join(sorted(allowed_exts))}",
+        )
+
 # Diretório para guardar fotos de perfil
 PROFILE_PHOTO_DIR = "profile_photos"
 os.makedirs(PROFILE_PHOTO_DIR, exist_ok=True)
@@ -50,7 +64,8 @@ def read_root():
     return {"status": "ok"}
 
 # Habilitar CORS (permitir acesso do frontend)
-origins = ["*"]  # Em produção, usar domínios específicos
+_cors_origins_env = os.getenv("ALLOWED_ORIGINS", "")
+origins = [o.strip() for o in _cors_origins_env.split(",") if o.strip()] or ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -101,10 +116,10 @@ CANCEL_URL = os.getenv("CANCEL_URL", "https://example.com/cancel")
 
 # validate_password
 def validate_password(password: str):
-    if len(password) < 8 or password.lower() == password:
+    if len(password) < 8 or password.lower() == password or not any(c.isdigit() for c in password):
         raise HTTPException(
             status_code=400,
-            detail="Password deve ter pelo menos 8 caracteres e uma letra maiúscula",
+            detail="Password deve ter pelo menos 8 caracteres, uma letra maiúscula e um número",
         )
 
 
@@ -178,7 +193,15 @@ manager = ConnectionManager()
 # --------------------------
 # Autenticação JWT simples
 # --------------------------
-SECRET_KEY = os.getenv("SECRET_KEY", "secret")
+SECRET_KEY = os.getenv("SECRET_KEY", "")
+if not SECRET_KEY:
+    import warnings
+    warnings.warn(
+        "SECRET_KEY não está definida. Usar um valor aleatório em produção.",
+        RuntimeWarning,
+        stacklevel=1,
+    )
+    SECRET_KEY = "dev-insecure-secret-change-in-production"
 bearer_scheme = HTTPBearer(auto_error=False)
 
 # _b64
@@ -350,10 +373,6 @@ async def generate_token(
     password = credentials.password
     force = credentials.force
 
-    email = credentials.email or credentials.username
-    password = credentials.password
-    force = credentials.force
-
     if not email or not password:
         raise HTTPException(status_code=400, detail="Email and password required")
 
@@ -430,9 +449,10 @@ async def create_vendor(
     if db_vendor:
         raise HTTPException(status_code=400, detail="Email already registered")
     validate_password(password)
+    validate_upload(profile_photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto de perfil")
     hashed_password = pwd_context.hash(password)
 
-    ext = os.path.splitext(profile_photo.filename)[1]
+    ext = os.path.splitext(profile_photo.filename)[1].lower()
     file_name = f"{uuid4().hex}{ext}"
     file_path = os.path.join(PROFILE_PHOTO_DIR, file_name)
     with open(file_path, "wb") as buffer:
@@ -490,17 +510,17 @@ async def password_reset_request(
     if not email:
         raise HTTPException(status_code=422, detail="Email is required")
     vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
-    if not vendor:
-        raise HTTPException(status_code=404, detail="Vendor not found")
-    vendor.password_reset_token = token_urlsafe(32)
-    vendor.password_reset_expires = utcnow() + timedelta(hours=1)
-    db.commit()
-    reset_link = f"{os.getenv('BASE_URL', 'http://localhost:8000')}/password-reset/{vendor.password_reset_token}"
-    send_email(
-        vendor.email,
-        "Redefinição de senha",
-        f"Clique no link para alterar sua senha:\n{reset_link}",
-    )
+    if vendor:
+        vendor.password_reset_token = token_urlsafe(32)
+        vendor.password_reset_expires = utcnow() + timedelta(hours=1)
+        db.commit()
+        reset_link = f"{os.getenv('BASE_URL', 'http://localhost:8000')}/password-reset/{vendor.password_reset_token}"
+        send_email(
+            vendor.email,
+            "Redefinição de senha",
+            f"Clique no link para alterar sua senha:\n{reset_link}",
+        )
+    # Sempre retornar 200 para não revelar se o email existe
     return {"message": "E-mail de recuperação enviado"}
 
 
@@ -575,7 +595,10 @@ async def update_vendor_profile(
 
     if name:
         vendor.name = name
-    if email:
+    if email and email != vendor.email:
+        existing = db.query(models.Vendor).filter(models.Vendor.email == email).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already in use")
         vendor.email = email
     # manter compatibilidade com parametro antigo 'password'
     if new_password or password:
@@ -589,12 +612,19 @@ async def update_vendor_profile(
     if product:
         vendor.product = product
     if profile_photo:
-        ext = os.path.splitext(profile_photo.filename)[1]
+        validate_upload(profile_photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto de perfil")
+        old_photo_path = vendor.profile_photo
+        ext = os.path.splitext(profile_photo.filename)[1].lower()
         file_name = f"{uuid4().hex}{ext}"
         file_path = os.path.join(PROFILE_PHOTO_DIR, file_name)
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(profile_photo.file, buffer)
         vendor.profile_photo = f"profile_photos/{file_name}"
+        if old_photo_path:
+            try:
+                os.remove(old_photo_path)
+            except OSError:
+                pass
     if pin_color:
         vendor.pin_color = pin_color
 
@@ -859,7 +889,8 @@ async def create_story(
 ):
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
-    ext = os.path.splitext(file.filename)[1]
+    validate_upload(file, ALLOWED_STORY_TYPES, ALLOWED_STORY_EXTENSIONS, "story")
+    ext = os.path.splitext(file.filename)[1].lower()
     file_name = f"{uuid4().hex}{ext}"
     file_path = os.path.join(STORY_DIR, file_name)
     with open(file_path, "wb") as buffer:
@@ -885,6 +916,21 @@ async def create_story(
 # list_stories
 def list_stories(vendor_id: int, db: Session = Depends(get_db)):
     now = utcnow()
+
+    expired = (
+        db.query(models.Story)
+        .filter(models.Story.vendor_id == vendor_id, models.Story.expires_at <= now)
+        .all()
+    )
+    for s in expired:
+        try:
+            os.remove(s.media_path)
+        except OSError:
+            pass
+        db.delete(s)
+    if expired:
+        db.commit()
+
     stories = (
         db.query(models.Story)
         .filter(models.Story.vendor_id == vendor_id, models.Story.expires_at > now)
