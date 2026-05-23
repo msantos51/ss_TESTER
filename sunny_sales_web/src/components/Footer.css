@@ -1,36 +1,39 @@
-/* (em português) Estilos do rodapé fixo com mensagens de sustentabilidade */
 .footer-wrapper {
   position: fixed;
   z-index: 500;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 40px;
+  height: var(--footer-h, 44px);
   overflow: hidden;
-  background-color: var(--footer-color);
+  background: var(--primary);
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  border-top: 1px solid rgba(255,255,255,0.18);
 }
 
 .footer-message {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 1rem;
-  box-sizing: border-box;
+  padding: 0 1.5rem;
   color: #fff;
-  font-weight: bold;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  font-weight: 600;
   font-size: 0.8rem;
   text-align: center;
-  z-index: 1;
+  letter-spacing: 0.02em;
+  animation: footerFade 0.5s ease;
+}
+
+@keyframes footerFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 480px) {
   .footer-message {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
   }
 }

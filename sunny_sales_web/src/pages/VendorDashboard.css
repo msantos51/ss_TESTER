@@ -1,10 +1,346 @@
-/* (em português) Estilos para o switch que ativa/desativa a localização do vendedor */
+/* ── Wrapper ─────────────────────────────────────────── */
+
+.vd-wrapper {
+  position: relative;
+  min-height: 60vh;
+}
+
+/* ── Menu toggle button ──────────────────────────────── */
+
+.vd-menu-toggle {
+  position: fixed;
+  top: calc(var(--navbar-h, 64px) + 14px);
+  left: 14px;
+  z-index: 1100;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  width: 44px;
+  height: 44px;
+  min-height: auto;
+  padding: 0;
+  border-radius: var(--radius-full);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-warm);
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.vd-menu-toggle:hover {
+  background: var(--primary-hover);
+  box-shadow: var(--shadow-warm-lg);
+  transform: scale(1.06);
+}
+
+/* ── Side menu overlay ───────────────────────────────── */
+
+.vd-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(3px);
+  z-index: 1050;
+  animation: fadeIn 0.2s ease;
+}
+
+/* ── Side menu ───────────────────────────────────────── */
+
+.vd-side-menu {
+  position: fixed;
+  top: var(--navbar-h, 64px);
+  left: 0;
+  height: calc(100% - var(--navbar-h, 64px));
+  width: min(280px, 82vw);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  padding: 16px 12px calc(16px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1100;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vd-side-menu.open {
+  transform: translateX(0);
+}
+
+.vd-menu-header {
+  padding: 4px 8px 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+.vd-menu-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.vd-menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.vd-menu-section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 4px 10px 2px;
+  display: block;
+}
+
+.vd-menu-item {
+  background: transparent;
+  color: var(--text);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  min-height: 44px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  width: 100%;
+  transition: background var(--transition), color var(--transition);
+  box-shadow: none;
+}
+
+.vd-menu-item:hover {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  transform: none;
+  box-shadow: none;
+}
+
+.vd-menu-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+}
+
+.vd-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0;
+}
+
+/* ── Main content ────────────────────────────────────── */
+
+.vd-container {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+  text-align: center;
+}
+
+.vd-title {
+  font-size: clamp(1.2rem, 5vw, 1.6rem);
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+/* ── Info card ───────────────────────────────────────── */
+
+.vd-info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 20px 20px 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.vd-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-light-solid);
+  box-shadow: var(--shadow-warm);
+  flex-shrink: 0;
+}
+
+.vd-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-light-solid);
+  color: var(--primary-dark);
+  font-size: 2rem;
+  font-weight: 800;
+  border: 3px solid var(--primary-light-solid);
+}
+
+.vd-info-grid {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vd-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+}
+
+.vd-info-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  min-width: 80px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+
+.vd-info-value {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.vd-pin-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vd-pin-dot {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.08);
+  flex-shrink: 0;
+}
+
+.vd-sub-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.vd-sub-badge.active {
+  background: rgba(76, 175, 80, 0.12);
+  color: #2e7d32;
+}
+
+.vd-sub-badge.inactive {
+  background: rgba(239, 68, 68, 0.1);
+  color: #c62828;
+}
+
+.vd-sub-date {
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* ── Toggle card ─────────────────────────────────────── */
+
+.vd-toggle-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.vd-toggle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+
+.vd-toggle-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.vd-toggle-status {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  transition: color var(--transition);
+}
+
+.vd-toggle-status.on {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+/* ── Logout button ───────────────────────────────────── */
+
+.vd-logout-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  padding: 10px 28px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition), background var(--transition), box-shadow var(--transition);
+  box-shadow: none;
+  margin-top: 4px;
+}
+
+.vd-logout-btn:hover {
+  color: #c62828;
+  border-color: #ef5350;
+  background: rgba(239, 68, 68, 0.06);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs);
+}
+
+/* ── Location toggle switch ──────────────────────────── */
+
 .vendor-switch {
   position: relative;
   display: inline-block;
-  width: 56px;
+  width: 52px;
   height: 28px;
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .vendor-switch input {
@@ -20,35 +356,40 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
-  transition: 0.4s;
-  border-radius: 24px;
+  background-color: #e5e7eb;
+  transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-full);
+  border: 1.5px solid transparent;
 }
 
-.vendor-switch .slider:before {
+.vendor-switch .slider::before {
   position: absolute;
   content: '';
-  height: 22px;
-  width: 22px;
+  height: 20px;
+  width: 20px;
   left: 3px;
   bottom: 3px;
   background-color: #fff;
-  transition: 0.4s;
+  transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 50%;
+  box-shadow: var(--shadow-xs);
 }
 
 .vendor-switch input:checked + .slider {
   background-color: #4caf50;
+  border-color: #3d9142;
 }
 
-.vendor-switch input:checked + .slider:before {
-  transform: translateX(28px);
+.vendor-switch input:checked + .slider::before {
+  transform: translateX(24px);
 }
 
-/* Responsividade do painel lateral do vendedor */
 @media (max-width: 480px) {
-  .vendor-switch {
-    width: 52px;
-    height: 26px;
+  .vd-info-label {
+    min-width: 68px;
+  }
+  .vd-avatar {
+    width: 72px;
+    height: 72px;
   }
 }

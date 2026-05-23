@@ -1,60 +1,94 @@
-
-
 .bc-container {
-  border: 1px solid #ccc;
-  padding: 1rem;
-  width: min(80%, 500px);
+  width: min(88%, 520px);
   max-width: 100%;
-  font-size: 0.9rem;
-  background: #fff;
-  border-radius: 8px;
-  margin-top: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  font-size: 0.875rem;
+  box-shadow: var(--shadow-sm);
   box-sizing: border-box;
+  margin-top: 12px;
+  animation: fadeIn 0.3s ease;
 }
 
-
 .bc-selector {
-  margin-bottom: 0.5rem;
+  margin-bottom: 12px;
 }
 
 .bc-selector select {
   width: 100%;
-  padding: 0.25rem;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  font-family: 'Inter', 'Roboto', sans-serif;
+  font-size: 0.875rem;
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  min-height: 42px;
+  -webkit-appearance: none;
 }
 
+.bc-selector select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
 
 .bc-content {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-
+  gap: 8px;
 }
 
 .bc-weather {
-  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.bc-weather div {
+  background: var(--surface-warm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
 }
 
 .bc-warning {
-  font-size: 0.75rem;
-  color: #555;
-  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin: 10px 0 0;
+  text-align: center;
+  font-style: italic;
 }
 
 @media (min-width: 640px) {
   .bc-content {
     flex-direction: row;
   }
+  .bc-weather {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 @media (max-width: 480px) {
   .bc-container {
-    width: 95%;
-    padding: 0.75rem;
-    font-size: 0.85rem;
+    width: 96%;
+    padding: 12px 14px;
   }
 
   .bc-selector select {
     font-size: 16px;
     min-height: 44px;
+  }
+
+  .bc-weather {
+    grid-template-columns: 1fr 1fr;
   }
 }

@@ -1,72 +1,58 @@
 import React from 'react';
 import BackHomeButton from '../components/BackHomeButton';
+import './InfoPage.css';
 
 export default function Sustentabilidade() {
   return (
-    <div style={styles.container}>
+    <div className="info-page">
       <BackHomeButton />
-      <h2 style={styles.title}>Sustentabilidade</h2>
-      <p style={styles.text}>
-        Acreditamos que o futuro do comércio de praia deve ser mais
-        <strong>eficiente, consciente e ecológico</strong>. O Sunny Sales assume o
-        compromisso de promover a sustentabilidade ambiental e social nas zonas
-        balneares.
+      <h2 className="info-page-title">Sustentabilidade</h2>
+      <p className="info-page-lead">
+        Acreditamos que o futuro do comércio de praia deve ser mais{' '}
+        <strong>eficiente, consciente e ecológico</strong>.
       </p>
-      <h3 style={styles.sectionTitle}>Iniciativas implementadas</h3>
-      <p style={styles.text}><strong>Redução da pegada ecológica</strong><br />
-        A plataforma ajuda os vendedores a evitar deslocações desnecessárias,
-        reduzindo o esforço físico e o impacto ambiental.
-      </p>
-      <p style={styles.text}><strong>Promoção de embalagens sustentáveis</strong><br />
-        Incentivamos a utilização de sacos biodegradáveis, embalagens reutilizáveis
-        e materiais amigos do ambiente.
-      </p>
-      <p style={styles.text}><strong>Consciencialização dos banhistas</strong></p>
-      <ul style={styles.list}>
-        <li>Recolher o lixo após a permanência na praia.</li>
-        <li>Utilizar cinzeiros portáteis.</li>
-        <li>Preferir protetor solar com menor impacto ambiental.</li>
-      </ul>
-      <p style={styles.text}><strong>Apoio a campanhas ambientais</strong><br />
-        Divulgamos e colaboramos com iniciativas de limpeza de praias,
-        sensibilização ambiental e educação para a sustentabilidade.
-      </p>
-      <p style={styles.text}>
-        O objetivo é promover praias mais limpas, vendedores mais responsáveis
-        e um verão sustentável.
+
+      <div className="info-cards">
+        <div className="info-card">
+          <span className="info-card-icon">🌱</span>
+          <h3 className="info-card-title">Redução da Pegada Ecológica</h3>
+          <p className="info-card-text">
+            A plataforma ajuda os vendedores a evitar deslocações desnecessárias,
+            reduzindo o esforço físico e o impacto ambiental.
+          </p>
+        </div>
+
+        <div className="info-card accent">
+          <span className="info-card-icon">♻️</span>
+          <h3 className="info-card-title">Embalagens Sustentáveis</h3>
+          <p className="info-card-text">
+            Incentivamos a utilização de sacos biodegradáveis, embalagens reutilizáveis
+            e materiais amigos do ambiente.
+          </p>
+        </div>
+
+        <div className="info-card">
+          <span className="info-card-icon">🤝</span>
+          <h3 className="info-card-title">Apoio a Campanhas</h3>
+          <p className="info-card-text">
+            Divulgamos e colaboramos com iniciativas de limpeza de praias, sensibilização
+            ambiental e educação para a sustentabilidade.
+          </p>
+        </div>
+      </div>
+
+      <div className="info-section">
+        <h3 className="info-section-title">Consciencialização dos Banhistas</h3>
+        <ul className="info-list">
+          <li data-bullet="✓">Recolher o lixo após a permanência na praia.</li>
+          <li data-bullet="✓">Utilizar cinzeiros portáteis.</li>
+          <li data-bullet="✓">Preferir protetor solar com menor impacto ambiental.</li>
+        </ul>
+      </div>
+
+      <p className="info-footer-text">
+        O objetivo é promover praias mais limpas, vendedores mais responsáveis e um verão sustentável.
       </p>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    padding: '2rem',
-    maxWidth: 800,
-    margin: '0 auto',
-      backgroundColor: 'var(--bg-color)',
-    borderRadius: '8px',
-    fontFamily: 'sans-serif',
-    color: '#333',
-  },
-  title: {
-    fontSize: '1.8rem',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: '1rem',
-  },
-  sectionTitle: {
-    fontSize: '1.2rem',
-    fontWeight: 'bold',
-    marginTop: '1rem',
-  },
-  text: {
-    fontSize: '1rem',
-    textAlign: 'justify',
-    marginBottom: '1rem',
-  },
-  list: {
-    marginBottom: '1rem',
-    marginLeft: '1.2rem',
-  },
-};
