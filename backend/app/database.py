@@ -25,6 +25,9 @@ else:
     engine = create_engine(
         DATABASE_URL,
         pool_pre_ping=True,
+        pool_recycle=280,
+        pool_size=5,
+        max_overflow=2,
     )
 
 # Sessão
