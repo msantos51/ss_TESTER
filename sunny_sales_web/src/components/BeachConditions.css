@@ -3,11 +3,13 @@
 .bc-container {
   border: 1px solid #ccc;
   padding: 1rem;
-  width: 80%;
+  width: min(80%, 500px);
+  max-width: 100%;
   font-size: 0.9rem;
   background: #fff;
   border-radius: 8px;
   margin-top: 1rem;
+  box-sizing: border-box;
 }
 
 
@@ -39,9 +41,20 @@
 }
 
 @media (min-width: 640px) {
-
   .bc-content {
     flex-direction: row;
+  }
+}
 
+@media (max-width: 480px) {
+  .bc-container {
+    width: 95%;
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .bc-selector select {
+    font-size: 16px;
+    min-height: 44px;
   }
 }
