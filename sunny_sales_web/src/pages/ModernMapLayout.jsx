@@ -16,7 +16,6 @@ export default function ModernMapLayout() {
   const [selectedProducts, setSelectedProducts] = useState([...PRODUCTS]);
   const [selected, setSelected] = useState(null);
 
-  const [mapReady, setMapReady] = useState(false);
   const [clientPos, setClientPos] = useState(null);
   const [showLocateHint, setShowLocateHint] = useState(false);
   // Verifica se o utilizador autenticado é um vendedor. Se sim, ocultamos o
@@ -87,11 +86,9 @@ export default function ModernMapLayout() {
     };
   }, []);
 
-  // Sempre que o mapa estiver pronto, acompanha a posição do utilizador
-  // (vendedor ou cliente) e mantém o mapa centrado nessa localização.
   useEffect(() => {
     let watchId;
-    if (mapReady && navigator.geolocation) {
+    if (navigator.geolocation) {
       const updatePosition = (pos) => {
         const coords = {
           lat: pos.coords.latitude,
@@ -112,7 +109,7 @@ export default function ModernMapLayout() {
     return () => {
       if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
     };
-  }, [mapReady]);
+  }, []);
 
 
   const activeVendors = vendors.filter((v) => v.current_lat && v.current_lng);
@@ -189,13 +186,10 @@ export default function ModernMapLayout() {
 
         <main className="map-area">
         <MapContainer
+          ref={mapRef}
           center={[38.7169, -9.1399]}
           zoom={13}
           className="map-container"
-          whenCreated={(map) => {
-            mapRef.current = map;
-            setMapReady(true);
-          }}
         >
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
