@@ -1,341 +1,272 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-body {
-  margin: 0;
-  font-family: 'Roboto', sans-serif;
-  background: var(--bg-color);
-  color: var(--text-color);
-}
+body { margin: 0; font-family: 'Inter', sans-serif; }
 
 .modern-layout {
-  /* Layout principal em coluna; o mapa e os filtros são agrupados noutra div */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   min-height: 80vh;
-}
-
-.app-name {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--secondary-color);
-}
-
-.login-buttons {
-  display: flex;
   gap: 1rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
 }
 
-.login-btn {
-  background: var(--secondary-color);
-  color: #FFFFFF;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  cursor: pointer;
-  /* Ensure the login buttons are always visible */
-  display: inline-block;
-  opacity: 1 !important;
-  transition: background 0.2s, transform 0.2s;
-}
-
-.login-btn:hover {
-  background: var(--primary-color);
-  transform: scale(1.05);
-}
-
+/* ── FILTER BAR ── */
 .map-wrapper {
-  /* Agrupa filtros e mapa lado a lado */
-  display: flex;
-  width: 100%;
-}
-
-.filters {
-  /* Coloca os filtros na coluna esquerda */
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  width: 200px;
-  padding: 1rem;
-}
-
-.filters-title {
-  font-size: 1.2rem;
-  margin: 0 0 0.5rem 0;
-}
-
-.filters-subtitle {
-  color: var(--text-color);
-  margin: 0 0.5rem 0 0;
-  white-space: nowrap;
-}
-
-/* Estilos para os novos checkboxes dos filtros */
-.checkbox-wrapper-46 input[type="checkbox"] {
-  display: none;
-  visibility: hidden;
-}
-
-.checkbox-wrapper-46 .cbx {
-  margin: auto;
-  -webkit-user-select: none;
-  user-select: none;
-  cursor: pointer;
-}
-.checkbox-wrapper-46 .cbx span {
-  display: inline-block;
-  vertical-align: middle;
-  transform: translate3d(0, 0, 0);
-}
-.checkbox-wrapper-46 .cbx span:first-child {
-  position: relative;
-  width: 18px;
-  height: 18px;
-  border-radius: 3px;
-  transform: scale(1);
-  vertical-align: middle;
-  border: 1px solid #fcb454;
-  transition: all 0.2s ease;
-}
-.checkbox-wrapper-46 .cbx span:first-child svg {
-  position: absolute;
-  top: 3px;
-  left: 2px;
-  fill: none;
-  stroke: #ffffff;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 16px;
-  stroke-dashoffset: 16px;
-  transition: all 0.3s ease;
-  transition-delay: 0.1s;
-  transform: translate3d(0, 0, 0);
-}
-.checkbox-wrapper-46 .cbx span:first-child:before {
-  content: "";
   width: 100%;
-  height: 100%;
-  background: #fcb454;
-  display: block;
-  transform: scale(0);
-  opacity: 1;
-  border-radius: 50%;
-}
-.checkbox-wrapper-46 .cbx span:last-child {
-  padding-left: 8px;
-}
-.checkbox-wrapper-46 .cbx:hover span:first-child {
-  border-color: #fcb454;
+  gap: 0;
 }
 
-.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child {
-  background: #fcb454;
-  border-color: #fcb454;
-  animation: wave-46 0.4s ease;
-}
-.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child svg {
-  stroke-dashoffset: 0;
-}
-.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child:before {
-  transform: scale(3.5);
-  opacity: 0;
-  transition: all 0.6s ease;
-}
-
-@keyframes wave-46 {
-  50% {
-    transform: scale(0.9);
-  }
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  flex-wrap: wrap;
+  background: var(--color-surface);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  border: 1px solid var(--color-border);
+  border-bottom: none;
 }
 
+.filter-bar::-webkit-scrollbar { height: 0; }
+
+.filter-count {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  padding-right: 0.25rem;
+  border-right: 1px solid var(--color-border);
+  margin-right: 0.25rem;
+}
+
+.filter-pill {
+  background: var(--color-surface) !important;
+  color: var(--color-text-secondary) !important;
+  border: 1.5px solid var(--color-border) !important;
+  border-radius: var(--r-full) !important;
+  padding: 0.35rem 0.85rem !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--ease-fast) !important;
+  flex-shrink: 0;
+  box-shadow: none !important;
+}
+
+.filter-pill.active {
+  background: var(--color-primary) !important;
+  color: #fff !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 2px 8px rgba(252,180,84,0.35) !important;
+}
+
+.filter-pill:hover:not(.active) {
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary-dark) !important;
+  transform: none !important;
+}
+
+/* ── MAP ── */
 .map-area {
-  /* Área do mapa ocupa o espaço restante à direita */
   position: relative;
   flex: 1;
-  height: 70vh;
-  padding: 0.5rem;
-  box-sizing: border-box;
+  height: 68vh;
+  width: 100%;
 }
 
 .map-container {
   width: 100%;
   height: 100%;
-  /* Only keep rounded corners at the bottom to merge with the header */
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
-  background: transparent;
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+  box-shadow: var(--shadow-md);
 }
 
-.leaflet-container {
-  background: transparent;
-}
+.leaflet-container { background: #f0f4f0; }
 
-.vendor-card {
-  z-index: 1000;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 180px;
-  padding: 1rem;
-  background: var(--bg-color);
-  border: 1px solid #dee2e6;
-  border-radius: 16px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  animation: fadeSlide 0.3s ease-out;
-  text-align: center;
-}
-
-@keyframes fadeSlide {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -60%);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
-}
-
-.close-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: none;
-  border: none;
-  font-size: 1.2rem;
+/* ── VENDOR MARKERS ── */
+.vendor-marker {
+  width: 40px;
+  height: 40px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2.5px solid #fff;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.22);
   cursor: pointer;
-  color: var(--secondary-color);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.card-photo {
-  width: 60px;
-  height: 60px;
+
+.vendor-marker:hover {
+  transform: rotate(-45deg) scale(1.15);
+  box-shadow: 0 5px 18px rgba(0,0,0,0.3);
+}
+
+.vendor-marker span {
+  transform: rotate(45deg);
+  font-size: 17px;
+  display: block;
+  line-height: 1;
+}
+
+/* ── CLIENT MARKER ── */
+.client-marker {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #2563EB;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.25);
+  animation: clientPulse 2s ease-in-out infinite;
+}
+
+@keyframes clientPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(37,99,235,0.25); }
+  50% { box-shadow: 0 0 0 7px rgba(37,99,235,0.1); }
+}
+
+/* ── VENDOR POPUP CARD ── */
+.vendor-popup {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(300px, calc(100% - 2rem));
+  background: var(--color-surface);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+  padding: 1.1rem;
+  z-index: 1000;
+  animation: slideUp 0.22s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.popup-close {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+}
+
+.popup-content {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+.popup-photo {
+  width: 54px; height: 54px;
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--color-border);
+}
+
+.popup-photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.popup-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.popup-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popup-product {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.popup-profile-link {
   display: block;
-  margin: 0 auto 0.5rem;
+  text-align: center;
+  background: var(--color-primary);
+  color: #fff;
+  text-decoration: none;
+  padding: 0.55rem;
+  border-radius: var(--r-full);
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: background var(--ease-fast), transform var(--ease-fast);
+  box-shadow: var(--shadow-primary);
 }
 
-
-
-.card-name {
-  margin: 0 0 4px 0;
-  font-weight: bold;
+.popup-profile-link:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
 }
 
+/* ── LOCATE BUTTONS ── */
+.locate-btn, .vendor-locate-btn {
+  position: absolute;
+  bottom: 2rem;
+  right: 1rem;
+  width: 44px; height: 44px;
+  background: var(--color-surface) !important;
+  color: var(--color-primary) !important;
+  border: 1.5px solid var(--color-border) !important;
+  border-radius: 50% !important;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  z-index: 500;
+  transition: all var(--ease-fast) !important;
+  padding: 0 !important;
+  font-size: 1.2rem !important;
+}
 
+.locate-btn:hover, .vendor-locate-btn:hover {
+  background: var(--color-primary) !important;
+  color: #fff !important;
+  transform: scale(1.08) !important;
+}
 
+/* ── LOADER ── */
+.loader {
+  width: 20px; height: 20px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── RESPONSIVE ── */
 @media (max-width: 768px) {
-  .map-wrapper {
-    flex-direction: column;
-  }
-  .filters {
-    width: 100%;
-    flex-direction: row;
-    justify-content: center;
-    margin-bottom: 0.5rem;
-  }
-  .map-area {
-    width: 100%;
-    height: 60vh;
-    margin: 0;
-  }
+  .filter-bar { flex-wrap: nowrap; padding: 0.6rem 0.75rem; }
+  .map-area { height: 58vh; }
 }
 
 @media (max-width: 480px) {
-  .vendor-card {
-    width: 90%;
-  }
+  .vendor-popup { width: calc(100% - 1.5rem); }
 }
-
-/* Botão para localizar a posição do cliente */
-.locate-btn {
-  position: absolute;
-  bottom: 2rem;
-  right: 1rem;
-  width: 44.8px;
-  height: 44.8px;
-  background: var(--secondary-color);
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s;
-  z-index: 500;
-}
-
-.locate-btn:hover {
-  transform: scale(1.1);
-}
-
-/* Botão para centrar o mapa no vendedor autenticado */
-.vendor-locate-btn {
-  position: absolute;
-  bottom: 2rem;
-  right: 1rem;
-  width: 44.8px;
-  height: 44.8px;
-  background: var(--secondary-color);
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s;
-  z-index: 500;
-}
-
-.vendor-locate-btn:hover {
-  transform: scale(1.1);
-}
-
-
-/* From Uiverse.io by JaydipPrajapati1910 */
-.loader {
-  width: 24px;
-  height: 24px;
-  position: relative;
-  transform: rotate(45deg);
-}
-
-.loader:before,
-.loader:after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50% 50% 0 50%;
-  background: #0000;
-  background-image: radial-gradient(circle 6px at 50% 50%, #0000 94%, #ff4747);
-}
-
-.loader:after {
-  animation: pulse-ytk0dhmd 1s infinite;
-  transform: perspective(336px) translateZ(0px);
-}
-
-@keyframes pulse-ytk0dhmd {
-  to {
-    transform: perspective(336px) translateZ(168px);
-    opacity: 0;
-  }
-}
-
-
-.client-pin img {
-  border-radius: 50%;
-  width: 32px !important;
-  height: 32px !important;
-  object-fit: cover;
-  border: 2px solid white;
-}
-

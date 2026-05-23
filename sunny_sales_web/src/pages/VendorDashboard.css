@@ -1,45 +1,348 @@
-/* (em português) Estilos para o switch que ativa/desativa a localização do vendedor */
+/* ── WRAPPER ── */
+.vd-wrapper { position: relative; min-height: 60vh; }
+
+/* ── SIDEBAR ── */
+.vd-sidebar {
+  position: fixed;
+  top: var(--navbar-h, 64px);
+  left: 0;
+  height: calc(100vh - var(--navbar-h, 64px));
+  width: 280px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  border-right: 1px solid var(--color-border);
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 900;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.vd-sidebar.open { transform: translateX(0); }
+
+.vd-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  flex-shrink: 0;
+}
+
+.vd-sidebar-close {
+  background: transparent !important;
+  color: var(--color-text-secondary) !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: var(--r-md) !important;
+  font-size: 1rem !important;
+  box-shadow: none !important;
+}
+
+.vd-sidebar-close:hover {
+  background: var(--color-surface-alt) !important;
+}
+
+.vd-sidebar-nav {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+}
+
+.vd-nav-section { margin-bottom: 0.35rem; }
+
+.vd-nav-label {
+  display: block;
+  padding: 0.6rem 0.75rem 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.vd-nav-item {
+  width: 100%;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 0.7rem;
+  padding: 0.65rem 0.85rem !important;
+  border-radius: var(--r-md) !important;
+  background: transparent !important;
+  color: var(--color-text-secondary) !important;
+  font-size: 0.88rem !important;
+  font-weight: 500 !important;
+  text-align: left !important;
+  transition: all var(--ease-fast) !important;
+  box-shadow: none !important;
+}
+
+.vd-nav-item:hover {
+  background: var(--color-primary-subtle) !important;
+  color: var(--color-primary-dark) !important;
+  transform: none !important;
+}
+
+/* ── OVERLAY ── */
+.vd-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 850;
+  backdrop-filter: blur(2px);
+}
+
+/* ── MAIN ── */
+.vd-main {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0.5rem 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.vd-topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+.vd-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+  text-align: center;
+}
+
+.vd-menu-btn {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border: 1.5px solid var(--color-border) !important;
+  border-radius: var(--r-md) !important;
+  padding: 0.45rem 0.9rem !important;
+  font-size: 0.85rem !important;
+  gap: 0.4rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.vd-menu-btn:hover {
+  border-color: var(--color-primary) !important;
+}
+
+/* ── PROFILE CARD ── */
+.vd-profile-card {
+  width: 100%;
+  background: var(--color-surface);
+  border-radius: var(--r-xl);
+  overflow: visible;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+}
+
+.vd-profile-banner {
+  height: 76px;
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  opacity: 0.85;
+}
+
+.vd-avatar-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: -40px;
+  position: relative;
+  z-index: 1;
+}
+
+.vd-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.vd-avatar-placeholder {
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.vd-profile-body {
+  padding: 0.75rem 1.5rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.vd-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.vd-email {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.vd-badges {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.3rem;
+}
+
+.vd-product-badge {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  padding: 0.22rem 0.7rem;
+  border-radius: var(--r-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.vd-sub-badge {
+  padding: 0.22rem 0.7rem;
+  border-radius: var(--r-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.vd-sub-badge.active {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.vd-sub-badge.inactive {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.vd-sub-expires {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ── LOCATION CARD ── */
+.vd-location-card {
+  width: 100%;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--r-xl);
+  padding: 1.15rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+  gap: 1rem;
+  transition: border-color var(--ease-base), background var(--ease-base);
+}
+
+.vd-location-card.sharing {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.vd-location-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.vd-location-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--color-text);
+}
+
+.vd-location-status {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  transition: color var(--ease-fast);
+}
+
+.vd-location-status.active { color: var(--color-success); }
+
+/* ── LOGOUT ── */
+.vd-logout {
+  background: transparent !important;
+  color: var(--color-error) !important;
+  border: 1.5px solid var(--color-error) !important;
+  border-radius: var(--r-full) !important;
+  padding: 0.55rem 1.5rem !important;
+  font-size: 0.88rem !important;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  box-shadow: none !important;
+}
+
+.vd-logout:hover {
+  background: var(--color-error-bg) !important;
+  transform: none !important;
+}
+
+/* ── VENDOR SWITCH ── */
 .vendor-switch {
   position: relative;
   display: inline-block;
-  width: 50px;
-  height: 24px;
+  width: 52px;
+  height: 28px;
+  flex-shrink: 0;
 }
 
-.vendor-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
+.vendor-switch input { opacity: 0; width: 0; height: 0; }
 
 .vendor-switch .slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: 0.4s;
-  border-radius: 24px;
+  inset: 0;
+  background-color: #D1D5DB;
+  transition: 0.3s;
+  border-radius: 28px;
 }
 
 .vendor-switch .slider:before {
   position: absolute;
   content: '';
-  height: 20px;
-  width: 20px;
-  left: 2px;
-  bottom: 2px;
-  background-color: #fff;
-  transition: 0.4s;
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  transition: 0.3s;
   border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
 .vendor-switch input:checked + .slider {
-  background-color: #4caf50;
+  background-color: var(--color-success);
 }
 
 .vendor-switch input:checked + .slider:before {
-  transform: translateX(26px);
+  transform: translateX(24px);
 }

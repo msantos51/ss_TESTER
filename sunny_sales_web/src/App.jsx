@@ -1,5 +1,3 @@
-// (em português) Componente principal da aplicação Web com rotas
-
 import {
   HashRouter as Router,
   Routes,
@@ -7,7 +5,7 @@ import {
   Link,
   useLocation,
 } from 'react-router-dom';
-import { FiUser, FiMenu } from 'react-icons/fi';
+import { FiUser, FiMenu, FiX } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BASE_URL } from './config';
@@ -32,9 +30,8 @@ import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
 import Sessions from './pages/Sessions';
 import Footer from './components/Footer';
-import './index.css'; // (em português) Importa os estilos globais
+import './index.css';
 
-// Componente principal que define as rotas da aplicação web
 export default function App() {
   return (
     <Router>
@@ -47,6 +44,17 @@ function AppLayout() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -71,54 +79,47 @@ function AppLayout() {
   }, [location]);
 
   const profileLink = isLoggedIn ? '/dashboard' : '/vendor-login';
+  const isActive = (path) =>
+    location.pathname === path ? 'nav-link active' : 'nav-link';
 
   return (
     <div className="wrapper">
-      {/* (em português) Links de navegação sobre o fundo */}
-      <nav className="navbar">
-        <Link className="nav-logo" to="/">Sunny Sales</Link>
+      <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
+        <Link className="nav-logo" to="/">☀️ Sunny Sales</Link>
+
         <button
           className="menu-toggle"
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Menu"
+          aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
         >
-          <FiMenu />
+          {menuOpen ? <FiX /> : <FiMenu />}
         </button>
 
-        {/* (em português) Links de navegação para as páginas informativas */}
-        <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
-          <Link
-            className="nav-link"
-            to="/sobre-projeto"
-            onClick={() => setMenuOpen(false)}
-          >
+        <div className={`nav-links${menuOpen ? ' open' : ''}`}>
+          <Link className={isActive('/sobre-projeto')} to="/sobre-projeto">
             Sobre o Projeto
           </Link>
-          <Link
-            className="nav-link"
-            to="/sustentabilidade"
-            onClick={() => setMenuOpen(false)}
-          >
+          <Link className={isActive('/sustentabilidade')} to="/sustentabilidade">
             Sustentabilidade
           </Link>
-          <Link
-            className="nav-link"
-            to="/implementacao"
-            onClick={() => setMenuOpen(false)}
-          >
+          <Link className={isActive('/implementacao')} to="/implementacao">
             Implementar
           </Link>
         </div>
 
-        <Link to={profileLink} className="profile-icon" aria-label="Login">
-          <FiUser />
-        </Link>
+        <div className="nav-icons">
+          <Link to={profileLink} className="profile-icon" aria-label="Perfil">
+            <FiUser />
+          </Link>
+        </div>
       </nav>
 
-      {/* (em português) Container central da aplicação */}
+      {menuOpen && (
+        <div className="mobile-overlay open" onClick={() => setMenuOpen(false)} />
+      )}
+
       <div className="container">
         <Routes>
-          {/* (em português) Página principal com layout moderno */}
           <Route path="/" element={<ModernMapLayout />} />
           <Route path="/about" element={<About />} />
           <Route path="/sobre-projeto" element={<SobreProjeto />} />
@@ -148,4 +149,3 @@ function AppLayout() {
     </div>
   );
 }
-

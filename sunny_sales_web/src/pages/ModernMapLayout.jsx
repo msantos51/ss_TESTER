@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import axios from 'axios';
@@ -9,20 +10,21 @@ import LocateHint from '../components/LocateHint';
 import BeachConditions from '../components/BeachConditions';
 import './ModernMapLayout.css';
 
-// Layout principal com mapa e lista de vendedores online
+const PRODUCT_EMOJI = {
+  'Bolas de Berlim': '🍩',
+  'Gelados': '🍦',
+  'Acessórios de Praia': '🏖️',
+};
+
 export default function ModernMapLayout() {
   const [vendors, setVendors] = useState([]);
   const PRODUCTS = ['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'];
   const [selectedProducts, setSelectedProducts] = useState([...PRODUCTS]);
   const [selected, setSelected] = useState(null);
-
   const [mapReady, setMapReady] = useState(false);
   const [clientPos, setClientPos] = useState(null);
   const [showLocateHint, setShowLocateHint] = useState(false);
-  // Verifica se o utilizador autenticado é um vendedor. Se sim, ocultamos o
-  // pin de cliente para evitar marcadores duplicados no mapa.
   const isVendorLogged = !!localStorage.getItem('user');
-
   const mapRef = useRef(null);
 
   useEffect(() => {
@@ -52,25 +54,18 @@ export default function ModernMapLayout() {
     };
     fetchVendors();
     interval = setInterval(fetchVendors, 1000);
-    return () => {
-      if (interval) clearInterval(interval);
-    };
+    return () => { if (interval) clearInterval(interval); };
   }, [isVendorLogged]);
 
   useEffect(() => {
-    // Constrói o URL do WebSocket substituindo http por ws
     const wsUrl = BASE_URL.replace(/^http/, 'ws') + '/ws/locations';
     const ws = new WebSocket(wsUrl);
-
-    // Recebe atualizações de localização em tempo real e atualiza o estado
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       setVendors((prev) => {
         if (data.remove) {
           return prev.map((v) =>
-            v.id === data.vendor_id
-              ? { ...v, current_lat: null, current_lng: null }
-              : v
+            v.id === data.vendor_id ? { ...v, current_lat: null, current_lng: null } : v
           );
         }
         return prev.map((v) =>
@@ -80,40 +75,25 @@ export default function ModernMapLayout() {
         );
       });
     };
-
-    // Fecha a ligação quando o componente é desmontado
-    return () => {
-      ws.close();
-    };
+    return () => ws.close();
   }, []);
 
-  // Sempre que o mapa estiver pronto, acompanha a posição do utilizador
-  // (vendedor ou cliente) e mantém o mapa centrado nessa localização.
   useEffect(() => {
     let watchId;
     if (mapReady && navigator.geolocation) {
       const updatePosition = (pos) => {
-        const coords = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        };
+        const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         setClientPos(coords);
-        if (mapRef.current) {
-          mapRef.current.setView([coords.lat, coords.lng]);
-        }
+        if (mapRef.current) mapRef.current.setView([coords.lat, coords.lng]);
       };
-
       watchId = navigator.geolocation.watchPosition(
         updatePosition,
         (err) => console.error('Erro localização:', err),
         { enableHighAccuracy: true, maximumAge: 1000 }
       );
     }
-    return () => {
-      if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
-    };
+    return () => { if (watchId !== undefined) navigator.geolocation.clearWatch(watchId); };
   }, [mapReady]);
-
 
   const activeVendors = vendors.filter((v) => v.current_lat && v.current_lng);
 
@@ -123,11 +103,8 @@ export default function ModernMapLayout() {
       const stored = localStorage.getItem('user');
       if (stored) {
         const { id } = JSON.parse(stored);
-
         const vendorId = Number(id);
-        loggedVendor =
-          activeVendors.find((v) => Number(v.id) === vendorId) || null;
-
+        loggedVendor = activeVendors.find((v) => Number(v.id) === vendorId) || null;
       }
     } catch (e) {
       console.error('Erro ao ler vendedor logado:', e);
@@ -138,144 +115,146 @@ export default function ModernMapLayout() {
   if (isVendorLogged) {
     filteredVendors = loggedVendor ? [loggedVendor] : [];
   } else {
-    filteredVendors = activeVendors.filter((v) =>
-      selectedProducts.includes(v.product)
-    );
+    filteredVendors = activeVendors.filter((v) => selectedProducts.includes(v.product));
   }
 
-  // Alterna a seleção de um produto no filtro
   const toggleProduct = (p) => {
     setSelectedProducts((prev) =>
       prev.includes(p) ? prev.filter((v) => v !== p) : [...prev, p]
     );
   };
 
-  // Centraliza o mapa no vendedor selecionado
   const focusVendor = (v) => {
     setSelected(v);
-    if (mapRef.current) {
-      mapRef.current.flyTo([v.current_lat, v.current_lng], 16);
-    }
+    if (mapRef.current) mapRef.current.flyTo([v.current_lat, v.current_lng], 16);
   };
 
+  const makeVendorIcon = (v) =>
+    L.divIcon({
+      className: 'vendor-pin',
+      html: `<div class="vendor-marker" style="background:${v.pin_color || '#FCB454'}">
+        <span>${PRODUCT_EMOJI[v.product] || '🛍️'}</span>
+      </div>`,
+      iconSize: [40, 48],
+      iconAnchor: [20, 48],
+    });
 
   return (
     <div className="modern-layout">
       <div className="map-wrapper">
         {!isVendorLogged && (
-          <div className="filters">
-            <p className="filters-subtitle">Vendedores:</p>
-            {PRODUCTS.map((p, idx) => (
-              <div key={p} className="checkbox-wrapper-46">
-                <input
-                  id={`filter-${idx}`}
-                  type="checkbox"
-                  className="inp-cbx"
-                  checked={selectedProducts.includes(p)}
-                  onChange={() => toggleProduct(p)}
-                />
-                <label htmlFor={`filter-${idx}`} className="cbx">
-                  <span>
-                    <svg viewBox="0 0 12 10">
-                      <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                    </svg>
-                  </span>
-                  <span>{p}</span>
-                </label>
-              </div>
+          <div className="filter-bar">
+            <span className="filter-count">
+              {filteredVendors.length} online
+            </span>
+            {PRODUCTS.map((p) => (
+              <button
+                key={p}
+                className={`filter-pill${selectedProducts.includes(p) ? ' active' : ''}`}
+                onClick={() => toggleProduct(p)}
+              >
+                {PRODUCT_EMOJI[p]} {p}
+              </button>
             ))}
           </div>
         )}
 
         <main className="map-area">
-        <MapContainer
-          center={[38.7169, -9.1399]}
-          zoom={13}
-          className="map-container"
-          whenCreated={(map) => {
-            mapRef.current = map;
-            setMapReady(true);
-          }}
-        >
-          <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
-            attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
-            subdomains="abcd"
-            maxZoom={19}
-          />
-          {!isVendorLogged && clientPos && (
-            <Marker
-              position={[clientPos.lat, clientPos.lng]}
-              icon={L.divIcon({
-                className: 'client-pin',
-                html:
-                  '<div style="background:#1976d2;width:24px;height:24px;border-radius:50%;border:2px solid white"></div>',
-              })}
-            >
-              <Popup>Você está aqui</Popup>
-            </Marker>
-          )}
-          {filteredVendors.map((v) => (
-            <Marker
-              key={v.id}
-              position={[v.current_lat, v.current_lng]}
-              icon={L.divIcon({
-                className: 'vendor-pin',
-                html: `<div style="background:${v.pin_color || '#FFB6C1'};width:16px;height:16px;border-radius:50%;"></div>`,
-              })}
-              eventHandlers={{
-                click: () => focusVendor(v),
-              }}
+          <MapContainer
+            center={[38.7169, -9.1399]}
+            zoom={13}
+            className="map-container"
+            whenCreated={(map) => {
+              mapRef.current = map;
+              setMapReady(true);
+            }}
+          >
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+              attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
+              subdomains="abcd"
+              maxZoom={19}
             />
-          ))}
 
-          {!isVendorLogged && (
-            <>
-              <LocateButton
-                onLocationFound={setClientPos}
-                onClick={() => setShowLocateHint(false)}
-              />
-              {showLocateHint && (
-                <LocateHint onClose={() => setShowLocateHint(false)} />
-              )}
-            </>
-          )}
-
-
-          {isVendorLogged && loggedVendor && (
-            <VendorLocateButton vendor={loggedVendor} />
-          )}
-
-
-        </MapContainer>
-
-        {selected && (
-          <div className="vendor-card">
-            <button
-              className="close-btn"
-              onClick={() => setSelected(null)}
-              aria-label="Fechar"
-            >
-              ×
-            </button>
-            {selected.profile_photo ? (
-              <img
-                src={`${BASE_URL}/${selected.profile_photo}`}
-                alt={selected.name}
-                className="card-photo"
-              />
-            ) : (
-              <div
-                className="card-photo"
-                style={{ background: selected.pin_color || '#ccc' }}
-              />
+            {!isVendorLogged && clientPos && (
+              <Marker
+                position={[clientPos.lat, clientPos.lng]}
+                icon={L.divIcon({
+                  className: 'client-pin',
+                  html: '<div class="client-marker"></div>',
+                  iconSize: [22, 22],
+                  iconAnchor: [11, 11],
+                })}
+              >
+                <Popup>Você está aqui</Popup>
+              </Marker>
             )}
-            <h4 className="card-name">{selected.name}</h4>
-          </div>
-        )}
-      </main>
+
+            {filteredVendors.map((v) => (
+              <Marker
+                key={v.id}
+                position={[v.current_lat, v.current_lng]}
+                icon={makeVendorIcon(v)}
+                eventHandlers={{ click: () => focusVendor(v) }}
+              />
+            ))}
+
+            {!isVendorLogged && (
+              <>
+                <LocateButton
+                  onLocationFound={setClientPos}
+                  onClick={() => setShowLocateHint(false)}
+                />
+                {showLocateHint && (
+                  <LocateHint onClose={() => setShowLocateHint(false)} />
+                )}
+              </>
+            )}
+
+            {isVendorLogged && loggedVendor && (
+              <VendorLocateButton vendor={loggedVendor} />
+            )}
+          </MapContainer>
+
+          {selected && (
+            <div className="vendor-popup">
+              <button
+                className="close-btn popup-close"
+                onClick={() => setSelected(null)}
+                aria-label="Fechar"
+              >
+                ×
+              </button>
+              <div className="popup-content">
+                {selected.profile_photo ? (
+                  <img
+                    src={`${BASE_URL}/${selected.profile_photo}`}
+                    alt={selected.name}
+                    className="popup-photo"
+                  />
+                ) : (
+                  <div
+                    className="popup-photo popup-photo-placeholder"
+                    style={{ background: selected.pin_color || '#FCB454' }}
+                  >
+                    {selected.name?.[0]?.toUpperCase()}
+                  </div>
+                )}
+                <div className="popup-info">
+                  <h4 className="popup-name">{selected.name}</h4>
+                  <span className="popup-product">
+                    {PRODUCT_EMOJI[selected.product] || '🛍️'} {selected.product}
+                  </span>
+                </div>
+              </div>
+              <Link to={`/vendors/${selected.id}`} className="popup-profile-link">
+                Ver Perfil →
+              </Link>
+            </div>
+          )}
+        </main>
+      </div>
+      <BeachConditions />
     </div>
-    <BeachConditions />
-  </div>
   );
 }

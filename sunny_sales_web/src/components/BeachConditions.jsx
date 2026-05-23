@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import './BeachConditions.css';
 
-// Widget "Condições de Praia" baseado na localização do utilizador
-export default function BeachConditions() {
+const uvLevel = (uv) => {
+  if (!uv && uv !== 0) return { label: '–', color: 'var(--color-text-muted)' };
+  if (uv <= 2) return { label: 'Baixo', color: '#22C55E' };
+  if (uv <= 5) return { label: 'Moderado', color: '#F59E0B' };
+  if (uv <= 7) return { label: 'Alto', color: '#F97316' };
+  if (uv <= 10) return { label: 'Muito Alto', color: '#EF4444' };
+  return { label: 'Extremo', color: '#9333EA' };
+};
 
+export default function BeachConditions() {
   const [userCoords, setUserCoords] = useState(null);
   const [beaches, setBeaches] = useState([]);
   const [selected, setSelected] = useState(null);
-
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,9 +27,7 @@ export default function BeachConditions() {
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-
         setUserCoords({ lat: pos.coords.latitude, lon: pos.coords.longitude });
-
         setError(null);
       },
       () => {
@@ -33,18 +37,13 @@ export default function BeachConditions() {
     );
   };
 
-  useEffect(() => {
-    requestLocation();
-  }, []);
+  useEffect(() => { requestLocation(); }, []);
 
   useEffect(() => {
-
     if (!userCoords) return;
     const fetchBeaches = async () => {
       try {
-
         const overpass = `https://overpass-api.de/api/interpreter?data=[out:json];(node(around:25000,${userCoords.lat},${userCoords.lon})[natural=beach];way(around:25000,${userCoords.lat},${userCoords.lon})[natural=beach];relation(around:25000,${userCoords.lat},${userCoords.lon})[natural=beach];);out center;`;
-
         const res = await fetch(overpass);
         const data = await res.json();
         const list = data.elements
@@ -62,10 +61,9 @@ export default function BeachConditions() {
         setBeaches(withCurrent);
         setSelected(withCurrent[0]);
       } catch {
-        setBeaches([
-          { id: 'current', name: 'Localização atual', lat: userCoords.lat, lon: userCoords.lon },
-        ]);
-        setSelected({ id: 'current', name: 'Localização atual', lat: userCoords.lat, lon: userCoords.lon });
+        const fallback = [{ id: 'current', name: 'Localização atual', lat: userCoords.lat, lon: userCoords.lon }];
+        setBeaches(fallback);
+        setSelected(fallback[0]);
       }
     };
     fetchBeaches();
@@ -75,19 +73,17 @@ export default function BeachConditions() {
     if (!selected) return;
     const fetchData = async () => {
       try {
-        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${selected.lat}&longitude=${selected.lon}&current=temperature_2m,wind_speed_10m,relative_humidity_2m&daily=uv_index_max&forecast_days=1&timezone=auto`;
-
-        const wRes = await fetch(weatherUrl);
-        const wData = await wRes.json();
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${selected.lat}&longitude=${selected.lon}&current=temperature_2m,wind_speed_10m,relative_humidity_2m&daily=uv_index_max&forecast_days=1&timezone=auto`;
+        const res = await fetch(url);
+        const data = await res.json();
         setWeather({
-          temperature: wData.current?.temperature_2m,
-          wind: wData.current?.wind_speed_10m,
-          humidity: wData.current?.relative_humidity_2m,
-          uvMax: wData.daily?.uv_index_max?.[0],
-          timezone: wData.timezone,
+          temperature: data.current?.temperature_2m,
+          wind: data.current?.wind_speed_10m,
+          humidity: data.current?.relative_humidity_2m,
+          uvMax: data.daily?.uv_index_max?.[0],
         });
-      } catch (e) {
-        setError('Erro ao carregar dados.');
+      } catch {
+        setError('Erro ao carregar dados meteorológicos.');
       } finally {
         setLoading(false);
       }
@@ -95,51 +91,71 @@ export default function BeachConditions() {
     fetchData();
   }, [selected]);
 
-  if (loading) return <div className="bc-container">A carregar...</div>;
-
-  if (error)
+  if (loading) {
     return (
-      <div className="bc-container">
-        <p>{error}</p>
-        <button onClick={requestLocation}>Tentar novamente</button>
+      <div className="bc-container bc-loading">
+        <div className="bc-spinner" />
+        <span>A carregar condições…</span>
       </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className="bc-container bc-error">
+        <span>⚠️ {error}</span>
+        <button onClick={requestLocation} className="bc-retry">Tentar novamente</button>
+      </div>
+    );
+  }
+
+  const uv = uvLevel(weather?.uvMax);
 
   return (
     <div className="bc-container">
-
-      {beaches.length > 0 && (
-        <div className="bc-selector">
+      <div className="bc-header">
+        <span className="bc-title">🌊 Condições de Praia</span>
+        {beaches.length > 0 && (
           <select
+            className="bc-select"
             value={selected?.id || ''}
             onChange={(e) => {
               setLoading(true);
               setError(null);
-              const b = beaches.find((b) => String(b.id) === e.target.value);
-              setSelected(b);
+              setSelected(beaches.find((b) => String(b.id) === e.target.value));
             }}
           >
             {beaches.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name}
-              </option>
+              <option key={b.id} value={b.id}>{b.name}</option>
             ))}
           </select>
-        </div>
-      )}
-
-      <div className="bc-content">
-        <div className="bc-weather">
-          <div>Temperatura: {weather.temperature}&deg;C</div>
-          <div>Vento: {weather.wind} km/h</div>
-          <div>Humidade: {weather.humidity}%</div>
-          <div>UV máx: {weather.uvMax}</div>
-        </div>
-
+        )}
       </div>
-      <p className="bc-warning">
-        Estimativa para uso recreativo; não usar para navegação.
-      </p>
+
+      <div className="bc-grid">
+        <div className="bc-stat">
+          <span className="bc-stat-icon">🌡️</span>
+          <span className="bc-stat-value">{weather?.temperature ?? '–'}°C</span>
+          <span className="bc-stat-label">Temperatura</span>
+        </div>
+        <div className="bc-stat">
+          <span className="bc-stat-icon">💨</span>
+          <span className="bc-stat-value">{weather?.wind ?? '–'} km/h</span>
+          <span className="bc-stat-label">Vento</span>
+        </div>
+        <div className="bc-stat">
+          <span className="bc-stat-icon">💧</span>
+          <span className="bc-stat-value">{weather?.humidity ?? '–'}%</span>
+          <span className="bc-stat-label">Humidade</span>
+        </div>
+        <div className="bc-stat">
+          <span className="bc-stat-icon">☀️</span>
+          <span className="bc-stat-value" style={{ color: uv.color }}>{weather?.uvMax ?? '–'}</span>
+          <span className="bc-stat-label">UV · {uv.label}</span>
+        </div>
+      </div>
+
+      <p className="bc-warning">Estimativa indicativa — não usar para navegação.</p>
     </div>
   );
 }
