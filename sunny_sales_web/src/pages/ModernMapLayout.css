@@ -60,7 +60,9 @@ body {
   flex-direction: column;
   gap: 0.75rem;
   width: 200px;
+  min-width: 160px;
   padding: 1rem;
+  flex-shrink: 0;
 }
 
 .filters-title {
@@ -181,7 +183,7 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 180px;
+  width: 200px;
   padding: 1rem;
   background: var(--bg-color);
   border: 1px solid #dee2e6;
@@ -237,19 +239,57 @@ body {
   .filters {
     width: 100%;
     flex-direction: row;
-    justify-content: center;
-    margin-bottom: 0.5rem;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-bottom: 0.25rem;
+    padding: 0.5rem 1rem;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .filters::-webkit-scrollbar {
+    display: none;
+  }
+  .filters-title {
+    display: none;
   }
   .map-area {
     width: 100%;
-    height: 60vh;
+    height: calc(100svh - 160px);
+    min-height: 300px;
     margin: 0;
+    padding: 0;
+  }
+  .vendor-card {
+    top: auto;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+    max-width: 320px;
+  }
+  @keyframes fadeSlide {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   }
 }
 
 @media (max-width: 480px) {
   .vendor-card {
-    width: 90%;
+    width: calc(100% - 1.5rem);
+    max-width: none;
+    bottom: 1rem;
+  }
+  .filters {
+    padding: 0.5rem 0.75rem;
   }
 }
 
@@ -258,8 +298,8 @@ body {
   position: absolute;
   bottom: 2rem;
   right: 1rem;
-  width: 44.8px;
-  height: 44.8px;
+  width: 48px;
+  height: 48px;
   background: var(--secondary-color);
   border: none;
   border-radius: 50%;
@@ -270,6 +310,7 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s;
   z-index: 500;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .locate-btn:hover {
@@ -281,8 +322,8 @@ body {
   position: absolute;
   bottom: 2rem;
   right: 1rem;
-  width: 44.8px;
-  height: 44.8px;
+  width: 48px;
+  height: 48px;
   background: var(--secondary-color);
   border: none;
   border-radius: 50%;
@@ -293,6 +334,7 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s;
   z-index: 500;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .vendor-locate-btn:hover {

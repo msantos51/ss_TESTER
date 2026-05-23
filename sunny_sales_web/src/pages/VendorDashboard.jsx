@@ -222,12 +222,14 @@ export default function VendorDashboard() {
   );
 }
 
+const isMobile = () => typeof window !== 'undefined' && window.innerWidth <= 600;
+
 const styles = {
   wrapper: {
     position: 'relative',
   },
   container: {
-    padding: '2rem',
+    padding: '1.5rem 1rem',
     maxWidth: '600px',
     margin: '0 auto',
     textAlign: 'center',
@@ -235,6 +237,7 @@ const styles = {
   },
   title: {
     marginBottom: '1rem',
+    fontSize: 'clamp(1.2rem, 5vw, 1.75rem)',
   },
   photo: {
     width: 100,
@@ -257,6 +260,7 @@ const styles = {
     borderRadius: '12px',
     marginBottom: '1rem',
     textAlign: 'left',
+    wordBreak: 'break-word',
   },
   logoutButton: {
     width: 'auto',
@@ -265,48 +269,58 @@ const styles = {
     borderRadius: 12,
     backgroundColor: '#FCB454',
     border: 'none',
-    padding: '0.5rem 1rem',
+    padding: '0.75rem 1.5rem',
     cursor: 'pointer',
     fontWeight: 'bold',
     color: '#fff',
+    minHeight: '44px',
   },
   toggleContainer: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.5rem',
+    gap: '0.75rem',
     justifyContent: 'center',
-    margin: '12px auto',
+    margin: '16px auto',
   },
   // (em português) Texto que mostra o estado atual da localização
   switchLabel: {
     fontWeight: 'bold',
+    fontSize: '1rem',
   },
   menuButton: {
     position: 'fixed',
     top: '8rem',
-    left: '1rem',
+    left: '0.75rem',
     zIndex: 1100,
     backgroundColor: '#FCB454',
     color: '#fff',
     border: 'none',
-    padding: '0.5rem 1rem',
+    padding: '0.6rem 1rem',
     cursor: 'pointer',
     fontSize: '1.2rem',
     borderRadius: '50%',
+    width: '48px',
+    height: '48px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
   },
   sideMenu: {
     position: 'fixed',
     top: '100px',
     left: 0,
     height: 'calc(100% - 100px)',
-    width: '250px',
+    width: 'min(280px, 85vw)',
     backgroundColor: '#f8f8f8',
-    boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
+    boxShadow: '2px 0 8px rgba(0,0,0,0.15)',
     padding: '1rem',
+    paddingBottom: 'max(1rem, env(safe-area-inset-bottom))',
     boxSizing: 'border-box',
     transform: 'translateX(-100%)',
     transition: 'transform 0.3s ease-in-out',
     zIndex: 900,
+    overflowY: 'auto',
   },
   sideMenuOpen: {
     transform: 'translateX(0)',
@@ -318,7 +332,7 @@ const styles = {
     alignItems: 'stretch',
   },
   menuButtonItem: {
-    padding: '0.75rem 1rem',
+    padding: '0.85rem 1rem',
     backgroundColor: '#FCB454',
     color: 'white',
     border: 'none',
@@ -326,6 +340,8 @@ const styles = {
     fontWeight: 'bold',
     cursor: 'pointer',
     textAlign: 'left',
+    minHeight: '44px',
+    fontSize: '0.95rem',
   },
   divider: {
     height: '1px',
