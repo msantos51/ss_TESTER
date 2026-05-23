@@ -33,8 +33,7 @@ export default function VendorDashboard() {
       alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
       return;
     }
-    // Token JWT fornecido para autenticação nas requisições de localização
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTY5NzYxNTksImp0aSI6IjRhZGVkZWQ5ZTgzMDQ4YzU4MTI5NDk2OGZhNjQwZWExIiwic3ViIjoxfQ.Elsk92DJnIzFyYLbROkBK1lIVN00v7wlOC6_oVuM3w0';
+    const token = localStorage.getItem('token');
     if (!token) return;
     try {
       await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/start`, null, {
@@ -87,8 +86,7 @@ export default function VendorDashboard() {
       watchId = null;
     }
     if (vendor) {
-      // Mesmo token JWT utilizado para autenticar o encerramento da partilha
-      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTY5NzYxNTksImp0aSI6IjRhZGVkZWQ5ZTgzMDQ4YzU4MTI5NDk2OGZhNjQwZWExIiwic3ViIjoxfQ.Elsk92DJnIzFyYLbROkBK1lIVN00v7wlOC6_oVuM3w0';
+      const token = localStorage.getItem('token');
       try {
         await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/stop`, null, {
           headers: { Authorization: `Bearer ${token}` },
