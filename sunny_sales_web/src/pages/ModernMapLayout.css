@@ -1,181 +1,178 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 body {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
-  background: var(--bg-color);
-  color: var(--text-color);
+  font-family: 'Inter', 'Roboto', sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
+/* ── Main layout ──────────────────────────────────────── */
+
 .modern-layout {
-  /* Layout principal em coluna; o mapa e os filtros são agrupados noutra div */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 16px;
   min-height: 80vh;
-}
-
-.app-name {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--secondary-color);
-}
-
-.login-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
-}
-
-.login-btn {
-  background: var(--secondary-color);
-  color: #FFFFFF;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  cursor: pointer;
-  /* Ensure the login buttons are always visible */
-  display: inline-block;
-  opacity: 1 !important;
-  transition: background 0.2s, transform 0.2s;
-}
-
-.login-btn:hover {
-  background: var(--primary-color);
-  transform: scale(1.05);
+  padding-bottom: 8px;
 }
 
 .map-wrapper {
-  /* Agrupa filtros e mapa lado a lado */
   display: flex;
   width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  min-height: 480px;
 }
 
+/* ── Filters sidebar ──────────────────────────────────── */
+
 .filters {
-  /* Coloca os filtros na coluna esquerda */
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  width: 200px;
-  min-width: 160px;
-  padding: 1rem;
+  gap: 10px;
+  width: 192px;
+  min-width: 148px;
+  padding: 16px 14px;
   flex-shrink: 0;
+  background: var(--surface-warm);
+  border-right: 1px solid var(--border);
 }
 
 .filters-title {
-  font-size: 1.2rem;
-  margin: 0 0 0.5rem 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0 0 4px;
 }
 
 .filters-subtitle {
-  color: var(--text-color);
-  margin: 0 0.5rem 0 0;
-  white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 6px;
 }
 
-/* Estilos para os novos checkboxes dos filtros */
+/* Custom checkboxes */
 .checkbox-wrapper-46 input[type="checkbox"] {
   display: none;
   visibility: hidden;
 }
 
 .checkbox-wrapper-46 .cbx {
-  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
-  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: var(--radius-xs);
+  transition: background var(--transition);
 }
+.checkbox-wrapper-46 .cbx:hover {
+  background: var(--primary-light);
+}
+
 .checkbox-wrapper-46 .cbx span {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   vertical-align: middle;
-  transform: translate3d(0, 0, 0);
 }
+
 .checkbox-wrapper-46 .cbx span:first-child {
   position: relative;
   width: 18px;
   height: 18px;
-  border-radius: 3px;
-  transform: scale(1);
-  vertical-align: middle;
-  border: 1px solid #fcb454;
+  min-width: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface);
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
+
 .checkbox-wrapper-46 .cbx span:first-child svg {
   position: absolute;
-  top: 3px;
+  top: 2px;
   left: 2px;
   fill: none;
-  stroke: #ffffff;
-  stroke-width: 2;
+  stroke: #fff;
+  stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 16px;
   stroke-dashoffset: 16px;
-  transition: all 0.3s ease;
-  transition-delay: 0.1s;
-  transform: translate3d(0, 0, 0);
+  transition: stroke-dashoffset 0.22s ease 0.06s;
 }
-.checkbox-wrapper-46 .cbx span:first-child:before {
+
+.checkbox-wrapper-46 .cbx span:first-child::before {
   content: "";
   width: 100%;
   height: 100%;
-  background: #fcb454;
+  background: var(--primary);
   display: block;
   transform: scale(0);
   opacity: 1;
   border-radius: 50%;
 }
+
 .checkbox-wrapper-46 .cbx span:last-child {
-  padding-left: 8px;
-}
-.checkbox-wrapper-46 .cbx:hover span:first-child {
-  border-color: #fcb454;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+  padding-left: 0;
 }
 
 .checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child {
-  background: #fcb454;
-  border-color: #fcb454;
-  animation: wave-46 0.4s ease;
+  background: var(--primary);
+  border-color: var(--primary);
+  animation: wave-46 0.35s ease;
 }
+
 .checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child svg {
   stroke-dashoffset: 0;
 }
-.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child:before {
+
+.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child::before {
   transform: scale(3.5);
   opacity: 0;
-  transition: all 0.6s ease;
+  transition: all 0.5s ease;
 }
 
 @keyframes wave-46 {
-  50% {
-    transform: scale(0.9);
-  }
+  50% { transform: scale(0.88); }
 }
 
+/* ── Map area ─────────────────────────────────────────── */
+
 .map-area {
-  /* Área do mapa ocupa o espaço restante à direita */
   position: relative;
   flex: 1;
   height: 70vh;
-  padding: 0.5rem;
-  box-sizing: border-box;
+  min-height: 380px;
 }
 
 .map-container {
   width: 100%;
   height: 100%;
-  /* Only keep rounded corners at the bottom to merge with the header */
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 0;
   background: transparent;
 }
 
 .leaflet-container {
   background: transparent;
+  font-family: 'Inter', 'Roboto', sans-serif;
 }
+
+/* ── Vendor card popup ────────────────────────────────── */
 
 .vendor-card {
   z-index: 1000;
@@ -183,20 +180,20 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 200px;
-  padding: 1rem;
-  background: var(--bg-color);
-  border: 1px solid #dee2e6;
-  border-radius: 16px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  animation: fadeSlide 0.3s ease-out;
+  width: 220px;
+  padding: 20px 18px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  animation: fadeSlide 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   text-align: center;
 }
 
 @keyframes fadeSlide {
   from {
     opacity: 0;
-    transform: translate(-50%, -60%);
+    transform: translate(-50%, -58%);
   }
   to {
     opacity: 1;
@@ -206,172 +203,100 @@ body {
 
 .close-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: none;
+  top: 10px;
+  right: 10px;
+  background: var(--surface-alt);
   border: none;
-  font-size: 1.2rem;
+  border-radius: var(--radius-full);
+  width: 28px;
+  height: 28px;
+  min-height: auto;
+  min-width: auto;
+  padding: 0;
+  font-size: 1rem;
   cursor: pointer;
-  color: var(--secondary-color);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-xs);
+  transition: background var(--transition), color var(--transition);
 }
+.close-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  transform: none;
+  box-shadow: none;
+}
+
 .card-photo {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   object-fit: cover;
   display: block;
-  margin: 0 auto 0.5rem;
+  margin: 0 auto 10px;
+  border: 2.5px solid var(--primary-light-solid);
+  box-shadow: var(--shadow-warm);
 }
-
-
 
 .card-name {
-  margin: 0 0 4px 0;
-  font-weight: bold;
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
 }
 
+/* ── Locate buttons ───────────────────────────────────── */
 
-
-@media (max-width: 768px) {
-  .map-wrapper {
-    flex-direction: column;
-  }
-  .filters {
-    width: 100%;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    margin-bottom: 0.25rem;
-    padding: 0.5rem 1rem;
-    gap: 0.5rem;
-    min-width: 0;
-  }
-  .filters::-webkit-scrollbar {
-    display: none;
-  }
-  .filters-title {
-    display: none;
-  }
-  .map-area {
-    width: 100%;
-    height: calc(100svh - 160px);
-    min-height: 300px;
-    margin: 0;
-    padding: 0;
-  }
-  .vendor-card {
-    top: auto;
-    bottom: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 2rem);
-    max-width: 320px;
-  }
-  @keyframes fadeSlide {
-    from {
-      opacity: 0;
-      transform: translateX(-50%) translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .vendor-card {
-    width: calc(100% - 1.5rem);
-    max-width: none;
-    bottom: 1rem;
-  }
-  .filters {
-    padding: 0.5rem 0.75rem;
-  }
-}
-
-/* Botão para localizar a posição do cliente */
-.locate-btn {
-  position: absolute;
-  bottom: 2rem;
-  right: 1rem;
-  width: 48px;
-  height: 48px;
-  background: var(--secondary-color);
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s;
-  z-index: 500;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.locate-btn:hover {
-  transform: scale(1.1);
-}
-
-/* Botão para centrar o mapa no vendedor autenticado */
+.locate-btn,
 .vendor-locate-btn {
   position: absolute;
-  bottom: 2rem;
-  right: 1rem;
-  width: 48px;
-  height: 48px;
-  background: var(--secondary-color);
-  border: none;
-  border-radius: 50%;
+  bottom: 20px;
+  right: 14px;
+  width: 46px;
+  height: 46px;
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-full);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s;
+  box-shadow: var(--shadow-md);
+  transition: background var(--transition), box-shadow var(--transition), border-color var(--transition), transform var(--transition);
   z-index: 500;
   -webkit-tap-highlight-color: transparent;
+  min-height: auto;
+  padding: 0;
+  color: var(--primary);
+  font-size: 1.1rem;
 }
 
+.locate-btn:hover,
 .vendor-locate-btn:hover {
-  transform: scale(1.1);
+  background: var(--primary-light-solid);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-warm);
+  transform: scale(1.06);
 }
 
+/* ── Loader ───────────────────────────────────────────── */
 
-/* From Uiverse.io by JaydipPrajapati1910 */
 .loader {
-  width: 24px;
-  height: 24px;
-  position: relative;
-  transform: rotate(45deg);
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
 }
 
-.loader:before,
-.loader:after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50% 50% 0 50%;
-  background: #0000;
-  background-image: radial-gradient(circle 6px at 50% 50%, #0000 94%, #ff4747);
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.loader:after {
-  animation: pulse-ytk0dhmd 1s infinite;
-  transform: perspective(336px) translateZ(0px);
-}
-
-@keyframes pulse-ytk0dhmd {
-  to {
-    transform: perspective(336px) translateZ(168px);
-    opacity: 0;
-  }
-}
-
+/* ── Client pin ───────────────────────────────────────── */
 
 .client-pin img {
   border-radius: 50%;
@@ -381,3 +306,65 @@ body {
   border: 2px solid white;
 }
 
+/* ── Responsive ───────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .map-wrapper {
+    flex-direction: column;
+    border-radius: var(--radius-md);
+  }
+
+  .filters {
+    width: 100%;
+    min-width: 0;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 10px 12px;
+    gap: 6px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .filters::-webkit-scrollbar { display: none; }
+
+  .filters-title,
+  .filters-subtitle {
+    display: none;
+  }
+
+  .map-area {
+    width: 100%;
+    height: calc(100svh - 200px);
+    min-height: 300px;
+  }
+
+  .vendor-card {
+    top: auto;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 28px);
+    max-width: 320px;
+    border-radius: var(--radius-lg);
+  }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateX(-50%) translateY(18px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+}
+
+@media (max-width: 480px) {
+  .vendor-card {
+    width: calc(100% - 20px);
+    max-width: none;
+    bottom: 12px;
+  }
+  .filters {
+    padding: 8px 10px;
+  }
+}

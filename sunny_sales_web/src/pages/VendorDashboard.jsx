@@ -1,5 +1,3 @@
-// (em português) Painel principal do vendedor com partilha de localização e menu lateral
-
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
@@ -25,7 +23,6 @@ export default function VendorDashboard() {
 
   const startSharing = useCallback(async () => {
     if (!vendor) return;
-    // Impede ativar a localização quando a subscrição não está ativa
     const expires = vendor.subscription_valid_until
       ? new Date(vendor.subscription_valid_until)
       : null;
@@ -67,17 +64,13 @@ export default function VendorDashboard() {
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
-    if (stored) {
-      setVendor(JSON.parse(stored));
-    }
+    if (stored) setVendor(JSON.parse(stored));
     const share = localStorage.getItem('sharingLocation') === 'true';
     setSharing(share);
   }, []);
 
   useEffect(() => {
-    if (sharing && vendor && watchId === null) {
-      startSharing();
-    }
+    if (sharing && vendor && watchId === null) startSharing();
   }, [sharing, vendor, startSharing]);
 
   const stopSharing = async () => {
@@ -126,84 +119,153 @@ export default function VendorDashboard() {
         setMenuOpen(false);
       }
     };
+    const handleKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKey);
+    };
   }, [menuOpen]);
 
+  const navItem = (label, onClick, icon = null) => (
+    <button className="vd-menu-item" onClick={() => { onClick(); setMenuOpen(false); }}>
+      {icon && <span className="vd-menu-icon">{icon}</span>}
+      {label}
+    </button>
+  );
+
   return (
-    <div style={styles.wrapper}>
+    <div className="vd-wrapper">
+      {/* Side menu toggle */}
       <button
         ref={menuButtonRef}
-        style={styles.menuButton}
-        onClick={() => setMenuOpen(!menuOpen)}
+        className="vd-menu-toggle"
+        onClick={() => setMenuOpen((o) => !o)}
+        aria-label="Menu"
+        aria-expanded={menuOpen}
       >
-        ☰
+        {menuOpen ? '✕' : '☰'}
       </button>
 
-      <div
+      {/* Side menu overlay */}
+      {menuOpen && (
+        <div className="vd-overlay" onClick={() => setMenuOpen(false)} aria-hidden="true" />
+      )}
+
+      {/* Side menu */}
+      <aside
         ref={sideMenuRef}
-        style={{ ...styles.sideMenu, ...(menuOpen ? styles.sideMenuOpen : {}) }}
+        className={`vd-side-menu${menuOpen ? ' open' : ''}`}
+        aria-hidden={!menuOpen}
       >
-        <div style={styles.menuList}>
-          <button style={styles.menuButtonItem} onClick={() => { paySubscription(); setMenuOpen(false); }}>Pagar Semanalidade</button>
-          <button style={styles.menuButtonItem} onClick={() => { navigate('/paid-weeks'); setMenuOpen(false); }}>Semanas Pagas</button>
-          <button style={styles.menuButtonItem} onClick={() => { navigate('/invoices'); setMenuOpen(false); }}>Faturas</button>
-
-          <div style={styles.divider} />
-
-          <button style={styles.menuButtonItem} onClick={() => { navigate('/routes'); setMenuOpen(false); }}>Trajetos</button>
-          <button style={styles.menuButtonItem} onClick={() => { navigate('/stats'); setMenuOpen(false); }}>Distância Percorrida</button>
-          <button style={styles.menuButtonItem} onClick={() => { navigate('/sessions'); setMenuOpen(false); }}>Sessões</button>
-
-          <div style={styles.divider} />
-
-          <button style={styles.menuButtonItem} onClick={() => { navigate('/account'); setMenuOpen(false); }}>Atualizar Dados Pessoais</button>
-
-          <div style={styles.divider} />
-
-          <button style={styles.menuButtonItem} onClick={() => { navigate('/terms'); setMenuOpen(false); }}>Termos e Condições</button>
-          <button style={styles.menuButtonItem} onClick={() => { window.location.href = 'mailto:suporte@sunnysales.com'; setMenuOpen(false); }}>Contactar Suporte</button>
+        <div className="vd-menu-header">
+          <span className="vd-menu-title">Menu</span>
         </div>
-      </div>
 
-      <div style={styles.container}>
-        <h2 style={styles.title}>Painel do Vendedor</h2>
+        <div className="vd-menu-section">
+          <span className="vd-menu-section-label">Subscrição</span>
+          {navItem('Pagar Semanalidade', paySubscription, '💳')}
+          {navItem('Semanas Pagas', () => navigate('/paid-weeks'), '📅')}
+          {navItem('Faturas', () => navigate('/invoices'), '🧾')}
+        </div>
+
+        <div className="vd-menu-divider" />
+
+        <div className="vd-menu-section">
+          <span className="vd-menu-section-label">Atividade</span>
+          {navItem('Trajetos', () => navigate('/routes'), '🗺️')}
+          {navItem('Distância Percorrida', () => navigate('/stats'), '📊')}
+          {navItem('Sessões', () => navigate('/sessions'), '⏱️')}
+        </div>
+
+        <div className="vd-menu-divider" />
+
+        <div className="vd-menu-section">
+          {navItem('Atualizar Dados Pessoais', () => navigate('/account'), '👤')}
+        </div>
+
+        <div className="vd-menu-divider" />
+
+        <div className="vd-menu-section">
+          {navItem('Termos e Condições', () => navigate('/terms'), '📋')}
+          {navItem('Contactar Suporte', () => { window.location.href = 'mailto:suporte@sunnysales.com'; }, '✉️')}
+        </div>
+      </aside>
+
+      {/* Main content */}
+      <div className="vd-container">
+        <h2 className="vd-title">Painel do Vendedor</h2>
 
         {vendor && (
-          <div style={styles.infoBox}>
-            {vendor.profile_photo && (
+          <div className="vd-info-card">
+            {vendor.profile_photo ? (
               <img
                 src={`${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}`}
-                alt="Foto"
-                style={styles.photo}
+                alt="Foto de perfil"
+                className="vd-avatar"
               />
+            ) : (
+              <div className="vd-avatar vd-avatar-placeholder">
+                {vendor.name?.charAt(0)?.toUpperCase() || '?'}
+              </div>
             )}
-            <p><strong>Nome:</strong> {vendor.name}</p>
-            <p><strong>Email:</strong> {vendor.email}</p>
-            <p><strong>Produto:</strong> {vendor.product}</p>
-            <p>
-              <strong>Cor do Pin:</strong>
-              <span style={{ ...styles.pinPreview, backgroundColor: vendor.pin_color || '#FFB6C1' }} />
-            </p>
-            <p>
-              <strong>Subscrição:</strong>{' '}
-              {vendor.subscription_active ? (
-                <>
-                  ativa
-                  {vendor.subscription_valid_until && (
-                    <> (Termina a: {new Date(vendor.subscription_valid_until).toLocaleDateString('pt-PT')})</>
+
+            <div className="vd-info-grid">
+              <div className="vd-info-row">
+                <span className="vd-info-label">Nome</span>
+                <span className="vd-info-value">{vendor.name}</span>
+              </div>
+              <div className="vd-info-row">
+                <span className="vd-info-label">Email</span>
+                <span className="vd-info-value">{vendor.email}</span>
+              </div>
+              <div className="vd-info-row">
+                <span className="vd-info-label">Produto</span>
+                <span className="vd-info-value">{vendor.product}</span>
+              </div>
+              <div className="vd-info-row">
+                <span className="vd-info-label">Cor do Pin</span>
+                <span className="vd-info-value vd-pin-row">
+                  <span
+                    className="vd-pin-dot"
+                    style={{ backgroundColor: vendor.pin_color || '#FFB6C1' }}
+                  />
+                  {vendor.pin_color || '#FFB6C1'}
+                </span>
+              </div>
+              <div className="vd-info-row">
+                <span className="vd-info-label">Subscrição</span>
+                <span className={`vd-info-value vd-sub-badge${vendor.subscription_active ? ' active' : ' inactive'}`}>
+                  {vendor.subscription_active ? (
+                    <>
+                      Ativa
+                      {vendor.subscription_valid_until && (
+                        <span className="vd-sub-date">
+                          &nbsp;até {new Date(vendor.subscription_valid_until).toLocaleDateString('pt-PT')}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    'Inativa'
                   )}
-                </>
-              ) : (
-                'inativa'
-              )}
-            </p>
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* (em português) Bloco que contém o switch para ativar/desativar a partilha de localização */}
-        <div style={styles.toggleContainer}>
-          <label className="vendor-switch">
+        {/* Location sharing toggle */}
+        <div className="vd-toggle-card">
+          <div className="vd-toggle-info">
+            <span className="vd-toggle-title">Partilha de Localização</span>
+            <span className={`vd-toggle-status${sharing ? ' on' : ''}`}>
+              {sharing ? 'Ligada — visível no mapa' : 'Desligada'}
+            </span>
+          </div>
+          <label className="vendor-switch" aria-label="Ativar/desativar localização">
             <input
               type="checkbox"
               checked={sharing}
@@ -211,142 +273,12 @@ export default function VendorDashboard() {
             />
             <span className="slider" />
           </label>
-          <span style={styles.switchLabel}>
-            {sharing ? 'Localização Ligada' : 'Localização Desligada'}
-          </span>
         </div>
 
-        <button className="btn" style={styles.logoutButton} onClick={logout}>Sair</button>
+        <button className="vd-logout-btn" onClick={logout}>
+          Terminar Sessão
+        </button>
       </div>
     </div>
   );
 }
-
-const isMobile = () => typeof window !== 'undefined' && window.innerWidth <= 600;
-
-const styles = {
-  wrapper: {
-    position: 'relative',
-  },
-  container: {
-    padding: '1.5rem 1rem',
-    maxWidth: '600px',
-    margin: '0 auto',
-    textAlign: 'center',
-    position: 'relative',
-  },
-  title: {
-    marginBottom: '1rem',
-    fontSize: 'clamp(1.2rem, 5vw, 1.75rem)',
-  },
-  photo: {
-    width: 100,
-    height: 100,
-    borderRadius: '50%',
-    objectFit: 'cover',
-    marginBottom: '1rem',
-  },
-  pinPreview: {
-    display: 'inline-block',
-    width: 16,
-    height: 16,
-    borderRadius: '50%',
-    marginLeft: 8,
-    verticalAlign: 'middle',
-  },
-  infoBox: {
-    backgroundColor: '#fff',
-    padding: '1rem',
-    borderRadius: '12px',
-    marginBottom: '1rem',
-    textAlign: 'left',
-    wordBreak: 'break-word',
-  },
-  logoutButton: {
-    width: 'auto',
-    alignSelf: 'center',
-    margin: '12px auto',
-    borderRadius: 12,
-    backgroundColor: '#FCB454',
-    border: 'none',
-    padding: '0.75rem 1.5rem',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    color: '#fff',
-    minHeight: '44px',
-  },
-  toggleContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.75rem',
-    justifyContent: 'center',
-    margin: '16px auto',
-  },
-  // (em português) Texto que mostra o estado atual da localização
-  switchLabel: {
-    fontWeight: 'bold',
-    fontSize: '1rem',
-  },
-  menuButton: {
-    position: 'fixed',
-    top: '8rem',
-    left: '0.75rem',
-    zIndex: 1100,
-    backgroundColor: '#FCB454',
-    color: '#fff',
-    border: 'none',
-    padding: '0.6rem 1rem',
-    cursor: 'pointer',
-    fontSize: '1.2rem',
-    borderRadius: '50%',
-    width: '48px',
-    height: '48px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-  },
-  sideMenu: {
-    position: 'fixed',
-    top: '100px',
-    left: 0,
-    height: 'calc(100% - 100px)',
-    width: 'min(280px, 85vw)',
-    backgroundColor: '#f8f8f8',
-    boxShadow: '2px 0 8px rgba(0,0,0,0.15)',
-    padding: '1rem',
-    paddingBottom: 'max(1rem, env(safe-area-inset-bottom))',
-    boxSizing: 'border-box',
-    transform: 'translateX(-100%)',
-    transition: 'transform 0.3s ease-in-out',
-    zIndex: 900,
-    overflowY: 'auto',
-  },
-  sideMenuOpen: {
-    transform: 'translateX(0)',
-  },
-  menuList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5rem',
-    alignItems: 'stretch',
-  },
-  menuButtonItem: {
-    padding: '0.85rem 1rem',
-    backgroundColor: '#FCB454',
-    color: 'white',
-    border: 'none',
-    borderRadius: '20px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    textAlign: 'left',
-    minHeight: '44px',
-    fontSize: '0.95rem',
-  },
-  divider: {
-    height: '1px',
-    backgroundColor: '#ccc',
-    width: '100%',
-    margin: '0.5rem 0',
-  },
-};

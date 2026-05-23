@@ -1,14 +1,13 @@
-// (em português) Componente principal da aplicação Web com rotas
-
 import {
   HashRouter as Router,
   Routes,
   Route,
   Link,
+  NavLink,
   useLocation,
 } from 'react-router-dom';
-import { FiUser, FiMenu } from 'react-icons/fi';
-import { useState, useEffect } from 'react';
+import { FiUser, FiMenu, FiX } from 'react-icons/fi';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { BASE_URL } from './config';
 import About from './pages/About';
@@ -32,9 +31,8 @@ import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
 import Sessions from './pages/Sessions';
 import Footer from './components/Footer';
-import './index.css'; // (em português) Importa os estilos globais
+import './index.css';
 
-// Componente principal que define as rotas da aplicação web
 export default function App() {
   return (
     <Router>
@@ -47,6 +45,7 @@ function AppLayout() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
+  const navLinksRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -70,55 +69,83 @@ function AppLayout() {
       });
   }, [location]);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  // Close mobile menu on outside click
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [menuOpen]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
   const profileLink = isLoggedIn ? '/dashboard' : '/vendor-login';
 
   return (
     <div className="wrapper">
-      {/* (em português) Links de navegação sobre o fundo */}
       <nav className="navbar">
         <Link className="nav-logo" to="/">Sunny Sales</Link>
-        <button
-          className="menu-toggle"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Menu"
-        >
-          <FiMenu />
-        </button>
 
-        {/* (em português) Links de navegação para as páginas informativas */}
-        <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
-          <Link
-            className="nav-link"
+        <div className={`nav-links ${menuOpen ? 'open' : ''}`} ref={navLinksRef}>
+          <NavLink
+            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/sobre-projeto"
-            onClick={() => setMenuOpen(false)}
           >
             Sobre o Projeto
-          </Link>
-          <Link
-            className="nav-link"
+          </NavLink>
+          <NavLink
+            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/sustentabilidade"
-            onClick={() => setMenuOpen(false)}
           >
             Sustentabilidade
-          </Link>
-          <Link
-            className="nav-link"
+          </NavLink>
+          <NavLink
+            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/implementacao"
-            onClick={() => setMenuOpen(false)}
           >
             Implementar
-          </Link>
+          </NavLink>
         </div>
 
-        <Link to={profileLink} className="profile-icon" aria-label="Login">
-          <FiUser />
-        </Link>
+        <div className="nav-icons">
+          <Link to={profileLink} className="profile-icon" aria-label="Perfil">
+            <FiUser size={18} />
+          </Link>
+          <button
+            className="menu-toggle"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? <FiX size={22} /> : <FiMenu size={22} />}
+          </button>
+        </div>
       </nav>
 
-      {/* (em português) Container central da aplicação */}
+      {/* Backdrop overlay for mobile menu */}
+      <div
+        className={`nav-overlay${menuOpen ? ' visible' : ''}`}
+        onClick={() => setMenuOpen(false)}
+        aria-hidden="true"
+      />
+
       <div className="container">
         <Routes>
-          {/* (em português) Página principal com layout moderno */}
           <Route path="/" element={<ModernMapLayout />} />
           <Route path="/about" element={<About />} />
           <Route path="/sobre-projeto" element={<SobreProjeto />} />
@@ -148,4 +175,3 @@ function AppLayout() {
     </div>
   );
 }
-
