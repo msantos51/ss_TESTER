@@ -109,13 +109,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await api.post("/vendors/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      // Após registo, efetuar login para obter token e dados do vendedor
-      await login(email, password);
     } catch (error: any) {
-      console.error("Erro no registo:", error.message || error);
+      const detail = error?.response?.data?.detail;
       throw new Error(
-        "Não foi possível registar. Verifica a internet ou o servidor."
+        detail || "Não foi possível registar. Verifica a internet ou o servidor."
       );
     }
   };

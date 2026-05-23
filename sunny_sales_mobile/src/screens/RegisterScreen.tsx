@@ -3,21 +3,15 @@ import { View, Text, StyleSheet, TextInput, Button, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { AuthContext } from '../context/AuthContext';
 
-/**
- * Ecrã responsável pelo registo de novos utilizadores.
- * Contém formulário com nome, email e palavra-passe.
- */
 export default function RegisterScreen({ navigation }: any) {
-  // Estados locais para os campos do formulário
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // Campo para o produto vendido
   const [product, setProduct] = useState('');
-  // URI da foto de perfil escolhida
   const [photo, setPhoto] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  // Função de registo disponibilizada pelo contexto
   const { register } = useContext(AuthContext);
 
   // Abre a galeria para o utilizador escolher uma foto
@@ -32,35 +26,45 @@ export default function RegisterScreen({ navigation }: any) {
     }
   };
 
-  // Trata o envio do formulário
   const handleRegister = async () => {
+    setError(null);
     try {
       if (!photo) {
-        throw new Error('É necessária uma foto de perfil.');
+        setError('É necessária uma foto de perfil.');
+        return;
       }
       await register(name, email, password, product, photo);
-      // Após registo, volta ao mapa
-      navigation.navigate('Map');
-    } catch (error) {
-      console.error('Erro no registo:', error);
+      setSuccess(true);
+    } catch (err: any) {
+      setError(err.message || 'Erro ao criar conta.');
     }
   };
 
+  if (success) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Registo efetuado!</Text>
+        <Text style={{ textAlign: 'center', marginBottom: 16 }}>
+          Verifique o seu email para confirmar a conta antes de iniciar sessão.
+        </Text>
+        <Button title="Ir para o Login" onPress={() => navigation.navigate('Login')} />
+      </View>
+    );
+  }
+
   return (
-    // Estrutura principal do ecrã
     <View style={styles.container}>
-      {/* Título do formulário */}
       <Text style={styles.title}>Registo</Text>
 
-      {/* Campo para o nome do utilizador */}
+      {error && <Text style={styles.error}>{error}</Text>}
+
       <TextInput
         style={styles.input}
-        placeholder="Name"
+        placeholder="Nome"
         value={name}
         onChangeText={setName}
       />
 
-      {/* Campo para o email */}
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -70,27 +74,23 @@ export default function RegisterScreen({ navigation }: any) {
         keyboardType="email-address"
       />
 
-      {/* Campo para a palavra-passe */}
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder="Palavra-passe"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
 
-      {/* Campo para o produto */}
       <TextInput
         style={styles.input}
-        placeholder="Product"
+        placeholder="Produto"
         value={product}
         onChangeText={setProduct}
       />
 
-      {/* Botão para escolher a foto de perfil */}
       <Button title="Selecionar Foto" onPress={pickPhoto} />
 
-      {/* Pré-visualização da foto escolhida */}
       {photo && (
         <Image
           source={{ uri: photo }}
@@ -98,16 +98,13 @@ export default function RegisterScreen({ navigation }: any) {
         />
       )}
 
-      {/* Botão que executa o registo */}
       <Button title="Registar" onPress={handleRegister} />
 
-      {/* Botão para voltar ao ecrã de login */}
       <Button title="Voltar ao Login" onPress={() => navigation.navigate('Login')} />
     </View>
   );
 }
 
-// Estilos utilizados neste ecrã
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -125,5 +122,10 @@ const styles = StyleSheet.create({
     padding: 8,
     marginBottom: 12,
     borderRadius: 4,
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 12,
   },
 });
