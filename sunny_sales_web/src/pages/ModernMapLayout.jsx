@@ -17,6 +17,14 @@ function getClientPinHtml(heading) {
   return `<div class="user-location-marker"><div class="user-location-pulse"></div><div class="user-location-dot">${arrow}</div></div>`;
 }
 
+function getVendorPinHtml(color, heading) {
+  const hasHeading = heading !== null && !isNaN(heading);
+  const arrow = hasHeading
+    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(${Math.round(heading)}deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
+    : '';
+  return `<div class="vendor-location-marker"><div class="vendor-location-dot" style="background:${color}">${arrow}</div></div>`;
+}
+
 // Layout principal com mapa e lista de vendedores online
 export default function ModernMapLayout() {
   const [vendors, setVendors] = useState([]);
@@ -238,19 +246,27 @@ export default function ModernMapLayout() {
               <Popup>Você está aqui</Popup>
             </Marker>
           )}
-          {filteredVendors.map((v) => (
-            <Marker
-              key={v.id}
-              position={[v.current_lat, v.current_lng]}
-              icon={L.divIcon({
-                className: 'vendor-pin',
-                html: `<div style="background:${v.pin_color || '#FFB6C1'};width:16px;height:16px;border-radius:50%;"></div>`,
-              })}
-              eventHandlers={{
-                click: () => focusVendor(v),
-              }}
-            />
-          ))}
+          {filteredVendors.map((v) => {
+            const isOwn = loggedVendor && Number(v.id) === Number(loggedVendor.id);
+            const pinColor = v.pin_color || '#FFB6C1';
+            return (
+              <Marker
+                key={v.id}
+                position={[v.current_lat, v.current_lng]}
+                icon={L.divIcon({
+                  className: isOwn ? 'vendor-own-pin' : 'vendor-pin',
+                  html: isOwn
+                    ? getVendorPinHtml(pinColor, heading)
+                    : `<div style="background:${pinColor};width:16px;height:16px;border-radius:50%;"></div>`,
+                  iconSize: isOwn ? [50, 50] : [16, 16],
+                  iconAnchor: isOwn ? [25, 25] : [8, 8],
+                })}
+                eventHandlers={{
+                  click: () => focusVendor(v),
+                }}
+              />
+            );
+          })}
 
           {!isVendorLogged && (
             <>
