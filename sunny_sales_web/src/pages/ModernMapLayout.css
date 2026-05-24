@@ -298,9 +298,32 @@ body {
 
 /* ── Client / user location pin ───────────────────────── */
 
-.client-pin {
+.client-pin,
+.vendor-own-pin {
   background: transparent !important;
   border: none !important;
+}
+
+.vendor-location-marker {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vendor-location-dot {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2.5px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
 }
 
 .user-location-marker {
