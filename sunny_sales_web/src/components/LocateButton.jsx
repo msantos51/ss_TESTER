@@ -30,7 +30,7 @@ export default function LocateButton({ onLocationFound, onClick }) {
 
     map.once('locationfound', onFound);
     map.once('locationerror', onError);
-    map.locate({ enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 });
+    map.locate({ enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
   };
 
   // Renderização do botão de localização

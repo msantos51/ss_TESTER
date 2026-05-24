@@ -9,6 +9,14 @@ import LocateHint from '../components/LocateHint';
 import BeachConditions from '../components/BeachConditions';
 import './ModernMapLayout.css';
 
+function getClientPinHtml(heading) {
+  const hasHeading = heading !== null && !isNaN(heading);
+  const arrow = hasHeading
+    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(${Math.round(heading)}deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
+    : '';
+  return `<div class="user-location-marker"><div class="user-location-pulse"></div><div class="user-location-dot">${arrow}</div></div>`;
+}
+
 // Layout principal com mapa e lista de vendedores online
 export default function ModernMapLayout() {
   const [vendors, setVendors] = useState([]);
@@ -17,6 +25,8 @@ export default function ModernMapLayout() {
   const [selected, setSelected] = useState(null);
 
   const [clientPos, setClientPos] = useState(null);
+  const [heading, setHeading] = useState(null);
+  const lastHeadingTs = useRef(0);
   const [showLocateHint, setShowLocateHint] = useState(false);
   // Verifica se o utilizador autenticado é um vendedor. Se sim, ocultamos o
   // pin de cliente para evitar marcadores duplicados no mapa.
@@ -87,27 +97,45 @@ export default function ModernMapLayout() {
   }, []);
 
   useEffect(() => {
-    let watchId;
-    if (navigator.geolocation) {
-      const updatePosition = (pos) => {
-        const coords = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        };
-        setClientPos(coords);
-        if (mapRef.current) {
-          mapRef.current.setView([coords.lat, coords.lng]);
+    if (!navigator.geolocation) return;
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        setClientPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        const gpsH = pos.coords.heading;
+        if (gpsH != null && !isNaN(gpsH)) {
+          const now = Date.now();
+          if (now - lastHeadingTs.current >= 200) {
+            lastHeadingTs.current = now;
+            setHeading(gpsH);
+          }
         }
-      };
+      },
+      (err) => console.error('Erro localização:', err),
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+    );
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
 
-      watchId = navigator.geolocation.watchPosition(
-        updatePosition,
-        (err) => console.error('Erro localização:', err),
-        { enableHighAccuracy: true, maximumAge: 1000 }
-      );
-    }
+  useEffect(() => {
+    const onOrientation = (e) => {
+      const now = Date.now();
+      if (now - lastHeadingTs.current < 200) return;
+      lastHeadingTs.current = now;
+      if (e.webkitCompassHeading != null) {
+        setHeading(e.webkitCompassHeading);
+      }
+    };
+    const onAbsolute = (e) => {
+      const now = Date.now();
+      if (now - lastHeadingTs.current < 200) return;
+      lastHeadingTs.current = now;
+      if (e.alpha != null) setHeading((360 - e.alpha) % 360);
+    };
+    window.addEventListener('deviceorientation', onOrientation, true);
+    window.addEventListener('deviceorientationabsolute', onAbsolute, true);
     return () => {
-      if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
+      window.removeEventListener('deviceorientation', onOrientation, true);
+      window.removeEventListener('deviceorientationabsolute', onAbsolute, true);
     };
   }, []);
 
@@ -202,8 +230,9 @@ export default function ModernMapLayout() {
               position={[clientPos.lat, clientPos.lng]}
               icon={L.divIcon({
                 className: 'client-pin',
-                html:
-                  '<div style="background:#1976d2;width:24px;height:24px;border-radius:50%;border:2px solid white"></div>',
+                html: getClientPinHtml(heading),
+                iconSize: [50, 50],
+                iconAnchor: [25, 25],
               })}
             >
               <Popup>Você está aqui</Popup>
