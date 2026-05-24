@@ -24,20 +24,25 @@ export default function MapScreen() {
   const PRODUCTS = ['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'];
   const [selectedProducts, setSelectedProducts] = useState<string[]>([...PRODUCTS]);
   const [region, setRegion] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [heading, setHeading] = useState<number | null>(null);
   const [markers, setMarkers] = useState<Record<number, VendorMarker>>({});
   const vendorInfo = useRef<Record<number, Vendor>>({});
   const webViewRef = useRef<WebView>(null);
+  const shouldRecenterRef = useRef(true);
 
   /**
-   * Obtém a localização atual e atualiza o estado para recentrar o mapa.
-   * Também envia a nova região para o WebView através do useEffect existente.
+   * Centra o mapa na posição atual com alta precisão.
    */
   const handleLocate = async () => {
+    shouldRecenterRef.current = true;
     try {
       const loc = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
+        accuracy: Location.Accuracy.BestForNavigation,
       });
       setRegion({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
+      if (loc.coords.heading != null && !isNaN(loc.coords.heading)) {
+        setHeading(loc.coords.heading);
+      }
     } catch (error: any) {
       console.warn('⚠️ Não foi possível obter a localização atual.', error.message);
     }
@@ -52,24 +57,40 @@ export default function MapScreen() {
     );
   };
 
-  // Obter permissões e localização inicial
+  // Tracking contínuo de localização com heading
   useEffect(() => {
-    const loadLocation = async () => {
-      try {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          console.log('Permissão de localização negada');
-          return;
-        }
-        const loc = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.High,
-        });
-        setRegion({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
-      } catch (error: any) {
-        console.warn('⚠️ Erro ao obter localização. Verifica se o GPS está ligado.', error.message);
+    let sub: Location.LocationSubscription | null = null;
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permissão de localização negada');
+        return;
       }
-    };
-    loadLocation();
+      // Localização inicial rápida para mostrar o mapa rapidamente
+      try {
+        const initial = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+        setRegion({ latitude: initial.coords.latitude, longitude: initial.coords.longitude });
+      } catch (e) {
+        console.warn('Erro na localização inicial', e);
+      }
+      // Tracking contínuo com alta precisão e heading
+      sub = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.BestForNavigation,
+          timeInterval: 1000,
+          distanceInterval: 1,
+        },
+        (loc) => {
+          setRegion({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
+          if (loc.coords.heading != null && !isNaN(loc.coords.heading)) {
+            setHeading(loc.coords.heading);
+          }
+        }
+      );
+    })();
+    return () => { sub?.remove(); };
   }, []);
 
   // Carregar vendedores
@@ -126,14 +147,18 @@ export default function MapScreen() {
     return () => ws.close();
   }, []);
 
-  // Enviar localização para o WebView
+  // Enviar posição + heading para o WebView
   useEffect(() => {
     if (region && webViewRef.current) {
       webViewRef.current.postMessage(
-        JSON.stringify({ type: 'region', data: region })
+        JSON.stringify({
+          type: 'region',
+          data: { ...region, heading, recenter: shouldRecenterRef.current },
+        })
       );
+      shouldRecenterRef.current = false;
     }
-  }, [region]);
+  }, [region, heading]);
 
   // Enviar marcadores filtrados para o WebView
   useEffect(() => {
@@ -167,6 +192,11 @@ export default function MapScreen() {
           .popup { text-align: center; }
           .active { color: green; }
           .inactive { color: red; }
+          .client-pin { background: transparent !important; border: none !important; }
+          .ulm { position:relative; width:50px; height:50px; display:flex; align-items:center; justify-content:center; }
+          .ulm-pulse { position:absolute; width:46px; height:46px; border-radius:50%; background:rgba(25,118,210,0.22); animation:ulm-pulse 2s ease-out infinite; pointer-events:none; }
+          .ulm-dot { position:relative; width:22px; height:22px; border-radius:50%; background:#1976d2; border:2.5px solid white; box-shadow:0 2px 8px rgba(25,118,210,0.55); display:flex; align-items:center; justify-content:center; z-index:1; }
+          @keyframes ulm-pulse { 0%{transform:scale(0.4);opacity:1} 100%{transform:scale(1.4);opacity:0} }
         </style>
       </head>
       <body>
@@ -177,6 +207,15 @@ export default function MapScreen() {
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
           var markers = {};
           var userMarker = null;
+
+          function getUserPinHtml(h) {
+            var hasH = h != null && !isNaN(h);
+            var arrow = hasH
+              ? '<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(' + Math.round(h) + 'deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>'
+              : '';
+            return '<div class="ulm"><div class="ulm-pulse"></div><div class="ulm-dot">' + arrow + '</div></div>';
+          }
+
           function updateMarkers(data) {
             var ids = new Set();
             data.forEach(function(m){
@@ -202,19 +241,27 @@ export default function MapScreen() {
               }
             }
           }
+
           document.addEventListener('message', function(event){
             var msg = JSON.parse(event.data);
             if (msg.type === 'region') {
-              map.setView([msg.data.latitude, msg.data.longitude], 15);
+              var lat = msg.data.latitude;
+              var lng = msg.data.longitude;
+              var h = msg.data.heading;
+              var icon = L.divIcon({
+                className: 'client-pin',
+                html: getUserPinHtml(h),
+                iconSize: [50, 50],
+                iconAnchor: [25, 25],
+              });
               if (userMarker) {
-                userMarker.setLatLng([msg.data.latitude, msg.data.longitude]);
+                userMarker.setLatLng([lat, lng]);
+                userMarker.setIcon(icon);
               } else {
-                userMarker = L.marker([msg.data.latitude, msg.data.longitude], {
-                  icon: L.divIcon({
-                    className: 'client-pin',
-                    html: '<div style="background:#1976d2;width:24px;height:24px;border-radius:50%;border:2px solid white"></div>'
-                  })
-                }).addTo(map);
+                userMarker = L.marker([lat, lng], { icon: icon }).addTo(map);
+              }
+              if (msg.data.recenter) {
+                map.setView([lat, lng], 15);
               }
             } else if (msg.type === 'markers') {
               updateMarkers(msg.data);
@@ -275,7 +322,7 @@ return (
     </TouchableOpacity>
   </View>
 );
-}  // ✅ aqui fecha a função MapScreen
+}
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -320,4 +367,3 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 });
-
