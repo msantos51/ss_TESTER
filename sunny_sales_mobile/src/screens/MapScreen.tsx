@@ -40,9 +40,6 @@ export default function MapScreen() {
         accuracy: Location.Accuracy.BestForNavigation,
       });
       setRegion({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
-      if (loc.coords.heading != null && !isNaN(loc.coords.heading)) {
-        setHeading(loc.coords.heading);
-      }
     } catch (error: any) {
       console.warn('⚠️ Não foi possível obter a localização atual.', error.message);
     }
@@ -57,9 +54,10 @@ export default function MapScreen() {
     );
   };
 
-  // Tracking contínuo de localização com heading
+  // Tracking contínuo de localização e bússola
   useEffect(() => {
     let sub: Location.LocationSubscription | null = null;
+    let headingSub: Location.LocationSubscription | null = null;
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -75,7 +73,7 @@ export default function MapScreen() {
       } catch (e) {
         console.warn('Erro na localização inicial', e);
       }
-      // Tracking contínuo com alta precisão e heading
+      // Tracking contínuo com alta precisão
       sub = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.BestForNavigation,
@@ -84,13 +82,18 @@ export default function MapScreen() {
         },
         (loc) => {
           setRegion({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
-          if (loc.coords.heading != null && !isNaN(loc.coords.heading)) {
-            setHeading(loc.coords.heading);
-          }
         }
       );
+      // Bússola: direção para onde o dispositivo está virado (independente do movimento)
+      headingSub = await Location.watchHeadingAsync((headingData) => {
+        const h = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
+        setHeading(h);
+      });
     })();
-    return () => { sub?.remove(); };
+    return () => {
+      sub?.remove();
+      headingSub?.remove();
+    };
   }, []);
 
   // Carregar vendedores
