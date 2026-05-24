@@ -46,8 +46,13 @@ export default function VendorRegister() {
       return;
     }
 
-    if (password.length < 8 || password.toLowerCase() === password) {
-      setError('A palavra-passe deve ter pelo menos 8 caracteres e uma letra maiúscula');
+    if (!photo) {
+      setError('É necessária uma foto de perfil.');
+      return;
+    }
+
+    if (password.length < 8 || password.toLowerCase() === password || !/\d/.test(password)) {
+      setError('A palavra-passe deve ter pelo menos 8 caracteres, uma letra maiúscula e um número');
       return;
     }
 
@@ -57,10 +62,8 @@ export default function VendorRegister() {
     formData.append('password', password);
     formData.append('product', product);
 
-    if (photo) {
-      const file = new File([photo], 'profile.jpg', { type: 'image/jpeg' });
-      formData.append('profile_photo', file);
-    }
+    const file = new File([photo], 'profile.jpg', { type: 'image/jpeg' });
+    formData.append('profile_photo', file);
 
     try {
       await axios.post(`${BASE_URL}/vendors/`, formData, {
