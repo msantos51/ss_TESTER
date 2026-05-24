@@ -29,6 +29,8 @@ export default function MapScreen() {
   const vendorInfo = useRef<Record<number, Vendor>>({});
   const webViewRef = useRef<WebView>(null);
   const shouldRecenterRef = useRef(true);
+  // True enquanto o GPS fornecer curso válido; evita que a bússola substitua o GPS durante o movimento
+  const gpsCourseActiveRef = useRef(false);
 
   /**
    * Centra o mapa na posição atual com alta precisão.
@@ -77,17 +79,26 @@ export default function MapScreen() {
       sub = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.BestForNavigation,
-          timeInterval: 1000,
-          distanceInterval: 1,
+          timeInterval: 500,
+          distanceInterval: 0.5,
         },
         (loc) => {
           setRegion({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
+          // Curso GPS: direção real de deslocamento (válido quando em movimento)
+          if (loc.coords.heading != null && loc.coords.heading >= 0) {
+            gpsCourseActiveRef.current = true;
+            setHeading(loc.coords.heading);
+          } else {
+            gpsCourseActiveRef.current = false;
+          }
         }
       );
-      // Bússola: direção para onde o dispositivo está virado (independente do movimento)
+      // Bússola: usada apenas quando o GPS não fornece curso (ex: dispositivo parado)
       headingSub = await Location.watchHeadingAsync((headingData) => {
-        const h = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
-        setHeading(h);
+        if (!gpsCourseActiveRef.current) {
+          const h = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
+          setHeading(h);
+        }
       });
     })();
     return () => {
@@ -245,7 +256,8 @@ export default function MapScreen() {
             }
           }
 
-          document.addEventListener('message', function(event){
+          // Android envia para window, iOS para document — ouvir ambos garante compatibilidade
+          function handleMessage(event) {
             var msg = JSON.parse(event.data);
             if (msg.type === 'region') {
               var lat = msg.data.latitude;
@@ -269,7 +281,9 @@ export default function MapScreen() {
             } else if (msg.type === 'markers') {
               updateMarkers(msg.data);
             }
-          });
+          }
+          window.addEventListener('message', handleMessage);
+          document.addEventListener('message', handleMessage);
         </script>
       </body>
     </html>
