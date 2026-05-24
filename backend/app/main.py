@@ -86,22 +86,20 @@ if WEB_DIST.is_dir():
     if assets_path.is_dir():
         app.mount("/assets", StaticFiles(directory=str(assets_path)), name="assets")
 
-    # Página principal da SPA
-    @app.get("/", response_class=HTMLResponse, include_in_schema=False)
-    async def serve_index():
-        return FileResponse(WEB_DIST / "index.html")
+# Criar as tabelas na base de dados (com retry para quando a BD ainda não está disponível)
+def _init_db(max_retries: int = 5, retry_delay: int = 5) -> None:
+    for attempt in range(max_retries):
+        try:
+            models.Base.metadata.create_all(bind=engine)
+            ensure_latest_schema()
+            return
+        except Exception as exc:
+            if attempt == max_retries - 1:
+                raise
+            print(f"⚠️  Base de dados não disponível (tentativa {attempt + 1}/{max_retries}): {exc}. A aguardar {retry_delay}s...")
+            time.sleep(retry_delay)
 
-    # Para rotas de SPA como /dashboard funcionarem após refresh
-    @app.get("/{path_name:path}", response_class=HTMLResponse, include_in_schema=False)
-    async def serve_spa(path_name: str):
-        file_path = WEB_DIST / path_name
-        if file_path.is_file():
-            return FileResponse(file_path)
-        return FileResponse(WEB_DIST / "index.html")
-
-# Criar as tabelas na base de dados
-models.Base.metadata.create_all(bind=engine)
-ensure_latest_schema()
+_init_db()
 
 # Contexto para hash de password
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -1027,3 +1025,20 @@ def admin_deactivate_vendor(vendor_id: int, db: Session = Depends(get_db), admin
 @app.get("/vendors/me", response_model=schemas.VendorOut)
 def get_my_vendor_profile(current_vendor: models.Vendor = Depends(get_current_vendor)):
     return current_vendor
+
+
+# --------------------------
+# SPA: servir o frontend React (deve ficar APÓS todas as rotas de API para
+# não interceptar chamadas como GET /vendors/ ou GET /vendors/me)
+# --------------------------
+if WEB_DIST.is_dir():
+    @app.get("/", response_class=HTMLResponse, include_in_schema=False)
+    async def serve_index():
+        return FileResponse(WEB_DIST / "index.html")
+
+    @app.get("/{path_name:path}", response_class=HTMLResponse, include_in_schema=False)
+    async def serve_spa(path_name: str):
+        file_path = WEB_DIST / path_name
+        if file_path.is_file():
+            return FileResponse(file_path)
+        return FileResponse(WEB_DIST / "index.html")
