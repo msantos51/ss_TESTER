@@ -338,8 +338,6 @@ def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     )
     if not vendor or not pwd_context.verify(credentials.password, vendor.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
-    if not vendor.email_confirmed:
-        raise HTTPException(status_code=400, detail="Email not confirmed")
     return vendor
 
 # --------------------------
@@ -377,8 +375,6 @@ async def generate_token(
     vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
     if not vendor or not pwd_context.verify(password, vendor.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
-    if not vendor.email_confirmed:
-        raise HTTPException(status_code=400, detail="Email not confirmed")
     token = create_access_token({"sub": vendor.id})
     session = models.VendorSession(
         vendor_id=vendor.id, token=token, user_agent=request.headers.get("user-agent")
@@ -465,18 +461,11 @@ async def create_vendor(
         product=product,
         profile_photo=public_path,
         pin_color="#FFB6C1",
-        confirmation_token=token_urlsafe(32),
+        email_confirmed=True,
     )
     db.add(new_vendor)
     db.commit()
     db.refresh(new_vendor)
-
-    confirm_link = f"{os.getenv('BASE_URL', 'http://localhost:8000')}/confirm-email/{new_vendor.confirmation_token}"
-    send_email(
-        new_vendor.email,
-        "Confirme o seu registro",
-        f"Clique no link para confirmar sua conta:\n{confirm_link}",
-    )
     return new_vendor
 
 
@@ -508,18 +497,13 @@ async def password_reset_request(
     if not email:
         raise HTTPException(status_code=422, detail="Email is required")
     vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
+    reset_link = None
     if vendor:
         vendor.password_reset_token = token_urlsafe(32)
         vendor.password_reset_expires = utcnow() + timedelta(hours=1)
         db.commit()
         reset_link = f"{os.getenv('BASE_URL', 'http://localhost:8000')}/password-reset/{vendor.password_reset_token}"
-        send_email(
-            vendor.email,
-            "Redefinição de senha",
-            f"Clique no link para alterar sua senha:\n{reset_link}",
-        )
-    # Sempre retornar 200 para não revelar se o email existe
-    return {"message": "E-mail de recuperação enviado"}
+    return {"message": "Link de recuperação gerado (modo de teste)", "reset_link": reset_link}
 
 
 @app.post("/password-reset/{token}")
