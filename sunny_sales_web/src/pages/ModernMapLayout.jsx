@@ -148,7 +148,9 @@ export default function ModernMapLayout() {
   }, []);
 
 
-  const activeVendors = vendors.filter((v) => v.current_lat && v.current_lng);
+  const activeVendors = Array.isArray(vendors)
+    ? vendors.filter((v) => v.current_lat && v.current_lng)
+    : [];
 
   let loggedVendor = null;
   if (isVendorLogged) {
