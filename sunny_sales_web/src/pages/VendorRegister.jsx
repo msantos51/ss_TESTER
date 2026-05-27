@@ -79,10 +79,15 @@ export default function VendorRegister() {
       setPhoto(null);
     } catch (err) {
       console.error('Erro:', err);
-      if (err.response?.data?.detail) {
-        setError(err.response.data.detail);
+      const detail = err.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        setError(detail.map((e) => e.msg).join('; '));
+      } else if (detail) {
+        setError(detail);
+      } else if (err.response) {
+        setError(`Erro ${err.response.status} ao registar. Tente novamente.`);
       } else {
-        setError('Erro ao registar. Tente novamente.');
+        setError('Sem resposta do servidor. Verifica a tua ligação à internet.');
       }
     }
   };
