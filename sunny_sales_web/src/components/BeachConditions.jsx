@@ -95,7 +95,12 @@ export default function BeachConditions() {
     fetchData();
   }, [selected]);
 
-  if (loading) return <div className="bc-container">A carregar...</div>;
+  if (loading) return (
+    <div className="bc-container bc-loading">
+      <div className="bc-spinner" />
+      A carregar...
+    </div>
+  );
 
   if (error)
     return (

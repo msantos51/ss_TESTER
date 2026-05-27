@@ -7,7 +7,15 @@ import LocateButton from '../components/LocateButton';
 import VendorLocateButton from '../components/VendorLocateButton';
 import LocateHint from '../components/LocateHint';
 import BeachConditions from '../components/BeachConditions';
+import { FiUsers, FiSettings, FiGlobe } from 'react-icons/fi';
+import { GiIceCreamCone } from 'react-icons/gi';
 import './ModernMapLayout.css';
+
+const PRODUCT_ICONS = {
+  'Bolas de Berlim': FiSettings,
+  'Gelados': GiIceCreamCone,
+  'Acessórios de Praia': FiGlobe,
+};
 
 function getClientPinHtml(heading) {
   const hasHeading = heading !== null && !isNaN(heading);
@@ -199,26 +207,35 @@ export default function ModernMapLayout() {
       <div className="map-wrapper">
         {!isVendorLogged && (
           <div className="filters">
-            <p className="filters-subtitle">Vendedores:</p>
-            {PRODUCTS.map((p, idx) => (
-              <div key={p} className="checkbox-wrapper-46">
-                <input
-                  id={`filter-${idx}`}
-                  type="checkbox"
-                  className="inp-cbx"
-                  checked={selectedProducts.includes(p)}
-                  onChange={() => toggleProduct(p)}
-                />
-                <label htmlFor={`filter-${idx}`} className="cbx">
-                  <span>
-                    <svg viewBox="0 0 12 10">
-                      <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                    </svg>
-                  </span>
-                  <span>{p}</span>
-                </label>
-              </div>
-            ))}
+            <div className="filters-header">
+              <FiUsers size={15} />
+              VENDEDORES
+            </div>
+            {PRODUCTS.map((p, idx) => {
+              const Icon = PRODUCT_ICONS[p];
+              return (
+                <div key={p} className="filter-item">
+                  <div className="checkbox-wrapper-46">
+                    <input
+                      id={`filter-${idx}`}
+                      type="checkbox"
+                      className="inp-cbx"
+                      checked={selectedProducts.includes(p)}
+                      onChange={() => toggleProduct(p)}
+                    />
+                    <label htmlFor={`filter-${idx}`} className="cbx">
+                      <span>
+                        <svg viewBox="0 0 12 10">
+                          <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                        </svg>
+                      </span>
+                      <span>{p}</span>
+                    </label>
+                  </div>
+                  {Icon && <Icon className="filter-icon" size={16} />}
+                </div>
+              );
+            })}
           </div>
         )}
 
