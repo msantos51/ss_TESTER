@@ -105,6 +105,8 @@ export default function BeachConditions() {
       </div>
     );
 
+  if (!weather) return null;
+
   return (
     <div className="bc-container">
 
