@@ -1,5 +1,5 @@
-// (em português) Componente de rodapé que apresenta mensagens rotativas de sensibilização ambiental
 import { useState, useEffect } from 'react';
+import { FiRefreshCw } from 'react-icons/fi';
 import './Footer.css';
 
 const messages = [
@@ -67,10 +67,11 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer
-      className="footer-wrapper"
-    >
-      <div className="footer-message">{messages[index]}</div>
+    <footer className="footer-wrapper">
+      <div className="footer-message">
+        <FiRefreshCw size={13} className="footer-icon" />
+        {messages[index]}
+      </div>
     </footer>
   );
 }

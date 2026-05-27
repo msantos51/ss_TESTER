@@ -6,7 +6,7 @@ import {
   NavLink,
   useLocation,
 } from 'react-router-dom';
-import { FiUser, FiMenu, FiX } from 'react-icons/fi';
+import { FiUser, FiMenu, FiX, FiInfo, FiTool, FiDroplet, FiSun } from 'react-icons/fi';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { BASE_URL } from './config';
@@ -99,25 +99,33 @@ function AppLayout() {
   return (
     <div className="wrapper">
       <nav className="navbar">
-        <Link className="nav-logo" to="/">Sunny Sales</Link>
+        <Link className="nav-logo" to="/">
+          <span className="nav-logo-icon"><FiSun size={22} /></span>
+          Sunny Sales
+        </Link>
 
         <div className={`nav-links ${menuOpen ? 'open' : ''}`} ref={navLinksRef}>
           <NavLink
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/sobre-projeto"
           >
+            <FiInfo size={14} className="nav-link-icon" />
             Sobre o Projeto
           </NavLink>
+          <span className="nav-divider">|</span>
           <NavLink
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/sustentabilidade"
           >
+            <FiDroplet size={14} className="nav-link-icon" />
             Sustentabilidade
           </NavLink>
+          <span className="nav-divider">|</span>
           <NavLink
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/implementacao"
           >
+            <FiTool size={14} className="nav-link-icon" />
             Implementar
           </NavLink>
         </div>

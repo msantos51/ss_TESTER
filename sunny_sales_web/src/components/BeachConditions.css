@@ -13,6 +13,30 @@
   animation: fadeIn 0.3s ease;
 }
 
+.bc-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 14px 24px;
+}
+
+.bc-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid var(--border-strong);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: bc-spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes bc-spin {
+  to { transform: rotate(360deg); }
+}
+
 .bc-selector {
   margin-bottom: 12px;
 }
