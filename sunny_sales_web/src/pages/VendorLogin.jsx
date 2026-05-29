@@ -1,7 +1,7 @@
 // (em português) Página Web para login de vendedores
 
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import LoadingDots from '../components/LoadingDots';
@@ -125,11 +125,6 @@ export default function VendorLogin() {
           Registar
         </button>
 
-        <div style={{ marginTop: '1rem' }}>
-          <Link to="/forgot-password" style={{ textDecoration: 'underline' }}>
-            Esqueci-me da palavra-passe
-          </Link>
-        </div>
       </div>
     </div>
   );
