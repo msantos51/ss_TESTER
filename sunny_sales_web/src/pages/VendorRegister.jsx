@@ -71,7 +71,7 @@ export default function VendorRegister() {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setSuccess('Registo efetuado com sucesso! Verifique o seu email.');
+      setSuccess('Registo efetuado com sucesso!');
       setName('');
       setEmail('');
       setPassword('');

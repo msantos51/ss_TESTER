@@ -13,7 +13,6 @@ import { BASE_URL } from './config';
 import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
 import VendorLogin from './pages/VendorLogin';
-import ForgotPassword from './pages/ForgotPassword';
 import ManageAccount from './pages/ManageAccount';
 import EditProfileScreen from './pages/EditProfileScreen';
 import PaidWeeksScreen from './pages/PaidWeeksScreen.jsx';
@@ -164,7 +163,6 @@ function AppLayout() {
           <Route path="/vendor-login" element={<VendorLogin />} />
           <Route path="/vendor-register" element={<VendorRegister />} />
           <Route path="/register" element={<VendorRegister />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/account" element={<ManageAccount />} />
           <Route path="/edit-profile" element={<EditProfileScreen />} />
           <Route path="/paid-weeks" element={<PaidWeeksScreen />} />

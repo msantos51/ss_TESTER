@@ -44,7 +44,6 @@ export default function ModernMapLayout() {
   const [heading, setHeading] = useState(null);
   const lastHeadingTs = useRef(0);
   const [compassReady, setCompassReady] = useState(false);
-  const [needsCompassPermission, setNeedsCompassPermission] = useState(false);
   const [showLocateHint, setShowLocateHint] = useState(false);
   // Verifica se o utilizador autenticado é um vendedor. Se sim, ocultamos o
   // pin de cliente para evitar marcadores duplicados no mapa.
@@ -134,29 +133,44 @@ export default function ModernMapLayout() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
-  // iOS 13+ requires explicit user-gesture permission for DeviceOrientationEvent
+  // iOS 13+ requires a user gesture to call requestPermission for DeviceOrientationEvent.
+  // Try immediately (works when permission was already granted in a previous visit);
+  // if that throws (first visit), wait for the first touchstart anywhere on the page.
   useEffect(() => {
     if (
-      typeof DeviceOrientationEvent !== 'undefined' &&
-      typeof DeviceOrientationEvent.requestPermission === 'function'
+      typeof DeviceOrientationEvent === 'undefined' ||
+      typeof DeviceOrientationEvent.requestPermission !== 'function'
     ) {
-      setNeedsCompassPermission(true);
-    } else {
       setCompassReady(true);
+      return;
     }
-  }, []);
 
-  const requestCompassPermission = async () => {
-    try {
-      const result = await DeviceOrientationEvent.requestPermission();
-      if (result === 'granted') {
-        setCompassReady(true);
-        setNeedsCompassPermission(false);
+    let touchListener = null;
+
+    const tryRequest = async () => {
+      try {
+        const result = await DeviceOrientationEvent.requestPermission();
+        if (result === 'granted') setCompassReady(true);
+      } catch {
+        // Need a user gesture – attach a one-time touchstart listener
+        touchListener = async () => {
+          try {
+            const r = await DeviceOrientationEvent.requestPermission();
+            if (r === 'granted') setCompassReady(true);
+          } catch (e) {
+            console.error('Erro ao pedir permissão da bússola:', e);
+          }
+        };
+        document.addEventListener('touchstart', touchListener, { once: true });
       }
-    } catch (e) {
-      console.error('Erro ao pedir permissão da bússola:', e);
-    }
-  };
+    };
+
+    tryRequest();
+
+    return () => {
+      if (touchListener) document.removeEventListener('touchstart', touchListener);
+    };
+  }, []);
 
   useEffect(() => {
     if (!compassReady) return;
@@ -334,17 +348,6 @@ export default function ModernMapLayout() {
 
 
         </MapContainer>
-
-        {!isVendorLogged && needsCompassPermission && (
-          <button
-            className="compass-btn"
-            onClick={requestCompassPermission}
-            aria-label="Ativar bússola"
-            title="Ativar bússola"
-          >
-            🧭
-          </button>
-        )}
 
         {selected && (
           <div className="vendor-card">
