@@ -460,3 +460,18 @@ body {
     padding: 8px 10px;
   }
 }
+
+/* Move locate button above vendor card when both are visible */
+@media (max-width: 768px) {
+  .map-area:has(.vendor-card) .locate-btn,
+  .map-area:has(.vendor-card) .vendor-locate-btn {
+    bottom: 168px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-area:has(.vendor-card) .locate-btn,
+  .map-area:has(.vendor-card) .vendor-locate-btn {
+    bottom: 156px;
+  }
+}

@@ -1,15 +1,11 @@
-// (em português) Ecrã que lista semanas pagas e respetivos recibos (versão web)
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import BackHomeButton from '../components/BackHomeButton';
 
-// Mostra ao vendedor as semanas já pagas
 export default function PaidWeeksScreen() {
   const [weeks, setWeeks] = useState([]);
 
-  // Carrega as semanas pagas do vendedor
   const loadWeeks = async () => {
     const stored = localStorage.getItem('user');
     const token = localStorage.getItem('token');
@@ -30,18 +26,26 @@ export default function PaidWeeksScreen() {
   }, []);
 
   return (
-    <div style={styles.container}>
+    <div className="page-wrapper">
       <BackHomeButton />
       <h2>Semanas Pagas</h2>
-      <ul style={styles.list}>
+      {weeks.length === 0 && (
+        <p className="page-empty">Sem semanas pagas registadas.</p>
+      )}
+      <ul className="page-list">
         {weeks.map((item) => {
-          const start = new Date(item.start_date).toLocaleDateString();
-          const end = new Date(item.end_date).toLocaleDateString();
+          const start = new Date(item.start_date).toLocaleDateString('pt-PT');
+          const end = new Date(item.end_date).toLocaleDateString('pt-PT');
           return (
-            <li key={item.id} style={styles.item}>
-              <span>{start} - {end}</span>
+            <li key={item.id} className="page-list-item" style={{ cursor: 'default' }}>
+              <span className="page-list-item-title">{start} — {end}</span>
               {item.receipt_url && (
-                <a href={item.receipt_url} target="_blank" rel="noopener noreferrer" style={styles.link}>
+                <a
+                  href={item.receipt_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="page-link-btn"
+                >
                   Recibo
                 </a>
               )}
@@ -52,27 +56,3 @@ export default function PaidWeeksScreen() {
     </div>
   );
 }
-
-// (em português) Estilos simples para a versão web
-const styles = {
-  container: {
-    padding: '2rem',
-    fontFamily: 'Arial',
-  },
-  list: {
-    listStyle: 'none',
-    padding: 0,
-  },
-  item: {
-    padding: '1rem 0',
-    borderBottom: '1px solid #ccc',
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-  link: {
-    marginLeft: '1rem',
-    textDecoration: 'none',
-    color: '#19a0a4',
-    fontWeight: 'bold',
-  },
-};

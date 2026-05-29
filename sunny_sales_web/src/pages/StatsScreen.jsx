@@ -1,15 +1,12 @@
-// (em português) Página Web de estatísticas com gráfico de distâncias percorridas por dia
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import BackHomeButton from '../components/BackHomeButton';
 
-// Mostra gráfico de distâncias percorridas pelo vendedor
 export default function StatsScreen() {
   const [chartData, setChartData] = useState([]);
 
-  // Carrega os trajetos para gerar o gráfico
   const loadRoutes = async () => {
     const stored = localStorage.getItem('user');
     const token = localStorage.getItem('token');
@@ -20,17 +17,15 @@ export default function StatsScreen() {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
-      // agrupar por dia
       const daily = {};
       res.data.forEach((r) => {
         const date = r.start_time.split('T')[0];
         daily[date] = (daily[date] || 0) + r.distance_m;
       });
 
-      // preparar dados para o gráfico
       const sorted = Object.entries(daily).sort();
       const data = sorted.map(([date, dist]) => ({
-        date: date.slice(5), // MM-DD
+        date: date.slice(5),
         distance: Number((dist / 1000).toFixed(2)),
       }));
 
@@ -45,31 +40,32 @@ export default function StatsScreen() {
   }, []);
 
   return (
-    <div style={styles.container}>
+    <div className="page-wrapper">
       <BackHomeButton />
-      <h2 style={styles.title}>Distâncias percorridas por dia</h2>
+      <h2>Distâncias percorridas por dia</h2>
 
       {chartData.length > 0 ? (
-        <div style={{ width: '100%', height: 400 }}>
-          <ResponsiveContainer>
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis unit=" km" />
-              <Tooltip />
-              <Bar dataKey="distance" fill="#8884d8" />
+        <div className="chart-wrapper">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 20, right: 16, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'var(--text-secondary)' }} />
+              <YAxis unit=" km" tick={{ fontSize: 12, fill: 'var(--text-secondary)' }} />
+              <Tooltip
+                contentStyle={{
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.85rem',
+                }}
+              />
+              <Bar dataKey="distance" fill="var(--primary)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       ) : (
-        <p>Nenhum trajeto disponível</p>
+        <p className="page-empty">Nenhum trajeto disponível.</p>
       )}
     </div>
   );
 }
-
-// estilos
-const styles = {
-  container: { padding: '2rem', maxWidth: 800, margin: '0 auto' },
-  title: { fontSize: '1.5rem', marginBottom: '1rem' },
-};

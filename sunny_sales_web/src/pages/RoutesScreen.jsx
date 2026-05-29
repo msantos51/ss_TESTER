@@ -1,16 +1,13 @@
-// (em português) Página Web que lista os trajetos do vendedor autenticado
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import BackHomeButton from '../components/BackHomeButton';
 
-// Lista os trajetos registados pelo vendedor
 export default function RoutesScreen() {
   const [routes, setRoutes] = useState([]);
   const navigate = useNavigate();
 
-  // Obtém do backend os trajetos do vendedor
   const loadRoutes = async () => {
     const stored = localStorage.getItem('user');
     const token = localStorage.getItem('token');
@@ -32,24 +29,33 @@ export default function RoutesScreen() {
   }, []);
 
   return (
-    <div style={styles.container}>
+    <div className="page-wrapper">
       <BackHomeButton />
       <h2>Histórico de Trajetos</h2>
-      <ul style={styles.list}>
+      {routes.length === 0 && (
+        <p className="page-empty">Sem trajetos registados.</p>
+      )}
+      <ul className="page-list">
         {routes.map((route) => {
           const start = new Date(route.start_time);
           const end = route.end_time ? new Date(route.end_time) : null;
           const durationMin = end ? Math.round((end - start) / 60000) : 0;
-          const description = `${durationMin} min - ${(route.distance_m / 1000).toFixed(2)} km`;
 
           return (
             <li
               key={route.id}
-              style={styles.item}
+              className="page-list-item"
               onClick={() => navigate('/route-detail', { state: { route } })}
             >
-              <strong>{start.toLocaleString()}</strong>
-              <div>{description}</div>
+              <div className="page-list-item-main">
+                <span className="page-list-item-title">
+                  {start.toLocaleString('pt-PT')}
+                </span>
+                <span className="page-list-item-desc">
+                  {durationMin} min · {(route.distance_m / 1000).toFixed(2)} km
+                </span>
+              </div>
+              <span className="page-chevron">›</span>
             </li>
           );
         })}
@@ -57,14 +63,3 @@ export default function RoutesScreen() {
     </div>
   );
 }
-
-// estilos
-const styles = {
-  container: { padding: '1rem', maxWidth: '800px', margin: '0 auto' },
-  list: { listStyle: 'none', padding: 0 },
-  item: {
-    padding: '12px',
-    borderBottom: '1px solid #ccc',
-    cursor: 'pointer',
-  },
-};

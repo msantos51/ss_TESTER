@@ -684,3 +684,220 @@ h2 {
 /* ── Span util ───────────────────────────────────────── */
 .span { color: var(--text-secondary); text-decoration: none; }
 .span a { color: var(--text); }
+
+/* ── Back button ─────────────────────────────────────── */
+.back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color var(--transition), background var(--transition);
+  box-shadow: none;
+  min-height: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+.back-btn:hover {
+  color: var(--primary);
+  background: var(--primary-light);
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Secondary page layout ───────────────────────────── */
+
+.page-wrapper {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+.page-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.page-list-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  transition: box-shadow var(--transition), transform var(--transition);
+  box-shadow: var(--shadow-xs);
+}
+
+.page-list-item:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.page-list-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.page-list-item-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.page-list-item-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.page-list-item-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.page-empty {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  margin-top: 8px;
+}
+
+.page-link-btn {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--primary);
+  white-space: nowrap;
+  transition: background var(--transition), color var(--transition);
+  flex-shrink: 0;
+}
+.page-link-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.page-danger-btn {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #c62828;
+  background: rgba(239, 68, 68, 0.06);
+  border: 1.5px solid #ef5350;
+  border-radius: var(--radius-full);
+  padding: 5px 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+  min-height: auto;
+  box-shadow: none;
+  transition: background var(--transition);
+}
+.page-danger-btn:hover {
+  background: rgba(239, 68, 68, 0.14);
+  transform: none;
+  box-shadow: none;
+}
+
+.page-chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+/* ── Chart wrapper ───────────────────────────────────── */
+
+.chart-wrapper {
+  width: 100%;
+  height: 360px;
+  margin-top: 8px;
+}
+
+/* ── Route detail ────────────────────────────────────── */
+
+.route-map {
+  height: 400px;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.route-info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.route-info-row {
+  display: flex;
+  gap: 10px;
+  font-size: 0.9rem;
+  align-items: baseline;
+}
+
+.route-info-label {
+  font-weight: 700;
+  color: var(--text-secondary);
+  min-width: 80px;
+  flex-shrink: 0;
+  font-size: 0.82rem;
+}
+
+.route-info-value {
+  color: var(--text);
+  font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .page-wrapper {
+    padding: 0 0.75rem 2rem;
+  }
+
+  .page-list-item {
+    padding: 12px 14px;
+  }
+
+  .chart-wrapper {
+    height: 260px;
+  }
+
+  .route-map {
+    height: 260px;
+    border-radius: var(--radius-md);
+  }
+}
