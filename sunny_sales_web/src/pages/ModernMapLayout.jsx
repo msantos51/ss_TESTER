@@ -43,6 +43,8 @@ export default function ModernMapLayout() {
   const [clientPos, setClientPos] = useState(null);
   const [heading, setHeading] = useState(null);
   const lastHeadingTs = useRef(0);
+  const [compassReady, setCompassReady] = useState(false);
+  const [needsCompassPermission, setNeedsCompassPermission] = useState(false);
   const [showLocateHint, setShowLocateHint] = useState(false);
   // Verifica se o utilizador autenticado é um vendedor. Se sim, ocultamos o
   // pin de cliente para evitar marcadores duplicados no mapa.
@@ -120,7 +122,7 @@ export default function ModernMapLayout() {
         const gpsH = pos.coords.heading;
         if (gpsH != null && !isNaN(gpsH)) {
           const now = Date.now();
-          if (now - lastHeadingTs.current >= 200) {
+          if (now - lastHeadingTs.current >= 100) {
             lastHeadingTs.current = now;
             setHeading(gpsH);
           }
@@ -132,10 +134,36 @@ export default function ModernMapLayout() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
+  // iOS 13+ requires explicit user-gesture permission for DeviceOrientationEvent
   useEffect(() => {
+    if (
+      typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function'
+    ) {
+      setNeedsCompassPermission(true);
+    } else {
+      setCompassReady(true);
+    }
+  }, []);
+
+  const requestCompassPermission = async () => {
+    try {
+      const result = await DeviceOrientationEvent.requestPermission();
+      if (result === 'granted') {
+        setCompassReady(true);
+        setNeedsCompassPermission(false);
+      }
+    } catch (e) {
+      console.error('Erro ao pedir permissão da bússola:', e);
+    }
+  };
+
+  useEffect(() => {
+    if (!compassReady) return;
+    const THROTTLE_MS = 100;
     const onOrientation = (e) => {
       const now = Date.now();
-      if (now - lastHeadingTs.current < 200) return;
+      if (now - lastHeadingTs.current < THROTTLE_MS) return;
       lastHeadingTs.current = now;
       if (e.webkitCompassHeading != null) {
         setHeading(e.webkitCompassHeading);
@@ -143,7 +171,7 @@ export default function ModernMapLayout() {
     };
     const onAbsolute = (e) => {
       const now = Date.now();
-      if (now - lastHeadingTs.current < 200) return;
+      if (now - lastHeadingTs.current < THROTTLE_MS) return;
       lastHeadingTs.current = now;
       if (e.alpha != null) setHeading((360 - e.alpha) % 360);
     };
@@ -153,7 +181,7 @@ export default function ModernMapLayout() {
       window.removeEventListener('deviceorientation', onOrientation, true);
       window.removeEventListener('deviceorientationabsolute', onAbsolute, true);
     };
-  }, []);
+  }, [compassReady]);
 
 
   const activeVendors = Array.isArray(vendors)
@@ -306,6 +334,17 @@ export default function ModernMapLayout() {
 
 
         </MapContainer>
+
+        {!isVendorLogged && needsCompassPermission && (
+          <button
+            className="compass-btn"
+            onClick={requestCompassPermission}
+            aria-label="Ativar bússola"
+            title="Ativar bússola"
+          >
+            🧭
+          </button>
+        )}
 
         {selected && (
           <div className="vendor-card">
