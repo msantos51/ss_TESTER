@@ -100,6 +100,13 @@ _init_db()
 # Contexto para hash de password
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+BASE_APP_URL = os.getenv("BASE_APP_URL", "https://ss-tester.onrender.com")
+
+
+def send_email(to: str, subject: str, body: str) -> None:
+    """Send an email notification. Patch this in tests or integrate a real provider."""
+    print(f"[Email] To: {to}\nSubject: {subject}\n{body}")
+
 # Configuração do Stripe
 stripe.api_key = os.getenv("STRIPE_API_KEY", "")
 STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID", "")
@@ -304,6 +311,8 @@ def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     )
     if not vendor or not pwd_context.verify(credentials.password, vendor.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
+    if not vendor.email_confirmed:
+        raise HTTPException(status_code=400, detail="Email not confirmed")
     return vendor
 
 # --------------------------
@@ -341,6 +350,8 @@ async def generate_token(
     vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
     if not vendor or not pwd_context.verify(password, vendor.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
+    if not vendor.email_confirmed:
+        raise HTTPException(status_code=400, detail="Email not confirmed")
     token = create_access_token({"sub": vendor.id})
     session = models.VendorSession(
         vendor_id=vendor.id, token=token, user_agent=request.headers.get("user-agent")
@@ -420,6 +431,7 @@ async def create_vendor(
 
     public_path = f"profile_photos/{file_name}"
 
+    confirmation_token = uuid4().hex
     new_vendor = models.Vendor(
         name=name,
         email=email,
@@ -427,11 +439,17 @@ async def create_vendor(
         product=product,
         profile_photo=public_path,
         pin_color="#FFB6C1",
-        email_confirmed=True,
+        email_confirmed=False,
+        confirmation_token=confirmation_token,
     )
     db.add(new_vendor)
     db.commit()
     db.refresh(new_vendor)
+    send_email(
+        to=email,
+        subject="Confirma o teu email",
+        body=f"Clica no link para confirmares a tua conta: {BASE_APP_URL}/confirm-email/{confirmation_token}",
+    )
     return new_vendor
 
 
@@ -709,6 +727,57 @@ def list_paid_weeks(
         .all()
     )
     return weeks
+
+
+@app.get("/confirm-email/{token}")
+def confirm_email(token: str, db: Session = Depends(get_db)):
+    vendor = db.query(models.Vendor).filter(models.Vendor.confirmation_token == token).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Invalid or expired confirmation token")
+    vendor.email_confirmed = True
+    vendor.confirmation_token = None
+    db.commit()
+    return {"status": "Email confirmed successfully"}
+
+
+@app.post("/password-reset-request")
+async def password_reset_request(request: Request, db: Session = Depends(get_db)):
+    form = await request.form()
+    email = form.get("email", "")
+    vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
+    if vendor:
+        token = uuid4().hex
+        vendor.password_reset_token = token
+        vendor.password_reset_expires = utcnow() + timedelta(hours=2)
+        db.commit()
+        send_email(
+            to=email,
+            subject="Redefinir Palavra-passe",
+            body=f"Clica no link para redefenires a tua palavra-passe: {BASE_APP_URL}/password-reset/{token}",
+        )
+    return {"status": "ok"}
+
+
+@app.post("/password-reset/{token}")
+async def reset_password(token: str, request: Request, db: Session = Depends(get_db)):
+    form = await request.form()
+    new_password = form.get("new_password", "")
+    vendor = (
+        db.query(models.Vendor)
+        .filter(
+            models.Vendor.password_reset_token == token,
+            models.Vendor.password_reset_expires > utcnow(),
+        )
+        .first()
+    )
+    if not vendor:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    validate_password(new_password)
+    vendor.hashed_password = pwd_context.hash(new_password)
+    vendor.password_reset_token = None
+    vendor.password_reset_expires = None
+    db.commit()
+    return {"status": "Password reset successfully"}
 
 
 @app.get("/password-reset/{token}", response_class=HTMLResponse)
