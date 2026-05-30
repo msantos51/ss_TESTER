@@ -20,7 +20,7 @@ const PRODUCT_ICONS = {
 function getClientPinHtml(heading) {
   const hasHeading = heading !== null && !isNaN(heading);
   const arrow = hasHeading
-    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(${Math.round(heading)}deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
+    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(${heading.toFixed(1)}deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
     : '';
   return `<div class="user-location-marker"><div class="user-location-pulse"></div><div class="user-location-dot">${arrow}</div></div>`;
 }
@@ -28,7 +28,7 @@ function getClientPinHtml(heading) {
 function getVendorPinHtml(color, heading) {
   const hasHeading = heading !== null && !isNaN(heading);
   const arrow = hasHeading
-    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(${Math.round(heading)}deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
+    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(${heading.toFixed(1)}deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
     : '';
   return `<div class="vendor-location-marker"><div class="vendor-location-dot" style="background:${color}">${arrow}</div></div>`;
 }
@@ -43,6 +43,9 @@ export default function ModernMapLayout() {
   const [clientPos, setClientPos] = useState(null);
   const [heading, setHeading] = useState(null);
   const lastHeadingTs = useRef(0);
+  const smoothedHeadingRef = useRef(null);
+  const absEventFiredRef = useRef(false); // true quando deviceorientationabsolute disparou
+  const gpsMovingRef = useRef(false); // true quando GPS fornece heading válido
   const [compassReady, setCompassReady] = useState(false);
   const [showLocateHint, setShowLocateHint] = useState(false);
   // Verifica se o utilizador autenticado é um vendedor. Se sim, ocultamos o
@@ -119,12 +122,14 @@ export default function ModernMapLayout() {
       (pos) => {
         setClientPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         const gpsH = pos.coords.heading;
-        if (gpsH != null && !isNaN(gpsH)) {
-          const now = Date.now();
-          if (now - lastHeadingTs.current >= 100) {
-            lastHeadingTs.current = now;
-            setHeading(gpsH);
-          }
+        // GPS heading tem prioridade máxima quando o utilizador está em movimento
+        if (gpsH != null && !isNaN(gpsH) && pos.coords.speed != null && pos.coords.speed > 0.3) {
+          gpsMovingRef.current = true;
+          smoothedHeadingRef.current = gpsH;
+          setHeading(gpsH);
+          lastHeadingTs.current = Date.now();
+        } else {
+          gpsMovingRef.current = false;
         }
       },
       (err) => console.error('Erro localização:', err),
@@ -174,26 +179,59 @@ export default function ModernMapLayout() {
 
   useEffect(() => {
     if (!compassReady) return;
-    const THROTTLE_MS = 100;
-    const onOrientation = (e) => {
+    const THROTTLE_MS = 50;
+    // Low-pass filter para suavizar o heading da bússola e reduzir jitter
+    const COMPASS_ALPHA = 0.25;
+    const MAX_ACCURACY_DEG = 25; // iOS webkitCompassAccuracy em graus
+
+    const applySmoothing = (raw) => {
+      const prev = smoothedHeadingRef.current;
+      if (prev === null) {
+        smoothedHeadingRef.current = raw;
+        return raw;
+      }
+      let diff = raw - prev;
+      if (diff > 180) diff -= 360;
+      if (diff < -180) diff += 360;
+      const next = (prev + COMPASS_ALPHA * diff + 360) % 360;
+      smoothedHeadingRef.current = next;
+      return next;
+    };
+
+    // deviceorientationabsolute: fonte mais fiável em Android (valores absolutos)
+    const onAbsolute = (e) => {
+      if (gpsMovingRef.current) return;
+      if (e.alpha == null) return;
       const now = Date.now();
       if (now - lastHeadingTs.current < THROTTLE_MS) return;
+      lastHeadingTs.current = now;
+      absEventFiredRef.current = true;
+      const raw = (360 - e.alpha) % 360;
+      setHeading(applySmoothing(raw));
+    };
+
+    // deviceorientation: iOS Safari (webkitCompassHeading) e fallback Android
+    const onOrientation = (e) => {
+      if (gpsMovingRef.current) return;
+      // Se deviceorientationabsolute já disparou, ignorar esta fonte (menos precisa)
+      if (absEventFiredRef.current) return;
+      const now = Date.now();
+      if (now - lastHeadingTs.current < THROTTLE_MS) return;
+      // Filtrar leituras iOS com baixa precisão de bússola
+      if (e.webkitCompassAccuracy != null && e.webkitCompassAccuracy >= 0 && e.webkitCompassAccuracy > MAX_ACCURACY_DEG) return;
       lastHeadingTs.current = now;
       if (e.webkitCompassHeading != null) {
-        setHeading(e.webkitCompassHeading);
+        setHeading(applySmoothing(e.webkitCompassHeading));
+      } else if (e.alpha != null && e.absolute) {
+        setHeading(applySmoothing((360 - e.alpha) % 360));
       }
     };
-    const onAbsolute = (e) => {
-      const now = Date.now();
-      if (now - lastHeadingTs.current < THROTTLE_MS) return;
-      lastHeadingTs.current = now;
-      if (e.alpha != null) setHeading((360 - e.alpha) % 360);
-    };
-    window.addEventListener('deviceorientation', onOrientation, true);
+
     window.addEventListener('deviceorientationabsolute', onAbsolute, true);
+    window.addEventListener('deviceorientation', onOrientation, true);
     return () => {
-      window.removeEventListener('deviceorientation', onOrientation, true);
       window.removeEventListener('deviceorientationabsolute', onAbsolute, true);
+      window.removeEventListener('deviceorientation', onOrientation, true);
     };
   }, [compassReady]);
 

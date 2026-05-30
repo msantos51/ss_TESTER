@@ -17,7 +17,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "A sua localização é usada para mostrar a sua posição no mapa e encontrar vendedores próximos.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "A sua localização é usada para mostrar a sua posição no mapa e encontrar vendedores próximos.",
+        "NSMotionUsageDescription": "O sensor de movimento é usado para determinar a direção em que está a apontar o telemóvel."
+      }
     },
     "android": {
       "adaptiveIcon": {
