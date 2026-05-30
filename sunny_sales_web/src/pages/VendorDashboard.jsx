@@ -157,17 +157,6 @@ export default function VendorDashboard() {
 
   return (
     <div className="vd-wrapper">
-      {/* Side menu toggle */}
-      <button
-        ref={menuButtonRef}
-        className="vd-menu-toggle"
-        onClick={() => setMenuOpen((o) => !o)}
-        aria-label="Menu"
-        aria-expanded={menuOpen}
-      >
-        {menuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
-      </button>
-
       {/* Side menu overlay */}
       {menuOpen && (
         <div className="vd-overlay" onClick={() => setMenuOpen(false)} aria-hidden="true" />
@@ -219,8 +208,21 @@ export default function VendorDashboard() {
         {/* Greeting */}
         {vendor && (
           <div className="vd-greeting">
-            <span className="vd-greeting-time">{getGreeting()},</span>
-            <h2 className="vd-greeting-name">{vendor.name.split(' ')[0]}</h2>
+            <div className="vd-greeting-row">
+              <div>
+                <span className="vd-greeting-time">{getGreeting()},</span>
+                <h2 className="vd-greeting-name">{vendor.name.split(' ')[0]}</h2>
+              </div>
+              <button
+                ref={menuButtonRef}
+                className="vd-menu-toggle"
+                onClick={() => setMenuOpen((o) => !o)}
+                aria-label="Menu"
+                aria-expanded={menuOpen}
+              >
+                {menuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
+              </button>
+            </div>
           </div>
         )}
 

@@ -8,10 +8,6 @@
 /* ── Menu toggle button ──────────────────────────────── */
 
 .vd-menu-toggle {
-  position: fixed;
-  top: calc(var(--navbar-h, 64px) + 14px);
-  left: 14px;
-  z-index: 1100;
   background: var(--primary);
   color: #fff;
   border: none;
@@ -26,6 +22,7 @@
   justify-content: center;
   box-shadow: var(--shadow-warm);
   cursor: pointer;
+  flex-shrink: 0;
   transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
 }
 
@@ -178,6 +175,13 @@
   gap: 2px;
   padding: 4px 2px 0;
   animation: fadeIn 0.3s ease;
+}
+
+.vd-greeting-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .vd-greeting-time {
