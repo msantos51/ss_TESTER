@@ -6,7 +6,19 @@ export default function ImageCropper({ src, onCancel, onComplete }) {
   const imgRef = useRef(null);
   const containerSize = 300; // tamanho da área de corte
   const [scale, setScale] = useState(1);
+  const [minScale, setMinScale] = useState(0.1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const handleImageLoad = (e) => {
+    const img = e.target;
+    const computed = Math.max(containerSize / img.naturalWidth, containerSize / img.naturalHeight);
+    setMinScale(computed);
+    setScale(computed);
+    setPosition({
+      x: (containerSize - img.naturalWidth * computed) / 2,
+      y: (containerSize - img.naturalHeight * computed) / 2,
+    });
+  };
   const [dragging, setDragging] = useState(false);
   const lastPos = useRef({ x: 0, y: 0 });
 
@@ -78,14 +90,18 @@ export default function ImageCropper({ src, onCancel, onComplete }) {
             ref={imgRef}
             src={src}
             alt="crop"
-            style={{ transform: `translate(${position.x}px, ${position.y}px) scale(${scale})` }}
+            onLoad={handleImageLoad}
+            style={{
+              transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+              transformOrigin: '0 0',
+            }}
           />
         </div>
         <input
           type="range"
-          min="0.5"
-          max="2"
-          step="0.1"
+          min={minScale}
+          max={Math.max(3, minScale * 10)}
+          step={minScale / 10}
           value={scale}
           onChange={(e) => setScale(Number(e.target.value))}
         />
