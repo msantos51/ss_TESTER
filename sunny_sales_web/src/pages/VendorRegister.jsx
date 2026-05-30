@@ -66,12 +66,8 @@ export default function VendorRegister() {
     formData.append('profile_photo', file);
 
     try {
-      await axios.post(`${BASE_URL}/vendors/`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setSuccess('Registo efetuado com sucesso!');
+      await axios.post(`${BASE_URL}/vendors/`, formData);
+      setSuccess('Registo efetuado com sucesso! Verifique o seu email para confirmar a conta.');
       setName('');
       setEmail('');
       setPassword('');

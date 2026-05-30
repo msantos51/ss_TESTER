@@ -47,8 +47,17 @@ def get_db():
 # Pequena migração automática para adicionar colunas recentes
 def ensure_latest_schema():
     inspector = inspect(engine)
-    if "vendors" in inspector.get_table_names():
-        columns = [c["name"] for c in inspector.get_columns("vendors")]
-        if "session_token" not in columns:
-            with engine.begin() as conn:  # begin() cria transação e faz commit automático
-                conn.execute(text("ALTER TABLE vendors ADD COLUMN session_token TEXT"))
+    tables = inspector.get_table_names()
+    if "vendors" in tables:
+        columns = {c["name"] for c in inspector.get_columns("vendors")}
+        migrations = [
+            ("session_token", "ALTER TABLE vendors ADD COLUMN session_token TEXT"),
+            ("email_confirmed", "ALTER TABLE vendors ADD COLUMN email_confirmed BOOLEAN DEFAULT false"),
+            ("confirmation_token", "ALTER TABLE vendors ADD COLUMN confirmation_token TEXT"),
+            ("password_reset_token", "ALTER TABLE vendors ADD COLUMN password_reset_token TEXT"),
+            ("password_reset_expires", "ALTER TABLE vendors ADD COLUMN password_reset_expires TIMESTAMP"),
+        ]
+        with engine.begin() as conn:
+            for col, stmt in migrations:
+                if col not in columns:
+                    conn.execute(text(stmt))
