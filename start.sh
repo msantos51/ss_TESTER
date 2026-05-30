@@ -11,4 +11,4 @@ if [ -d "sunny_sales_web" ]; then
   echo "Frontend compilado com sucesso."
 fi
 
-exec uvicorn backend.app.main:app --host 0.0.0.0 --port 10000
+exec uvicorn backend.app.main:app --host 0.0.0.0 --port "${PORT:-10000}"

@@ -10,18 +10,27 @@ export default function ImageCropper({ src, onCancel, onComplete }) {
   const [dragging, setDragging] = useState(false);
   const lastPos = useRef({ x: 0, y: 0 });
 
+  const getCoords = (e) => {
+    if (e.touches && e.touches.length > 0) {
+      return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+    return { x: e.clientX, y: e.clientY };
+  };
+
   const startDrag = (e) => {
     e.preventDefault();
     setDragging(true);
-    lastPos.current = { x: e.clientX, y: e.clientY };
+    const coords = getCoords(e);
+    lastPos.current = coords;
   };
 
   const onDrag = (e) => {
     if (!dragging) return;
-    const dx = e.clientX - lastPos.current.x;
-    const dy = e.clientY - lastPos.current.y;
+    const coords = getCoords(e);
+    const dx = coords.x - lastPos.current.x;
+    const dy = coords.y - lastPos.current.y;
     setPosition((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
-    lastPos.current = { x: e.clientX, y: e.clientY };
+    lastPos.current = coords;
   };
 
   const endDrag = () => {
@@ -50,12 +59,20 @@ export default function ImageCropper({ src, onCancel, onComplete }) {
   };
 
   return (
-    <div className="cropper-overlay" onMouseMove={onDrag} onMouseUp={endDrag} onMouseLeave={endDrag}>
+    <div
+      className="cropper-overlay"
+      onMouseMove={onDrag}
+      onMouseUp={endDrag}
+      onMouseLeave={endDrag}
+      onTouchMove={onDrag}
+      onTouchEnd={endDrag}
+    >
       <div className="cropper-box">
         <div
           className="cropper-area"
           style={{ width: containerSize, height: containerSize }}
           onMouseDown={startDrag}
+          onTouchStart={startDrag}
         >
           <img
             ref={imgRef}
