@@ -2,9 +2,21 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
+import {
+  FiMap, FiBarChart2, FiCalendar, FiUser, FiFileText, FiClock,
+  FiCreditCard, FiShield, FiMail, FiMapPin, FiLogOut, FiMenu, FiX,
+  FiChevronRight,
+} from 'react-icons/fi';
 import './VendorDashboard.css';
 
 let watchId = null;
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Bom dia';
+  if (h < 19) return 'Boa tarde';
+  return 'Boa noite';
+}
 
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
@@ -130,12 +142,18 @@ export default function VendorDashboard() {
     };
   }, [menuOpen]);
 
-  const navItem = (label, onClick, icon = null) => (
+  const navItem = (label, onClick, icon) => (
     <button className="vd-menu-item" onClick={() => { onClick(); setMenuOpen(false); }}>
-      {icon && <span className="vd-menu-icon">{icon}</span>}
-      {label}
+      <span className="vd-menu-icon">{icon}</span>
+      <span className="vd-menu-item-label">{label}</span>
+      <FiChevronRight className="vd-menu-chevron" />
     </button>
   );
+
+  const subscriptionActive = vendor?.subscription_active;
+  const subscriptionDate = vendor?.subscription_valid_until
+    ? new Date(vendor.subscription_valid_until).toLocaleDateString('pt-PT')
+    : null;
 
   return (
     <div className="vd-wrapper">
@@ -147,7 +165,7 @@ export default function VendorDashboard() {
         aria-label="Menu"
         aria-expanded={menuOpen}
       >
-        {menuOpen ? '✕' : '☰'}
+        {menuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
       </button>
 
       {/* Side menu overlay */}
@@ -167,68 +185,82 @@ export default function VendorDashboard() {
 
         <div className="vd-menu-section">
           <span className="vd-menu-section-label">Subscrição</span>
-          {navItem('Pagar Semanalidade', paySubscription, '💳')}
-          {navItem('Semanas Pagas', () => navigate('/paid-weeks'), '📅')}
-          {navItem('Faturas', () => navigate('/invoices'), '🧾')}
+          {navItem('Pagar Semanalidade', paySubscription, <FiCreditCard />)}
+          {navItem('Semanas Pagas', () => navigate('/paid-weeks'), <FiCalendar />)}
+          {navItem('Faturas', () => navigate('/invoices'), <FiFileText />)}
         </div>
 
         <div className="vd-menu-divider" />
 
         <div className="vd-menu-section">
           <span className="vd-menu-section-label">Atividade</span>
-          {navItem('Trajetos', () => navigate('/routes'), '🗺️')}
-          {navItem('Distância Percorrida', () => navigate('/stats'), '📊')}
-          {navItem('Sessões', () => navigate('/sessions'), '⏱️')}
+          {navItem('Trajetos', () => navigate('/routes'), <FiMap />)}
+          {navItem('Distância Percorrida', () => navigate('/stats'), <FiBarChart2 />)}
+          {navItem('Sessões', () => navigate('/sessions'), <FiClock />)}
         </div>
 
         <div className="vd-menu-divider" />
 
         <div className="vd-menu-section">
-          {navItem('Atualizar Dados Pessoais', () => navigate('/account'), '👤')}
+          {navItem('Atualizar Dados Pessoais', () => navigate('/account'), <FiUser />)}
         </div>
 
         <div className="vd-menu-divider" />
 
         <div className="vd-menu-section">
-          {navItem('Termos e Condições', () => navigate('/terms'), '📋')}
-          {navItem('Contactar Suporte', () => { window.location.href = 'mailto:suporte@sunnysales.com'; }, '✉️')}
+          {navItem('Termos e Condições', () => navigate('/terms'), <FiShield />)}
+          {navItem('Contactar Suporte', () => { window.location.href = 'mailto:suporte@sunnysales.com'; }, <FiMail />)}
         </div>
       </aside>
 
       {/* Main content */}
       <div className="vd-container">
-        <h2 className="vd-title">Painel do Vendedor</h2>
 
+        {/* Greeting */}
         {vendor && (
-          <div className="vd-info-card">
-            {vendor.profile_photo ? (
-              <img
-                src={`${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}`}
-                alt="Foto de perfil"
-                className="vd-avatar"
-              />
-            ) : (
-              <div className="vd-avatar vd-avatar-placeholder">
-                {vendor.name?.charAt(0)?.toUpperCase() || '?'}
-              </div>
-            )}
+          <div className="vd-greeting">
+            <span className="vd-greeting-time">{getGreeting()},</span>
+            <h2 className="vd-greeting-name">{vendor.name.split(' ')[0]}</h2>
+          </div>
+        )}
 
-            <div className="vd-info-grid">
-              <div className="vd-info-row">
-                <span className="vd-info-label">Nome</span>
-                <span className="vd-info-value">{vendor.name}</span>
+        {/* Profile card */}
+        {vendor && (
+          <div className="vd-profile-card">
+            <div className="vd-profile-top">
+              {vendor.profile_photo ? (
+                <img
+                  src={`${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}`}
+                  alt="Foto de perfil"
+                  className="vd-avatar"
+                />
+              ) : (
+                <div className="vd-avatar vd-avatar-placeholder">
+                  {vendor.name?.charAt(0)?.toUpperCase() || '?'}
+                </div>
+              )}
+              <div className="vd-profile-meta">
+                <span className="vd-profile-name">{vendor.name}</span>
+                <span className="vd-profile-product">{vendor.product}</span>
+                <span className={`vd-sub-badge${subscriptionActive ? ' active' : ' inactive'}`}>
+                  <span className="vd-sub-dot" />
+                  {subscriptionActive
+                    ? <>Ativa{subscriptionDate && <span className="vd-sub-date"> · {subscriptionDate}</span>}</>
+                    : 'Inativa'}
+                </span>
               </div>
-              <div className="vd-info-row">
-                <span className="vd-info-label">Email</span>
-                <span className="vd-info-value">{vendor.email}</span>
+            </div>
+
+            <div className="vd-profile-divider" />
+
+            <div className="vd-profile-details">
+              <div className="vd-detail-item">
+                <span className="vd-detail-label">Email</span>
+                <span className="vd-detail-value">{vendor.email}</span>
               </div>
-              <div className="vd-info-row">
-                <span className="vd-info-label">Produto</span>
-                <span className="vd-info-value">{vendor.product}</span>
-              </div>
-              <div className="vd-info-row">
-                <span className="vd-info-label">Cor do Pin</span>
-                <span className="vd-info-value vd-pin-row">
+              <div className="vd-detail-item">
+                <span className="vd-detail-label">Cor do Pin</span>
+                <span className="vd-detail-value vd-pin-row">
                   <span
                     className="vd-pin-dot"
                     style={{ backgroundColor: vendor.pin_color || '#FFB6C1' }}
@@ -236,33 +268,33 @@ export default function VendorDashboard() {
                   {vendor.pin_color || '#FFB6C1'}
                 </span>
               </div>
-              <div className="vd-info-row">
-                <span className="vd-info-label">Subscrição</span>
-                <span className={`vd-info-value vd-sub-badge${vendor.subscription_active ? ' active' : ' inactive'}`}>
-                  {vendor.subscription_active ? (
-                    <>
-                      Ativa
-                      {vendor.subscription_valid_until && (
-                        <span className="vd-sub-date">
-                          &nbsp;até {new Date(vendor.subscription_valid_until).toLocaleDateString('pt-PT')}
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    'Inativa'
-                  )}
-                </span>
-              </div>
             </div>
           </div>
         )}
 
-        {/* Location sharing toggle */}
-        <div className="vd-toggle-card">
-          <div className="vd-toggle-info">
-            <span className="vd-toggle-title">Partilha de Localização</span>
-            <span className={`vd-toggle-status${sharing ? ' on' : ''}`}>
-              {sharing ? 'Ligada — visível no mapa' : 'Desligada'}
+        {/* Subscription CTA if inactive */}
+        {vendor && !subscriptionActive && (
+          <div className="vd-cta-card">
+            <div className="vd-cta-text">
+              <span className="vd-cta-title">Subscrição Inativa</span>
+              <span className="vd-cta-desc">Ative para aparecer no mapa</span>
+            </div>
+            <button className="vd-cta-btn" onClick={paySubscription}>
+              Ativar
+            </button>
+          </div>
+        )}
+
+        {/* Location sharing */}
+        <div className={`vd-location-card${sharing ? ' active' : ''}`}>
+          <div className="vd-location-icon-wrap">
+            <FiMapPin className="vd-location-icon" />
+            {sharing && <span className="vd-location-pulse" />}
+          </div>
+          <div className="vd-location-text">
+            <span className="vd-location-title">Partilha de Localização</span>
+            <span className="vd-location-status">
+              {sharing ? 'Ativo — visível no mapa' : 'Desligado'}
             </span>
           </div>
           <label className="vendor-switch" aria-label="Ativar/desativar localização">
@@ -275,7 +307,28 @@ export default function VendorDashboard() {
           </label>
         </div>
 
+        {/* Quick actions grid */}
+        <div className="vd-quick-grid">
+          <button className="vd-quick-item" onClick={() => navigate('/routes')}>
+            <span className="vd-quick-icon"><FiMap /></span>
+            <span className="vd-quick-label">Trajetos</span>
+          </button>
+          <button className="vd-quick-item" onClick={() => navigate('/stats')}>
+            <span className="vd-quick-icon"><FiBarChart2 /></span>
+            <span className="vd-quick-label">Estatísticas</span>
+          </button>
+          <button className="vd-quick-item" onClick={() => navigate('/paid-weeks')}>
+            <span className="vd-quick-icon"><FiCalendar /></span>
+            <span className="vd-quick-label">Subscrição</span>
+          </button>
+          <button className="vd-quick-item" onClick={() => navigate('/account')}>
+            <span className="vd-quick-icon"><FiUser /></span>
+            <span className="vd-quick-label">Perfil</span>
+          </button>
+        </div>
+
         <button className="vd-logout-btn" onClick={logout}>
+          <FiLogOut size={15} />
           Terminar Sessão
         </button>
       </div>
