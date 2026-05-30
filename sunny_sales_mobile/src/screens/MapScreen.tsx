@@ -60,16 +60,20 @@ export default function MapScreen() {
   useEffect(() => {
     let sub: Location.LocationSubscription | null = null;
     let headingSub: Location.LocationSubscription | null = null;
+    // Low-pass filter para suavizar o heading da bússola e reduzir jitter
+    let smoothedHeading: number | null = null;
+    const COMPASS_ALPHA = 0.25; // 0 = sem resposta, 1 = sem suavização
+    const MAX_COMPASS_ACCURACY_DEG = 20; // ignora leituras com precisão inferior a 20°
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         console.log('Permissão de localização negada');
         return;
       }
-      // Localização inicial rápida para mostrar o mapa rapidamente
+      // Localização inicial com máxima precisão
       try {
         const initial = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced,
+          accuracy: Location.Accuracy.BestForNavigation,
         });
         setRegion({ latitude: initial.coords.latitude, longitude: initial.coords.longitude });
       } catch (e) {
@@ -87,6 +91,7 @@ export default function MapScreen() {
           // Curso GPS: direção real de deslocamento (válido quando em movimento)
           if (loc.coords.heading != null && loc.coords.heading >= 0) {
             gpsCourseActiveRef.current = true;
+            smoothedHeading = loc.coords.heading;
             setHeading(loc.coords.heading);
           } else {
             gpsCourseActiveRef.current = false;
@@ -95,10 +100,21 @@ export default function MapScreen() {
       );
       // Bússola: usada apenas quando o GPS não fornece curso (ex: dispositivo parado)
       headingSub = await Location.watchHeadingAsync((headingData) => {
-        if (!gpsCourseActiveRef.current) {
-          const h = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
-          setHeading(h);
+        if (gpsCourseActiveRef.current) return;
+        // Rejeitar leituras com baixa qualidade (accuracy em graus)
+        if (headingData.accuracy > MAX_COMPASS_ACCURACY_DEG) return;
+        const raw = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
+        if (raw < 0) return;
+        // Interpolação angular para evitar saltos nos 0°/360°
+        if (smoothedHeading === null) {
+          smoothedHeading = raw;
+        } else {
+          let diff = raw - smoothedHeading;
+          if (diff > 180) diff -= 360;
+          if (diff < -180) diff += 360;
+          smoothedHeading = (smoothedHeading + COMPASS_ALPHA * diff + 360) % 360;
         }
+        setHeading(smoothedHeading);
       });
     })();
     return () => {
@@ -225,7 +241,7 @@ export default function MapScreen() {
           function getUserPinHtml(h) {
             var hasH = h != null && !isNaN(h);
             var arrow = hasH
-              ? '<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(' + Math.round(h) + 'deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>'
+              ? '<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(' + h.toFixed(1) + 'deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>'
               : '';
             return '<div class="ulm"><div class="ulm-pulse"></div><div class="ulm-dot">' + arrow + '</div></div>';
           }
