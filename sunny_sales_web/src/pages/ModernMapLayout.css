@@ -85,13 +85,13 @@ body {
 }
 
 .filter-list-item.active {
-  background: rgba(252, 180, 84, 0.18);
+  background: rgba(10, 147, 150, 0.18);
   border-color: var(--primary);
   color: var(--primary);
 }
 
 .filter-list-item.active:hover {
-  background: rgba(252, 180, 84, 0.26);
+  background: rgba(10, 147, 150, 0.26);
   transform: none;
   box-shadow: none;
 }
