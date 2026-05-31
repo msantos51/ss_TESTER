@@ -54,12 +54,12 @@ function getVendorPinHtml(color, heading) {
 export default function ModernMapLayout() {
   const [vendors, setVendors] = useState([]);
   const PRODUCTS = ['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'];
-  const [selectedProducts, setSelectedProducts] = useState([...PRODUCTS]);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [maxDistance, setMaxDistance] = useState(null);
   const [selected, setSelected] = useState(null);
 
   const [filterOpen, setFilterOpen] = useState(false);
-  const [pendingProducts, setPendingProducts] = useState([...PRODUCTS]);
+  const [pendingProducts, setPendingProducts] = useState([]);
   const [pendingDistance, setPendingDistance] = useState(null);
 
   const [clientPos, setClientPos] = useState(null);
@@ -74,11 +74,11 @@ export default function ModernMapLayout() {
 
   const mapRef = useRef(null);
 
-  // Active filter count: deselected products + distance set
+  // Active filter count: selected products + distance set
   const activeFilterCount =
-    (PRODUCTS.length - selectedProducts.length) + (maxDistance !== null ? 1 : 0);
+    selectedProducts.length + (maxDistance !== null ? 1 : 0);
   const pendingFilterCount =
-    (PRODUCTS.length - pendingProducts.length) + (pendingDistance !== null ? 1 : 0);
+    pendingProducts.length + (pendingDistance !== null ? 1 : 0);
 
   const openFilters = () => {
     setPendingProducts([...selectedProducts]);
@@ -93,7 +93,7 @@ export default function ModernMapLayout() {
   };
 
   const resetPending = () => {
-    setPendingProducts([...PRODUCTS]);
+    setPendingProducts([]);
     setPendingDistance(null);
   };
 
@@ -299,7 +299,7 @@ export default function ModernMapLayout() {
     filteredVendors = loggedVendor ? [loggedVendor] : [];
   } else {
     filteredVendors = activeVendors.filter((v) => {
-      if (!selectedProducts.includes(v.product)) return false;
+      if (selectedProducts.length > 0 && !selectedProducts.includes(v.product)) return false;
       if (maxDistance !== null && clientPos) {
         const dist = haversineDistance(
           clientPos.lat, clientPos.lng,
@@ -421,7 +421,7 @@ export default function ModernMapLayout() {
                     <span className="filter-section-title">Vendedores</span>
                     <button
                       className="filter-reset-link"
-                      onClick={() => setPendingProducts([...PRODUCTS])}
+                      onClick={() => setPendingProducts([])}
                     >
                       Repor
                     </button>
