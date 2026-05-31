@@ -49,6 +49,50 @@ body {
   font-family: 'Inter', 'Roboto', sans-serif;
 }
 
+/* ── Leaflet zoom controls (+/-) — canto superior esquerdo ── */
+
+.map-container .leaflet-top.leaflet-left {
+  top: 14px;
+  left: 14px;
+}
+
+.map-container .leaflet-top .leaflet-control {
+  margin: 0;
+}
+
+.map-container .leaflet-control-zoom {
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.map-container .leaflet-control-zoom-in,
+.map-container .leaflet-control-zoom-out {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border: none !important;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), color var(--transition);
+}
+
+.map-container .leaflet-control-zoom-in {
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.map-container .leaflet-control-zoom-in:hover,
+.map-container .leaflet-control-zoom-out:hover {
+  background: var(--primary-light-solid) !important;
+  color: var(--primary) !important;
+}
+
 /* ── Filter FAB ───────────────────────────────────────── */
 
 .filter-fab {
