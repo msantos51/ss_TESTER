@@ -291,29 +291,18 @@ export default function ModernMapLayout() {
               <FiUsers size={15} />
               VENDEDORES
             </div>
-            {PRODUCTS.map((p, idx) => {
+            {PRODUCTS.map((p) => {
               const Icon = PRODUCT_ICONS[p];
+              const active = selectedProducts.includes(p);
               return (
-                <div key={p} className="filter-item">
-                  <div className="checkbox-wrapper-46">
-                    <input
-                      id={`filter-${idx}`}
-                      type="checkbox"
-                      className="inp-cbx"
-                      checked={selectedProducts.includes(p)}
-                      onChange={() => toggleProduct(p)}
-                    />
-                    <label htmlFor={`filter-${idx}`} className="cbx">
-                      <span>
-                        <svg viewBox="0 0 12 10">
-                          <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                        </svg>
-                      </span>
-                      <span>{p}</span>
-                    </label>
-                  </div>
-                  {Icon && <Icon className="filter-icon" size={16} />}
-                </div>
+                <button
+                  key={p}
+                  className={`filter-list-item${active ? ' active' : ''}`}
+                  onClick={() => toggleProduct(p)}
+                >
+                  {Icon && <Icon size={15} className="filter-list-icon" />}
+                  <span>{p}</span>
+                </button>
               );
             })}
           </div>
