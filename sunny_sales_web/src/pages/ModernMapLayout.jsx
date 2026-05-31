@@ -7,7 +7,7 @@ import LocateButton from '../components/LocateButton';
 import VendorLocateButton from '../components/VendorLocateButton';
 import LocateHint from '../components/LocateHint';
 import BeachConditions from '../components/BeachConditions';
-import { FiUsers, FiSettings, FiGlobe, FiMapPin } from 'react-icons/fi';
+import { FiSettings, FiGlobe, FiMapPin, FiFilter, FiCheck } from 'react-icons/fi';
 import { GiIceCreamCone } from 'react-icons/gi';
 import './ModernMapLayout.css';
 
@@ -51,7 +51,6 @@ function getVendorPinHtml(color, heading) {
   return `<div class="vendor-location-marker"><div class="vendor-location-dot" style="background:${color}">${arrow}</div></div>`;
 }
 
-// Layout principal com mapa e lista de vendedores online
 export default function ModernMapLayout() {
   const [vendors, setVendors] = useState([]);
   const PRODUCTS = ['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'];
@@ -59,19 +58,50 @@ export default function ModernMapLayout() {
   const [maxDistance, setMaxDistance] = useState(null);
   const [selected, setSelected] = useState(null);
 
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [pendingProducts, setPendingProducts] = useState([...PRODUCTS]);
+  const [pendingDistance, setPendingDistance] = useState(null);
+
   const [clientPos, setClientPos] = useState(null);
   const [heading, setHeading] = useState(null);
   const lastHeadingTs = useRef(0);
   const smoothedHeadingRef = useRef(null);
-  const absEventFiredRef = useRef(false); // true quando deviceorientationabsolute disparou
-  const gpsMovingRef = useRef(false); // true quando GPS fornece heading válido
+  const absEventFiredRef = useRef(false);
+  const gpsMovingRef = useRef(false);
   const [compassReady, setCompassReady] = useState(false);
   const [showLocateHint, setShowLocateHint] = useState(false);
-  // Verifica se o utilizador autenticado é um vendedor. Se sim, ocultamos o
-  // pin de cliente para evitar marcadores duplicados no mapa.
   const isVendorLogged = !!localStorage.getItem('user');
 
   const mapRef = useRef(null);
+
+  // Active filter count: deselected products + distance set
+  const activeFilterCount =
+    (PRODUCTS.length - selectedProducts.length) + (maxDistance !== null ? 1 : 0);
+  const pendingFilterCount =
+    (PRODUCTS.length - pendingProducts.length) + (pendingDistance !== null ? 1 : 0);
+
+  const openFilters = () => {
+    setPendingProducts([...selectedProducts]);
+    setPendingDistance(maxDistance);
+    setFilterOpen(true);
+  };
+
+  const applyFilters = () => {
+    setSelectedProducts([...pendingProducts]);
+    setMaxDistance(pendingDistance);
+    setFilterOpen(false);
+  };
+
+  const resetPending = () => {
+    setPendingProducts([...PRODUCTS]);
+    setPendingDistance(null);
+  };
+
+  const togglePendingProduct = (p) => {
+    setPendingProducts((prev) =>
+      prev.includes(p) ? prev.filter((v) => v !== p) : [...prev, p]
+    );
+  };
 
   useEffect(() => {
     if (!isVendorLogged) {
@@ -106,11 +136,9 @@ export default function ModernMapLayout() {
   }, [isVendorLogged]);
 
   useEffect(() => {
-    // Constrói o URL do WebSocket substituindo http por ws
     const wsUrl = BASE_URL.replace(/^http/, 'ws') + '/ws/locations';
     const ws = new WebSocket(wsUrl);
 
-    // Recebe atualizações de localização em tempo real e atualiza o estado
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       setVendors((prev) => {
@@ -129,7 +157,6 @@ export default function ModernMapLayout() {
       });
     };
 
-    // Fecha a ligação quando o componente é desmontado
     return () => {
       ws.close();
     };
@@ -141,7 +168,6 @@ export default function ModernMapLayout() {
       (pos) => {
         setClientPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         const gpsH = pos.coords.heading;
-        // GPS heading tem prioridade máxima quando o utilizador está em movimento
         if (gpsH != null && !isNaN(gpsH) && pos.coords.speed != null && pos.coords.speed > 0.3) {
           gpsMovingRef.current = true;
           smoothedHeadingRef.current = gpsH;
@@ -176,7 +202,6 @@ export default function ModernMapLayout() {
         const result = await DeviceOrientationEvent.requestPermission();
         if (result === 'granted') setCompassReady(true);
       } catch {
-        // Need a user gesture – attach a one-time touchstart listener
         touchListener = async () => {
           try {
             const r = await DeviceOrientationEvent.requestPermission();
@@ -199,9 +224,8 @@ export default function ModernMapLayout() {
   useEffect(() => {
     if (!compassReady) return;
     const THROTTLE_MS = 50;
-    // Low-pass filter para suavizar o heading da bússola e reduzir jitter
     const COMPASS_ALPHA = 0.25;
-    const MAX_ACCURACY_DEG = 25; // iOS webkitCompassAccuracy em graus
+    const MAX_ACCURACY_DEG = 25;
 
     const applySmoothing = (raw) => {
       const prev = smoothedHeadingRef.current;
@@ -217,7 +241,6 @@ export default function ModernMapLayout() {
       return next;
     };
 
-    // deviceorientationabsolute: fonte mais fiável em Android (valores absolutos)
     const onAbsolute = (e) => {
       if (gpsMovingRef.current) return;
       if (e.alpha == null) return;
@@ -229,14 +252,11 @@ export default function ModernMapLayout() {
       setHeading(applySmoothing(raw));
     };
 
-    // deviceorientation: iOS Safari (webkitCompassHeading) e fallback Android
     const onOrientation = (e) => {
       if (gpsMovingRef.current) return;
-      // Se deviceorientationabsolute já disparou, ignorar esta fonte (menos precisa)
       if (absEventFiredRef.current) return;
       const now = Date.now();
       if (now - lastHeadingTs.current < THROTTLE_MS) return;
-      // Filtrar leituras iOS com baixa precisão de bússola
       if (e.webkitCompassAccuracy != null && e.webkitCompassAccuracy >= 0 && e.webkitCompassAccuracy > MAX_ACCURACY_DEG) return;
       lastHeadingTs.current = now;
       if (e.webkitCompassHeading != null) {
@@ -265,11 +285,9 @@ export default function ModernMapLayout() {
       const stored = localStorage.getItem('user');
       if (stored) {
         const { id } = JSON.parse(stored);
-
         const vendorId = Number(id);
         loggedVendor =
           activeVendors.find((v) => Number(v.id) === vendorId) || null;
-
       }
     } catch (e) {
       console.error('Erro ao ler vendedor logado:', e);
@@ -293,14 +311,6 @@ export default function ModernMapLayout() {
     });
   }
 
-  // Alterna a seleção de um produto no filtro
-  const toggleProduct = (p) => {
-    setSelectedProducts((prev) =>
-      prev.includes(p) ? prev.filter((v) => v !== p) : [...prev, p]
-    );
-  };
-
-  // Centraliza o mapa no vendedor selecionado
   const focusVendor = (v) => {
     setSelected(v);
     if (mapRef.current) {
@@ -312,145 +322,202 @@ export default function ModernMapLayout() {
   return (
     <div className="modern-layout">
       <div className="map-wrapper">
-        {!isVendorLogged && (
-          <div className="filters">
-            <div className="filters-header">
-              <FiUsers size={15} />
-              VENDEDORES
-            </div>
-            {PRODUCTS.map((p) => {
-              const Icon = PRODUCT_ICONS[p];
-              const active = selectedProducts.includes(p);
+        <main className="map-area">
+          <MapContainer
+            ref={mapRef}
+            center={[38.7169, -9.1399]}
+            zoom={13}
+            className="map-container"
+          >
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+              attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
+              subdomains="abcd"
+              maxZoom={19}
+            />
+            {!isVendorLogged && clientPos && (
+              <Marker
+                position={[clientPos.lat, clientPos.lng]}
+                icon={L.divIcon({
+                  className: 'client-pin',
+                  html: getClientPinHtml(heading),
+                  iconSize: [50, 50],
+                  iconAnchor: [25, 25],
+                })}
+              >
+                <Popup>Você está aqui</Popup>
+              </Marker>
+            )}
+            {filteredVendors.map((v) => {
+              const isOwn = loggedVendor && Number(v.id) === Number(loggedVendor.id);
+              const pinColor = v.pin_color || '#FFB6C1';
               return (
-                <button
-                  key={p}
-                  className={`filter-list-item${active ? ' active' : ''}`}
-                  onClick={() => toggleProduct(p)}
-                >
-                  {Icon && <Icon size={15} className="filter-list-icon" />}
-                  <span>{p}</span>
-                </button>
+                <Marker
+                  key={v.id}
+                  position={[v.current_lat, v.current_lng]}
+                  icon={L.divIcon({
+                    className: isOwn ? 'vendor-own-pin' : 'vendor-pin',
+                    html: isOwn
+                      ? getVendorPinHtml(pinColor, heading)
+                      : `<div style="background:${pinColor};width:16px;height:16px;border-radius:50%;"></div>`,
+                    iconSize: isOwn ? [50, 50] : [16, 16],
+                    iconAnchor: isOwn ? [25, 25] : [8, 8],
+                  })}
+                  eventHandlers={{
+                    click: () => focusVendor(v),
+                  }}
+                />
               );
             })}
 
-            <div className="filters-section-divider" />
-
-            <div className="filters-header">
-              <FiMapPin size={15} />
-              DISTÂNCIA
-            </div>
-            {DISTANCE_OPTIONS.map((opt) => (
-              <button
-                key={opt.label}
-                className={`filter-list-item${maxDistance === opt.value ? ' active' : ''}`}
-                onClick={() => setMaxDistance(opt.value)}
-              >
-                <span>{opt.label}</span>
-              </button>
-            ))}
-            {maxDistance !== null && !clientPos && (
-              <p className="filter-distance-hint">
-                Ative a localização para filtrar por distância
-              </p>
+            {!isVendorLogged && (
+              <>
+                <LocateButton
+                  onLocationFound={setClientPos}
+                  onClick={() => setShowLocateHint(false)}
+                />
+                {showLocateHint && (
+                  <LocateHint onClose={() => setShowLocateHint(false)} />
+                )}
+              </>
             )}
-          </div>
-        )}
 
-        <main className="map-area">
-        <MapContainer
-          ref={mapRef}
-          center={[38.7169, -9.1399]}
-          zoom={13}
-          className="map-container"
-        >
-          <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
-            attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
-            subdomains="abcd"
-            maxZoom={19}
-          />
-          {!isVendorLogged && clientPos && (
-            <Marker
-              position={[clientPos.lat, clientPos.lng]}
-              icon={L.divIcon({
-                className: 'client-pin',
-                html: getClientPinHtml(heading),
-                iconSize: [50, 50],
-                iconAnchor: [25, 25],
-              })}
-            >
-              <Popup>Você está aqui</Popup>
-            </Marker>
-          )}
-          {filteredVendors.map((v) => {
-            const isOwn = loggedVendor && Number(v.id) === Number(loggedVendor.id);
-            const pinColor = v.pin_color || '#FFB6C1';
-            return (
-              <Marker
-                key={v.id}
-                position={[v.current_lat, v.current_lng]}
-                icon={L.divIcon({
-                  className: isOwn ? 'vendor-own-pin' : 'vendor-pin',
-                  html: isOwn
-                    ? getVendorPinHtml(pinColor, heading)
-                    : `<div style="background:${pinColor};width:16px;height:16px;border-radius:50%;"></div>`,
-                  iconSize: isOwn ? [50, 50] : [16, 16],
-                  iconAnchor: isOwn ? [25, 25] : [8, 8],
-                })}
-                eventHandlers={{
-                  click: () => focusVendor(v),
-                }}
-              />
-            );
-          })}
+            {isVendorLogged && loggedVendor && (
+              <VendorLocateButton vendor={loggedVendor} />
+            )}
+          </MapContainer>
 
+          {/* Floating filter button */}
           {!isVendorLogged && (
-            <>
-              <LocateButton
-                onLocationFound={setClientPos}
-                onClick={() => setShowLocateHint(false)}
-              />
-              {showLocateHint && (
-                <LocateHint onClose={() => setShowLocateHint(false)} />
-              )}
-            </>
-          )}
-
-
-          {isVendorLogged && loggedVendor && (
-            <VendorLocateButton vendor={loggedVendor} />
-          )}
-
-
-        </MapContainer>
-
-        {selected && (
-          <div className="vendor-card">
             <button
-              className="close-btn"
-              onClick={() => setSelected(null)}
-              aria-label="Fechar"
+              className={`filter-fab${activeFilterCount > 0 ? ' has-filters' : ''}`}
+              onClick={openFilters}
+              aria-label="Abrir filtros"
             >
-              ×
+              <FiFilter size={16} />
+              <span>Filtrar{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}</span>
             </button>
-            {selected.profile_photo ? (
-              <img
-                src={`${BASE_URL}/${selected.profile_photo}`}
-                alt={selected.name}
-                className="card-photo"
-              />
-            ) : (
-              <div
-                className="card-photo"
-                style={{ background: selected.pin_color || '#ccc' }}
-              />
-            )}
-            <h4 className="card-name">{selected.name}</h4>
-          </div>
-        )}
-      </main>
+          )}
+
+          {/* Filter bottom sheet */}
+          {filterOpen && !isVendorLogged && (
+            <div className="filter-overlay" onClick={() => setFilterOpen(false)}>
+              <div className="filter-sheet" onClick={(e) => e.stopPropagation()}>
+                <div className="filter-sheet-handle" />
+                <div className="filter-sheet-header">
+                  <span className="filter-sheet-label">Filtrar por:</span>
+                  <button
+                    className="filter-close-btn"
+                    onClick={() => setFilterOpen(false)}
+                    aria-label="Fechar"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* Products section */}
+                <div className="filter-section">
+                  <div className="filter-section-row">
+                    <span className="filter-section-title">Vendedores</span>
+                    <button
+                      className="filter-reset-link"
+                      onClick={() => setPendingProducts([...PRODUCTS])}
+                    >
+                      Repor
+                    </button>
+                  </div>
+                  {PRODUCTS.map((p) => {
+                    const Icon = PRODUCT_ICONS[p];
+                    const active = pendingProducts.includes(p);
+                    return (
+                      <button
+                        key={p}
+                        className={`filter-option${active ? ' active' : ''}`}
+                        onClick={() => togglePendingProduct(p)}
+                      >
+                        {Icon && <Icon size={16} className="filter-option-icon" />}
+                        <span>{p}</span>
+                        {active && <FiCheck size={14} className="filter-check" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="filter-divider" />
+
+                {/* Distance section */}
+                <div className="filter-section">
+                  <div className="filter-section-row">
+                    <span className="filter-section-title">
+                      <FiMapPin size={14} style={{ marginRight: 6 }} />
+                      Distância
+                    </span>
+                    <button
+                      className="filter-reset-link"
+                      onClick={() => setPendingDistance(null)}
+                    >
+                      Repor
+                    </button>
+                  </div>
+                  <div className="filter-distance-row">
+                    {DISTANCE_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.label}
+                        className={`filter-distance-opt${pendingDistance === opt.value ? ' active' : ''}`}
+                        onClick={() => setPendingDistance(opt.value)}
+                      >
+                        {pendingDistance === opt.value && <FiCheck size={12} />}
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  {pendingDistance !== null && !clientPos && (
+                    <p className="filter-distance-hint">
+                      Ative a localização para filtrar por distância
+                    </p>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="filter-sheet-footer">
+                  <button className="filter-reset-all-btn" onClick={resetPending}>
+                    Repor Tudo
+                  </button>
+                  <button className="filter-apply-btn" onClick={applyFilters}>
+                    Aplicar Filtros{pendingFilterCount > 0 ? ` (${pendingFilterCount})` : ''}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {selected && (
+            <div className="vendor-card">
+              <button
+                className="close-btn"
+                onClick={() => setSelected(null)}
+                aria-label="Fechar"
+              >
+                ×
+              </button>
+              {selected.profile_photo ? (
+                <img
+                  src={`${BASE_URL}/${selected.profile_photo}`}
+                  alt={selected.name}
+                  className="card-photo"
+                />
+              ) : (
+                <div
+                  className="card-photo"
+                  style={{ background: selected.pin_color || '#ccc' }}
+                />
+              )}
+              <h4 className="card-name">{selected.name}</h4>
+            </div>
+          )}
+        </main>
+      </div>
+      <BeachConditions />
     </div>
-    <BeachConditions />
-  </div>
   );
 }
