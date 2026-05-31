@@ -6,7 +6,7 @@
   width: 100%;
   height: var(--footer-h, 44px);
   overflow: hidden;
-  background: var(--navy, #0f2744);
+  background: var(--primary, #0A9396);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -29,7 +29,7 @@
 }
 
 .footer-icon {
-  color: var(--secondary, #EE9B00);
+  color: rgba(255, 255, 255, 0.9);
   flex-shrink: 0;
   opacity: 0.9;
 }
