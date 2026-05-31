@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import ImageCropper from '../components/ImageCropper';
+import BackHomeButton from '../components/BackHomeButton';
 
 // Página para o vendedor atualizar ou remover a sua conta
 export default function ManageAccount() {
@@ -98,6 +99,7 @@ export default function ManageAccount() {
   if (!vendor) {
     return (
       <div className="form-box">
+        <BackHomeButton />
         <h2 className="title">Definições de Conta</h2>
         <p>Utilizador não autenticado.</p>
       </div>
@@ -106,6 +108,7 @@ export default function ManageAccount() {
 
   return (
     <div className="form-box">
+      <BackHomeButton />
       <h2 className="title">Definições de Conta</h2>
       <form onSubmit={handleUpdate} className="form">
         {error && <p style={{ color: 'red' }}>{error}</p>}

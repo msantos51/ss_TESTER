@@ -267,7 +267,6 @@ export default function VendorDashboard() {
                     className="vd-pin-dot"
                     style={{ backgroundColor: vendor.pin_color || '#FFB6C1' }}
                   />
-                  {vendor.pin_color || '#FFB6C1'}
                 </span>
               </div>
             </div>

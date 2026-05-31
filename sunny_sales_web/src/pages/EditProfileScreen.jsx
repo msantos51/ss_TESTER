@@ -3,6 +3,7 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 import ImageCropper from '../components/ImageCropper';
+import BackHomeButton from '../components/BackHomeButton';
 
 // Ecrã para edição dos dados do utilizador autenticado
 export default function EditProfileScreen() {
@@ -77,6 +78,7 @@ export default function EditProfileScreen() {
 
   return (
     <div className="form-box">
+      <BackHomeButton />
       <h2 className="title">Editar Perfil</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={save} className="form">
