@@ -7,7 +7,7 @@ import LocateButton from '../components/LocateButton';
 import VendorLocateButton from '../components/VendorLocateButton';
 import LocateHint from '../components/LocateHint';
 import BeachConditions from '../components/BeachConditions';
-import { FiUsers, FiSettings, FiGlobe } from 'react-icons/fi';
+import { FiUsers, FiSettings, FiGlobe, FiMapPin } from 'react-icons/fi';
 import { GiIceCreamCone } from 'react-icons/gi';
 import './ModernMapLayout.css';
 
@@ -16,6 +16,24 @@ const PRODUCT_ICONS = {
   'Gelados': GiIceCreamCone,
   'Acessórios de Praia': FiGlobe,
 };
+
+const DISTANCE_OPTIONS = [
+  { label: 'Todos', value: null },
+  { label: '500 m', value: 500 },
+  { label: '1 km', value: 1000 },
+  { label: '2 km', value: 2000 },
+  { label: '5 km', value: 5000 },
+];
+
+function haversineDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lng2 - lng1) * Math.PI) / 180;
+  const a = Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
 
 function getClientPinHtml(heading) {
   const hasHeading = heading !== null && !isNaN(heading);
@@ -38,6 +56,7 @@ export default function ModernMapLayout() {
   const [vendors, setVendors] = useState([]);
   const PRODUCTS = ['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'];
   const [selectedProducts, setSelectedProducts] = useState([...PRODUCTS]);
+  const [maxDistance, setMaxDistance] = useState(null);
   const [selected, setSelected] = useState(null);
 
   const [clientPos, setClientPos] = useState(null);
@@ -261,9 +280,17 @@ export default function ModernMapLayout() {
   if (isVendorLogged) {
     filteredVendors = loggedVendor ? [loggedVendor] : [];
   } else {
-    filteredVendors = activeVendors.filter((v) =>
-      selectedProducts.includes(v.product)
-    );
+    filteredVendors = activeVendors.filter((v) => {
+      if (!selectedProducts.includes(v.product)) return false;
+      if (maxDistance !== null && clientPos) {
+        const dist = haversineDistance(
+          clientPos.lat, clientPos.lng,
+          v.current_lat, v.current_lng
+        );
+        if (dist > maxDistance) return false;
+      }
+      return true;
+    });
   }
 
   // Alterna a seleção de um produto no filtro
@@ -305,6 +332,27 @@ export default function ModernMapLayout() {
                 </button>
               );
             })}
+
+            <div className="filters-section-divider" />
+
+            <div className="filters-header">
+              <FiMapPin size={15} />
+              DISTÂNCIA
+            </div>
+            {DISTANCE_OPTIONS.map((opt) => (
+              <button
+                key={opt.label}
+                className={`filter-list-item${maxDistance === opt.value ? ' active' : ''}`}
+                onClick={() => setMaxDistance(opt.value)}
+              >
+                <span>{opt.label}</span>
+              </button>
+            ))}
+            {maxDistance !== null && !clientPos && (
+              <p className="filter-distance-hint">
+                Ative a localização para filtrar por distância
+              </p>
+            )}
           </div>
         )}
 

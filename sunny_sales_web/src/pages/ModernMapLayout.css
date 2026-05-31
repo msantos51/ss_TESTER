@@ -101,6 +101,20 @@ body {
   opacity: 0.85;
 }
 
+.filters-section-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.10);
+  margin: 10px 0 6px;
+  flex-shrink: 0;
+}
+
+.filter-distance-hint {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 6px 2px 0;
+  line-height: 1.4;
+}
+
 /* ── Map area ─────────────────────────────────────────── */
 
 .map-area {
@@ -376,6 +390,17 @@ body {
   .filter-list-item {
     flex-shrink: 0;
     width: auto;
+  }
+
+  .filters-section-divider {
+    width: 1px;
+    height: 28px;
+    margin: 0 4px;
+    align-self: center;
+  }
+
+  .filter-distance-hint {
+    display: none;
   }
 
   .map-area {
