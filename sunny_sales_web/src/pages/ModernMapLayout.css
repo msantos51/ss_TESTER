@@ -54,8 +54,8 @@ body {
 .filter-fab {
   position: absolute;
   top: 14px;
-  left: 14px;
-  z-index: 500;
+  right: 14px;
+  z-index: 900;
   display: flex;
   align-items: center;
   gap: 7px;
@@ -97,7 +97,7 @@ body {
 .filter-overlay {
   position: absolute;
   inset: 0;
-  z-index: 600;
+  z-index: 950;
   background: rgba(0, 0, 0, 0.38);
   display: flex;
   align-items: flex-end;
@@ -249,9 +249,9 @@ body {
 }
 
 .filter-option.active {
-  background: var(--primary-light);
+  background: var(--primary);
   border-color: var(--primary);
-  color: var(--primary);
+  color: white;
 }
 
 .filter-option-icon {
@@ -302,9 +302,9 @@ body {
 }
 
 .filter-distance-opt.active {
-  background: var(--primary-light);
+  background: var(--primary);
   border-color: var(--primary);
-  color: var(--primary);
+  color: white;
 }
 
 .filter-distance-hint {
