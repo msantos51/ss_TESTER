@@ -29,7 +29,7 @@
 }
 
 .footer-icon {
-  color: var(--primary, #FCB454);
+  color: var(--secondary, #EE9B00);
   flex-shrink: 0;
   opacity: 0.9;
 }

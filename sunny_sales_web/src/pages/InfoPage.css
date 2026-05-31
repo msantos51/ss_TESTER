@@ -97,7 +97,7 @@
 /* Accent card */
 .info-card.accent {
   background: var(--primary-light-solid);
-  border-color: rgba(252, 180, 84, 0.3);
+  border-color: rgba(10, 147, 150, 0.3);
 }
 
 /* Section blocks */

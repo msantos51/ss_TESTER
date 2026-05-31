@@ -1,11 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto:wght@400;700&display=swap');
 
 :root {
-  --primary: #FCB454;
-  --primary-hover: #e8a03e;
-  --primary-dark: #c8883a;
-  --primary-light: rgba(252, 180, 84, 0.12);
-  --primary-light-solid: #fff4e0;
+  --primary: #0A9396;
+  --primary-hover: #097b7e;
+  --primary-dark: #075e60;
+  --primary-light: rgba(10, 147, 150, 0.12);
+  --primary-light-solid: #e0f5f5;
+
+  --secondary: #EE9B00;
+  --secondary-hover: #d48900;
+  --secondary-light: rgba(238, 155, 0, 0.12);
 
   --navy: #0f2744;
   --navy-light: #1a3558;
@@ -27,8 +31,8 @@
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
-  --shadow-warm: 0 4px 24px rgba(252, 180, 84, 0.22);
-  --shadow-warm-lg: 0 8px 40px rgba(252, 180, 84, 0.28);
+  --shadow-warm: 0 4px 24px rgba(10, 147, 150, 0.22);
+  --shadow-warm-lg: 0 8px 40px rgba(10, 147, 150, 0.28);
 
   --radius-xs: 6px;
   --radius-sm: 10px;
@@ -97,7 +101,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--primary);
+  color: var(--secondary);
   flex-shrink: 0;
 }
 
@@ -137,7 +141,7 @@ body {
 }
 .nav-link.active {
   color: var(--primary);
-  background: rgba(252, 180, 84, 0.15);
+  background: rgba(10, 147, 150, 0.15);
 }
 
 .nav-link-icon {
@@ -169,8 +173,8 @@ body {
 .profile-icon:hover {
   color: var(--primary);
   border-color: var(--primary);
-  background: rgba(252, 180, 84, 0.15);
-  box-shadow: 0 0 0 3px rgba(252, 180, 84, 0.15);
+  background: rgba(10, 147, 150, 0.15);
+  box-shadow: 0 0 0 3px rgba(10, 147, 150, 0.15);
 }
 
 .menu-toggle {
@@ -637,7 +641,7 @@ h2 {
 
   .nav-link.active {
     color: var(--primary);
-    background: rgba(252, 180, 84, 0.12);
+    background: rgba(10, 147, 150, 0.12);
   }
 
   .menu-toggle {
