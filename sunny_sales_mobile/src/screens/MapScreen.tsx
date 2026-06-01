@@ -26,17 +26,17 @@ export default function MapScreen() {
   const [region, setRegion] = useState<{ latitude: number; longitude: number } | null>(null);
   const [heading, setHeading] = useState<number | null>(null);
   const [markers, setMarkers] = useState<Record<number, VendorMarker>>({});
+  const [isAutoFollowing, setIsAutoFollowing] = useState(true);
   const vendorInfo = useRef<Record<number, Vendor>>({});
   const webViewRef = useRef<WebView>(null);
-  const shouldRecenterRef = useRef(true);
   // True enquanto o GPS fornecer curso válido; evita que a bússola substitua o GPS durante o movimento
   const gpsCourseActiveRef = useRef(false);
 
   /**
-   * Centra o mapa na posição atual com alta precisão.
+   * Centra o mapa na posição atual com alta precisão e ativa o auto-follow.
    */
   const handleLocate = async () => {
-    shouldRecenterRef.current = true;
+    setIsAutoFollowing(true);
     try {
       const loc = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.BestForNavigation,
@@ -54,6 +54,20 @@ export default function MapScreen() {
     setSelectedProducts((prev) =>
       prev.includes(product) ? prev.filter((p) => p !== product) : [...prev, product]
     );
+  };
+
+  /**
+   * Processa mensagens do WebView (interações do utilizador com o mapa).
+   */
+  const handleWebViewMessage = (event: any) => {
+    try {
+      const msg = JSON.parse(event.nativeEvent.data);
+      if (msg.type === 'userInteraction') {
+        setIsAutoFollowing(false);
+      }
+    } catch (err) {
+      console.error('Erro ao processar mensagem do WebView', err);
+    }
   };
 
   // Tracking contínuo de localização e bússola
@@ -183,12 +197,11 @@ export default function MapScreen() {
       webViewRef.current.postMessage(
         JSON.stringify({
           type: 'region',
-          data: { ...region, heading, recenter: shouldRecenterRef.current },
+          data: { ...region, heading, recenter: isAutoFollowing },
         })
       );
-      shouldRecenterRef.current = false;
     }
-  }, [region, heading]);
+  }, [region, heading, isAutoFollowing]);
 
   // Enviar marcadores filtrados para o WebView
   useEffect(() => {
@@ -298,6 +311,15 @@ export default function MapScreen() {
               updateMarkers(msg.data);
             }
           }
+
+          // Detetar interações do utilizador com o mapa para desativar auto-follow
+          map.on('dragstart', function() {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'userInteraction', action: 'pan' }));
+          });
+          map.on('zoomstart', function() {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'userInteraction', action: 'zoom' }));
+          });
+
           window.addEventListener('message', handleMessage);
           document.addEventListener('message', handleMessage);
         </script>
@@ -320,6 +342,7 @@ return (
       originWhitelist={['*']}
       source={{ html: mapHtml }}
       style={styles.map}
+      onMessage={handleWebViewMessage}
     />
     <View style={styles.filtersContainer}>
       <Text style={styles.filterTitle}>Vendedores:</Text>
