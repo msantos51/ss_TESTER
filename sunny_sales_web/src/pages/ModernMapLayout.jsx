@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import axios from 'axios';
 import { BASE_URL } from '../config';
@@ -51,6 +51,24 @@ function getVendorPinHtml(color, heading) {
   return `<div class="vendor-location-marker"><div class="vendor-location-dot" style="background:${color}">${arrow}</div></div>`;
 }
 
+function VendorAutoFollow({ vendor, isAutoFollowing, setIsAutoFollowing }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const onDragStart = () => setIsAutoFollowing(false);
+    map.on('dragstart', onDragStart);
+    return () => map.off('dragstart', onDragStart);
+  }, [map, setIsAutoFollowing]);
+
+  useEffect(() => {
+    if (isAutoFollowing && vendor?.current_lat && vendor?.current_lng) {
+      map.panTo([vendor.current_lat, vendor.current_lng]);
+    }
+  }, [vendor?.current_lat, vendor?.current_lng, isAutoFollowing, map]);
+
+  return null;
+}
+
 export default function ModernMapLayout() {
   const [vendors, setVendors] = useState([]);
   const PRODUCTS = ['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'];
@@ -73,6 +91,7 @@ export default function ModernMapLayout() {
   const isVendorLogged = !!localStorage.getItem('user');
 
   const mapRef = useRef(null);
+  const [isAutoFollowing, setIsAutoFollowing] = useState(true);
 
   // Active filter count: selected products + distance set
   const activeFilterCount =
@@ -383,7 +402,17 @@ export default function ModernMapLayout() {
             )}
 
             {isVendorLogged && loggedVendor && (
-              <VendorLocateButton vendor={loggedVendor} />
+              <>
+                <VendorAutoFollow
+                  vendor={loggedVendor}
+                  isAutoFollowing={isAutoFollowing}
+                  setIsAutoFollowing={setIsAutoFollowing}
+                />
+                <VendorLocateButton
+                  vendor={loggedVendor}
+                  onLocate={() => setIsAutoFollowing(true)}
+                />
+              </>
             )}
           </MapContainer>
 
