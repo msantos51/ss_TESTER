@@ -8,7 +8,6 @@ export default function Sustentabilidade() {
       <BackHomeButton />
 
       <div className="info-hero green">
-        <span className="info-hero-icon">🌿</span>
         <h1 className="info-hero-title">Sustentabilidade</h1>
         <p className="info-hero-lead">
           Acreditamos que o futuro do comércio de praia deve ser mais{' '}
@@ -31,7 +30,7 @@ export default function Sustentabilidade() {
 
       <div className="info-cards">
         <div className="info-card">
-          <span className="info-card-icon">🌱</span>
+
           <h3 className="info-card-title">Redução da Pegada Ecológica</h3>
           <p className="info-card-text">
             Ao otimizar os percursos dos vendedores com base na localização real dos clientes,
@@ -41,7 +40,7 @@ export default function Sustentabilidade() {
         </div>
 
         <div className="info-card accent">
-          <span className="info-card-icon">♻️</span>
+
           <h3 className="info-card-title">Embalagens Sustentáveis</h3>
           <p className="info-card-text">
             Incentivamos ativamente os vendedores parceiros a utilizarem sacos biodegradáveis,
@@ -51,7 +50,7 @@ export default function Sustentabilidade() {
         </div>
 
         <div className="info-card">
-          <span className="info-card-icon">🤝</span>
+
           <h3 className="info-card-title">Apoio a Campanhas</h3>
           <p className="info-card-text">
             Divulgamos e colaboramos com iniciativas de limpeza de praias, sensibilização
