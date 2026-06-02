@@ -17,15 +17,9 @@ export default function ImplementarScreen() {
       </div>
 
       <div className="info-badges">
-        <div className="info-badge">
-          <span className="info-badge-value">⚡</span> Implementação rápida
-        </div>
-        <div className="info-badge">
-          <span className="info-badge-value">📊</span> Estatísticas incluídas
-        </div>
-        <div className="info-badge">
-          <span className="info-badge-value">🔗</span> Acesso via QR Code
-        </div>
+        <div className="info-badge">Implementação rápida</div>
+        <div className="info-badge">Estatísticas incluídas</div>
+        <div className="info-badge">Acesso via QR Code</div>
       </div>
 
       <div className="info-cards">

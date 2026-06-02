@@ -17,15 +17,9 @@ export default function SobreProjeto() {
       </div>
 
       <div className="info-badges">
-        <div className="info-badge">
-          <span className="info-badge-value">🏖️</span> Praias portuguesas
-        </div>
-        <div className="info-badge">
-          <span className="info-badge-value">📍</span> Localização em tempo real
-        </div>
-        <div className="info-badge">
-          <span className="info-badge-value">📱</span> Web &amp; Mobile
-        </div>
+        <div className="info-badge">Praias portuguesas</div>
+        <div className="info-badge">Localização em tempo real</div>
+        <div className="info-badge">Web &amp; Mobile</div>
       </div>
 
       <div className="info-cards">

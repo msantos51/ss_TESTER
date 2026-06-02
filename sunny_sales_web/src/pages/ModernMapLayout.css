@@ -260,7 +260,7 @@ body {
 }
 
 .filter-reset-link:hover {
-  color: var(--primary-hover);
+  color: white;
   transform: none;
   box-shadow: none;
 }

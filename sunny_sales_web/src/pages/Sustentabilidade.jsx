@@ -17,15 +17,9 @@ export default function Sustentabilidade() {
       </div>
 
       <div className="info-badges">
-        <div className="info-badge">
-          <span className="info-badge-value">🌱</span> Emissões reduzidas
-        </div>
-        <div className="info-badge">
-          <span className="info-badge-value">♻️</span> Embalagens eco-friendly
-        </div>
-        <div className="info-badge">
-          <span className="info-badge-value">🌊</span> Praias mais limpas
-        </div>
+        <div className="info-badge">Emissões reduzidas</div>
+        <div className="info-badge">Embalagens eco-friendly</div>
+        <div className="info-badge">Praias mais limpas</div>
       </div>
 
       <div className="info-cards">
