@@ -54,6 +54,31 @@ body {
   font-family: 'Inter', 'Roboto', sans-serif;
 }
 
+/* ── Nearby vendors badge ─────────────────────────────── */
+
+.nearby-vendors-badge {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 /* ── Leaflet zoom controls (+/-) — canto superior esquerdo ── */
 
 .map-container .leaflet-top.leaflet-left {
