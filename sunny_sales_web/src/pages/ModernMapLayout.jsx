@@ -324,6 +324,12 @@ export default function ModernMapLayout() {
     }
   }
 
+  const nearbyVendorsCount = (!isVendorLogged && clientPos)
+    ? activeVendors.filter((v) =>
+        haversineDistance(clientPos.lat, clientPos.lng, v.current_lat, v.current_lng) <= 100
+      ).length
+    : null;
+
   let filteredVendors = [];
   if (isVendorLogged) {
     filteredVendors = loggedVendor ? [loggedVendor] : [];
@@ -434,6 +440,18 @@ export default function ModernMapLayout() {
               </>
             )}
           </MapContainer>
+
+          {/* Nearby vendors badge */}
+          {!isVendorLogged && nearbyVendorsCount !== null && (
+            <div className="nearby-vendors-badge">
+              <FiMapPin size={13} />
+              {nearbyVendorsCount === 0
+                ? 'Nenhum vendedor na sua área'
+                : nearbyVendorsCount === 1
+                  ? '1 vendedor na sua área'
+                  : `${nearbyVendorsCount} vendedores na sua área`}
+            </div>
+          )}
 
           {/* Floating filter button */}
           {!isVendorLogged && (
