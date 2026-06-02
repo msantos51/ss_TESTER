@@ -157,7 +157,7 @@ export default function ManageAccount() {
           >
             <option value="Bolas de Berlim">Bolas de Berlim</option>
             <option value="Gelados">Gelados</option>
-            <option value="Acessórios">Acessórios</option>
+            <option value="Acessórios de Praia">Acessórios de Praia</option>
           </select>
         </span>
         <span className="input-span">

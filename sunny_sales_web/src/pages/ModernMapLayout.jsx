@@ -51,6 +51,24 @@ function getVendorPinHtml(color, heading) {
   return `<div class="vendor-location-marker"><div class="vendor-location-dot" style="background:${color}">${arrow}</div></div>`;
 }
 
+function ClientAutoFollow({ clientPos, isAutoFollowing, setIsAutoFollowing }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const onDragStart = () => setIsAutoFollowing(false);
+    map.on('dragstart', onDragStart);
+    return () => map.off('dragstart', onDragStart);
+  }, [map, setIsAutoFollowing]);
+
+  useEffect(() => {
+    if (isAutoFollowing && clientPos?.lat && clientPos?.lng) {
+      map.panTo([clientPos.lat, clientPos.lng]);
+    }
+  }, [clientPos?.lat, clientPos?.lng, isAutoFollowing, map]);
+
+  return null;
+}
+
 function VendorAutoFollow({ vendor, isAutoFollowing, setIsAutoFollowing }) {
   const map = useMap();
 
@@ -391,8 +409,16 @@ export default function ModernMapLayout() {
 
             {!isVendorLogged && (
               <>
+                <ClientAutoFollow
+                  clientPos={clientPos}
+                  isAutoFollowing={isAutoFollowing}
+                  setIsAutoFollowing={setIsAutoFollowing}
+                />
                 <LocateButton
-                  onLocationFound={setClientPos}
+                  onLocationFound={(pos) => {
+                    setClientPos(pos);
+                    setIsAutoFollowing(true);
+                  }}
                   onClick={() => setShowLocateHint(false)}
                 />
                 {showLocateHint && (

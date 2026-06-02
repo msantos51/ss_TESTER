@@ -29,6 +29,7 @@ import SobreProjeto from './pages/SobreProjeto';
 import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
 import Sessions from './pages/Sessions';
+import ForgotPassword from './pages/ForgotPassword';
 import Footer from './components/Footer';
 import './index.css';
 
@@ -174,6 +175,7 @@ function AppLayout() {
           <Route path="/sessions" element={<Sessions />} />
           <Route path="/terms" element={<TermsScreen />} />
           <Route path="/vendors/:id" element={<VendorDetailScreen />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>

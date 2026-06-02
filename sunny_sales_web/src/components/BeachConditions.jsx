@@ -122,7 +122,7 @@ export default function BeachConditions() {
             onChange={(e) => {
               setLoading(true);
               setError(null);
-              const b = beaches.find((b) => String(b.id) === e.target.value);
+              const b = beaches.find((item) => String(item.id) === e.target.value);
               setSelected(b);
             }}
           >
