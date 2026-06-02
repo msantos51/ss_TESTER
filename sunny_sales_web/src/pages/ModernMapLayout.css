@@ -291,8 +291,8 @@ body {
 
 .filter-option:hover {
   border-color: var(--primary);
-  background: var(--primary-light);
-  color: var(--primary);
+  background: var(--primary);
+  color: white;
   transform: none;
   box-shadow: none;
 }
@@ -344,8 +344,8 @@ body {
 
 .filter-distance-opt:hover {
   border-color: var(--primary);
-  background: var(--primary-light);
-  color: var(--primary);
+  background: var(--primary);
+  color: white;
   transform: none;
   box-shadow: none;
 }
