@@ -1,21 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import 'leaflet-rotate';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import LocateButton from '../components/LocateButton';
 import VendorLocateButton from '../components/VendorLocateButton';
 import LocateHint from '../components/LocateHint';
 import BeachConditions from '../components/BeachConditions';
-import { FiSettings, FiGlobe, FiMapPin, FiFilter, FiCheck } from 'react-icons/fi';
-import { GiIceCreamCone } from 'react-icons/gi';
+import { FiMapPin, FiFilter, FiCheck } from 'react-icons/fi';
 import './ModernMapLayout.css';
-
-const PRODUCT_ICONS = {
-  'Bolas de Berlim': FiSettings,
-  'Gelados': GiIceCreamCone,
-  'Acessórios de Praia': FiGlobe,
-};
 
 const DISTANCE_OPTIONS = [
   { label: 'Todos', value: null },
@@ -38,7 +32,7 @@ function haversineDistance(lat1, lng1, lat2, lng2) {
 function getClientPinHtml(heading) {
   const hasHeading = heading !== null && !isNaN(heading);
   const arrow = hasHeading
-    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(${heading.toFixed(1)}deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
+    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
     : '';
   return `<div class="user-location-marker"><div class="user-location-pulse"></div><div class="user-location-dot">${arrow}</div></div>`;
 }
@@ -46,9 +40,37 @@ function getClientPinHtml(heading) {
 function getVendorPinHtml(color, heading) {
   const hasHeading = heading !== null && !isNaN(heading);
   const arrow = hasHeading
-    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(${heading.toFixed(1)}deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
+    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
     : '';
   return `<div class="vendor-location-marker"><div class="vendor-location-dot" style="background:${color}">${arrow}</div></div>`;
+}
+
+function MapBearingController({ bearing }) {
+  const map = useMap();
+  useEffect(() => {
+    if (bearing !== null && !isNaN(bearing)) {
+      map.setBearing(bearing);
+    }
+  }, [map, bearing]);
+  return null;
+}
+
+function ClientAutoFollow({ clientPos, isAutoFollowing, setIsAutoFollowing }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const onDragStart = () => setIsAutoFollowing(false);
+    map.on('dragstart', onDragStart);
+    return () => map.off('dragstart', onDragStart);
+  }, [map, setIsAutoFollowing]);
+
+  useEffect(() => {
+    if (isAutoFollowing && clientPos?.lat && clientPos?.lng) {
+      map.panTo([clientPos.lat, clientPos.lng]);
+    }
+  }, [clientPos?.lat, clientPos?.lng, isAutoFollowing, map]);
+
+  return null;
 }
 
 function VendorAutoFollow({ vendor, isAutoFollowing, setIsAutoFollowing }) {
@@ -87,6 +109,7 @@ export default function ModernMapLayout() {
   const absEventFiredRef = useRef(false);
   const gpsMovingRef = useRef(false);
   const [compassReady, setCompassReady] = useState(false);
+  const [needsCompassPermission, setNeedsCompassPermission] = useState(false);
   const [showLocateHint, setShowLocateHint] = useState(false);
   const isVendorLogged = !!localStorage.getItem('user');
 
@@ -204,7 +227,7 @@ export default function ModernMapLayout() {
 
   // iOS 13+ requires a user gesture to call requestPermission for DeviceOrientationEvent.
   // Try immediately (works when permission was already granted in a previous visit);
-  // if that throws (first visit), wait for the first touchstart anywhere on the page.
+  // if that throws (first visit), show the compass button so the user can tap it.
   useEffect(() => {
     if (
       typeof DeviceOrientationEvent === 'undefined' ||
@@ -214,37 +237,33 @@ export default function ModernMapLayout() {
       return;
     }
 
-    let touchListener = null;
-
-    const tryRequest = async () => {
-      try {
-        const result = await DeviceOrientationEvent.requestPermission();
+    DeviceOrientationEvent.requestPermission()
+      .then((result) => {
         if (result === 'granted') setCompassReady(true);
-      } catch {
-        touchListener = async () => {
-          try {
-            const r = await DeviceOrientationEvent.requestPermission();
-            if (r === 'granted') setCompassReady(true);
-          } catch (e) {
-            console.error('Erro ao pedir permissão da bússola:', e);
-          }
-        };
-        document.addEventListener('touchstart', touchListener, { once: true });
-      }
-    };
-
-    tryRequest();
-
-    return () => {
-      if (touchListener) document.removeEventListener('touchstart', touchListener);
-    };
+        else setNeedsCompassPermission(true);
+      })
+      .catch(() => {
+        setNeedsCompassPermission(true);
+      });
   }, []);
+
+  const requestCompassPermission = async () => {
+    try {
+      const result = await DeviceOrientationEvent.requestPermission();
+      if (result === 'granted') {
+        setCompassReady(true);
+        setNeedsCompassPermission(false);
+      }
+    } catch (e) {
+      console.error('Erro ao pedir permissão da bússola:', e);
+    }
+  };
 
   useEffect(() => {
     if (!compassReady) return;
     const THROTTLE_MS = 50;
     const COMPASS_ALPHA = 0.25;
-    const MAX_ACCURACY_DEG = 25;
+    const MAX_ACCURACY_DEG = 50;
 
     const applySmoothing = (raw) => {
       const prev = smoothedHeadingRef.current;
@@ -313,6 +332,12 @@ export default function ModernMapLayout() {
     }
   }
 
+  const nearbyVendorsCount = (!isVendorLogged && clientPos)
+    ? activeVendors.filter((v) =>
+        haversineDistance(clientPos.lat, clientPos.lng, v.current_lat, v.current_lng) <= 100
+      ).length
+    : null;
+
   let filteredVendors = [];
   if (isVendorLogged) {
     filteredVendors = loggedVendor ? [loggedVendor] : [];
@@ -347,7 +372,10 @@ export default function ModernMapLayout() {
             center={[38.7169, -9.1399]}
             zoom={13}
             className="map-container"
+            rotate={true}
+            bearing={0}
           >
+            <MapBearingController bearing={heading} />
             <TileLayer
               url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
               attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
@@ -391,8 +419,16 @@ export default function ModernMapLayout() {
 
             {!isVendorLogged && (
               <>
+                <ClientAutoFollow
+                  clientPos={clientPos}
+                  isAutoFollowing={isAutoFollowing}
+                  setIsAutoFollowing={setIsAutoFollowing}
+                />
                 <LocateButton
-                  onLocationFound={setClientPos}
+                  onLocationFound={(pos) => {
+                    setClientPos(pos);
+                    setIsAutoFollowing(true);
+                  }}
                   onClick={() => setShowLocateHint(false)}
                 />
                 {showLocateHint && (
@@ -415,6 +451,30 @@ export default function ModernMapLayout() {
               </>
             )}
           </MapContainer>
+
+          {/* Compass permission button — only shown on iOS before permission is granted */}
+          {needsCompassPermission && !compassReady && (
+            <button
+              className="compass-btn"
+              onClick={requestCompassPermission}
+              aria-label="Ativar bússola"
+              title="Ativar bússola"
+            >
+              🧭
+            </button>
+          )}
+
+          {/* Nearby vendors badge */}
+          {!isVendorLogged && nearbyVendorsCount !== null && (
+            <div className="nearby-vendors-badge">
+              <FiMapPin size={13} />
+              {nearbyVendorsCount === 0
+                ? 'Nenhum vendedor na sua área'
+                : nearbyVendorsCount === 1
+                  ? '1 vendedor na sua área'
+                  : `${nearbyVendorsCount} vendedores na sua área`}
+            </div>
+          )}
 
           {/* Floating filter button */}
           {!isVendorLogged && (
@@ -456,7 +516,6 @@ export default function ModernMapLayout() {
                     </button>
                   </div>
                   {PRODUCTS.map((p) => {
-                    const Icon = PRODUCT_ICONS[p];
                     const active = pendingProducts.includes(p);
                     return (
                       <button
@@ -464,7 +523,6 @@ export default function ModernMapLayout() {
                         className={`filter-option${active ? ' active' : ''}`}
                         onClick={() => togglePendingProduct(p)}
                       >
-                        {Icon && <Icon size={16} className="filter-option-icon" />}
                         <span>{p}</span>
                         {active && <FiCheck size={14} className="filter-check" />}
                       </button>

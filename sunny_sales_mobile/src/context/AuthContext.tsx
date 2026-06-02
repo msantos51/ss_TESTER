@@ -47,16 +47,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Estado que guarda os dados do vendedor autenticado
   const [vendor, setVendor] = useState<Vendor | null>(null);
 
-  // Carrega o token armazenado ao iniciar a aplicação
+  // Carrega o token armazenado ao iniciar a aplicação e recarrega os dados do vendedor
   useEffect(() => {
     const loadToken = async () => {
       try {
         const storedToken = await AsyncStorage.getItem("token");
         if (storedToken) {
           setToken(storedToken);
+          const res = await api.get("/vendors/me", {
+            headers: { Authorization: `Bearer ${storedToken}` },
+          });
+          setVendor(res.data);
         }
       } catch (error) {
-        console.error("Erro ao carregar token:", error);
+        console.error("Erro ao carregar sessão:", error);
+        await AsyncStorage.removeItem("token");
       }
     };
     loadToken();
@@ -79,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error("Erro no login:", error.message || error);
       throw new Error(
-        "Não foi possível iniciar sessão. Verifica a internet ou o servidor."
+        "Não foi possível iniciar sessão. Verifique a ligação à internet."
       );
     }
   };
@@ -112,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       const detail = error?.response?.data?.detail;
       throw new Error(
-        detail || "Não foi possível registar. Verifica a internet ou o servidor."
+        detail || "Não foi possível registar. Verifique a ligação à internet."
       );
     }
   };

@@ -43,7 +43,8 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "EXPO_PUBLIC_BASE_URL": "https://ss-tester.onrender.com"
+      "EXPO_PUBLIC_BASE_URL": "https://ss-tester.onrender.com",
+      "EXPO_PUBLIC_WEB_URL": "https://ss-tester.onrender.com"
     }
   }
 }

@@ -8,7 +8,6 @@ export default function SobreProjeto() {
       <BackHomeButton />
 
       <div className="info-hero">
-        <span className="info-hero-icon">🌊</span>
         <h1 className="info-hero-title">Sobre o Projeto</h1>
         <p className="info-hero-lead">
           O <strong>Sunny Sales</strong> conecta vendedores ambulantes de praia a banhistas
@@ -18,20 +17,14 @@ export default function SobreProjeto() {
       </div>
 
       <div className="info-badges">
-        <div className="info-badge">
-          <span className="info-badge-value">🏖️</span> Praias portuguesas
-        </div>
-        <div className="info-badge">
-          <span className="info-badge-value">📍</span> Localização em tempo real
-        </div>
-        <div className="info-badge">
-          <span className="info-badge-value">📱</span> Web &amp; Mobile
-        </div>
+        <div className="info-badge">Praias portuguesas</div>
+        <div className="info-badge">Localização em tempo real</div>
+        <div className="info-badge">Web &amp; Mobile</div>
       </div>
 
       <div className="info-cards">
         <div className="info-card accent">
-          <span className="info-card-icon">🏖️</span>
+
           <h3 className="info-card-title">Quem Somos</h3>
           <p className="info-card-text">
             Somos uma plataforma digital que valoriza o comércio ambulante tradicional de praia —
@@ -41,7 +34,7 @@ export default function SobreProjeto() {
         </div>
 
         <div className="info-card">
-          <span className="info-card-icon">💡</span>
+
           <h3 className="info-card-title">A Nossa Motivação</h3>
           <p className="info-card-text">
             Os banhistas perdem tempo a procurar vendedores pela areia e os vendedores percorrem
@@ -51,7 +44,7 @@ export default function SobreProjeto() {
         </div>
 
         <div className="info-card">
-          <span className="info-card-icon">✅</span>
+
           <h3 className="info-card-title">Benefícios</h3>
           <ul className="info-card-list">
             <li>Menos tempo a procurar vendedores na praia</li>

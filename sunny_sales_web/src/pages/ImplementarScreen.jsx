@@ -8,7 +8,6 @@ export default function ImplementarScreen() {
       <BackHomeButton />
 
       <div className="info-hero">
-        <span className="info-hero-icon">🏛️</span>
         <h1 className="info-hero-title">Implementação do Sunny Sales</h1>
         <p className="info-hero-lead">
           Uma solução tecnológica pronta a usar para <strong>autarquias, juntas de freguesia
@@ -18,20 +17,14 @@ export default function ImplementarScreen() {
       </div>
 
       <div className="info-badges">
-        <div className="info-badge">
-          <span className="info-badge-value">⚡</span> Implementação rápida
-        </div>
-        <div className="info-badge">
-          <span className="info-badge-value">📊</span> Estatísticas incluídas
-        </div>
-        <div className="info-badge">
-          <span className="info-badge-value">🔗</span> Acesso via QR Code
-        </div>
+        <div className="info-badge">Implementação rápida</div>
+        <div className="info-badge">Estatísticas incluídas</div>
+        <div className="info-badge">Acesso via QR Code</div>
       </div>
 
       <div className="info-cards">
         <div className="info-card accent">
-          <span className="info-card-icon">🏛️</span>
+
           <h3 className="info-card-title">Vantagens para a Autarquia</h3>
           <ul className="info-card-list">
             <li>Organização eficiente da atividade ambulante</li>
@@ -44,7 +37,7 @@ export default function ImplementarScreen() {
         </div>
 
         <div className="info-card">
-          <span className="info-card-icon">🗺️</span>
+
           <h3 className="info-card-title">Recursos Disponibilizados</h3>
           <ul className="info-card-list">
             <li>Mapa digital interativo com vendedores em tempo real</li>

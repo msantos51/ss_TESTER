@@ -6,7 +6,7 @@ import {
   NavLink,
   useLocation,
 } from 'react-router-dom';
-import { FiUser, FiMenu, FiX, FiInfo, FiTool, FiDroplet, FiSun } from 'react-icons/fi';
+import { FiUser, FiMenu, FiX, FiSun } from 'react-icons/fi';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { BASE_URL } from './config';
@@ -29,6 +29,7 @@ import SobreProjeto from './pages/SobreProjeto';
 import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
 import Sessions from './pages/Sessions';
+import ForgotPassword from './pages/ForgotPassword';
 import Footer from './components/Footer';
 import './index.css';
 
@@ -108,7 +109,6 @@ function AppLayout() {
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/sobre-projeto"
           >
-            <FiInfo size={14} className="nav-link-icon" />
             Sobre o Projeto
           </NavLink>
           <span className="nav-divider">|</span>
@@ -116,7 +116,6 @@ function AppLayout() {
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/sustentabilidade"
           >
-            <FiDroplet size={14} className="nav-link-icon" />
             Sustentabilidade
           </NavLink>
           <span className="nav-divider">|</span>
@@ -124,7 +123,6 @@ function AppLayout() {
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/implementacao"
           >
-            <FiTool size={14} className="nav-link-icon" />
             Implementar
           </NavLink>
         </div>
@@ -174,6 +172,7 @@ function AppLayout() {
           <Route path="/sessions" element={<Sessions />} />
           <Route path="/terms" element={<TermsScreen />} />
           <Route path="/vendors/:id" element={<VendorDetailScreen />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>

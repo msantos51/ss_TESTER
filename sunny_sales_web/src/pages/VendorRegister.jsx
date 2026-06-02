@@ -83,7 +83,7 @@ export default function VendorRegister() {
       } else if (err.response) {
         setError(`Erro ${err.response.status} ao registar. Tente novamente.`);
       } else {
-        setError('Sem resposta do servidor. Verifica a tua ligação à internet.');
+        setError('Sem resposta do servidor. Verifique a sua ligação à internet.');
       }
     }
   };
@@ -130,7 +130,7 @@ export default function VendorRegister() {
             <option value="">Selecione um produto</option>
             <option value="Bolas de Berlim">Bolas de Berlim</option>
             <option value="Gelados">Gelados</option>
-            <option value="Acessórios">Acessórios</option>
+            <option value="Acessórios de Praia">Acessórios de Praia</option>
           </select>
         </span>
         <span className="input-span">
