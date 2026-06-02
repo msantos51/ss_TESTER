@@ -109,6 +109,7 @@ export default function ModernMapLayout() {
   const absEventFiredRef = useRef(false);
   const gpsMovingRef = useRef(false);
   const [compassReady, setCompassReady] = useState(false);
+  const [needsCompassPermission, setNeedsCompassPermission] = useState(false);
   const [showLocateHint, setShowLocateHint] = useState(false);
   const isVendorLogged = !!localStorage.getItem('user');
 
@@ -226,7 +227,7 @@ export default function ModernMapLayout() {
 
   // iOS 13+ requires a user gesture to call requestPermission for DeviceOrientationEvent.
   // Try immediately (works when permission was already granted in a previous visit);
-  // if that throws (first visit), wait for the first touchstart anywhere on the page.
+  // if that throws (first visit), show the compass button so the user can tap it.
   useEffect(() => {
     if (
       typeof DeviceOrientationEvent === 'undefined' ||
@@ -236,37 +237,33 @@ export default function ModernMapLayout() {
       return;
     }
 
-    let touchListener = null;
-
-    const tryRequest = async () => {
-      try {
-        const result = await DeviceOrientationEvent.requestPermission();
+    DeviceOrientationEvent.requestPermission()
+      .then((result) => {
         if (result === 'granted') setCompassReady(true);
-      } catch {
-        touchListener = async () => {
-          try {
-            const r = await DeviceOrientationEvent.requestPermission();
-            if (r === 'granted') setCompassReady(true);
-          } catch (e) {
-            console.error('Erro ao pedir permissão da bússola:', e);
-          }
-        };
-        document.addEventListener('touchstart', touchListener, { once: true });
-      }
-    };
-
-    tryRequest();
-
-    return () => {
-      if (touchListener) document.removeEventListener('touchstart', touchListener);
-    };
+        else setNeedsCompassPermission(true);
+      })
+      .catch(() => {
+        setNeedsCompassPermission(true);
+      });
   }, []);
+
+  const requestCompassPermission = async () => {
+    try {
+      const result = await DeviceOrientationEvent.requestPermission();
+      if (result === 'granted') {
+        setCompassReady(true);
+        setNeedsCompassPermission(false);
+      }
+    } catch (e) {
+      console.error('Erro ao pedir permissão da bússola:', e);
+    }
+  };
 
   useEffect(() => {
     if (!compassReady) return;
     const THROTTLE_MS = 50;
     const COMPASS_ALPHA = 0.25;
-    const MAX_ACCURACY_DEG = 25;
+    const MAX_ACCURACY_DEG = 50;
 
     const applySmoothing = (raw) => {
       const prev = smoothedHeadingRef.current;
@@ -454,6 +451,18 @@ export default function ModernMapLayout() {
               </>
             )}
           </MapContainer>
+
+          {/* Compass permission button — only shown on iOS before permission is granted */}
+          {needsCompassPermission && !compassReady && (
+            <button
+              className="compass-btn"
+              onClick={requestCompassPermission}
+              aria-label="Ativar bússola"
+              title="Ativar bússola"
+            >
+              🧭
+            </button>
+          )}
 
           {/* Nearby vendors badge */}
           {!isVendorLogged && nearbyVendorsCount !== null && (
