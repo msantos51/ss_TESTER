@@ -5,9 +5,9 @@
     "sdkVersion": "54.0.0",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon.PNG",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash.PNG",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -27,7 +27,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon.PNG",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -40,7 +40,7 @@
       "package": "com.sunny.sales"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.PNG"
     },
     "extra": {
       "EXPO_PUBLIC_BASE_URL": "https://ss-tester.onrender.com",
