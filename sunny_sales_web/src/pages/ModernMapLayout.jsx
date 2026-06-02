@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import 'leaflet-rotate';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import LocateButton from '../components/LocateButton';
@@ -31,7 +32,7 @@ function haversineDistance(lat1, lng1, lat2, lng2) {
 function getClientPinHtml(heading) {
   const hasHeading = heading !== null && !isNaN(heading);
   const arrow = hasHeading
-    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(${heading.toFixed(1)}deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
+    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
     : '';
   return `<div class="user-location-marker"><div class="user-location-pulse"></div><div class="user-location-dot">${arrow}</div></div>`;
 }
@@ -39,9 +40,19 @@ function getClientPinHtml(heading) {
 function getVendorPinHtml(color, heading) {
   const hasHeading = heading !== null && !isNaN(heading);
   const arrow = hasHeading
-    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="transform:rotate(${heading.toFixed(1)}deg);display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
+    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
     : '';
   return `<div class="vendor-location-marker"><div class="vendor-location-dot" style="background:${color}">${arrow}</div></div>`;
+}
+
+function MapBearingController({ bearing }) {
+  const map = useMap();
+  useEffect(() => {
+    if (bearing !== null && !isNaN(bearing)) {
+      map.setBearing(bearing);
+    }
+  }, [map, bearing]);
+  return null;
 }
 
 function ClientAutoFollow({ clientPos, isAutoFollowing, setIsAutoFollowing }) {
@@ -364,7 +375,10 @@ export default function ModernMapLayout() {
             center={[38.7169, -9.1399]}
             zoom={13}
             className="map-container"
+            rotate={true}
+            bearing={0}
           >
+            <MapBearingController bearing={heading} />
             <TileLayer
               url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
               attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
