@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error("Erro no login:", error.message || error);
       throw new Error(
-        "Não foi possível iniciar sessão. Verifica a internet ou o servidor."
+        "Não foi possível iniciar sessão. Verifique a ligação à internet."
       );
     }
   };
@@ -117,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       const detail = error?.response?.data?.detail;
       throw new Error(
-        detail || "Não foi possível registar. Verifica a internet ou o servidor."
+        detail || "Não foi possível registar. Verifique a ligação à internet."
       );
     }
   };

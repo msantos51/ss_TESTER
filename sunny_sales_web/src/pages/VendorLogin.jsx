@@ -125,6 +125,14 @@ export default function VendorLogin() {
           Registar
         </button>
 
+        <p style={{ textAlign: 'center', marginTop: '4px' }}>
+          <span
+            className="sign-up-link"
+            onClick={() => navigate('/forgot-password')}
+          >
+            Esqueci a palavra-passe
+          </span>
+        </p>
       </div>
     </div>
   );

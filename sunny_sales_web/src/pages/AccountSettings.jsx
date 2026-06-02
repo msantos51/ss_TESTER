@@ -1,55 +1,43 @@
-// (em português) Página de definições de conta na versão web
-
 import React, { useEffect, useState } from 'react';
+import BackHomeButton from '../components/BackHomeButton';
 
-// Simulação dos serviços (deves adaptar ao que tiveres no backend/localStorage)
-// Obtém se as notificações estão ativas no localStorage
 const isNotificationsEnabled = () =>
   localStorage.getItem('notifications_enabled') === 'true';
 
-// Atualiza o estado de notificações no localStorage
 const setNotificationsEnabled = (value) => {
   localStorage.setItem('notifications_enabled', value);
 };
 
-// Obtém o raio configurado
 const getNotificationRadius = () =>
   parseInt(localStorage.getItem('notification_radius') || '20', 10);
 
-// Guarda o raio de alertas
 const setNotificationRadius = (value) => {
   localStorage.setItem('notification_radius', value);
 };
 
-// Componente que permite configurar notificações e raio de alertas
 export default function AccountSettings() {
   const [enabled, setEnabled] = useState(true);
   const [radius, setRadius] = useState('20');
 
   useEffect(() => {
-    const load = async () => {
-      setEnabled(await isNotificationsEnabled());
-      const r = await getNotificationRadius();
-      setRadius(String(r));
-    };
-    load();
+    setEnabled(isNotificationsEnabled());
+    setRadius(String(getNotificationRadius()));
   }, []);
 
-  // Alterna o estado das notificações
-  const toggleNotifications = async () => {
+  const toggleNotifications = () => {
     const val = !enabled;
     setEnabled(val);
-    await setNotificationsEnabled(val);
+    setNotificationsEnabled(val);
   };
 
-  // Atualiza o raio de alertas no localStorage
-  const changeRadius = async (value) => {
+  const changeRadius = (value) => {
     setRadius(String(value));
-    await setNotificationRadius(value);
+    setNotificationRadius(value);
   };
 
   return (
     <div className="form-box">
+      <BackHomeButton />
       <h2 className="title">Definições da Conta</h2>
 
       <div className="form">
@@ -76,4 +64,3 @@ export default function AccountSettings() {
     </div>
   );
 }
-
