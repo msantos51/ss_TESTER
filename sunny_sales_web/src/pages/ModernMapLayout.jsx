@@ -306,7 +306,7 @@ export default function ModernMapLayout() {
       if (now - lastHeadingTs.current < THROTTLE_MS) return;
       lastHeadingTs.current = now;
       absEventFiredRef.current = true;
-      const raw = (360 - e.alpha) % 360;
+      const raw = e.alpha % 360;
       setHeading(applySmoothing(raw));
     };
 
@@ -320,7 +320,7 @@ export default function ModernMapLayout() {
       if (e.webkitCompassHeading != null) {
         setHeading(applySmoothing(e.webkitCompassHeading));
       } else if (e.alpha != null && e.absolute) {
-        setHeading(applySmoothing((360 - e.alpha) % 360));
+        setHeading(applySmoothing(e.alpha % 360));
       }
     };
 
