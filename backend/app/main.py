@@ -23,10 +23,29 @@ import hmac
 import hashlib
 from math import radians, sin, cos, sqrt, atan2
 
+import cloudinary
+import cloudinary.uploader
+
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
 ALLOWED_STORY_TYPES = ALLOWED_IMAGE_TYPES | {"video/mp4", "video/webm"}
 ALLOWED_STORY_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS | {".mp4", ".webm"}
+
+# Cloudinary config (usa variáveis de ambiente CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET)
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True,
+)
+
+_CLOUDINARY_ENABLED = bool(os.getenv("CLOUDINARY_CLOUD_NAME"))
+
+# Fallback: diretórios locais (usados se Cloudinary não estiver configurado)
+PROFILE_PHOTO_DIR = "profile_photos"
+os.makedirs(PROFILE_PHOTO_DIR, exist_ok=True)
+STORY_DIR = "stories"
+os.makedirs(STORY_DIR, exist_ok=True)
 
 
 def validate_upload(file: UploadFile, allowed_types: set, allowed_exts: set, label: str = "ficheiro"):
@@ -37,13 +56,55 @@ def validate_upload(file: UploadFile, allowed_types: set, allowed_exts: set, lab
             detail=f"Tipo de {label} inválido. Permitidos: {', '.join(sorted(allowed_exts))}",
         )
 
-# Diretório para guardar fotos de perfil
-PROFILE_PHOTO_DIR = "profile_photos"
-os.makedirs(PROFILE_PHOTO_DIR, exist_ok=True)
 
-# Diretório para stories dos vendedores
-STORY_DIR = "stories"
-os.makedirs(STORY_DIR, exist_ok=True)
+def _upload_to_cloudinary(file: UploadFile, folder: str) -> str:
+    """Faz upload de um ficheiro para o Cloudinary e devolve o URL seguro."""
+    result = cloudinary.uploader.upload(
+        file.file,
+        folder=folder,
+        resource_type="auto",
+    )
+    return result["secure_url"]
+
+
+def _delete_from_cloudinary(url: str) -> None:
+    """Remove um ficheiro do Cloudinary dado o seu URL. Falhas são ignoradas silenciosamente."""
+    try:
+        # Extrai o public_id a partir do URL (formato: .../folder/filename.ext)
+        parts = url.split("/upload/")
+        if len(parts) == 2:
+            public_id_with_ext = parts[1]
+            # Remove a versão (v123456/) se presente
+            segments = public_id_with_ext.split("/")
+            if segments[0].startswith("v") and segments[0][1:].isdigit():
+                segments = segments[1:]
+            public_id = "/".join(segments).rsplit(".", 1)[0]
+            cloudinary.uploader.destroy(public_id, resource_type="image")
+    except Exception:
+        pass
+
+
+def _upload_file(upload_file: UploadFile, folder: str) -> str:
+    """Faz upload de um ficheiro para Cloudinary (se configurado) ou para o filesystem local."""
+    if _CLOUDINARY_ENABLED:
+        return _upload_to_cloudinary(upload_file, folder)
+    ext = os.path.splitext(upload_file.filename or "")[1].lower()
+    file_name = f"{uuid4().hex}{ext}"
+    file_path = os.path.join(folder, file_name)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(upload_file.file, buffer)
+    return f"{folder}/{file_name}"
+
+
+def _delete_file(path_or_url: str) -> None:
+    """Remove um ficheiro do Cloudinary ou do filesystem local."""
+    if _CLOUDINARY_ENABLED and path_or_url.startswith("http"):
+        _delete_from_cloudinary(path_or_url)
+    else:
+        try:
+            os.remove(path_or_url)
+        except OSError:
+            pass
 
 # Inicializar app
 app = FastAPI()
@@ -423,13 +484,7 @@ async def create_vendor(
     validate_upload(profile_photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto de perfil")
     hashed_password = pwd_context.hash(password)
 
-    ext = os.path.splitext(profile_photo.filename)[1].lower()
-    file_name = f"{uuid4().hex}{ext}"
-    file_path = os.path.join(PROFILE_PHOTO_DIR, file_name)
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(profile_photo.file, buffer)
-
-    public_path = f"profile_photos/{file_name}"
+    public_path = _upload_file(profile_photo, PROFILE_PHOTO_DIR)
 
     confirmation_token = uuid4().hex
     new_vendor = models.Vendor(
@@ -526,17 +581,9 @@ async def update_vendor_profile(
     if profile_photo:
         validate_upload(profile_photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto de perfil")
         old_photo_path = vendor.profile_photo
-        ext = os.path.splitext(profile_photo.filename)[1].lower()
-        file_name = f"{uuid4().hex}{ext}"
-        file_path = os.path.join(PROFILE_PHOTO_DIR, file_name)
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(profile_photo.file, buffer)
-        vendor.profile_photo = f"profile_photos/{file_name}"
+        vendor.profile_photo = _upload_file(profile_photo, PROFILE_PHOTO_DIR)
         if old_photo_path:
-            try:
-                os.remove(old_photo_path)
-            except OSError:
-                pass
+            _delete_file(old_photo_path)
     if pin_color:
         vendor.pin_color = pin_color
 
@@ -853,15 +900,11 @@ async def create_story(
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
     validate_upload(file, ALLOWED_STORY_TYPES, ALLOWED_STORY_EXTENSIONS, "story")
-    ext = os.path.splitext(file.filename)[1].lower()
-    file_name = f"{uuid4().hex}{ext}"
-    file_path = os.path.join(STORY_DIR, file_name)
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    media_url = _upload_file(file, STORY_DIR)
     created = utcnow()
     story = models.Story(
         vendor_id=vendor_id,
-        media_path=f"stories/{file_name}",
+        media_path=media_url,
         created_at=created,
         expires_at=created + timedelta(hours=2),
     )
@@ -886,10 +929,7 @@ def list_stories(vendor_id: int, db: Session = Depends(get_db)):
         .all()
     )
     for s in expired:
-        try:
-            os.remove(s.media_path)
-        except OSError:
-            pass
+        _delete_file(s.media_path)
         db.delete(s)
     if expired:
         db.commit()
