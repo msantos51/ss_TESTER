@@ -45,13 +45,34 @@ function getVendorPinHtml(color, heading) {
   return `<div class="vendor-location-marker"><div class="vendor-location-dot" style="background:${color}">${arrow}</div></div>`;
 }
 
-function MapBearingController({ bearing }) {
+function MapBearingController({ targetBearingRef }) {
   const map = useMap();
   useEffect(() => {
-    if (bearing !== null && !isNaN(bearing)) {
-      map.setBearing(bearing);
-    }
-  }, [map, bearing]);
+    const current = { val: null };
+    let rafId;
+    const LERP = 0.18;
+
+    const tick = () => {
+      const target = targetBearingRef.current;
+      if (target !== null && !isNaN(target)) {
+        if (current.val === null) {
+          current.val = target;
+          map.setBearing(target);
+        } else {
+          let diff = target - current.val;
+          if (diff > 180) diff -= 360;
+          if (diff < -180) diff += 360;
+          if (Math.abs(diff) > 0.08) {
+            current.val = (current.val + diff * LERP + 360) % 360;
+            map.setBearing(current.val);
+          }
+        }
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [map, targetBearingRef]);
   return null;
 }
 
@@ -125,11 +146,12 @@ export default function ModernMapLayout() {
   const [clientPos, setClientPos] = useState(null);
   const [heading, setHeading] = useState(null);
   const lastHeadingTs = useRef(0);
-  const smoothedHeadingRef = useRef(null);
+  const targetBearingRef = useRef(null);
   const absEventFiredRef = useRef(false);
   const gpsMovingRef = useRef(false);
   const [compassReady, setCompassReady] = useState(false);
   const [needsCompassPermission, setNeedsCompassPermission] = useState(false);
+  const [showCompassModal, setShowCompassModal] = useState(false);
   const [showLocateHint, setShowLocateHint] = useState(false);
   const isVendorLogged = !!localStorage.getItem('user');
 
@@ -233,7 +255,7 @@ export default function ModernMapLayout() {
         if (gpsH != null && !isNaN(gpsH) && pos.coords.speed != null && pos.coords.speed > 0.3) {
           gpsMovingRef.current = true;
           const mappedGpsH = (360 - gpsH) % 360;
-          smoothedHeadingRef.current = mappedGpsH;
+          targetBearingRef.current = mappedGpsH;
           setHeading(mappedGpsH);
           lastHeadingTs.current = Date.now();
         } else {
@@ -248,7 +270,7 @@ export default function ModernMapLayout() {
 
   // iOS 13+ requires a user gesture to call requestPermission for DeviceOrientationEvent.
   // Try immediately (works when permission was already granted in a previous visit);
-  // if that throws (first visit), show the compass button so the user can tap it.
+  // if that fails (first visit), auto-show the compass permission modal.
   useEffect(() => {
     if (
       typeof DeviceOrientationEvent === 'undefined' ||
@@ -260,11 +282,18 @@ export default function ModernMapLayout() {
 
     DeviceOrientationEvent.requestPermission()
       .then((result) => {
-        if (result === 'granted') setCompassReady(true);
-        else setNeedsCompassPermission(true);
+        if (result === 'granted') {
+          setCompassReady(true);
+        } else {
+          setNeedsCompassPermission(true);
+          const dismissed = localStorage.getItem('compass_modal_dismissed');
+          if (!dismissed) setShowCompassModal(true);
+        }
       })
       .catch(() => {
         setNeedsCompassPermission(true);
+        const dismissed = localStorage.getItem('compass_modal_dismissed');
+        if (!dismissed) setShowCompassModal(true);
       });
   }, []);
 
@@ -277,28 +306,23 @@ export default function ModernMapLayout() {
       }
     } catch (e) {
       console.error('Erro ao pedir permissão da bússola:', e);
+    } finally {
+      setShowCompassModal(false);
+      localStorage.setItem('compass_modal_dismissed', 'true');
     }
+  };
+
+  const dismissCompassModal = () => {
+    setShowCompassModal(false);
+    localStorage.setItem('compass_modal_dismissed', 'true');
   };
 
   useEffect(() => {
     if (!compassReady) return;
-    const THROTTLE_MS = 50;
-    const COMPASS_ALPHA = 0.25;
+    const THROTTLE_MS = 16; // ~60fps for targetBearingRef; state update throttled separately
+    const MARKER_THROTTLE_MS = 100;
     const MAX_ACCURACY_DEG = 50;
-
-    const applySmoothing = (raw) => {
-      const prev = smoothedHeadingRef.current;
-      if (prev === null) {
-        smoothedHeadingRef.current = raw;
-        return raw;
-      }
-      let diff = raw - prev;
-      if (diff > 180) diff -= 360;
-      if (diff < -180) diff += 360;
-      const next = (prev + COMPASS_ALPHA * diff + 360) % 360;
-      smoothedHeadingRef.current = next;
-      return next;
-    };
+    let lastMarkerTs = 0;
 
     const onAbsolute = (e) => {
       if (gpsMovingRef.current) return;
@@ -308,7 +332,11 @@ export default function ModernMapLayout() {
       lastHeadingTs.current = now;
       absEventFiredRef.current = true;
       const raw = e.alpha % 360;
-      setHeading(applySmoothing(raw));
+      targetBearingRef.current = raw;
+      if (now - lastMarkerTs > MARKER_THROTTLE_MS) {
+        lastMarkerTs = now;
+        setHeading(raw);
+      }
     };
 
     const onOrientation = (e) => {
@@ -318,10 +346,18 @@ export default function ModernMapLayout() {
       if (now - lastHeadingTs.current < THROTTLE_MS) return;
       if (e.webkitCompassAccuracy != null && e.webkitCompassAccuracy >= 0 && e.webkitCompassAccuracy > MAX_ACCURACY_DEG) return;
       lastHeadingTs.current = now;
+      let raw = null;
       if (e.webkitCompassHeading != null) {
-        setHeading(applySmoothing((360 - e.webkitCompassHeading) % 360));
+        raw = (360 - e.webkitCompassHeading) % 360;
       } else if (e.alpha != null && e.absolute) {
-        setHeading(applySmoothing(e.alpha % 360));
+        raw = e.alpha % 360;
+      }
+      if (raw !== null) {
+        targetBearingRef.current = raw;
+        if (now - lastMarkerTs > MARKER_THROTTLE_MS) {
+          lastMarkerTs = now;
+          setHeading(raw);
+        }
       }
     };
 
@@ -396,7 +432,7 @@ export default function ModernMapLayout() {
             rotate={true}
             bearing={0}
           >
-            <MapBearingController bearing={heading} />
+            <MapBearingController targetBearingRef={targetBearingRef} />
             <TileLayer
               url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
               attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
@@ -473,11 +509,30 @@ export default function ModernMapLayout() {
             )}
           </MapContainer>
 
-          {/* Compass permission button — only shown on iOS before permission is granted */}
-          {needsCompassPermission && !compassReady && (
+          {/* Compass permission modal — shown automatically on first iOS visit */}
+          {showCompassModal && (
+            <div className="compass-modal-overlay" onClick={dismissCompassModal}>
+              <div className="compass-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="compass-modal-icon">🧭</div>
+                <h3 className="compass-modal-title">Orientação Automática</h3>
+                <p className="compass-modal-desc">
+                  Para o mapa rodar conforme a direção que estás a olhar, precisa de acesso à bússola do dispositivo.
+                </p>
+                <button className="compass-allow-btn" onClick={requestCompassPermission}>
+                  Permitir Bússola
+                </button>
+                <button className="compass-skip-btn" onClick={dismissCompassModal}>
+                  Agora não
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Fallback compass button if modal was dismissed but permission still needed */}
+          {needsCompassPermission && !compassReady && !showCompassModal && (
             <button
               className="compass-btn"
-              onClick={requestCompassPermission}
+              onClick={() => setShowCompassModal(true)}
               aria-label="Ativar bússola"
               title="Ativar bússola"
             >
