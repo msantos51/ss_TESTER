@@ -59,14 +59,26 @@ function ClientAutoFollow({ clientPos, isAutoFollowing, setIsAutoFollowing }) {
   const map = useMap();
 
   useEffect(() => {
-    const onDragStart = () => setIsAutoFollowing(false);
-    map.on('dragstart', onDragStart);
-    return () => map.off('dragstart', onDragStart);
+    // Use DOM events instead of Leaflet's dragstart, because leaflet-rotate's
+    // setBearing() can internally trigger dragstart, which would break auto-follow
+    // every time the compass heading updates.
+    const onUserInteraction = (e) => {
+      if (e.target.closest('button, a, .leaflet-control')) return;
+      setIsAutoFollowing(false);
+    };
+    const container = map.getContainer();
+    container.addEventListener('mousedown', onUserInteraction);
+    container.addEventListener('touchstart', onUserInteraction, { passive: true });
+    return () => {
+      container.removeEventListener('mousedown', onUserInteraction);
+      container.removeEventListener('touchstart', onUserInteraction);
+    };
   }, [map, setIsAutoFollowing]);
 
   useEffect(() => {
     if (isAutoFollowing && clientPos?.lat && clientPos?.lng) {
-      map.panTo([clientPos.lat, clientPos.lng]);
+      // animate: false prevents pan animation from conflicting with bearing updates
+      map.setView([clientPos.lat, clientPos.lng], map.getZoom(), { animate: false });
     }
   }, [clientPos?.lat, clientPos?.lng, isAutoFollowing, map]);
 
@@ -77,14 +89,22 @@ function VendorAutoFollow({ vendor, isAutoFollowing, setIsAutoFollowing }) {
   const map = useMap();
 
   useEffect(() => {
-    const onDragStart = () => setIsAutoFollowing(false);
-    map.on('dragstart', onDragStart);
-    return () => map.off('dragstart', onDragStart);
+    const onUserInteraction = (e) => {
+      if (e.target.closest('button, a, .leaflet-control')) return;
+      setIsAutoFollowing(false);
+    };
+    const container = map.getContainer();
+    container.addEventListener('mousedown', onUserInteraction);
+    container.addEventListener('touchstart', onUserInteraction, { passive: true });
+    return () => {
+      container.removeEventListener('mousedown', onUserInteraction);
+      container.removeEventListener('touchstart', onUserInteraction);
+    };
   }, [map, setIsAutoFollowing]);
 
   useEffect(() => {
     if (isAutoFollowing && vendor?.current_lat && vendor?.current_lng) {
-      map.panTo([vendor.current_lat, vendor.current_lng]);
+      map.setView([vendor.current_lat, vendor.current_lng], map.getZoom(), { animate: false });
     }
   }, [vendor?.current_lat, vendor?.current_lng, isAutoFollowing, map]);
 
