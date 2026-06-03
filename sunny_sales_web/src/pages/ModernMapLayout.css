@@ -576,6 +576,89 @@ body {
   transform: scale(1.06);
 }
 
+/* ── Compass permission modal ─────────────────────────── */
+
+.compass-modal-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1400;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: overlayFadeIn 0.2s ease;
+}
+
+.compass-modal {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px 24px;
+  max-width: 320px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+  animation: sheetSlideUp 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.compass-modal-icon {
+  font-size: 2.4rem;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.compass-modal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 10px;
+}
+
+.compass-modal-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.compass-allow-btn {
+  width: 100%;
+  padding: 13px 0;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background var(--transition), transform var(--transition);
+  min-height: auto;
+}
+
+.compass-allow-btn:hover {
+  background: var(--primary-hover);
+  transform: scale(1.02);
+}
+
+.compass-skip-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 0;
+  min-height: auto;
+}
+
+.compass-skip-btn:hover {
+  color: var(--text);
+}
+
 /* ── Loader ───────────────────────────────────────────── */
 
 .loader {
