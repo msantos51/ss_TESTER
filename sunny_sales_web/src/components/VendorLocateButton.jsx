@@ -6,7 +6,7 @@ export default function VendorLocateButton({ vendor, onLocate }) {
 
   const handleLocate = () => {
     if (vendor && vendor.current_lat && vendor.current_lng) {
-      map.flyTo([vendor.current_lat, vendor.current_lng], 16);
+      map.setView([vendor.current_lat, vendor.current_lng], 18, { animate: false });
     }
     onLocate?.();
   };

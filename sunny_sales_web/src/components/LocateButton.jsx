@@ -20,7 +20,7 @@ export default function LocateButton({ onLocationFound, onClick }) {
         onLocationFound({ lat, lng });
       }
 
-      map.flyTo([lat, lng], 16);
+      map.flyTo([lat, lng], 18, { animate: true, duration: 0.5 });
     };
 
     const onError = () => {

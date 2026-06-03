@@ -415,7 +415,7 @@ export default function ModernMapLayout() {
   const focusVendor = (v) => {
     setSelected(v);
     if (mapRef.current) {
-      mapRef.current.flyTo([v.current_lat, v.current_lng], 16);
+      mapRef.current.flyTo([v.current_lat, v.current_lng], 18, { animate: true, duration: 0.5 });
     }
   };
 
