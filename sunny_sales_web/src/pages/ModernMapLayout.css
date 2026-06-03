@@ -54,6 +54,10 @@ body {
   font-family: 'Inter', 'Roboto', sans-serif;
 }
 
+.leaflet-control-attribution {
+  font-size: 0.6rem !important;
+}
+
 /* ── Nearby vendors badge ─────────────────────────────── */
 
 .nearby-vendors-badge {
