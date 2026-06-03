@@ -84,6 +84,61 @@
   color: var(--text);
 }
 
+.bc-tides {
+  margin-top: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.bc-tides-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.bc-tides-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.bc-tide-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+}
+
+.bc-tide-high {
+  background: #e8f4fd;
+}
+
+.bc-tide-low {
+  background: #fef9e7;
+}
+
+.bc-tide-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.bc-tide-time {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.bc-tide-height {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
 .bc-warning {
   font-size: 0.72rem;
   color: var(--text-muted);
