@@ -232,8 +232,9 @@ export default function ModernMapLayout() {
         const gpsH = pos.coords.heading;
         if (gpsH != null && !isNaN(gpsH) && pos.coords.speed != null && pos.coords.speed > 0.3) {
           gpsMovingRef.current = true;
-          smoothedHeadingRef.current = gpsH;
-          setHeading(gpsH);
+          const mappedGpsH = (360 - gpsH) % 360;
+          smoothedHeadingRef.current = mappedGpsH;
+          setHeading(mappedGpsH);
           lastHeadingTs.current = Date.now();
         } else {
           gpsMovingRef.current = false;
@@ -318,7 +319,7 @@ export default function ModernMapLayout() {
       if (e.webkitCompassAccuracy != null && e.webkitCompassAccuracy >= 0 && e.webkitCompassAccuracy > MAX_ACCURACY_DEG) return;
       lastHeadingTs.current = now;
       if (e.webkitCompassHeading != null) {
-        setHeading(applySmoothing(e.webkitCompassHeading));
+        setHeading(applySmoothing((360 - e.webkitCompassHeading) % 360));
       } else if (e.alpha != null && e.absolute) {
         setHeading(applySmoothing(e.alpha % 360));
       }
