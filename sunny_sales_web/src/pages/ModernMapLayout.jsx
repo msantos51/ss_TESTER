@@ -538,18 +538,6 @@ export default function ModernMapLayout() {
             </div>
           )}
 
-          {/* Fallback compass button if modal was dismissed but permission still needed */}
-          {needsCompassPermission && !compassReady && !showCompassModal && (
-            <button
-              className="compass-btn"
-              onClick={() => setShowCompassModal(true)}
-              aria-label="Ativar bússola"
-              title="Ativar bússola"
-            >
-              🧭
-            </button>
-          )}
-
           {/* Nearby vendors badge */}
           {!isVendorLogged && nearbyVendorsCount !== null && (
             <div className="nearby-vendors-badge">
