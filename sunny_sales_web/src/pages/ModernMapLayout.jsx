@@ -8,6 +8,7 @@ import LocateButton from '../components/LocateButton';
 import VendorLocateButton from '../components/VendorLocateButton';
 import LocateHint from '../components/LocateHint';
 import BeachConditions from '../components/BeachConditions';
+import WelcomeCard from '../components/WelcomeCard';
 import { FiMapPin, FiFilter, FiCheck } from 'react-icons/fi';
 import './ModernMapLayout.css';
 
@@ -157,6 +158,15 @@ export default function ModernMapLayout() {
 
   const mapRef = useRef(null);
   const [isAutoFollowing, setIsAutoFollowing] = useState(true);
+
+  const [showWelcome, setShowWelcome] = useState(
+    () => !localStorage.getItem('welcomeSeen')
+  );
+
+  const dismissWelcome = () => {
+    localStorage.setItem('welcomeSeen', '1');
+    setShowWelcome(false);
+  };
 
   // Active filter count: selected products + distance set
   const activeFilterCount =
@@ -681,6 +691,7 @@ export default function ModernMapLayout() {
         </main>
       </div>
       <BeachConditions />
+      {showWelcome && <WelcomeCard onClose={dismissWelcome} />}
     </div>
   );
 }
