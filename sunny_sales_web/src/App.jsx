@@ -30,6 +30,7 @@ import Sustentabilidade from './pages/Sustentabilidade';
 import ImplementarScreen from './pages/ImplementarScreen';
 import Sessions from './pages/Sessions';
 import ForgotPassword from './pages/ForgotPassword';
+import Contacto from './pages/Contacto';
 import Footer from './components/Footer';
 import './index.css';
 
@@ -125,6 +126,13 @@ function AppLayout() {
           >
             Implementar
           </NavLink>
+          <span className="nav-divider">|</span>
+          <NavLink
+            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+            to="/contacto"
+          >
+            Contacto
+          </NavLink>
         </div>
 
         <div className="nav-icons">
@@ -173,6 +181,7 @@ function AppLayout() {
           <Route path="/terms" element={<TermsScreen />} />
           <Route path="/vendors/:id" element={<VendorDetailScreen />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/contacto" element={<Contacto />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
