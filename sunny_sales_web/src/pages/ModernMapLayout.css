@@ -511,10 +511,48 @@ body {
 }
 
 .card-name {
-  margin: 0 0 4px;
+  margin: 0 0 6px;
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text);
+}
+
+.card-product {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  margin-bottom: 10px;
+}
+
+.card-payments {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.card-payment-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  transition: background var(--transition), color var(--transition);
+}
+
+.card-payment-chip:hover {
+  background: var(--primary-light);
+  color: var(--primary);
 }
 
 /* ── Locate buttons ───────────────────────────────────── */

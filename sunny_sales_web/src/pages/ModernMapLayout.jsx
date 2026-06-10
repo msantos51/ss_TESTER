@@ -9,8 +9,19 @@ import VendorLocateButton from '../components/VendorLocateButton';
 import LocateHint from '../components/LocateHint';
 import BeachConditions from '../components/BeachConditions';
 import WelcomeCard from '../components/WelcomeCard';
-import { FiMapPin, FiFilter, FiCheck } from 'react-icons/fi';
+import {
+  FiMapPin, FiFilter, FiCheck,
+  FiDollarSign, FiSmartphone, FiTerminal, FiCreditCard, FiWifi, FiTag,
+} from 'react-icons/fi';
 import './ModernMapLayout.css';
+
+const PAYMENT_ICONS = {
+  'Numerário':   FiDollarSign,
+  'MB Way':      FiSmartphone,
+  'Multibanco':  FiTerminal,
+  'Cartão':      FiCreditCard,
+  'NFC':         FiWifi,
+};
 
 const DISTANCE_OPTIONS = [
   { label: 'Todos', value: null },
@@ -669,11 +680,30 @@ export default function ModernMapLayout() {
                 />
               ) : (
                 <div
-                  className="card-photo"
+                  className="card-photo card-photo--placeholder"
                   style={{ background: selected.pin_color || '#ccc' }}
                 />
               )}
               <h4 className="card-name">{selected.name}</h4>
+              {selected.product && (
+                <div className="card-product">
+                  <FiTag size={12} />
+                  <span>{selected.product}</span>
+                </div>
+              )}
+              {selected.payment_methods && (
+                <div className="card-payments">
+                  {selected.payment_methods.split(',').map((m) => {
+                    const method = m.trim();
+                    const Icon = PAYMENT_ICONS[method];
+                    return Icon ? (
+                      <span key={method} className="card-payment-chip" title={method}>
+                        <Icon size={14} />
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              )}
             </div>
           )}
         </main>
