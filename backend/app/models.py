@@ -33,6 +33,7 @@ class Vendor(Base):
     # Token da sessão atualmente ativa. Quando um novo token é gerado,
     # o valor anterior é substituído para garantir apenas uma sessão por vendedor
     session_token = Column(String, nullable=True, index=True)
+    payment_methods = Column(String, nullable=True)  # e.g. "Numerário,MB Way,Cartão"
 
     routes = relationship("Route", back_populates="vendor")
     sessions = relationship(

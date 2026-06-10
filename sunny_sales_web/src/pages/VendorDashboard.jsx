@@ -5,8 +5,16 @@ import axios from 'axios';
 import {
   FiMap, FiBarChart2, FiCalendar, FiUser, FiFileText, FiClock,
   FiCreditCard, FiShield, FiMail, FiMapPin, FiLogOut, FiMenu, FiX,
-  FiChevronRight,
+  FiChevronRight, FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
 } from 'react-icons/fi';
+
+const PAYMENT_ICONS = {
+  'Numerário': <FiDollarSign />,
+  'MB Way': <FiSmartphone />,
+  'Multibanco': <FiTerminal />,
+  'Cartão': <FiCreditCard />,
+  'NFC': <FiWifi />,
+};
 import './VendorDashboard.css';
 
 let watchId = null;
@@ -269,6 +277,19 @@ export default function VendorDashboard() {
                   />
                 </span>
               </div>
+              {vendor.payment_methods && (
+                <div className="vd-detail-item vd-detail-payments">
+                  <span className="vd-detail-label">Pagamentos</span>
+                  <div className="vd-payments-row">
+                    {vendor.payment_methods.split(',').filter(Boolean).map(m => (
+                      <span key={m} className="vd-payment-badge" title={m}>
+                        <span className="vd-payment-badge-icon">{PAYMENT_ICONS[m] || <FiCreditCard />}</span>
+                        <span className="vd-payment-badge-label">{m}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
