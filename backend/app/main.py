@@ -551,6 +551,7 @@ async def update_vendor_profile(
     product: str = Form(None),
     profile_photo: UploadFile = File(None),
     pin_color: str = Form(None),
+    payment_methods: str = Form(None),
     db: Session = Depends(get_db),
     current_vendor: models.Vendor = Depends(get_current_vendor),
 ):
@@ -586,6 +587,8 @@ async def update_vendor_profile(
             _delete_file(old_photo_path)
     if pin_color:
         vendor.pin_color = pin_color
+    if payment_methods is not None:
+        vendor.payment_methods = payment_methods
 
     db.commit()
     db.refresh(vendor)

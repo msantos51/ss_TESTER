@@ -1,0 +1,441 @@
+/* ── Wrapper ─────────────────────────────────────────── */
+
+.ma-wrapper {
+  min-height: 60vh;
+  padding-bottom: 3rem;
+}
+
+.ma-container {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ma-title {
+  font-size: clamp(1.4rem, 5vw, 1.75rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+  margin: 0 0 4px;
+}
+
+.ma-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Photo section ───────────────────────────────────── */
+
+.ma-photo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0 4px;
+}
+
+.ma-avatar-btn {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-warm);
+  min-height: auto;
+}
+
+.ma-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-light-solid);
+  display: block;
+}
+
+.ma-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-light-solid);
+  color: var(--primary-dark);
+  font-size: 2rem;
+  font-weight: 800;
+  border: 3px solid var(--primary-light-solid);
+}
+
+.ma-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.ma-avatar-btn:hover .ma-avatar-overlay,
+.ma-avatar-btn:focus .ma-avatar-overlay {
+  opacity: 1;
+}
+
+.ma-avatar-cam {
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.ma-photo-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ── Alerts ──────────────────────────────────────────── */
+
+.ma-alert {
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.2s ease;
+}
+
+.ma-alert-error {
+  background: rgba(239, 68, 68, 0.10);
+  color: #c62828;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.ma-alert-success {
+  background: rgba(76, 175, 80, 0.10);
+  color: #2e7d32;
+  border: 1px solid rgba(76, 175, 80, 0.25);
+}
+
+/* ── Cards ───────────────────────────────────────────── */
+
+.ma-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ma-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ma-card-toggle {
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 100%;
+  cursor: pointer;
+  min-height: auto;
+  box-shadow: none;
+  justify-content: space-between;
+}
+
+.ma-card-toggle:hover,
+.ma-card-toggle:active {
+  background: transparent;
+  transform: none;
+  box-shadow: none;
+  color: inherit;
+}
+
+.ma-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ma-card-icon {
+  color: var(--primary);
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.ma-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ma-card-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: -6px 0 0;
+}
+
+.ma-toggle-icon {
+  color: var(--text-muted);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.ma-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeIn 0.22s ease;
+}
+
+/* ── Fields ──────────────────────────────────────────── */
+
+.ma-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ma-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.ma-input {
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ma-input::placeholder {
+  color: var(--text-muted);
+}
+
+.ma-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(10, 147, 150, 0.12);
+  background: var(--surface);
+}
+
+/* ── Product chips ───────────────────────────────────── */
+
+.ma-product-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ma-product-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  min-height: auto;
+  box-shadow: none;
+  transition: all var(--transition);
+}
+
+.ma-product-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  background: var(--primary-light);
+  transform: none;
+  box-shadow: none;
+}
+
+.ma-product-chip.selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: var(--shadow-warm);
+}
+
+.ma-chip-check {
+  font-size: 0.85rem;
+}
+
+/* ── Color picker ────────────────────────────────────── */
+
+.ma-color-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ma-color-input {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-strong);
+  padding: 3px;
+  cursor: pointer;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.ma-color-preview {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-xs);
+}
+
+.ma-color-value {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.03em;
+}
+
+/* ── Payment method chips ────────────────────────────── */
+
+.ma-payment-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ma-payment-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 11px 15px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  min-height: auto;
+  box-shadow: none;
+  transition: all var(--transition);
+}
+
+.ma-payment-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  background: var(--primary-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs);
+}
+
+.ma-payment-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: var(--shadow-warm);
+}
+
+.ma-payment-chip.active:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: #fff;
+}
+
+.ma-payment-icon {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ma-payment-label {
+  line-height: 1;
+}
+
+.ma-payment-check {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+/* ── Save button ─────────────────────────────────────── */
+
+.ma-save-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 14px 32px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: var(--shadow-warm);
+  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+  width: 100%;
+  margin-top: 4px;
+}
+
+.ma-save-btn:hover:not(:disabled) {
+  background: var(--primary-hover);
+  box-shadow: var(--shadow-warm-lg);
+  transform: translateY(-1px);
+}
+
+.ma-save-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.ma-save-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .ma-avatar-btn,
+  .ma-avatar {
+    width: 82px;
+    height: 82px;
+  }
+
+  .ma-avatar-placeholder {
+    font-size: 1.7rem;
+  }
+
+  .ma-card {
+    padding: 16px;
+  }
+
+  .ma-payment-chip {
+    padding: 10px 13px;
+    font-size: 0.84rem;
+  }
+}

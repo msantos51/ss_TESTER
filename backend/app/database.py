@@ -56,6 +56,7 @@ def ensure_latest_schema():
             ("confirmation_token", "ALTER TABLE vendors ADD COLUMN confirmation_token TEXT"),
             ("password_reset_token", "ALTER TABLE vendors ADD COLUMN password_reset_token TEXT"),
             ("password_reset_expires", "ALTER TABLE vendors ADD COLUMN password_reset_expires TIMESTAMP"),
+            ("payment_methods", "ALTER TABLE vendors ADD COLUMN payment_methods TEXT"),
         ]
         with engine.begin() as conn:
             for col, stmt in migrations:

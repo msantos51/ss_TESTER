@@ -371,6 +371,39 @@
   flex-shrink: 0;
 }
 
+.vd-detail-payments {
+  align-items: flex-start;
+}
+
+.vd-payments-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.vd-payment-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border-radius: var(--radius-full);
+  padding: 3px 9px 3px 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid rgba(10, 147, 150, 0.18);
+}
+
+.vd-payment-badge-icon {
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+}
+
+.vd-payment-badge-label {
+  line-height: 1;
+}
+
 /* ── Subscription CTA ────────────────────────────────── */
 
 .vd-cta-card {
