@@ -538,16 +538,21 @@ body {
 }
 
 .card-payment-chip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
+  gap: 5px;
+  padding: 3px 9px;
   border-radius: var(--radius-full);
   background: var(--surface-alt);
   color: var(--text-secondary);
   border: 1px solid var(--border);
   transition: background var(--transition), color var(--transition);
+}
+
+.card-payment-label {
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .card-payment-chip:hover {
