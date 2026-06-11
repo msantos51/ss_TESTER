@@ -696,8 +696,9 @@ export default function ModernMapLayout() {
                     const method = m.trim();
                     const Icon = PAYMENT_ICONS[method];
                     return Icon ? (
-                      <span key={method} className="card-payment-chip" title={method}>
-                        <Icon size={14} />
+                      <span key={method} className="card-payment-chip">
+                        <Icon size={13} />
+                        <span className="card-payment-label">{method}</span>
                       </span>
                     ) : null;
                   })}
