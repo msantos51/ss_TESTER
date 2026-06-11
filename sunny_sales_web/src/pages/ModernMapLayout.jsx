@@ -7,7 +7,6 @@ import { BASE_URL } from '../config';
 import LocateButton from '../components/LocateButton';
 import VendorLocateButton from '../components/VendorLocateButton';
 import LocateHint from '../components/LocateHint';
-import BeachConditions from '../components/BeachConditions';
 import WelcomeCard from '../components/WelcomeCard';
 import {
   FiMapPin, FiFilter, FiCheck,
@@ -708,7 +707,6 @@ export default function ModernMapLayout() {
           )}
         </main>
       </div>
-      <BeachConditions />
       {showWelcome && <WelcomeCard onClose={dismissWelcome} />}
     </div>
   );
