@@ -1,0 +1,265 @@
+/* ── Wrapper ─────────────────────────────────────────── */
+
+.ss-wrapper {
+  min-height: 60vh;
+  padding-bottom: 3rem;
+}
+
+.ss-container {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Header ──────────────────────────────────────────── */
+
+.ss-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 4px;
+}
+
+.ss-header-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-md);
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.ss-title {
+  font-size: clamp(1.3rem, 5vw, 1.65rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+  margin: 0 0 2px;
+}
+
+.ss-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ── Summary bar ─────────────────────────────────────── */
+
+.ss-summary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: var(--shadow-sm);
+  gap: 8px;
+}
+
+.ss-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.ss-stat-icon {
+  font-size: 1rem;
+  color: var(--primary);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.ss-stat-value {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+  line-height: 1;
+}
+
+.ss-stat-unit {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ss-stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+.ss-stat-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--border-strong);
+  flex-shrink: 0;
+}
+
+/* ── Period filter ───────────────────────────────────── */
+
+.ss-period-bar {
+  display: flex;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.ss-period-btn {
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  padding: 7px 16px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  min-height: auto;
+  box-shadow: none;
+  transition: all var(--transition);
+}
+
+.ss-period-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  background: var(--primary-light);
+  transform: none;
+  box-shadow: none;
+}
+
+.ss-period-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: var(--shadow-warm);
+}
+
+/* ── Chart card ──────────────────────────────────────── */
+
+.ss-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 20px 16px 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ss-chart {
+  width: 100%;
+  height: 300px;
+}
+
+.ss-chart-note {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: right;
+  margin: 0;
+  padding: 0 4px;
+}
+
+.ss-chart-note strong {
+  color: var(--primary-dark);
+}
+
+/* ── Custom tooltip ──────────────────────────────────── */
+
+.ss-tooltip {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ss-tooltip-date {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ss-tooltip-value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+}
+
+/* ── Loading ─────────────────────────────────────────── */
+
+.ss-loading {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.ss-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-strong);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: ss-spin 0.7s linear infinite;
+}
+
+@keyframes ss-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Empty state ─────────────────────────────────────── */
+
+.ss-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 3rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.ss-empty-icon {
+  font-size: 2.2rem;
+  color: var(--border-strong);
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .ss-summary {
+    padding: 14px 12px;
+  }
+
+  .ss-stat-value {
+    font-size: 1.1rem;
+  }
+
+  .ss-chart {
+    height: 220px;
+  }
+
+  .ss-card {
+    padding: 16px 10px 12px;
+  }
+}

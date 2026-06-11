@@ -1,0 +1,272 @@
+/* ── Wrapper ─────────────────────────────────────────── */
+
+.pw-wrapper {
+  min-height: 60vh;
+  padding-bottom: 3rem;
+}
+
+.pw-container {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Header ──────────────────────────────────────────── */
+
+.pw-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 4px;
+}
+
+.pw-header-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-md);
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.pw-title {
+  font-size: clamp(1.3rem, 5vw, 1.65rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+  margin: 0 0 2px;
+}
+
+.pw-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ── Summary bar ─────────────────────────────────────── */
+
+.pw-summary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: var(--shadow-sm);
+  gap: 8px;
+}
+
+.pw-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.pw-stat-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+  line-height: 1;
+}
+
+.pw-stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+.pw-stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border-strong);
+  flex-shrink: 0;
+}
+
+/* ── Loading ─────────────────────────────────────────── */
+
+.pw-loading {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.pw-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-strong);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: pw-spin 0.7s linear infinite;
+}
+
+@keyframes pw-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Empty state ─────────────────────────────────────── */
+
+.pw-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 3rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.pw-empty-icon {
+  font-size: 2.2rem;
+  color: var(--border-strong);
+}
+
+/* ── Week list ───────────────────────────────────────── */
+
+.pw-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pw-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.pw-item:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.pw-item-icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.pw-item-icon {
+  font-size: 1rem;
+}
+
+.pw-item-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pw-item-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pw-item-dates {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pw-item-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ── Active badge ────────────────────────────────────── */
+
+.pw-badge-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(76, 175, 80, 0.12);
+  color: #2e7d32;
+  border: 1px solid rgba(76, 175, 80, 0.28);
+  border-radius: var(--radius-full);
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pw-badge-active svg {
+  font-size: 0.7rem;
+}
+
+/* ── Receipt button ──────────────────────────────────── */
+
+.pw-receipt-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  text-decoration: none;
+  border: 1.5px solid rgba(10, 147, 150, 0.2);
+  transition: background var(--transition), box-shadow var(--transition);
+}
+
+.pw-receipt-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: var(--shadow-warm);
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .pw-summary {
+    padding: 14px 12px;
+  }
+
+  .pw-stat-value {
+    font-size: 1.15rem;
+  }
+
+  .pw-item {
+    padding: 12px 14px;
+  }
+
+  .pw-item-dates {
+    font-size: 0.82rem;
+  }
+}
