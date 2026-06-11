@@ -273,7 +273,6 @@ export default function ManageAccount() {
                   onChange={(e) => setPinColor(e.target.value)}
                   className="ma-color-input"
                 />
-                <span className="ma-color-preview" style={{ backgroundColor: pinColor }} />
                 <span className="ma-color-value">{pinColor.toUpperCase()}</span>
               </div>
             </div>
