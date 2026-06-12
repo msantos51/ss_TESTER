@@ -413,6 +413,19 @@ async def generate_token(
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     if not vendor.email_confirmed:
         raise HTTPException(status_code=400, detail="Email not confirmed")
+
+    existing_sessions = (
+        db.query(models.VendorSession)
+        .filter(models.VendorSession.vendor_id == vendor.id)
+        .all()
+    )
+    if existing_sessions:
+        if not force:
+            raise HTTPException(status_code=409, detail="Sessão já ativa noutro dispositivo")
+        for s in existing_sessions:
+            db.delete(s)
+        db.commit()
+
     token = create_access_token({"sub": vendor.id})
     session = models.VendorSession(
         vendor_id=vendor.id, token=token, user_agent=request.headers.get("user-agent")

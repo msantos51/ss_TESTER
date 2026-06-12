@@ -95,38 +95,35 @@ def test_session_management(client):
     confirm_latest_email(client)
 
     token1 = get_token(client, email="single@example.com")
-    token2 = get_token(client, email="single@example.com")
 
-    resp = client.get(
-        "/vendors/me",
-        headers={"Authorization": f"Bearer {token1}"},
-    )
+    # Segunda tentativa sem force deve devolver 409
+    resp = client.post("/token", json={"email": "single@example.com", "password": "Secret123"})
+    assert resp.status_code == 409
+
+    # token1 continua válido
+    resp = client.get("/vendors/me", headers={"Authorization": f"Bearer {token1}"})
     assert resp.status_code == 200
 
-    resp = client.get(
-        "/vendors/me",
-        headers={"Authorization": f"Bearer {token2}"},
-    )
-    assert resp.status_code == 200
+    # Com force=True a sessão anterior é terminada e é criada uma nova
+    token2 = get_token(client, email="single@example.com", force=True)
 
-    resp = client.get(
-        "/vendors/me/sessions",
-        headers={"Authorization": f"Bearer {token2}"},
-    )
+    # token1 deve agora ser inválido
+    resp = client.get("/vendors/me", headers={"Authorization": f"Bearer {token1}"})
+    assert resp.status_code == 401
+
+    # token2 é válido e é a única sessão
+    resp = client.get("/vendors/me/sessions", headers={"Authorization": f"Bearer {token2}"})
     sessions = resp.json()
-    assert len(sessions) == 2
-    target = [s for s in sessions if not s["current"]][0]
+    assert len(sessions) == 1
 
+    # Eliminar a sessão atual via DELETE invalida token2
     resp = client.delete(
-        f"/vendors/me/sessions/{target['id']}",
+        f"/vendors/me/sessions/{sessions[0]['id']}",
         headers={"Authorization": f"Bearer {token2}"},
     )
     assert resp.status_code == 200
 
-    resp = client.get(
-        "/vendors/me",
-        headers={"Authorization": f"Bearer {token1}"},
-    )
+    resp = client.get("/vendors/me", headers={"Authorization": f"Bearer {token2}"})
     assert resp.status_code == 401
 
 
