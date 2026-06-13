@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
@@ -6,8 +6,10 @@ import {
   FiCalendar, FiFileText,
   FiCreditCard, FiMail, FiMapPin, FiLogOut,
   FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
-  FiNavigation, FiEdit2, FiCheck,
+  FiNavigation, FiUser, FiX,
 } from 'react-icons/fi';
+import ImageCropper from '../components/ImageCropper';
+import './VendorDashboard.css';
 
 const PAYMENT_ICONS = {
   'Numerário': <FiDollarSign />,
@@ -16,7 +18,6 @@ const PAYMENT_ICONS = {
   'Cartão': <FiCreditCard />,
   'NFC': <FiWifi />,
 };
-import './VendorDashboard.css';
 
 let watchId = null;
 
@@ -31,10 +32,19 @@ export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [pinColor, setPinColor] = useState('#FFB6C1');
-  const [pinEditing, setPinEditing] = useState(false);
-  const [pinSaving, setPinSaving] = useState(false);
-  const pinInputRef = useRef(null);
   const navigate = useNavigate();
+
+  // Profile modal state
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editProduct, setEditProduct] = useState('');
+  const [editPhoto, setEditPhoto] = useState(null);
+  const [editPhotoPreview, setEditPhotoPreview] = useState(null);
+  const [editCropSrc, setEditCropSrc] = useState(null);
+  const [editPinColor, setEditPinColor] = useState('#FFB6C1');
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState('');
 
   const logout = () => {
     stopSharing();
@@ -95,35 +105,6 @@ export default function VendorDashboard() {
     setSharing(share);
   }, []);
 
-  const savePinColor = async () => {
-    if (!vendor) return;
-    setPinSaving(true);
-    try {
-      const token = localStorage.getItem('token');
-      const data = new FormData();
-      data.append('pin_color', pinColor);
-      const res = await axios.patch(
-        `${BASE_URL}/vendors/${vendor.id}/profile`,
-        data,
-        { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` } }
-      );
-      const updated = res.data;
-      localStorage.setItem('user', JSON.stringify(updated));
-      setVendor(updated);
-      setPinColor(updated.pin_color || pinColor);
-    } catch (err) {
-      console.error('Erro ao guardar cor do pin:', err);
-    } finally {
-      setPinSaving(false);
-      setPinEditing(false);
-    }
-  };
-
-  const handlePinEditClick = () => {
-    setPinEditing(true);
-    setTimeout(() => pinInputRef.current?.click(), 50);
-  };
-
   useEffect(() => {
     if (sharing && vendor && watchId === null) startSharing();
   }, [sharing, vendor, startSharing]);
@@ -162,14 +143,93 @@ export default function VendorDashboard() {
     }
   };
 
+  // ── Profile modal ─────────────────────────────────────
+
+  const openProfileModal = () => {
+    if (!vendor) return;
+    setEditName(vendor.name || '');
+    setEditEmail(vendor.email || '');
+    setEditProduct(vendor.product || '');
+    setEditPhoto(null);
+    setEditPhotoPreview(null);
+    setEditCropSrc(null);
+    setEditPinColor(vendor.pin_color || '#FFB6C1');
+    setEditError('');
+    setProfileOpen(true);
+  };
+
+  const closeProfileModal = () => {
+    if (editPhotoPreview) URL.revokeObjectURL(editPhotoPreview);
+    if (editCropSrc) URL.revokeObjectURL(editCropSrc);
+    setProfileOpen(false);
+    setEditPhoto(null);
+    setEditPhotoPreview(null);
+    setEditCropSrc(null);
+  };
+
+  const handleEditPhoto = (e) => {
+    if (e.target.files?.[0]) {
+      const url = URL.createObjectURL(e.target.files[0]);
+      setEditCropSrc(url);
+    }
+  };
+
+  const handleEditCropCancel = () => {
+    if (editCropSrc) URL.revokeObjectURL(editCropSrc);
+    setEditCropSrc(null);
+  };
+
+  const handleEditCropComplete = (blob) => {
+    if (editCropSrc) URL.revokeObjectURL(editCropSrc);
+    setEditCropSrc(null);
+    setEditPhoto(blob);
+    if (editPhotoPreview) URL.revokeObjectURL(editPhotoPreview);
+    setEditPhotoPreview(URL.createObjectURL(blob));
+  };
+
+  const saveProfile = async (e) => {
+    e.preventDefault();
+    if (!vendor) return;
+    setEditSaving(true);
+    setEditError('');
+    try {
+      const token = localStorage.getItem('token');
+      const data = new FormData();
+      if (editName !== vendor.name) data.append('name', editName);
+      if (editEmail !== vendor.email) data.append('email', editEmail);
+      if (editProduct !== vendor.product) data.append('product', editProduct);
+      if (editPinColor !== (vendor.pin_color || '#FFB6C1')) data.append('pin_color', editPinColor);
+      if (editPhoto) {
+        const file = new File([editPhoto], 'profile.jpg', { type: 'image/jpeg' });
+        data.append('profile_photo', file);
+      }
+      const res = await axios.patch(
+        `${BASE_URL}/vendors/${vendor.id}/profile`,
+        data,
+        { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` } }
+      );
+      const updated = res.data;
+      localStorage.setItem('user', JSON.stringify(updated));
+      setVendor(updated);
+      setPinColor(updated.pin_color || '#FFB6C1');
+      closeProfileModal();
+    } catch {
+      setEditError('Erro ao guardar alterações');
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
   const subscriptionActive = vendor?.subscription_active;
   const subscriptionDate = vendor?.subscription_valid_until
     ? new Date(vendor.subscription_valid_until).toLocaleDateString('pt-PT')
     : null;
 
+  const modalAvatarSrc = editPhotoPreview
+    || (vendor?.profile_photo ? `${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}` : null);
+
   return (
     <div className="vd-wrapper">
-      {/* Main content */}
       <div className="vd-container">
 
         {/* Greeting */}
@@ -209,13 +269,6 @@ export default function VendorDashboard() {
                     : 'Inativa'}
                 </span>
               </div>
-              <button
-                className="vd-profile-edit-btn"
-                onClick={() => navigate('/edit-profile')}
-                title="Editar perfil"
-              >
-                <FiEdit2 size={15} />
-              </button>
             </div>
 
             <div className="vd-profile-divider" />
@@ -228,38 +281,8 @@ export default function VendorDashboard() {
               <div className="vd-detail-item">
                 <span className="vd-detail-label">Cor do Pin</span>
                 <span className="vd-detail-value vd-pin-row">
-                  <span
-                    className="vd-pin-dot"
-                    style={{ backgroundColor: pinColor }}
-                  />
+                  <span className="vd-pin-dot" style={{ backgroundColor: pinColor }} />
                   <span className="vd-pin-hex">{pinColor.toUpperCase()}</span>
-                  {pinEditing ? (
-                    <>
-                      <input
-                        ref={pinInputRef}
-                        type="color"
-                        value={pinColor}
-                        onChange={e => setPinColor(e.target.value)}
-                        className="vd-pin-color-input"
-                      />
-                      <button
-                        className="vd-pin-save-btn"
-                        onClick={savePinColor}
-                        disabled={pinSaving}
-                        title="Guardar"
-                      >
-                        {pinSaving ? <span className="vd-pin-saving-dot" /> : <FiCheck size={12} />}
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      className="vd-pin-edit-btn"
-                      onClick={handlePinEditClick}
-                      title="Alterar cor do pin"
-                    >
-                      <FiEdit2 size={11} />
-                    </button>
-                  )}
                 </span>
               </div>
               {vendor.payment_methods && (
@@ -336,6 +359,10 @@ export default function VendorDashboard() {
             <span className="vd-quick-icon"><FiNavigation /></span>
             <span className="vd-quick-label">Trajetos</span>
           </button>
+          <button className="vd-quick-item" onClick={openProfileModal}>
+            <span className="vd-quick-icon"><FiUser /></span>
+            <span className="vd-quick-label">Perfil</span>
+          </button>
         </div>
 
         <button className="vd-logout-btn" onClick={logout}>
@@ -343,6 +370,111 @@ export default function VendorDashboard() {
           Terminar Sessão
         </button>
       </div>
+
+      {/* Profile edit modal */}
+      {profileOpen && (
+        <div className="vd-modal-overlay" onClick={closeProfileModal}>
+          <div className="vd-modal" onClick={e => e.stopPropagation()}>
+            <div className="vd-modal-header">
+              <span className="vd-modal-title">Editar Perfil</span>
+              <button type="button" className="vd-modal-close" onClick={closeProfileModal}>
+                <FiX size={18} />
+              </button>
+            </div>
+
+            <form className="vd-modal-form" onSubmit={saveProfile}>
+              {/* Avatar + photo upload */}
+              <div className="vd-modal-photo-section">
+                {modalAvatarSrc ? (
+                  <img
+                    src={modalAvatarSrc}
+                    alt="Foto de perfil"
+                    className="vd-modal-avatar"
+                    style={{ borderColor: editPinColor }}
+                  />
+                ) : (
+                  <div
+                    className="vd-modal-avatar vd-modal-avatar-placeholder"
+                    style={{ borderColor: editPinColor, background: `${editPinColor}22`, color: editPinColor }}
+                  >
+                    {vendor?.name?.charAt(0)?.toUpperCase() || '?'}
+                  </div>
+                )}
+                <label className="vd-modal-photo-btn">
+                  Alterar foto
+                  <input type="file" accept="image/*" hidden onChange={handleEditPhoto} />
+                </label>
+              </div>
+
+              <div className="vd-modal-field">
+                <label className="vd-modal-label">Nome</label>
+                <input
+                  className="vd-modal-input"
+                  type="text"
+                  value={editName}
+                  onChange={e => setEditName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="vd-modal-field">
+                <label className="vd-modal-label">Email</label>
+                <input
+                  className="vd-modal-input"
+                  type="email"
+                  value={editEmail}
+                  onChange={e => setEditEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="vd-modal-field">
+                <label className="vd-modal-label">Produto</label>
+                <select
+                  className="vd-modal-input"
+                  value={editProduct}
+                  onChange={e => setEditProduct(e.target.value)}
+                >
+                  <option value="Bolas de Berlim">Bolas de Berlim</option>
+                  <option value="Gelados">Gelados</option>
+                  <option value="Acessórios de Praia">Acessórios de Praia</option>
+                </select>
+              </div>
+              <div className="vd-modal-field">
+                <label className="vd-modal-label">Cor do Pin</label>
+                <div className="vd-modal-pin-row">
+                  <label className="vd-modal-pin-swatch" style={{ backgroundColor: editPinColor }}>
+                    <input
+                      type="color"
+                      value={editPinColor}
+                      onChange={e => setEditPinColor(e.target.value)}
+                      className="vd-modal-pin-input"
+                    />
+                  </label>
+                  <span className="vd-pin-hex">{editPinColor.toUpperCase()}</span>
+                </div>
+              </div>
+
+              {editError && <p className="vd-modal-error">{editError}</p>}
+
+              <div className="vd-modal-actions">
+                <button type="button" className="vd-modal-cancel" onClick={closeProfileModal}>
+                  Cancelar
+                </button>
+                <button type="submit" className="vd-modal-save" disabled={editSaving}>
+                  {editSaving ? 'A guardar…' : 'Guardar'}
+                </button>
+              </div>
+            </form>
+
+            {editCropSrc && (
+              <ImageCropper
+                src={editCropSrc}
+                onCancel={handleEditCropCancel}
+                onComplete={handleEditCropComplete}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
