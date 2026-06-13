@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
 import {
-  FiMap, FiBarChart2, FiCalendar, FiUser, FiFileText, FiClock,
-  FiCreditCard, FiShield, FiMail, FiMapPin, FiLogOut, FiMenu, FiX,
+  FiCalendar, FiFileText,
+  FiCreditCard, FiMail, FiMapPin, FiLogOut, FiMenu, FiX,
   FiChevronRight, FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
 } from 'react-icons/fi';
 
@@ -190,22 +190,6 @@ export default function VendorDashboard() {
         <div className="vd-menu-divider" />
 
         <div className="vd-menu-section">
-          <span className="vd-menu-section-label">Atividade</span>
-          {navItem('Trajetos', () => navigate('/routes'), <FiMap />)}
-          {navItem('Distância Percorrida', () => navigate('/stats'), <FiBarChart2 />)}
-          {navItem('Sessões', () => navigate('/sessions'), <FiClock />)}
-        </div>
-
-        <div className="vd-menu-divider" />
-
-        <div className="vd-menu-section">
-          {navItem('Atualizar Dados Pessoais', () => navigate('/account'), <FiUser />)}
-        </div>
-
-        <div className="vd-menu-divider" />
-
-        <div className="vd-menu-section">
-          {navItem('Termos e Condições', () => navigate('/terms'), <FiShield />)}
           {navItem('Contactar Suporte', () => { window.location.href = 'mailto:suporte@sunnysales.com'; }, <FiMail />)}
         </div>
       </aside>
@@ -331,21 +315,21 @@ export default function VendorDashboard() {
 
         {/* Quick actions grid */}
         <div className="vd-quick-grid">
-          <button className="vd-quick-item" onClick={() => navigate('/routes')}>
-            <span className="vd-quick-icon"><FiMap /></span>
-            <span className="vd-quick-label">Trajetos</span>
-          </button>
-          <button className="vd-quick-item" onClick={() => navigate('/stats')}>
-            <span className="vd-quick-icon"><FiBarChart2 /></span>
-            <span className="vd-quick-label">Estatísticas</span>
+          <button className="vd-quick-item" onClick={paySubscription}>
+            <span className="vd-quick-icon"><FiCreditCard /></span>
+            <span className="vd-quick-label">Pagar Semanalidade</span>
           </button>
           <button className="vd-quick-item" onClick={() => navigate('/paid-weeks')}>
             <span className="vd-quick-icon"><FiCalendar /></span>
-            <span className="vd-quick-label">Subscrição</span>
+            <span className="vd-quick-label">Subscrições</span>
           </button>
-          <button className="vd-quick-item" onClick={() => navigate('/account')}>
-            <span className="vd-quick-icon"><FiUser /></span>
-            <span className="vd-quick-label">Perfil</span>
+          <button className="vd-quick-item" onClick={() => navigate('/invoices')}>
+            <span className="vd-quick-icon"><FiFileText /></span>
+            <span className="vd-quick-label">Faturas</span>
+          </button>
+          <button className="vd-quick-item" onClick={() => { window.location.href = 'mailto:suporte@sunnysales.com'; }}>
+            <span className="vd-quick-icon"><FiMail /></span>
+            <span className="vd-quick-label">Contactar Suporte</span>
           </button>
         </div>
 
