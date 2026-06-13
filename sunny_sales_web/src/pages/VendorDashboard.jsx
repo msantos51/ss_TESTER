@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
@@ -6,7 +6,7 @@ import {
   FiCalendar, FiFileText,
   FiCreditCard, FiMail, FiMapPin, FiLogOut,
   FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
-  FiNavigation, FiUser,
+  FiNavigation, FiEdit2, FiCheck,
 } from 'react-icons/fi';
 
 const PAYMENT_ICONS = {
@@ -30,6 +30,10 @@ function getGreeting() {
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
+  const [pinColor, setPinColor] = useState('#FFB6C1');
+  const [pinEditing, setPinEditing] = useState(false);
+  const [pinSaving, setPinSaving] = useState(false);
+  const pinInputRef = useRef(null);
   const navigate = useNavigate();
 
   const logout = () => {
@@ -82,10 +86,43 @@ export default function VendorDashboard() {
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
-    if (stored) setVendor(JSON.parse(stored));
+    if (stored) {
+      const v = JSON.parse(stored);
+      setVendor(v);
+      setPinColor(v.pin_color || '#FFB6C1');
+    }
     const share = localStorage.getItem('sharingLocation') === 'true';
     setSharing(share);
   }, []);
+
+  const savePinColor = async () => {
+    if (!vendor) return;
+    setPinSaving(true);
+    try {
+      const token = localStorage.getItem('token');
+      const data = new FormData();
+      data.append('pin_color', pinColor);
+      const res = await axios.patch(
+        `${BASE_URL}/vendors/${vendor.id}/profile`,
+        data,
+        { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` } }
+      );
+      const updated = res.data;
+      localStorage.setItem('user', JSON.stringify(updated));
+      setVendor(updated);
+      setPinColor(updated.pin_color || pinColor);
+    } catch (err) {
+      console.error('Erro ao guardar cor do pin:', err);
+    } finally {
+      setPinSaving(false);
+      setPinEditing(false);
+    }
+  };
+
+  const handlePinEditClick = () => {
+    setPinEditing(true);
+    setTimeout(() => pinInputRef.current?.click(), 50);
+  };
 
   useEffect(() => {
     if (sharing && vendor && watchId === null) startSharing();
@@ -152,9 +189,13 @@ export default function VendorDashboard() {
                   src={`${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}`}
                   alt="Foto de perfil"
                   className="vd-avatar"
+                  style={{ borderColor: pinColor }}
                 />
               ) : (
-                <div className="vd-avatar vd-avatar-placeholder">
+                <div
+                  className="vd-avatar vd-avatar-placeholder"
+                  style={{ borderColor: pinColor, background: `${pinColor}22`, color: pinColor }}
+                >
                   {vendor.name?.charAt(0)?.toUpperCase() || '?'}
                 </div>
               )}
@@ -168,6 +209,13 @@ export default function VendorDashboard() {
                     : 'Inativa'}
                 </span>
               </div>
+              <button
+                className="vd-profile-edit-btn"
+                onClick={() => navigate('/edit-profile')}
+                title="Editar perfil"
+              >
+                <FiEdit2 size={15} />
+              </button>
             </div>
 
             <div className="vd-profile-divider" />
@@ -182,8 +230,36 @@ export default function VendorDashboard() {
                 <span className="vd-detail-value vd-pin-row">
                   <span
                     className="vd-pin-dot"
-                    style={{ backgroundColor: vendor.pin_color || '#FFB6C1' }}
+                    style={{ backgroundColor: pinColor }}
                   />
+                  <span className="vd-pin-hex">{pinColor.toUpperCase()}</span>
+                  {pinEditing ? (
+                    <>
+                      <input
+                        ref={pinInputRef}
+                        type="color"
+                        value={pinColor}
+                        onChange={e => setPinColor(e.target.value)}
+                        className="vd-pin-color-input"
+                      />
+                      <button
+                        className="vd-pin-save-btn"
+                        onClick={savePinColor}
+                        disabled={pinSaving}
+                        title="Guardar"
+                      >
+                        {pinSaving ? <span className="vd-pin-saving-dot" /> : <FiCheck size={12} />}
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="vd-pin-edit-btn"
+                      onClick={handlePinEditClick}
+                      title="Alterar cor do pin"
+                    >
+                      <FiEdit2 size={11} />
+                    </button>
+                  )}
                 </span>
               </div>
               {vendor.payment_methods && (
@@ -259,10 +335,6 @@ export default function VendorDashboard() {
           <button className="vd-quick-item" onClick={() => navigate('/routes')}>
             <span className="vd-quick-icon"><FiNavigation /></span>
             <span className="vd-quick-label">Trajetos</span>
-          </button>
-          <button className="vd-quick-item" onClick={() => navigate('/edit-profile')}>
-            <span className="vd-quick-icon"><FiUser /></span>
-            <span className="vd-quick-label">Perfil</span>
           </button>
         </div>
 
