@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 import axios from 'axios';
 import {
   FiCalendar, FiFileText,
-  FiCreditCard, FiMail, FiMapPin, FiLogOut, FiMenu, FiX,
-  FiChevronRight, FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
+  FiCreditCard, FiMail, FiMapPin, FiLogOut,
+  FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
+  FiNavigation, FiUser,
 } from 'react-icons/fi';
 
 const PAYMENT_ICONS = {
@@ -29,9 +30,6 @@ function getGreeting() {
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuButtonRef = useRef(null);
-  const sideMenuRef = useRef(null);
   const navigate = useNavigate();
 
   const logout = () => {
@@ -127,37 +125,6 @@ export default function VendorDashboard() {
     }
   };
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handleClickOutside = (e) => {
-      if (
-        sideMenuRef.current &&
-        !sideMenuRef.current.contains(e.target) &&
-        menuButtonRef.current &&
-        !menuButtonRef.current.contains(e.target)
-      ) {
-        setMenuOpen(false);
-      }
-    };
-    const handleKey = (e) => {
-      if (e.key === 'Escape') setMenuOpen(false);
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleKey);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKey);
-    };
-  }, [menuOpen]);
-
-  const navItem = (label, onClick, icon) => (
-    <button className="vd-menu-item" onClick={() => { onClick(); setMenuOpen(false); }}>
-      <span className="vd-menu-icon">{icon}</span>
-      <span className="vd-menu-item-label">{label}</span>
-      <FiChevronRight className="vd-menu-chevron" />
-    </button>
-  );
-
   const subscriptionActive = vendor?.subscription_active;
   const subscriptionDate = vendor?.subscription_valid_until
     ? new Date(vendor.subscription_valid_until).toLocaleDateString('pt-PT')
@@ -165,56 +132,14 @@ export default function VendorDashboard() {
 
   return (
     <div className="vd-wrapper">
-      {/* Side menu overlay */}
-      {menuOpen && (
-        <div className="vd-overlay" onClick={() => setMenuOpen(false)} aria-hidden="true" />
-      )}
-
-      {/* Side menu */}
-      <aside
-        ref={sideMenuRef}
-        className={`vd-side-menu${menuOpen ? ' open' : ''}`}
-        aria-hidden={!menuOpen}
-      >
-        <div className="vd-menu-header">
-          <span className="vd-menu-title">Menu</span>
-        </div>
-
-        <div className="vd-menu-section">
-          <span className="vd-menu-section-label">Subscrição</span>
-          {navItem('Pagar Semanalidade', paySubscription, <FiCreditCard />)}
-          {navItem('Semanas Pagas', () => navigate('/paid-weeks'), <FiCalendar />)}
-          {navItem('Faturas', () => navigate('/invoices'), <FiFileText />)}
-        </div>
-
-        <div className="vd-menu-divider" />
-
-        <div className="vd-menu-section">
-          {navItem('Contactar Suporte', () => { window.location.href = 'mailto:suporte@sunnysales.com'; }, <FiMail />)}
-        </div>
-      </aside>
-
       {/* Main content */}
       <div className="vd-container">
 
         {/* Greeting */}
         {vendor && (
           <div className="vd-greeting">
-            <div className="vd-greeting-row">
-              <div>
-                <span className="vd-greeting-time">{getGreeting()},</span>
-                <h2 className="vd-greeting-name">{vendor.name.split(' ')[0]}</h2>
-              </div>
-              <button
-                ref={menuButtonRef}
-                className="vd-menu-toggle"
-                onClick={() => setMenuOpen((o) => !o)}
-                aria-label="Menu"
-                aria-expanded={menuOpen}
-              >
-                {menuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
-              </button>
-            </div>
+            <span className="vd-greeting-time">{getGreeting()},</span>
+            <h2 className="vd-greeting-name">{vendor.name.split(' ')[0]}</h2>
           </div>
         )}
 
@@ -330,6 +255,14 @@ export default function VendorDashboard() {
           <button className="vd-quick-item" onClick={() => { window.location.href = 'mailto:suporte@sunnysales.com'; }}>
             <span className="vd-quick-icon"><FiMail /></span>
             <span className="vd-quick-label">Contactar Suporte</span>
+          </button>
+          <button className="vd-quick-item" onClick={() => navigate('/routes')}>
+            <span className="vd-quick-icon"><FiNavigation /></span>
+            <span className="vd-quick-label">Trajetos</span>
+          </button>
+          <button className="vd-quick-item" onClick={() => navigate('/edit-profile')}>
+            <span className="vd-quick-icon"><FiUser /></span>
+            <span className="vd-quick-label">Perfil</span>
           </button>
         </div>
 
