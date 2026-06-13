@@ -14,7 +14,6 @@ import About from './pages/About';
 import AccountSettings from './pages/AccountSettings';
 import VendorLogin from './pages/VendorLogin';
 import ManageAccount from './pages/ManageAccount';
-import EditProfileScreen from './pages/EditProfileScreen';
 import PaidWeeksScreen from './pages/PaidWeeksScreen.jsx';
 import VendorRegister from './pages/VendorRegister';
 import RouteDetail from './pages/RouteDetail';
@@ -170,7 +169,6 @@ function AppLayout() {
           <Route path="/vendor-register" element={<VendorRegister />} />
           <Route path="/register" element={<VendorRegister />} />
           <Route path="/account" element={<ManageAccount />} />
-          <Route path="/edit-profile" element={<EditProfileScreen />} />
           <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/map" element={<ModernMapLayout />} />
