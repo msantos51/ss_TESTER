@@ -45,7 +45,7 @@
   padding: 10px 14px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
-  background: var(--background);
+  background: var(--surface-alt);
   color: var(--text);
   font-family: inherit;
   font-size: 0.9rem;
