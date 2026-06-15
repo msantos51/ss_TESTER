@@ -30,6 +30,7 @@ import ImplementarScreen from './pages/ImplementarScreen';
 import Sessions from './pages/Sessions';
 import ForgotPassword from './pages/ForgotPassword';
 import Contacto from './pages/Contacto';
+import PlanosVendedores from './pages/PlanosVendedores';
 import Footer from './components/Footer';
 import './index.css';
 
@@ -128,6 +129,13 @@ function AppLayout() {
           <span className="nav-divider">|</span>
           <NavLink
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+            to="/planos"
+          >
+            Planos
+          </NavLink>
+          <span className="nav-divider">|</span>
+          <NavLink
+            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/contacto"
           >
             Contacto
@@ -180,6 +188,7 @@ function AppLayout() {
           <Route path="/vendors/:id" element={<VendorDetailScreen />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="/planos" element={<PlanosVendedores />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
