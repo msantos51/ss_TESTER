@@ -984,7 +984,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 
     if event.get("type") == "checkout.session.completed":
         session = event["data"]["object"]
-        vendor_id = int(session.get("metadata", {}).get("vendor_id", 0))
+        vendor_id = int(session.get("client_reference_id") or session.get("metadata", {}).get("vendor_id") or 0)
         vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
         if vendor:
             vendor.subscription_active = True
