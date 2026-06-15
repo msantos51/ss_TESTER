@@ -657,7 +657,7 @@
 .vd-modal-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 20px;
 }
 
@@ -665,28 +665,6 @@
   font-size: 1.1rem;
   font-weight: 800;
   color: var(--text);
-}
-
-.vd-modal-close {
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  width: 32px;
-  height: 32px;
-  min-height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background var(--transition), color var(--transition), border-color var(--transition);
-}
-
-.vd-modal-close:hover {
-  background: rgba(239, 68, 68, 0.08);
-  color: #c62828;
-  border-color: rgba(239, 68, 68, 0.2);
 }
 
 .vd-modal-form {

@@ -6,7 +6,7 @@ import {
   FiCalendar, FiFileText,
   FiCreditCard, FiMail, FiMapPin, FiLogOut,
   FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
-  FiNavigation, FiUser, FiX, FiLock, FiCheck,
+  FiNavigation, FiUser, FiLock, FiCheck,
 } from 'react-icons/fi';
 import ImageCropper from '../components/ImageCropper';
 import './VendorDashboard.css';
@@ -422,10 +422,10 @@ export default function VendorDashboard() {
         <div className="vd-modal-overlay" onClick={closeProfileModal}>
           <div className="vd-modal" onClick={e => e.stopPropagation()}>
             <div className="vd-modal-header">
-              <span className="vd-modal-title">Perfil</span>
-              <button type="button" className="vd-modal-close" onClick={closeProfileModal}>
-                <FiX size={18} />
+              <button type="button" className="back-btn" onClick={closeProfileModal}>
+                ← Voltar
               </button>
+              <span className="vd-modal-title">Perfil</span>
             </div>
 
             {/* Tabs */}
