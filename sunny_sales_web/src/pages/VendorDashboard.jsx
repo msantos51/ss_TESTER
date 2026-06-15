@@ -328,7 +328,6 @@ export default function VendorDashboard() {
                 <span className="vd-detail-label">Cor do Pin</span>
                 <span className="vd-detail-value vd-pin-row">
                   <span className="vd-pin-dot" style={{ backgroundColor: pinColor }} />
-                  <span className="vd-pin-hex">{pinColor.toUpperCase()}</span>
                 </span>
               </div>
               {vendor.payment_methods && (
@@ -514,7 +513,6 @@ export default function VendorDashboard() {
                         className="vd-modal-pin-input"
                       />
                     </label>
-                    <span className="vd-pin-hex">{editPinColor.toUpperCase()}</span>
                   </div>
                 </div>
 
