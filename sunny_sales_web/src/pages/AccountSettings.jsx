@@ -41,12 +41,14 @@ export default function AccountSettings() {
       <h2 className="title">Definições da Conta</h2>
 
       <div className="form">
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <span>Notificações Ativas</span>
-          <label className="checkbox-container">
-            <input type="checkbox" checked={enabled} onChange={toggleNotifications} />
-            <span className="checkmark"></span>
-          </label>
+          <input
+            type="checkbox"
+            className="theme-checkbox"
+            checked={enabled}
+            onChange={toggleNotifications}
+          />
         </div>
 
         <span className="input-span">

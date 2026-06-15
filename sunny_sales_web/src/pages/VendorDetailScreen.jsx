@@ -91,7 +91,7 @@ export default function VendorDetailScreen() {
             {vendor.name?.charAt(0)?.toUpperCase() || '?'}
           </div>
         )}
-        <h2 style={{ margin: '12px 0 4px' }}>{vendor.name}</h2>
+        <h2 style={{ margin: '12px 0 4px', wordBreak: 'break-word' }}>{vendor.name}</h2>
         <p style={{ color: 'var(--text-secondary)', margin: 0 }}>{vendor.product}</p>
       </div>
 

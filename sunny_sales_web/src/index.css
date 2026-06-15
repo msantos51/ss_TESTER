@@ -227,7 +227,7 @@ body {
   height: 100%;
   max-width: none;
   margin: 0 auto;
-  padding: calc(var(--navbar-h) + 16px) 0.5rem var(--footer-h);
+  padding: calc(var(--navbar-h) + 16px) 0.5rem calc(var(--footer-h) + env(safe-area-inset-bottom, 0px));
   background: transparent;
 }
 
@@ -653,7 +653,7 @@ h2 {
   }
 
   .container {
-    padding: calc(var(--navbar-h) + 8px) 0.25rem var(--footer-h);
+    padding: calc(var(--navbar-h) + 8px) 0.25rem calc(var(--footer-h) + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -681,8 +681,29 @@ h2 {
 
 @supports (padding: max(0px)) {
   .navbar {
-    padding-left: max(24px, env(safe-area-inset-left));
-    padding-right: max(24px, env(safe-area-inset-right));
+    padding-left: max(28px, env(safe-area-inset-left));
+    padding-right: max(28px, env(safe-area-inset-right));
+  }
+
+  @media (max-width: 768px) {
+    .navbar {
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+    }
+  }
+
+  @media (max-width: 480px) {
+    .navbar {
+      padding-left: max(14px, env(safe-area-inset-left));
+      padding-right: max(14px, env(safe-area-inset-right));
+    }
+  }
+
+  @media (max-width: 375px) {
+    .navbar {
+      padding-left: max(12px, env(safe-area-inset-left));
+      padding-right: max(12px, env(safe-area-inset-right));
+    }
   }
 }
 
@@ -763,6 +784,9 @@ h2 {
   font-weight: 700;
   font-size: 0.9rem;
   color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .page-list-item-desc {

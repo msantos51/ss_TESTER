@@ -841,11 +841,15 @@ body {
   }
 }
 
-/* Move locate button above vendor card when both are visible */
+/* Move locate + compass buttons above vendor card when both are visible */
 @media (max-width: 768px) {
   .map-area:has(.vendor-card) .locate-btn,
   .map-area:has(.vendor-card) .vendor-locate-btn {
     bottom: 168px;
+  }
+
+  .map-area:has(.vendor-card) .compass-btn {
+    bottom: 222px;
   }
 }
 
@@ -853,5 +857,9 @@ body {
   .map-area:has(.vendor-card) .locate-btn,
   .map-area:has(.vendor-card) .vendor-locate-btn {
     bottom: 156px;
+  }
+
+  .map-area:has(.vendor-card) .compass-btn {
+    bottom: 210px;
   }
 }
