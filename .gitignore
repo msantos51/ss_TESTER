@@ -10,3 +10,11 @@ profile_photos/
 sunny_sales_mobile/node_modules/
 sunny_sales_mobile/.expo/
 sunny_sales_mobile/dist/
+
+# Mobile (Capacitor)
+mobile/node_modules/
+mobile/dist/
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/android/build/
+mobile/.capacitor/
