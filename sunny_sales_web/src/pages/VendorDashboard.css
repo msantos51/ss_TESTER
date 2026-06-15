@@ -878,6 +878,79 @@
   }
 }
 
+/* ── Modal tabs ──────────────────────────────────────── */
+
+.vd-modal-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.vd-modal-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  min-height: auto;
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+}
+
+.vd-modal-tab.active {
+  background: var(--surface);
+  color: var(--primary-dark);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.10);
+}
+
+.vd-modal-tab:not(.active):hover {
+  color: var(--text-secondary);
+}
+
+/* ── Security tab ────────────────────────────────────── */
+
+.vd-modal-security-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  padding: 8px 0 4px;
+}
+
+.vd-modal-security-icon {
+  color: var(--primary);
+  opacity: 0.85;
+}
+
+.vd-modal-security-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 260px;
+}
+
+.vd-modal-success {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #1b8a4e;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin: 0;
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 
 @media (max-width: 480px) {

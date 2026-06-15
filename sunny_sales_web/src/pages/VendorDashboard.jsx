@@ -6,7 +6,7 @@ import {
   FiCalendar, FiFileText,
   FiCreditCard, FiMail, FiMapPin, FiLogOut,
   FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
-  FiNavigation, FiUser, FiX,
+  FiNavigation, FiUser, FiX, FiLock, FiCheck,
 } from 'react-icons/fi';
 import ImageCropper from '../components/ImageCropper';
 import './VendorDashboard.css';
@@ -36,6 +36,7 @@ export default function VendorDashboard() {
 
   // Profile modal state
   const [profileOpen, setProfileOpen] = useState(false);
+  const [profileTab, setProfileTab] = useState('perfil');
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editProduct, setEditProduct] = useState('');
@@ -45,6 +46,12 @@ export default function VendorDashboard() {
   const [editPinColor, setEditPinColor] = useState('#FFB6C1');
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState('');
+  // Security tab state
+  const [secOldPassword, setSecOldPassword] = useState('');
+  const [secNewPassword, setSecNewPassword] = useState('');
+  const [secSaving, setSecSaving] = useState(false);
+  const [secError, setSecError] = useState('');
+  const [secSuccess, setSecSuccess] = useState('');
 
   const logout = () => {
     stopSharing();
@@ -147,6 +154,7 @@ export default function VendorDashboard() {
 
   const openProfileModal = () => {
     if (!vendor) return;
+    setProfileTab('perfil');
     setEditName(vendor.name || '');
     setEditEmail(vendor.email || '');
     setEditProduct(vendor.product || '');
@@ -155,6 +163,10 @@ export default function VendorDashboard() {
     setEditCropSrc(null);
     setEditPinColor(vendor.pin_color || '#FFB6C1');
     setEditError('');
+    setSecOldPassword('');
+    setSecNewPassword('');
+    setSecError('');
+    setSecSuccess('');
     setProfileOpen(true);
   };
 
@@ -217,6 +229,40 @@ export default function VendorDashboard() {
       setEditError('Erro ao guardar alterações');
     } finally {
       setEditSaving(false);
+    }
+  };
+
+  const savePassword = async (e) => {
+    e.preventDefault();
+    if (!vendor) return;
+    if (!secOldPassword || !secNewPassword) {
+      setSecError('Preenche ambos os campos.');
+      return;
+    }
+    if (secNewPassword.length < 8) {
+      setSecError('A nova palavra-passe deve ter pelo menos 8 caracteres.');
+      return;
+    }
+    setSecSaving(true);
+    setSecError('');
+    setSecSuccess('');
+    try {
+      const token = localStorage.getItem('token');
+      const data = new FormData();
+      data.append('old_password', secOldPassword);
+      data.append('new_password', secNewPassword);
+      await axios.patch(
+        `${BASE_URL}/vendors/${vendor.id}/profile`,
+        data,
+        { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` } }
+      );
+      setSecSuccess('Palavra-passe alterada com sucesso!');
+      setSecOldPassword('');
+      setSecNewPassword('');
+    } catch (err) {
+      setSecError(err.response?.data?.detail || 'Erro ao alterar a palavra-passe.');
+    } finally {
+      setSecSaving(false);
     }
   };
 
@@ -339,6 +385,14 @@ export default function VendorDashboard() {
 
         {/* Quick actions grid */}
         <div className="vd-quick-grid">
+          <button className="vd-quick-item" onClick={openProfileModal}>
+            <span className="vd-quick-icon"><FiUser /></span>
+            <span className="vd-quick-label">Perfil</span>
+          </button>
+          <button className="vd-quick-item" onClick={() => navigate('/routes')}>
+            <span className="vd-quick-icon"><FiNavigation /></span>
+            <span className="vd-quick-label">Trajetos</span>
+          </button>
           <button className="vd-quick-item" onClick={paySubscription}>
             <span className="vd-quick-icon"><FiCreditCard /></span>
             <span className="vd-quick-label">Pagar Semanalidade</span>
@@ -355,14 +409,6 @@ export default function VendorDashboard() {
             <span className="vd-quick-icon"><FiMail /></span>
             <span className="vd-quick-label">Contactar Suporte</span>
           </button>
-          <button className="vd-quick-item" onClick={() => navigate('/routes')}>
-            <span className="vd-quick-icon"><FiNavigation /></span>
-            <span className="vd-quick-label">Trajetos</span>
-          </button>
-          <button className="vd-quick-item" onClick={openProfileModal}>
-            <span className="vd-quick-icon"><FiUser /></span>
-            <span className="vd-quick-label">Perfil</span>
-          </button>
         </div>
 
         <button className="vd-logout-btn" onClick={logout}>
@@ -376,94 +422,166 @@ export default function VendorDashboard() {
         <div className="vd-modal-overlay" onClick={closeProfileModal}>
           <div className="vd-modal" onClick={e => e.stopPropagation()}>
             <div className="vd-modal-header">
-              <span className="vd-modal-title">Editar Perfil</span>
+              <span className="vd-modal-title">Perfil</span>
               <button type="button" className="vd-modal-close" onClick={closeProfileModal}>
                 <FiX size={18} />
               </button>
             </div>
 
-            <form className="vd-modal-form" onSubmit={saveProfile}>
-              {/* Avatar + photo upload */}
-              <div className="vd-modal-photo-section">
-                {modalAvatarSrc ? (
-                  <img
-                    src={modalAvatarSrc}
-                    alt="Foto de perfil"
-                    className="vd-modal-avatar"
-                    style={{ borderColor: editPinColor }}
-                  />
-                ) : (
-                  <div
-                    className="vd-modal-avatar vd-modal-avatar-placeholder"
-                    style={{ borderColor: editPinColor, background: `${editPinColor}22`, color: editPinColor }}
-                  >
-                    {vendor?.name?.charAt(0)?.toUpperCase() || '?'}
-                  </div>
-                )}
-                <label className="vd-modal-photo-btn">
-                  Alterar foto
-                  <input type="file" accept="image/*" hidden onChange={handleEditPhoto} />
-                </label>
-              </div>
+            {/* Tabs */}
+            <div className="vd-modal-tabs">
+              <button
+                type="button"
+                className={`vd-modal-tab${profileTab === 'perfil' ? ' active' : ''}`}
+                onClick={() => setProfileTab('perfil')}
+              >
+                <FiUser size={14} /> Perfil
+              </button>
+              <button
+                type="button"
+                className={`vd-modal-tab${profileTab === 'seguranca' ? ' active' : ''}`}
+                onClick={() => setProfileTab('seguranca')}
+              >
+                <FiLock size={14} /> Segurança
+              </button>
+            </div>
 
-              <div className="vd-modal-field">
-                <label className="vd-modal-label">Nome</label>
-                <input
-                  className="vd-modal-input"
-                  type="text"
-                  value={editName}
-                  onChange={e => setEditName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="vd-modal-field">
-                <label className="vd-modal-label">Email</label>
-                <input
-                  className="vd-modal-input"
-                  type="email"
-                  value={editEmail}
-                  onChange={e => setEditEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="vd-modal-field">
-                <label className="vd-modal-label">Produto</label>
-                <select
-                  className="vd-modal-input"
-                  value={editProduct}
-                  onChange={e => setEditProduct(e.target.value)}
-                >
-                  <option value="Bolas de Berlim">Bolas de Berlim</option>
-                  <option value="Gelados">Gelados</option>
-                  <option value="Acessórios de Praia">Acessórios de Praia</option>
-                </select>
-              </div>
-              <div className="vd-modal-field">
-                <label className="vd-modal-label">Cor do Pin</label>
-                <div className="vd-modal-pin-row">
-                  <label className="vd-modal-pin-swatch" style={{ backgroundColor: editPinColor }}>
-                    <input
-                      type="color"
-                      value={editPinColor}
-                      onChange={e => setEditPinColor(e.target.value)}
-                      className="vd-modal-pin-input"
+            {profileTab === 'perfil' && (
+              <form className="vd-modal-form" onSubmit={saveProfile}>
+                {/* Avatar + photo upload */}
+                <div className="vd-modal-photo-section">
+                  {modalAvatarSrc ? (
+                    <img
+                      src={modalAvatarSrc}
+                      alt="Foto de perfil"
+                      className="vd-modal-avatar"
+                      style={{ borderColor: editPinColor }}
                     />
+                  ) : (
+                    <div
+                      className="vd-modal-avatar vd-modal-avatar-placeholder"
+                      style={{ borderColor: editPinColor, background: `${editPinColor}22`, color: editPinColor }}
+                    >
+                      {vendor?.name?.charAt(0)?.toUpperCase() || '?'}
+                    </div>
+                  )}
+                  <label className="vd-modal-photo-btn">
+                    Alterar foto
+                    <input type="file" accept="image/*" hidden onChange={handleEditPhoto} />
                   </label>
-                  <span className="vd-pin-hex">{editPinColor.toUpperCase()}</span>
                 </div>
-              </div>
 
-              {editError && <p className="vd-modal-error">{editError}</p>}
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Nome</label>
+                  <input
+                    className="vd-modal-input"
+                    type="text"
+                    value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Email</label>
+                  <input
+                    className="vd-modal-input"
+                    type="email"
+                    value={editEmail}
+                    onChange={e => setEditEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Produto</label>
+                  <select
+                    className="vd-modal-input"
+                    value={editProduct}
+                    onChange={e => setEditProduct(e.target.value)}
+                  >
+                    <option value="Bolas de Berlim">Bolas de Berlim</option>
+                    <option value="Gelados">Gelados</option>
+                    <option value="Acessórios de Praia">Acessórios de Praia</option>
+                  </select>
+                </div>
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Cor do Pin</label>
+                  <div className="vd-modal-pin-row">
+                    <label className="vd-modal-pin-swatch" style={{ backgroundColor: editPinColor }}>
+                      <input
+                        type="color"
+                        value={editPinColor}
+                        onChange={e => setEditPinColor(e.target.value)}
+                        className="vd-modal-pin-input"
+                      />
+                    </label>
+                    <span className="vd-pin-hex">{editPinColor.toUpperCase()}</span>
+                  </div>
+                </div>
 
-              <div className="vd-modal-actions">
-                <button type="button" className="vd-modal-cancel" onClick={closeProfileModal}>
-                  Cancelar
-                </button>
-                <button type="submit" className="vd-modal-save" disabled={editSaving}>
-                  {editSaving ? 'A guardar…' : 'Guardar'}
-                </button>
-              </div>
-            </form>
+                {editError && <p className="vd-modal-error">{editError}</p>}
+
+                <div className="vd-modal-actions">
+                  <button type="button" className="vd-modal-cancel" onClick={closeProfileModal}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className="vd-modal-save" disabled={editSaving}>
+                    {editSaving ? 'A guardar…' : 'Guardar'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {profileTab === 'seguranca' && (
+              <form className="vd-modal-form" onSubmit={savePassword}>
+                <div className="vd-modal-security-header">
+                  <FiLock size={24} className="vd-modal-security-icon" />
+                  <p className="vd-modal-security-desc">
+                    Introduz a tua palavra-passe atual e escolhe uma nova.
+                  </p>
+                </div>
+
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Palavra-passe atual</label>
+                  <input
+                    className="vd-modal-input"
+                    type="password"
+                    placeholder="Palavra-passe atual"
+                    value={secOldPassword}
+                    onChange={e => setSecOldPassword(e.target.value)}
+                    autoComplete="current-password"
+                    required
+                  />
+                </div>
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Nova palavra-passe</label>
+                  <input
+                    className="vd-modal-input"
+                    type="password"
+                    placeholder="Mínimo 8 caracteres"
+                    value={secNewPassword}
+                    onChange={e => setSecNewPassword(e.target.value)}
+                    autoComplete="new-password"
+                    required
+                  />
+                </div>
+
+                {secError && <p className="vd-modal-error">{secError}</p>}
+                {secSuccess && (
+                  <p className="vd-modal-success">
+                    <FiCheck size={14} /> {secSuccess}
+                  </p>
+                )}
+
+                <div className="vd-modal-actions">
+                  <button type="button" className="vd-modal-cancel" onClick={closeProfileModal}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className="vd-modal-save" disabled={secSaving}>
+                    {secSaving ? 'A guardar…' : 'Alterar Palavra-passe'}
+                  </button>
+                </div>
+              </form>
+            )}
 
             {editCropSrc && (
               <ImageCropper
