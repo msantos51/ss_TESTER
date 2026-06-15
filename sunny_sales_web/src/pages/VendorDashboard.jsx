@@ -135,19 +135,11 @@ export default function VendorDashboard() {
     setSharing(false);
   };
 
-  const paySubscription = async () => {
+  const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/test_28E3cvaRX1xWdIzd2ZeUU00';
+
+  const paySubscription = () => {
     if (!vendor) return;
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.post(
-        `${BASE_URL}/vendors/${vendor.id}/create-checkout-session`,
-        null,
-        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
-      );
-      if (res.data.checkout_url) window.open(res.data.checkout_url, '_blank');
-    } catch (err) {
-      console.error('Erro no pagamento:', err);
-    }
+    window.open(`${STRIPE_PAYMENT_LINK}?client_reference_id=${vendor.id}`, '_blank');
   };
 
   // ── Profile modal ─────────────────────────────────────
