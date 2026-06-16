@@ -13,9 +13,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
-  min-height: 80vh;
-  padding-bottom: 8px;
+  gap: 10px;
+  height: calc(100svh - var(--navbar-h) - var(--footer-h) - 32px);
+  min-height: 0;
+  padding-bottom: 0;
+  overflow: hidden;
 }
 
 .map-wrapper {
@@ -25,7 +27,8 @@ body {
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.08);
   border: none;
-  min-height: 480px;
+  flex: 1;
+  min-height: 0;
 }
 
 /* ── Map area ─────────────────────────────────────────── */
@@ -33,8 +36,8 @@ body {
 .map-area {
   position: relative;
   flex: 1;
-  height: 70vh;
-  min-height: 380px;
+  height: 100%;
+  min-height: 0;
   padding: 0;
   text-align: left;
   display: flex;
@@ -809,8 +812,8 @@ body {
 
   .map-area {
     width: 100%;
-    height: calc(100svh - 160px);
-    min-height: 300px;
+    height: 100%;
+    min-height: 0;
   }
 
   .vendor-card {
