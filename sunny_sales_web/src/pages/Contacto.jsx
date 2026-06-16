@@ -80,7 +80,6 @@ export default function Contacto() {
       <BackHomeButton />
 
       <div className="info-hero">
-        <span className="info-hero-icon"><FiMail /></span>
         <h1 className="info-hero-title">Contacto</h1>
         <p className="info-hero-lead">
           Tens alguma questão, sugestão ou queres saber mais sobre o Sunny Sales?
