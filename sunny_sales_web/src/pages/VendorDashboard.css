@@ -481,14 +481,13 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 18px 14px 16px;
+  padding: 14px 10px 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 7px;
   cursor: pointer;
-  aspect-ratio: 1 / 1;
   box-shadow: var(--shadow-xs);
   transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition), background var(--transition);
   color: var(--text);
@@ -939,7 +938,7 @@
   }
 
   .vd-quick-item {
-    padding: 16px 12px 14px;
+    padding: 12px 10px 10px;
   }
 
   .vd-quick-icon {
