@@ -76,26 +76,45 @@
   opacity: 0.95;
 }
 
-/* ── Forecast strip ────────────────────────── */
-.weather-forecast {
-  display: flex;
-  justify-content: space-around;
-  background: rgba(0, 0, 0, 0.18);
-  padding: 9px 14px;
-}
-
-.weather-forecast-item {
+/* ── Tide strip ────────────────────────────── */
+.weather-tides {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  gap: 5px;
+  background: rgba(0, 0, 0, 0.18);
+  padding: 9px 18px 10px;
 }
 
-.forecast-day {
-  font-size: 0.62rem;
-  font-weight: 700;
+.tide-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+}
+
+.tide-icon {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.tide-icon--high {
+  color: #fff;
+}
+
+.tide-icon--low {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.tide-label {
+  font-weight: 600;
   opacity: 0.82;
-  letter-spacing: 0.06em;
+  min-width: 76px;
+  letter-spacing: 0.01em;
+}
+
+.tide-times {
+  font-weight: 700;
+  letter-spacing: 0.03em;
 }
 
 /* ── Skeleton state ────────────────────────── */
@@ -130,4 +149,5 @@
   .weather-temp  { font-size: 2.2rem; }
   .weather-time  { font-size: 1.6rem; }
   .weather-main  { padding: 12px 14px 8px; }
+  .weather-tides { padding: 8px 14px 9px; }
 }
