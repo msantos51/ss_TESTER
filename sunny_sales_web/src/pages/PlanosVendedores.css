@@ -10,7 +10,7 @@
   overflow: hidden;
   background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, #0fb8bc 100%);
   border-radius: var(--radius-xl);
-  padding: 52px 28px 44px;
+  padding: 36px 28px 32px;
   text-align: center;
   color: white;
   margin-bottom: 2rem;

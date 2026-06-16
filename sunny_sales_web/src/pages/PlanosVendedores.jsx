@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiCheck, FiZap, FiStar, FiTrendingUp, FiMapPin, FiBarChart2, FiSmartphone, FiUsers } from 'react-icons/fi';
+import { FiCheck, FiZap, FiStar, FiTrendingUp } from 'react-icons/fi';
 import './PlanosVendedores.css';
 
 const PLANS = [
@@ -66,13 +66,6 @@ const PLANS = [
   },
 ];
 
-const BENEFITS = [
-  { icon: <FiMapPin size={22} />, title: 'Visibilidade Máxima', text: 'O teu carrinho aparece no mapa em tempo real para milhares de pessoas na praia.' },
-  { icon: <FiSmartphone size={22} />, title: 'App Móvel', text: 'Gere a tua localização e rota diretamente do telemóvel, onde quer que estejas.' },
-  { icon: <FiBarChart2 size={22} />, title: 'Estatísticas', text: 'Acompanha visitas ao teu perfil, horários de maior procura e muito mais.' },
-  { icon: <FiUsers size={22} />, title: 'Comunidade', text: 'Faz parte de uma rede de vendedores de praia e ganha mais clientes todos os dias.' },
-];
-
 const FAQS = [
   { q: 'Posso cancelar quando quiser?', a: 'Sim. Podes cancelar a qualquer momento. O acesso mantém-se ativo até ao fim do período pago.' },
   { q: 'Como funciona o pagamento?', a: 'O pagamento é feito de forma segura via Stripe. Aceitamos cartões de crédito e débito.' },
@@ -88,7 +81,6 @@ export default function PlanosVendedores() {
       <div className="pv-hero">
         <div className="pv-hero-blur pv-hero-blur-1" />
         <div className="pv-hero-blur pv-hero-blur-2" />
-        <span className="pv-hero-icon">☀️</span>
         <h1 className="pv-hero-title">Leva o teu negócio<br />para a praia</h1>
         <p className="pv-hero-lead">
           Junta-te à plataforma que coloca os vendedores de praia no mapa —
@@ -101,19 +93,6 @@ export default function PlanosVendedores() {
           <div className="pv-hero-stat-divider" />
           <div className="pv-hero-stat"><strong>Real-time</strong><span>Localização</span></div>
         </div>
-      </div>
-
-      {/* ── Benefits ── */}
-      <div className="pv-benefits">
-        {BENEFITS.map((b) => (
-          <div key={b.title} className="pv-benefit-card">
-            <div className="pv-benefit-icon">{b.icon}</div>
-            <div>
-              <h3 className="pv-benefit-title">{b.title}</h3>
-              <p className="pv-benefit-text">{b.text}</p>
-            </div>
-          </div>
-        ))}
       </div>
 
       {/* ── Pricing header ── */}
