@@ -367,6 +367,8 @@ button:disabled {
 .form input[type="email"],
 .form input[type="password"],
 .form input[type="text"],
+.form input[type="tel"],
+.form input[type="date"],
 .form input[type="file"],
 .form select,
 .input {
