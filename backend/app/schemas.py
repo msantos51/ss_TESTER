@@ -22,7 +22,7 @@ class VendorProfileUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
     password: Optional[str] = None
-    product: Optional[Literal["Bolas de Berlim", "Gelados", "Acess\u00f3rios"]] = None
+    product: Optional[Literal["Bolas de Berlim", "Gelados", "Acessórios"]] = None
     profile_photo: Optional[str] = None
     pin_color: Optional[str] = None
 
@@ -31,8 +31,21 @@ class VendorCreate(BaseModel):
     name: str
     email: str
     password: str
-    product: Literal["Bolas de Berlim", "Gelados", "Acess\u00f3rios"]
+    product: Literal["Bolas de Berlim", "Gelados", "Acessórios"]
     profile_photo: str
+    license_number: str
+    license_municipality: str
+    license_expiry: str
+    license_type: str
+    nif: str
+    id_document_number: str
+    phone: str
+    address: str
+    beaches: str
+    product_categories: str
+    iban: Optional[str] = None
+    business_name: Optional[str] = None
+    terms_accepted: bool
 
 # VendorOut
 class VendorOut(BaseModel):
@@ -48,11 +61,17 @@ class VendorOut(BaseModel):
     subscription_valid_until: Optional[datetime] = None
     last_seen: Optional[str] = None
     payment_methods: Optional[str] = None
-    # Configuração para permitir criação a partir de objetos ORM
+    license_number: Optional[str] = None
+    license_municipality: Optional[str] = None
+    license_expiry: Optional[datetime] = None
+    license_type: Optional[str] = None
+    nif: Optional[str] = None
+    phone: Optional[str] = None
+    beaches: Optional[str] = None
+    product_categories: Optional[str] = None
+    business_name: Optional[str] = None
+    terms_accepted: Optional[bool] = None
     model_config = ConfigDict(from_attributes=True)
-
-
-
 
 
 # RoutePoint

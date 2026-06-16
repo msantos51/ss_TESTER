@@ -1,26 +1,81 @@
-// (em português) Página Web para registo de vendedores
 import React, { useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import ImageCropper from '../components/ImageCropper';
 
-// Formulário de registo para novos vendedores
+const MUNICIPALITIES = [
+  "Albufeira", "Alcoutim", "Aljezur", "Castro Marim", "Faro",
+  "Lagoa", "Lagos", "Loulé", "Monchique", "Olhão",
+  "Portimão", "São Brás de Alportel", "Silves", "Tavira",
+  "Vila do Bispo", "Vila Real de Santo António",
+  "Almada", "Cascais", "Grândola", "Lisboa", "Oeiras",
+  "Santiago do Cacém", "Sesimbra", "Setúbal", "Sines",
+  "Sintra", "Torres Vedras", "Peniche", "Nazaré",
+  "Espinho", "Matosinhos", "Porto", "Vila Nova de Gaia",
+  "Viana do Castelo", "Caminha", "Vila do Conde", "Póvoa de Varzim",
+];
+
+const LICENSE_TYPES = [
+  "Vendedor Ambulante / Itinerante",
+  "Barraca Fixa",
+  "Concessão de Praia",
+  "Venda Ambulante de Gelados",
+  "Aluguer de Equipamentos",
+];
+
+const PRODUCT_CATEGORIES = [
+  "Bebidas",
+  "Bolas de Berlim",
+  "Gelados",
+  "Snacks / Comida",
+  "Acessórios de Praia",
+  "Aluguer de Chapéus de Sol",
+  "Aluguer de Gaivotas",
+];
+
+const BEACHES_OPTIONS = [
+  "Praia da Rocha", "Praia de Faro", "Praia da Falésia",
+  "Praia de Vilamoura", "Praia da Marinha", "Praia de Albufeira",
+  "Praia da Carcavelos", "Praia de Cascais", "Costa da Caparica",
+  "Praia de São Pedro de Moel", "Praia da Nazaré", "Praia de Espinho",
+  "Praia de Matosinhos", "Praia de Miramar",
+];
+
 export default function VendorRegister() {
+  const [step, setStep] = useState(1);
+  const totalSteps = 4;
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [product, setProduct] = useState('');
-  const [photo, setPhoto] = useState(null); // blob da foto cortada
+  const [photo, setPhoto] = useState(null);
   const [cropSrc, setCropSrc] = useState(null);
+
+  const [licenseNumber, setLicenseNumber] = useState('');
+  const [licenseMunicipality, setLicenseMunicipality] = useState('');
+  const [licenseExpiry, setLicenseExpiry] = useState('');
+  const [licenseType, setLicenseType] = useState('');
+  const [licenseDocument, setLicenseDocument] = useState(null);
+
+  const [nif, setNif] = useState('');
+  const [idDocumentNumber, setIdDocumentNumber] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+
+  const [beaches, setBeaches] = useState([]);
+  const [productCategories, setProductCategories] = useState([]);
+  const [iban, setIban] = useState('');
+  const [businessName, setBusinessName] = useState('');
+
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Abre o recorte ao selecionar uma foto
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      setCropSrc(url);
+      setCropSrc(URL.createObjectURL(file));
     }
   };
 
@@ -35,44 +90,113 @@ export default function VendorRegister() {
     setPhoto(blob);
   };
 
-  // Envia os dados de registo do vendedor
+  const handleLicenseDocChange = (e) => {
+    const file = e.target.files[0];
+    if (file) setLicenseDocument(file);
+  };
+
+  const toggleBeach = (beach) => {
+    setBeaches((prev) =>
+      prev.includes(beach) ? prev.filter((b) => b !== beach) : [...prev, beach]
+    );
+  };
+
+  const toggleCategory = (cat) => {
+    setProductCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+  };
+
+  const validateStep = (s) => {
+    setError('');
+    if (s === 1) {
+      if (!licenseNumber || !licenseMunicipality || !licenseExpiry || !licenseType) {
+        setError('Preencha todos os campos de licença.');
+        return false;
+      }
+      if (!licenseDocument) {
+        setError('Faça upload do comprovativo de licença.');
+        return false;
+      }
+    } else if (s === 2) {
+      if (!name || !email || !password || !nif || !idDocumentNumber || !phone || !address) {
+        setError('Preencha todos os campos de identificação.');
+        return false;
+      }
+      if (password.length < 8 || password.toLowerCase() === password || !/\d/.test(password)) {
+        setError('A palavra-passe deve ter pelo menos 8 caracteres, uma letra maiúscula e um número.');
+        return false;
+      }
+      if (nif.length !== 9 || !/^\d{9}$/.test(nif)) {
+        setError('O NIF deve ter exatamente 9 dígitos.');
+        return false;
+      }
+    } else if (s === 3) {
+      if (!product) {
+        setError('Selecione um produto principal.');
+        return false;
+      }
+      if (beaches.length === 0) {
+        setError('Selecione pelo menos uma praia.');
+        return false;
+      }
+      if (productCategories.length === 0) {
+        setError('Selecione pelo menos uma categoria de produto.');
+        return false;
+      }
+      if (!photo) {
+        setError('É necessária uma foto de perfil.');
+        return false;
+      }
+    } else if (s === 4) {
+      if (!termsAccepted) {
+        setError('É necessário aceitar os Termos e Condições.');
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const nextStep = () => {
+    if (validateStep(step)) setStep((s) => Math.min(s + 1, totalSteps));
+  };
+
+  const prevStep = () => {
+    setError('');
+    setStep((s) => Math.max(s - 1, 1));
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
-    if (!name || !email || !password || !product) {
-      setError('Preencha todos os campos obrigatórios');
-      return;
-    }
-
-    if (!photo) {
-      setError('É necessária uma foto de perfil.');
-      return;
-    }
-
-    if (password.length < 8 || password.toLowerCase() === password || !/\d/.test(password)) {
-      setError('A palavra-passe deve ter pelo menos 8 caracteres, uma letra maiúscula e um número');
-      return;
-    }
+    if (!validateStep(4)) return;
 
     const formData = new FormData();
     formData.append('name', name);
     formData.append('email', email);
     formData.append('password', password);
     formData.append('product', product);
-
-    const file = new File([photo], 'profile.jpg', { type: 'image/jpeg' });
-    formData.append('profile_photo', file);
+    formData.append('profile_photo', new File([photo], 'profile.jpg', { type: 'image/jpeg' }));
+    formData.append('license_number', licenseNumber);
+    formData.append('license_municipality', licenseMunicipality);
+    formData.append('license_expiry', licenseExpiry);
+    formData.append('license_type', licenseType);
+    formData.append('license_document', licenseDocument);
+    formData.append('nif', nif);
+    formData.append('id_document_number', idDocumentNumber);
+    formData.append('phone', phone);
+    formData.append('address', address);
+    formData.append('beaches', beaches.join(','));
+    formData.append('product_categories', productCategories.join(','));
+    formData.append('iban', iban);
+    formData.append('business_name', businessName);
+    formData.append('terms_accepted', 'true');
 
     try {
       await axios.post(`${BASE_URL}/vendors/`, formData);
       setSuccess('Registo efetuado com sucesso! Verifique o seu email para confirmar a conta.');
-      setName('');
-      setEmail('');
-      setPassword('');
-      setProduct('');
-      setPhoto(null);
     } catch (err) {
       console.error('Erro:', err);
       const detail = err.response?.data?.detail;
@@ -88,56 +212,276 @@ export default function VendorRegister() {
     }
   };
 
+  const stepTitles = [
+    'Validação de Licença',
+    'Identificação',
+    'Dados Operacionais',
+    'Confirmação',
+  ];
+
+  const renderProgressBar = () => (
+    <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+      {stepTitles.map((title, i) => (
+        <div key={i} style={{ textAlign: 'center', flex: 1 }}>
+          <div
+            style={{
+              width: '2rem',
+              height: '2rem',
+              borderRadius: '50%',
+              background: step > i ? '#2ecc71' : step === i + 1 ? '#3498db' : '#ddd',
+              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 0.3rem',
+              fontWeight: 'bold',
+              fontSize: '0.85rem',
+            }}
+          >
+            {step > i ? '✓' : i + 1}
+          </div>
+          <span style={{ fontSize: '0.7rem', color: step === i + 1 ? '#3498db' : '#888' }}>
+            {title}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderStep1 = () => (
+    <>
+      <h3 style={{ marginBottom: '1rem', color: '#333' }}>Validação de Licença</h3>
+      <span className="input-span">
+        <label className="label">Número de Licença / Concessão *</label>
+        <input type="text" placeholder="Ex: LIC-2024-001234" value={licenseNumber} onChange={(e) => setLicenseNumber(e.target.value)} />
+      </span>
+      <span className="input-span">
+        <label className="label">Câmara Municipal *</label>
+        <select value={licenseMunicipality} onChange={(e) => setLicenseMunicipality(e.target.value)}>
+          <option value="">Selecione a câmara</option>
+          {MUNICIPALITIES.map((m) => (
+            <option key={m} value={m}>{m}</option>
+          ))}
+        </select>
+      </span>
+      <span className="input-span">
+        <label className="label">Data de Validade *</label>
+        <input type="date" value={licenseExpiry} onChange={(e) => setLicenseExpiry(e.target.value)} />
+      </span>
+      <span className="input-span">
+        <label className="label">Tipo de Licença *</label>
+        <select value={licenseType} onChange={(e) => setLicenseType(e.target.value)}>
+          <option value="">Selecione o tipo</option>
+          {LICENSE_TYPES.map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
+      </span>
+      <span className="input-span">
+        <label className="label">Comprovativo de Licença (PDF ou imagem) *</label>
+        <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={handleLicenseDocChange} />
+        {licenseDocument && <span style={{ fontSize: '0.8rem', color: '#2ecc71' }}>{licenseDocument.name}</span>}
+      </span>
+    </>
+  );
+
+  const renderStep2 = () => (
+    <>
+      <h3 style={{ marginBottom: '1rem', color: '#333' }}>Identificação e Contacto</h3>
+      <span className="input-span">
+        <label className="label">Nome Completo *</label>
+        <input type="text" placeholder="Nome completo" value={name} onChange={(e) => setName(e.target.value)} />
+      </span>
+      <span className="input-span">
+        <label className="label">NIF *</label>
+        <input type="text" placeholder="123456789" maxLength={9} value={nif} onChange={(e) => setNif(e.target.value.replace(/\D/g, ''))} />
+      </span>
+      <span className="input-span">
+        <label className="label">N.º Documento de Identidade (CC/BI) *</label>
+        <input type="text" placeholder="N.º do documento" value={idDocumentNumber} onChange={(e) => setIdDocumentNumber(e.target.value)} />
+      </span>
+      <span className="input-span">
+        <label className="label">Email *</label>
+        <input type="email" placeholder="email@exemplo.pt" value={email} onChange={(e) => setEmail(e.target.value)} />
+      </span>
+      <span className="input-span">
+        <label className="label">Telemóvel *</label>
+        <input type="tel" placeholder="912345678" value={phone} onChange={(e) => setPhone(e.target.value)} />
+      </span>
+      <span className="input-span">
+        <label className="label">Morada *</label>
+        <input type="text" placeholder="Rua, número, código postal, localidade" value={address} onChange={(e) => setAddress(e.target.value)} />
+      </span>
+      <span className="input-span">
+        <label className="label">Palavra-passe *</label>
+        <input type="password" placeholder="Mín. 8 caracteres, 1 maiúscula, 1 número" value={password} onChange={(e) => setPassword(e.target.value)} />
+      </span>
+    </>
+  );
+
+  const renderStep3 = () => (
+    <>
+      <h3 style={{ marginBottom: '1rem', color: '#333' }}>Dados Operacionais</h3>
+      <span className="input-span">
+        <label className="label">Produto Principal *</label>
+        <select value={product} onChange={(e) => setProduct(e.target.value)}>
+          <option value="">Selecione um produto</option>
+          <option value="Bolas de Berlim">Bolas de Berlim</option>
+          <option value="Gelados">Gelados</option>
+          <option value="Acessórios de Praia">Acessórios de Praia</option>
+        </select>
+      </span>
+      <div style={{ marginBottom: '1rem' }}>
+        <label className="label" style={{ display: 'block', marginBottom: '0.5rem' }}>Categorias de Produtos *</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+          {PRODUCT_CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => toggleCategory(cat)}
+              style={{
+                padding: '0.4rem 0.8rem',
+                borderRadius: '1rem',
+                border: productCategories.includes(cat) ? '2px solid #3498db' : '1px solid #ccc',
+                background: productCategories.includes(cat) ? '#ebf5fb' : '#fff',
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+              }}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div style={{ marginBottom: '1rem' }}>
+        <label className="label" style={{ display: 'block', marginBottom: '0.5rem' }}>Praia(s) onde trabalha *</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+          {BEACHES_OPTIONS.map((beach) => (
+            <button
+              key={beach}
+              type="button"
+              onClick={() => toggleBeach(beach)}
+              style={{
+                padding: '0.4rem 0.8rem',
+                borderRadius: '1rem',
+                border: beaches.includes(beach) ? '2px solid #e67e22' : '1px solid #ccc',
+                background: beaches.includes(beach) ? '#fef5e7' : '#fff',
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+              }}
+            >
+              {beach}
+            </button>
+          ))}
+        </div>
+      </div>
+      <span className="input-span">
+        <label className="label">IBAN (para receber pagamentos)</label>
+        <input type="text" placeholder="PT50 0000 0000 0000 0000 0000 0" value={iban} onChange={(e) => setIban(e.target.value)} />
+      </span>
+      <span className="input-span">
+        <label className="label">Nome da Atividade / Firma</label>
+        <input type="text" placeholder="Nome comercial (opcional)" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
+      </span>
+      <span className="input-span">
+        <label className="label">Foto de Perfil *</label>
+        <input type="file" accept="image/*" onChange={handlePhotoChange} />
+        {photo && <span style={{ fontSize: '0.8rem', color: '#2ecc71' }}>Foto selecionada</span>}
+      </span>
+    </>
+  );
+
+  const renderStep4 = () => (
+    <>
+      <h3 style={{ marginBottom: '1rem', color: '#333' }}>Confirmação e Termos</h3>
+      <div style={{ background: '#f9f9f9', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1rem', fontSize: '0.85rem' }}>
+        <p><strong>Nome:</strong> {name}</p>
+        <p><strong>Email:</strong> {email}</p>
+        <p><strong>NIF:</strong> {nif}</p>
+        <p><strong>Telemóvel:</strong> {phone}</p>
+        <p><strong>Licença:</strong> {licenseNumber} ({licenseMunicipality})</p>
+        <p><strong>Tipo:</strong> {licenseType}</p>
+        <p><strong>Validade:</strong> {licenseExpiry}</p>
+        <p><strong>Produto:</strong> {product}</p>
+        <p><strong>Praias:</strong> {beaches.join(', ')}</p>
+        <p><strong>Categorias:</strong> {productCategories.join(', ')}</p>
+        {businessName && <p><strong>Firma:</strong> {businessName}</p>}
+      </div>
+      <div style={{
+        background: '#fff',
+        border: '1px solid #ddd',
+        borderRadius: '0.5rem',
+        padding: '1rem',
+        marginBottom: '1rem',
+        maxHeight: '200px',
+        overflowY: 'auto',
+        fontSize: '0.8rem',
+        lineHeight: '1.5',
+      }}>
+        <h4>Termos e Condições</h4>
+        <p>Ao registar-se como vendedor na plataforma Sunny Sales, declara e aceita que:</p>
+        <ol>
+          <li>Possui licença de venda válida emitida pela câmara municipal competente.</li>
+          <li>Todos os dados fornecidos são verdadeiros e atualizados.</li>
+          <li>É responsável por manter a licença válida e atualizada na plataforma.</li>
+          <li>A plataforma reserva-se o direito de suspender contas com licenças expiradas ou dados inválidos.</li>
+          <li>Os dados pessoais serão tratados de acordo com o RGPD e a legislação portuguesa.</li>
+          <li>A plataforma não se responsabiliza por infrações cometidas pelo vendedor.</li>
+          <li>Aceita receber comunicações relacionadas com a operação da plataforma.</li>
+        </ol>
+      </div>
+      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem' }}>
+        <input
+          type="checkbox"
+          checked={termsAccepted}
+          onChange={(e) => setTermsAccepted(e.target.checked)}
+          style={{ width: '1.2rem', height: '1.2rem' }}
+        />
+        Li e aceito os Termos e Condições *
+      </label>
+    </>
+  );
+
+  if (success) {
+    return (
+      <div className="form-box" style={{ textAlign: 'center' }}>
+        <h2 className="title auth-title">Registo de Vendedor</h2>
+        <p style={{ color: '#2ecc71', marginBottom: '1rem', fontSize: '1.1rem' }}>{success}</p>
+        <a href="/vendor-login" style={{ color: '#3498db' }}>Ir para o login</a>
+      </div>
+    );
+  }
+
   return (
-    <div className="form-box">
+    <div className="form-box" style={{ maxWidth: '520px' }}>
       <h2 className="title auth-title">Registo de Vendedor</h2>
 
-      {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
-      {success && <p style={{ color: 'black', marginBottom: '1rem' }}>{success}</p>}
+      {renderProgressBar()}
+
+      {error && <p style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</p>}
 
       <form onSubmit={handleRegister} className="form login-form auth-form">
-        <span className="input-span">
-          <label className="label">Nome</label>
-          <input
-            type="text"
-            placeholder="Nome"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </span>
-        <span className="input-span">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </span>
-        <span className="input-span">
-          <input
-            type="password"
-            placeholder="Palavra-passe"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </span>
-        <span className="input-span">
-          <label className="label">Produto</label>
-          <select
-            value={product}
-            onChange={(e) => setProduct(e.target.value)}
-          >
-            <option value="">Selecione um produto</option>
-            <option value="Bolas de Berlim">Bolas de Berlim</option>
-            <option value="Gelados">Gelados</option>
-            <option value="Acessórios de Praia">Acessórios de Praia</option>
-          </select>
-        </span>
-        <span className="input-span">
-          <label className="label">Foto</label>
-          <input type="file" onChange={handlePhotoChange} />
-        </span>
-        <button type="submit" className="submit">Registar</button>
+        {step === 1 && renderStep1()}
+        {step === 2 && renderStep2()}
+        {step === 3 && renderStep3()}
+        {step === 4 && renderStep4()}
+
+        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+          {step > 1 && (
+            <button type="button" onClick={prevStep} className="submit" style={{ background: '#95a5a6', flex: 1 }}>
+              Anterior
+            </button>
+          )}
+          {step < totalSteps ? (
+            <button type="button" onClick={nextStep} className="submit" style={{ flex: 1 }}>
+              Seguinte
+            </button>
+          ) : (
+            <button type="submit" className="submit" style={{ flex: 1 }}>
+              Registar
+            </button>
+          )}
+        </div>
       </form>
 
       {cropSrc && (
@@ -150,4 +494,3 @@ export default function VendorRegister() {
     </div>
   );
 }
-

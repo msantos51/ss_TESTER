@@ -30,10 +30,31 @@ class Vendor(Base):
     confirmation_token = Column(String, nullable=True, index=True)
     password_reset_token = Column(String, nullable=True, index=True)
     password_reset_expires = Column(DateTime, nullable=True)
-    # Token da sessão atualmente ativa. Quando um novo token é gerado,
-    # o valor anterior é substituído para garantir apenas uma sessão por vendedor
     session_token = Column(String, nullable=True, index=True)
-    payment_methods = Column(String, nullable=True)  # e.g. "Numerário,MB Way,Cartão"
+    payment_methods = Column(String, nullable=True)
+
+    # Licença
+    license_number = Column(String, nullable=True)
+    license_municipality = Column(String, nullable=True)
+    license_expiry = Column(DateTime, nullable=True)
+    license_type = Column(String, nullable=True)
+    license_document = Column(String, nullable=True)
+
+    # Identificação e compliance
+    nif = Column(String, nullable=True, unique=True, index=True)
+    id_document_number = Column(String, nullable=True)
+    phone = Column(String, nullable=True)
+    address = Column(String, nullable=True)
+
+    # Operacional
+    beaches = Column(String, nullable=True)
+    product_categories = Column(String, nullable=True)
+    iban = Column(String, nullable=True)
+    business_name = Column(String, nullable=True)
+
+    # Compliance
+    terms_accepted = Column(Boolean, default=False)
+    terms_accepted_at = Column(DateTime, nullable=True)
 
     routes = relationship("Route", back_populates="vendor")
     sessions = relationship(
