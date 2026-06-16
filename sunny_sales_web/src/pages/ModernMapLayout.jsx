@@ -8,6 +8,7 @@ import LocateButton from '../components/LocateButton';
 import VendorLocateButton from '../components/VendorLocateButton';
 import LocateHint from '../components/LocateHint';
 import WelcomeCard from '../components/WelcomeCard';
+import WeatherCard from '../components/WeatherCard';
 import {
   FiMapPin, FiFilter, FiCheck,
   FiDollarSign, FiSmartphone, FiTerminal, FiCreditCard, FiWifi, FiTag,
@@ -708,6 +709,7 @@ export default function ModernMapLayout() {
           )}
         </main>
       </div>
+      <WeatherCard />
       {showWelcome && <WelcomeCard onClose={dismissWelcome} />}
     </div>
   );
