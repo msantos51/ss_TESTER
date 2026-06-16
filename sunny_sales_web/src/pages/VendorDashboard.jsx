@@ -386,7 +386,7 @@ export default function VendorDashboard() {
           </button>
           <button className="vd-quick-item" onClick={paySubscription}>
             <span className="vd-quick-icon"><FiCreditCard /></span>
-            <span className="vd-quick-label">Pagar Semanalidade</span>
+            <span className="vd-quick-label">Ativar Subscrição</span>
           </button>
           <button className="vd-quick-item" onClick={() => navigate('/paid-weeks')}>
             <span className="vd-quick-icon"><FiCalendar /></span>
