@@ -57,6 +57,21 @@ def ensure_latest_schema():
             ("password_reset_token", "ALTER TABLE vendors ADD COLUMN password_reset_token TEXT"),
             ("password_reset_expires", "ALTER TABLE vendors ADD COLUMN password_reset_expires TIMESTAMP"),
             ("payment_methods", "ALTER TABLE vendors ADD COLUMN payment_methods TEXT"),
+            ("license_number", "ALTER TABLE vendors ADD COLUMN license_number TEXT"),
+            ("license_municipality", "ALTER TABLE vendors ADD COLUMN license_municipality TEXT"),
+            ("license_expiry", "ALTER TABLE vendors ADD COLUMN license_expiry TIMESTAMP"),
+            ("license_type", "ALTER TABLE vendors ADD COLUMN license_type TEXT"),
+            ("license_document", "ALTER TABLE vendors ADD COLUMN license_document TEXT"),
+            ("nif", "ALTER TABLE vendors ADD COLUMN nif TEXT"),
+            ("id_document_number", "ALTER TABLE vendors ADD COLUMN id_document_number TEXT"),
+            ("phone", "ALTER TABLE vendors ADD COLUMN phone TEXT"),
+            ("address", "ALTER TABLE vendors ADD COLUMN address TEXT"),
+            ("beaches", "ALTER TABLE vendors ADD COLUMN beaches TEXT"),
+            ("product_categories", "ALTER TABLE vendors ADD COLUMN product_categories TEXT"),
+            ("iban", "ALTER TABLE vendors ADD COLUMN iban TEXT"),
+            ("business_name", "ALTER TABLE vendors ADD COLUMN business_name TEXT"),
+            ("terms_accepted", "ALTER TABLE vendors ADD COLUMN terms_accepted BOOLEAN DEFAULT false"),
+            ("terms_accepted_at", "ALTER TABLE vendors ADD COLUMN terms_accepted_at TIMESTAMP"),
         ]
         with engine.begin() as conn:
             for col, stmt in migrations:

@@ -465,24 +465,79 @@ def delete_session(
 # --------------------------
 # Registo de vendedor
 # --------------------------
+ALLOWED_DOC_TYPES = {"application/pdf", "image/jpeg", "image/png", "image/webp"}
+ALLOWED_DOC_EXTENSIONS = {".pdf", ".jpg", ".jpeg", ".png", ".webp"}
+LICENSE_DOC_DIR = "license_docs"
+LICENSE_DOC_BUCKET = "license-docs"
+
+if not supabase:
+    os.makedirs(LICENSE_DOC_DIR, exist_ok=True)
+
+BUCKET_MAP[LICENSE_DOC_DIR] = LICENSE_DOC_BUCKET
+
+
+def _validate_nif(nif: str) -> bool:
+    if len(nif) != 9 or not nif.isdigit():
+        return False
+    if nif[0] not in ("1", "2", "3", "5", "6", "7", "8", "9"):
+        return False
+    check = 0
+    for i in range(8):
+        check += int(nif[i]) * (9 - i)
+    remainder = check % 11
+    control = 0 if remainder < 2 else 11 - remainder
+    return int(nif[8]) == control
+
+
 @app.post("/vendors/", response_model=schemas.VendorOut)
-# create_vendor
 async def create_vendor(
     name: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
     product: str = Form(...),
     profile_photo: UploadFile = File(...),
+    license_number: str = Form(...),
+    license_municipality: str = Form(...),
+    license_expiry: str = Form(...),
+    license_type: str = Form(...),
+    license_document: UploadFile = File(...),
+    nif: str = Form(...),
+    id_document_number: str = Form(...),
+    phone: str = Form(...),
+    address: str = Form(...),
+    beaches: str = Form(...),
+    product_categories: str = Form(...),
+    iban: str = Form(""),
+    business_name: str = Form(""),
+    terms_accepted: bool = Form(...),
     db: Session = Depends(get_db),
 ):
+    if not terms_accepted:
+        raise HTTPException(status_code=400, detail="É necessário aceitar os Termos e Condições")
+
+    if not _validate_nif(nif):
+        raise HTTPException(status_code=400, detail="NIF inválido")
+
     db_vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
     if db_vendor:
         raise HTTPException(status_code=400, detail="Email already registered")
+
+    db_nif = db.query(models.Vendor).filter(models.Vendor.nif == nif).first()
+    if db_nif:
+        raise HTTPException(status_code=400, detail="NIF já registado")
+
     validate_password(password)
     validate_upload(profile_photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto de perfil")
-    hashed_password = pwd_context.hash(password)
+    validate_upload(license_document, ALLOWED_DOC_TYPES, ALLOWED_DOC_EXTENSIONS, "documento de licença")
 
-    public_path = _upload_file(profile_photo, PROFILE_PHOTO_DIR)
+    try:
+        parsed_expiry = datetime.strptime(license_expiry, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Data de validade da licença inválida (formato: AAAA-MM-DD)")
+
+    hashed_password = pwd_context.hash(password)
+    photo_path = _upload_file(profile_photo, PROFILE_PHOTO_DIR)
+    license_doc_path = _upload_file(license_document, LICENSE_DOC_DIR)
 
     confirmation_token = uuid4().hex
     new_vendor = models.Vendor(
@@ -490,10 +545,25 @@ async def create_vendor(
         email=email,
         hashed_password=hashed_password,
         product=product,
-        profile_photo=public_path,
+        profile_photo=photo_path,
         pin_color="#FFB6C1",
         email_confirmed=False,
         confirmation_token=confirmation_token,
+        license_number=license_number,
+        license_municipality=license_municipality,
+        license_expiry=parsed_expiry,
+        license_type=license_type,
+        license_document=license_doc_path,
+        nif=nif,
+        id_document_number=id_document_number,
+        phone=phone,
+        address=address,
+        beaches=beaches,
+        product_categories=product_categories,
+        iban=iban or None,
+        business_name=business_name or None,
+        terms_accepted=True,
+        terms_accepted_at=utcnow(),
     )
     db.add(new_vendor)
     db.commit()
