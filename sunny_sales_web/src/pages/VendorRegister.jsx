@@ -23,23 +23,6 @@ const LICENSE_TYPES = [
   "Aluguer de Equipamentos",
 ];
 
-const PRODUCT_CATEGORIES = [
-  "Bebidas",
-  "Bolas de Berlim",
-  "Gelados",
-  "Snacks / Comida",
-  "Acessórios de Praia",
-  "Aluguer de Chapéus de Sol",
-  "Aluguer de Gaivotas",
-];
-
-const BEACHES_OPTIONS = [
-  "Praia da Rocha", "Praia de Faro", "Praia da Falésia",
-  "Praia de Vilamoura", "Praia da Marinha", "Praia de Albufeira",
-  "Praia da Carcavelos", "Praia de Cascais", "Costa da Caparica",
-  "Praia de São Pedro de Moel", "Praia da Nazaré", "Praia de Espinho",
-  "Praia de Matosinhos", "Praia de Miramar",
-];
 
 export default function VendorRegister() {
   const [step, setStep] = useState(1);
@@ -63,9 +46,6 @@ export default function VendorRegister() {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
 
-  const [beaches, setBeaches] = useState([]);
-  const [productCategories, setProductCategories] = useState([]);
-  const [iban, setIban] = useState('');
   const [businessName, setBusinessName] = useState('');
 
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -95,18 +75,6 @@ export default function VendorRegister() {
     if (file) setLicenseDocument(file);
   };
 
-  const toggleBeach = (beach) => {
-    setBeaches((prev) =>
-      prev.includes(beach) ? prev.filter((b) => b !== beach) : [...prev, beach]
-    );
-  };
-
-  const toggleCategory = (cat) => {
-    setProductCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
-    );
-  };
-
   const validateStep = (s) => {
     setError('');
     if (s === 1) {
@@ -134,14 +102,6 @@ export default function VendorRegister() {
     } else if (s === 3) {
       if (!product) {
         setError('Selecione um produto principal.');
-        return false;
-      }
-      if (beaches.length === 0) {
-        setError('Selecione pelo menos uma praia.');
-        return false;
-      }
-      if (productCategories.length === 0) {
-        setError('Selecione pelo menos uma categoria de produto.');
         return false;
       }
       if (!photo) {
@@ -188,9 +148,6 @@ export default function VendorRegister() {
     formData.append('id_document_number', idDocumentNumber);
     formData.append('phone', phone);
     formData.append('address', address);
-    formData.append('beaches', beaches.join(','));
-    formData.append('product_categories', productCategories.join(','));
-    formData.append('iban', iban);
     formData.append('business_name', businessName);
     formData.append('terms_accepted', 'true');
 
@@ -331,54 +288,6 @@ export default function VendorRegister() {
           <option value="Acessórios de Praia">Acessórios de Praia</option>
         </select>
       </span>
-      <div style={{ marginBottom: '1rem' }}>
-        <label className="label" style={{ display: 'block', marginBottom: '0.5rem' }}>Categorias de Produtos *</label>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-          {PRODUCT_CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => toggleCategory(cat)}
-              style={{
-                padding: '0.4rem 0.8rem',
-                borderRadius: '1rem',
-                border: productCategories.includes(cat) ? '2px solid #3498db' : '1px solid #ccc',
-                background: productCategories.includes(cat) ? '#ebf5fb' : '#fff',
-                cursor: 'pointer',
-                fontSize: '0.85rem',
-              }}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div style={{ marginBottom: '1rem' }}>
-        <label className="label" style={{ display: 'block', marginBottom: '0.5rem' }}>Praia(s) onde trabalha *</label>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-          {BEACHES_OPTIONS.map((beach) => (
-            <button
-              key={beach}
-              type="button"
-              onClick={() => toggleBeach(beach)}
-              style={{
-                padding: '0.4rem 0.8rem',
-                borderRadius: '1rem',
-                border: beaches.includes(beach) ? '2px solid #e67e22' : '1px solid #ccc',
-                background: beaches.includes(beach) ? '#fef5e7' : '#fff',
-                cursor: 'pointer',
-                fontSize: '0.85rem',
-              }}
-            >
-              {beach}
-            </button>
-          ))}
-        </div>
-      </div>
-      <span className="input-span">
-        <label className="label">IBAN (para receber pagamentos)</label>
-        <input type="text" placeholder="PT50 0000 0000 0000 0000 0000 0" value={iban} onChange={(e) => setIban(e.target.value)} />
-      </span>
       <span className="input-span">
         <label className="label">Nome da Atividade / Firma</label>
         <input type="text" placeholder="Nome comercial (opcional)" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
@@ -403,8 +312,6 @@ export default function VendorRegister() {
         <p><strong>Tipo:</strong> {licenseType}</p>
         <p><strong>Validade:</strong> {licenseExpiry}</p>
         <p><strong>Produto:</strong> {product}</p>
-        <p><strong>Praias:</strong> {beaches.join(', ')}</p>
-        <p><strong>Categorias:</strong> {productCategories.join(', ')}</p>
         {businessName && <p><strong>Firma:</strong> {businessName}</p>}
       </div>
       <div style={{
