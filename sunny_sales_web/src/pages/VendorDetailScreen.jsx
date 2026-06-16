@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { BASE_URL } from '../config';
+import { BASE_URL, mediaUrl } from '../config';
 import BackHomeButton from '../components/BackHomeButton';
 
 export default function VendorDetailScreen() {
@@ -40,7 +40,6 @@ export default function VendorDetailScreen() {
     loadStories();
   }, [vendor]);
 
-  const baseUrl = BASE_URL.replace(/\/$/, '');
 
   if (loading) {
     return (
@@ -67,7 +66,7 @@ export default function VendorDetailScreen() {
       <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
         {vendor.profile_photo ? (
           <img
-            src={`${baseUrl}/${vendor.profile_photo}`}
+            src={mediaUrl(vendor.profile_photo)}
             alt="Foto do vendedor"
             className="card-photo"
             style={{ width: 96, height: 96, cursor: stories.length > 0 ? 'pointer' : 'default' }}
@@ -116,7 +115,7 @@ export default function VendorDetailScreen() {
           }}
         >
           <img
-            src={`${baseUrl}/${stories[storyIndex].media_url}`}
+            src={mediaUrl(stories[storyIndex].media_url)}
             alt="Story"
             style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', borderRadius: 'var(--radius-lg)' }}
           />
@@ -128,7 +127,7 @@ export default function VendorDetailScreen() {
           {stories.map((s, i) => (
             <img
               key={s.id}
-              src={`${baseUrl}/${s.media_url}`}
+              src={mediaUrl(s.media_url)}
               onClick={() => setStoryIndex(i)}
               alt="Story"
               style={{

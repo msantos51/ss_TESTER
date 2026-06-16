@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet-rotate';
 import axios from 'axios';
-import { BASE_URL } from '../config';
+import { BASE_URL, mediaUrl } from '../config';
 import LocateButton from '../components/LocateButton';
 import VendorLocateButton from '../components/VendorLocateButton';
 import LocateHint from '../components/LocateHint';
@@ -673,7 +673,7 @@ export default function ModernMapLayout() {
               </button>
               {selected.profile_photo ? (
                 <img
-                  src={`${BASE_URL}/${selected.profile_photo}`}
+                  src={mediaUrl(selected.profile_photo)}
                   alt={selected.name}
                   className="card-photo"
                 />

@@ -22,16 +22,30 @@ import base64
 import hmac
 import hashlib
 from math import radians, sin, cos, sqrt, atan2
+from supabase import create_client
 
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
 ALLOWED_STORY_TYPES = ALLOWED_IMAGE_TYPES | {"video/mp4", "video/webm"}
 ALLOWED_STORY_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS | {".mp4", ".webm"}
 
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) if SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY else None
+
+PROFILE_PHOTO_BUCKET = "profile-photos"
+STORY_BUCKET = "stories"
+
 PROFILE_PHOTO_DIR = "profile_photos"
-os.makedirs(PROFILE_PHOTO_DIR, exist_ok=True)
 STORY_DIR = "stories"
-os.makedirs(STORY_DIR, exist_ok=True)
+if not supabase:
+    os.makedirs(PROFILE_PHOTO_DIR, exist_ok=True)
+    os.makedirs(STORY_DIR, exist_ok=True)
+
+BUCKET_MAP = {
+    PROFILE_PHOTO_DIR: PROFILE_PHOTO_BUCKET,
+    STORY_DIR: STORY_BUCKET,
+}
 
 
 def validate_upload(file: UploadFile, allowed_types: set, allowed_exts: set, label: str = "ficheiro"):
@@ -46,6 +60,15 @@ def validate_upload(file: UploadFile, allowed_types: set, allowed_exts: set, lab
 def _upload_file(upload_file: UploadFile, folder: str) -> str:
     ext = os.path.splitext(upload_file.filename or "")[1].lower()
     file_name = f"{uuid4().hex}{ext}"
+    if supabase:
+        bucket = BUCKET_MAP.get(folder, folder)
+        content = upload_file.file.read()
+        supabase.storage.from_(bucket).upload(
+            file_name,
+            content,
+            {"content-type": upload_file.content_type or "application/octet-stream"},
+        )
+        return supabase.storage.from_(bucket).get_public_url(file_name)
     file_path = os.path.join(folder, file_name)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(upload_file.file, buffer)
@@ -53,6 +76,16 @@ def _upload_file(upload_file: UploadFile, folder: str) -> str:
 
 
 def _delete_file(path_or_url: str) -> None:
+    if supabase and path_or_url.startswith("http"):
+        for folder, bucket in BUCKET_MAP.items():
+            marker = f"/object/public/{bucket}/"
+            if marker in path_or_url:
+                file_name = path_or_url.split(marker)[-1]
+                try:
+                    supabase.storage.from_(bucket).remove([file_name])
+                except Exception:
+                    pass
+                return
     try:
         os.remove(path_or_url)
     except OSError:
@@ -83,9 +116,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Montar rota para servir fotos publicamente
-app.mount("/profile_photos", StaticFiles(directory=PROFILE_PHOTO_DIR), name="profile_photos")
-app.mount("/stories", StaticFiles(directory=STORY_DIR), name="stories")
+if not supabase:
+    app.mount("/profile_photos", StaticFiles(directory=PROFILE_PHOTO_DIR), name="profile_photos")
+    app.mount("/stories", StaticFiles(directory=STORY_DIR), name="stories")
 
 # Servir a aplicação web compilada, se existir
 WEB_DIST = Path(__file__).resolve().parents[2] / "sunny_sales_web" / "dist"

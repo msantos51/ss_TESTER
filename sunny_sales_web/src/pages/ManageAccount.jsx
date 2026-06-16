@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { BASE_URL } from '../config';
+import { BASE_URL, mediaUrl } from '../config';
 import ImageCropper from '../components/ImageCropper';
 import BackHomeButton from '../components/BackHomeButton';
 import {
@@ -117,7 +117,7 @@ export default function ManageAccount() {
   };
 
   const avatarSrc = photoPreview
-    || (vendor?.profile_photo ? `${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}` : null);
+    || (vendor?.profile_photo ? mediaUrl(vendor.profile_photo) : null);
 
   if (!vendor) {
     return (

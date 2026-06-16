@@ -15,8 +15,6 @@ export default defineConfig({
       '/admin': 'http://localhost:8000',
       '/stripe': 'http://localhost:8000',
       '/ws': { target: 'ws://localhost:8000', ws: true },
-      '/profile_photos': 'http://localhost:8000',
-      '/stories': 'http://localhost:8000',
       '/api': 'http://localhost:8000',
     },
   },

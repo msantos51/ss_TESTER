@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BASE_URL } from '../config';
+import { BASE_URL, mediaUrl } from '../config';
 import axios from 'axios';
 import {
   FiCalendar, FiFileText,
@@ -264,7 +264,7 @@ export default function VendorDashboard() {
     : null;
 
   const modalAvatarSrc = editPhotoPreview
-    || (vendor?.profile_photo ? `${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}` : null);
+    || (vendor?.profile_photo ? mediaUrl(vendor.profile_photo) : null);
 
   return (
     <div className="vd-wrapper">
@@ -284,7 +284,7 @@ export default function VendorDashboard() {
             <div className="vd-profile-top">
               {vendor.profile_photo ? (
                 <img
-                  src={`${BASE_URL.replace(/\/$/, '')}/${vendor.profile_photo}`}
+                  src={mediaUrl(vendor.profile_photo)}
                   alt="Foto de perfil"
                   className="vd-avatar"
                   style={{ borderColor: pinColor }}
