@@ -19,6 +19,14 @@ const PAYMENT_ICONS = {
   'NFC': <FiWifi />,
 };
 
+const PAYMENT_METHODS = [
+  { id: 'Numerário', label: 'Numerário', icon: <FiDollarSign /> },
+  { id: 'MB Way', label: 'MB Way', icon: <FiSmartphone /> },
+  { id: 'Multibanco', label: 'Multibanco', icon: <FiTerminal /> },
+  { id: 'Cartão', label: 'Cartão', icon: <FiCreditCard /> },
+  { id: 'NFC', label: 'NFC', icon: <FiWifi /> },
+];
+
 let watchId = null;
 
 function getGreeting() {
@@ -46,6 +54,7 @@ export default function VendorDashboard() {
   const [editPinColor, setEditPinColor] = useState('#FFB6C1');
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState('');
+  const [editPaymentMethods, setEditPaymentMethods] = useState([]);
   // Security tab state
   const [secOldPassword, setSecOldPassword] = useState('');
   const [secNewPassword, setSecNewPassword] = useState('');
@@ -154,6 +163,7 @@ export default function VendorDashboard() {
     setEditPhotoPreview(null);
     setEditCropSrc(null);
     setEditPinColor(vendor.pin_color || '#FFB6C1');
+    setEditPaymentMethods(vendor.payment_methods ? vendor.payment_methods.split(',').filter(Boolean) : []);
     setEditError('');
     setSecOldPassword('');
     setSecNewPassword('');
@@ -191,6 +201,12 @@ export default function VendorDashboard() {
     setEditPhotoPreview(URL.createObjectURL(blob));
   };
 
+  const toggleEditPayment = (id) => {
+    setEditPaymentMethods(prev =>
+      prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]
+    );
+  };
+
   const saveProfile = async (e) => {
     e.preventDefault();
     if (!vendor) return;
@@ -207,6 +223,8 @@ export default function VendorDashboard() {
         const file = new File([editPhoto], 'profile.jpg', { type: 'image/jpeg' });
         data.append('profile_photo', file);
       }
+      const newMethods = editPaymentMethods.join(',');
+      if (newMethods !== (vendor.payment_methods || '')) data.append('payment_methods', newMethods);
       const res = await axios.patch(
         `${BASE_URL}/vendors/${vendor.id}/profile`,
         data,
@@ -505,6 +523,29 @@ export default function VendorDashboard() {
                         className="vd-modal-pin-input"
                       />
                     </label>
+                  </div>
+                </div>
+
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Métodos de Pagamento</label>
+                  <p className="vd-modal-hint">Indica quais os métodos que aceitas dos clientes.</p>
+                  <div className="vd-modal-payment-grid">
+                    {PAYMENT_METHODS.map(({ id, label, icon }) => {
+                      const active = editPaymentMethods.includes(id);
+                      return (
+                        <button
+                          key={id}
+                          type="button"
+                          className={`vd-modal-payment-chip${active ? ' active' : ''}`}
+                          onClick={() => toggleEditPayment(id)}
+                          aria-pressed={active}
+                        >
+                          <span className="vd-modal-payment-icon">{icon}</span>
+                          <span className="vd-modal-payment-label">{label}</span>
+                          {active && <FiCheck className="vd-modal-payment-check" />}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
