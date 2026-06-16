@@ -23,29 +23,11 @@ import hmac
 import hashlib
 from math import radians, sin, cos, sqrt, atan2
 
-import cloudinary
-import cloudinary.uploader
-
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
 ALLOWED_STORY_TYPES = ALLOWED_IMAGE_TYPES | {"video/mp4", "video/webm"}
 ALLOWED_STORY_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS | {".mp4", ".webm"}
 
-# Cloudinary config (usa variáveis de ambiente CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET)
-cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
-    secure=True,
-)
-
-_CLOUDINARY_ENABLED = all([
-    os.getenv("CLOUDINARY_CLOUD_NAME"),
-    os.getenv("CLOUDINARY_API_KEY"),
-    os.getenv("CLOUDINARY_API_SECRET"),
-])
-
-# Fallback: diretórios locais (usados se Cloudinary não estiver configurado)
 PROFILE_PHOTO_DIR = "profile_photos"
 os.makedirs(PROFILE_PHOTO_DIR, exist_ok=True)
 STORY_DIR = "stories"
@@ -61,35 +43,7 @@ def validate_upload(file: UploadFile, allowed_types: set, allowed_exts: set, lab
         )
 
 
-def _upload_to_cloudinary(file: UploadFile, folder: str) -> str:
-    """Faz upload de um ficheiro para o Cloudinary e devolve o URL seguro."""
-    result = cloudinary.uploader.upload(
-        file.file,
-        folder=folder,
-        resource_type="auto",
-    )
-    return result["secure_url"]
-
-
-def _delete_from_cloudinary(url: str) -> None:
-    """Remove um ficheiro do Cloudinary dado o seu URL. Falhas são ignoradas silenciosamente."""
-    try:
-        # Extrai o public_id a partir do URL (formato: .../folder/filename.ext)
-        parts = url.split("/upload/")
-        if len(parts) == 2:
-            public_id_with_ext = parts[1]
-            # Remove a versão (v123456/) se presente
-            segments = public_id_with_ext.split("/")
-            if segments[0].startswith("v") and segments[0][1:].isdigit():
-                segments = segments[1:]
-            public_id = "/".join(segments).rsplit(".", 1)[0]
-            cloudinary.uploader.destroy(public_id, resource_type="image")
-    except Exception:
-        pass
-
-
-def _save_locally(upload_file: UploadFile, folder: str) -> str:
-    """Guarda um ficheiro no filesystem local."""
+def _upload_file(upload_file: UploadFile, folder: str) -> str:
     ext = os.path.splitext(upload_file.filename or "")[1].lower()
     file_name = f"{uuid4().hex}{ext}"
     file_path = os.path.join(folder, file_name)
@@ -98,26 +52,11 @@ def _save_locally(upload_file: UploadFile, folder: str) -> str:
     return f"{folder}/{file_name}"
 
 
-def _upload_file(upload_file: UploadFile, folder: str) -> str:
-    """Faz upload de um ficheiro para Cloudinary (se configurado) ou para o filesystem local."""
-    if _CLOUDINARY_ENABLED:
-        try:
-            return _upload_to_cloudinary(upload_file, folder)
-        except Exception:
-            upload_file.file.seek(0)
-            return _save_locally(upload_file, folder)
-    return _save_locally(upload_file, folder)
-
-
 def _delete_file(path_or_url: str) -> None:
-    """Remove um ficheiro do Cloudinary ou do filesystem local."""
-    if _CLOUDINARY_ENABLED and path_or_url.startswith("http"):
-        _delete_from_cloudinary(path_or_url)
-    else:
-        try:
-            os.remove(path_or_url)
-        except OSError:
-            pass
+    try:
+        os.remove(path_or_url)
+    except OSError:
+        pass
 
 # Inicializar app
 app = FastAPI()
