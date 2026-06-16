@@ -26,7 +26,7 @@ import Dashboard from './pages/Dashboard';
 import ModernMapLayout from './pages/ModernMapLayout';
 import SobreProjeto from './pages/SobreProjeto';
 import Sustentabilidade from './pages/Sustentabilidade';
-import ImplementarScreen from './pages/ImplementarScreen';
+
 import Sessions from './pages/Sessions';
 import ForgotPassword from './pages/ForgotPassword';
 import Contacto from './pages/Contacto';
@@ -122,13 +122,6 @@ function AppLayout() {
           <span className="nav-divider">|</span>
           <NavLink
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-            to="/implementacao"
-          >
-            Implementar
-          </NavLink>
-          <span className="nav-divider">|</span>
-          <NavLink
-            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/planos"
           >
             Planos
@@ -170,7 +163,6 @@ function AppLayout() {
           <Route path="/about" element={<About />} />
           <Route path="/sobre-projeto" element={<SobreProjeto />} />
           <Route path="/sustentabilidade" element={<Sustentabilidade />} />
-          <Route path="/implementacao" element={<ImplementarScreen />} />
           <Route path="/settings" element={<AccountSettings />} />
           <Route path="/login" element={<VendorLogin />} />
           <Route path="/vendor-login" element={<VendorLogin />} />
