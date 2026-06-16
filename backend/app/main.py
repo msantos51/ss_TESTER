@@ -39,7 +39,11 @@ cloudinary.config(
     secure=True,
 )
 
-_CLOUDINARY_ENABLED = bool(os.getenv("CLOUDINARY_CLOUD_NAME"))
+_CLOUDINARY_ENABLED = all([
+    os.getenv("CLOUDINARY_CLOUD_NAME"),
+    os.getenv("CLOUDINARY_API_KEY"),
+    os.getenv("CLOUDINARY_API_SECRET"),
+])
 
 # Fallback: diretórios locais (usados se Cloudinary não estiver configurado)
 PROFILE_PHOTO_DIR = "profile_photos"
@@ -84,16 +88,25 @@ def _delete_from_cloudinary(url: str) -> None:
         pass
 
 
-def _upload_file(upload_file: UploadFile, folder: str) -> str:
-    """Faz upload de um ficheiro para Cloudinary (se configurado) ou para o filesystem local."""
-    if _CLOUDINARY_ENABLED:
-        return _upload_to_cloudinary(upload_file, folder)
+def _save_locally(upload_file: UploadFile, folder: str) -> str:
+    """Guarda um ficheiro no filesystem local."""
     ext = os.path.splitext(upload_file.filename or "")[1].lower()
     file_name = f"{uuid4().hex}{ext}"
     file_path = os.path.join(folder, file_name)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(upload_file.file, buffer)
     return f"{folder}/{file_name}"
+
+
+def _upload_file(upload_file: UploadFile, folder: str) -> str:
+    """Faz upload de um ficheiro para Cloudinary (se configurado) ou para o filesystem local."""
+    if _CLOUDINARY_ENABLED:
+        try:
+            return _upload_to_cloudinary(upload_file, folder)
+        except Exception:
+            upload_file.file.seek(0)
+            return _save_locally(upload_file, folder)
+    return _save_locally(upload_file, folder)
 
 
 def _delete_file(path_or_url: str) -> None:
