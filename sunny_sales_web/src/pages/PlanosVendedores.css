@@ -68,43 +68,6 @@
   z-index: 1;
 }
 
-.pv-hero-stats {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: var(--radius-full);
-  padding: 12px 28px;
-  display: inline-flex;
-  position: relative;
-  z-index: 1;
-}
-
-.pv-hero-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 20px;
-}
-.pv-hero-stat strong {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: white;
-}
-.pv-hero-stat span {
-  font-size: 0.72rem;
-  opacity: 0.78;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.pv-hero-stat-divider {
-  width: 1px;
-  height: 32px;
-  background: rgba(255,255,255,0.25);
-}
 
 /* ── Benefits ──────────────────────────────────────────── */
 .pv-benefits {

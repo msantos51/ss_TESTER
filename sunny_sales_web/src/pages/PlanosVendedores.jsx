@@ -86,13 +86,6 @@ export default function PlanosVendedores() {
           Junta-te à plataforma que coloca os vendedores de praia no mapa —
           literalmente. Mais visibilidade, mais clientes, mais vendas.
         </p>
-        <div className="pv-hero-stats">
-          <div className="pv-hero-stat"><strong>+500</strong><span>Vendedores</span></div>
-          <div className="pv-hero-stat-divider" />
-          <div className="pv-hero-stat"><strong>+12k</strong><span>Utilizadores</span></div>
-          <div className="pv-hero-stat-divider" />
-          <div className="pv-hero-stat"><strong>Real-time</strong><span>Localização</span></div>
-        </div>
       </div>
 
       {/* ── Pricing header ── */}
