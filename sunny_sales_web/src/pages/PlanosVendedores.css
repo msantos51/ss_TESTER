@@ -307,12 +307,15 @@
 
 .pv-plan-cta {
   display: block;
+  width: 100%;
   text-align: center;
   padding: 13px 20px;
   border-radius: var(--radius-full);
   font-size: 0.92rem;
   font-weight: 700;
+  font-family: inherit;
   text-decoration: none;
+  cursor: pointer;
   border: 2px solid var(--primary);
   color: var(--primary);
   background: transparent;

@@ -1,7 +1,9 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FiCheck, FiZap, FiStar, FiTrendingUp } from 'react-icons/fi';
 import BackHomeButton from '../components/BackHomeButton';
 import './PlanosVendedores.css';
+
+const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/test_28E3cvaRX1xWdIzd2ZeUU00';
 
 const PLANS = [
   {
@@ -75,6 +77,20 @@ const FAQS = [
 ];
 
 export default function PlanosVendedores() {
+  const navigate = useNavigate();
+
+  const handlePlanClick = (e) => {
+    e.preventDefault();
+    const user = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    if (user && token) {
+      const vendor = JSON.parse(user);
+      window.open(`${STRIPE_PAYMENT_LINK}?client_reference_id=${vendor.id}`, '_blank');
+    } else {
+      navigate('/vendor-login');
+    }
+  };
+
   return (
     <div className="pv-page">
       <BackHomeButton />
@@ -138,12 +154,12 @@ export default function PlanosVendedores() {
               ))}
             </ul>
 
-            <Link
-              to="/vendor-register"
+            <button
+              onClick={handlePlanClick}
               className={`pv-plan-cta${plan.highlight ? ' pv-plan-cta--highlight' : ''}`}
             >
               {plan.cta}
-            </Link>
+            </button>
           </div>
         ))}
       </div>
@@ -170,25 +186,6 @@ export default function PlanosVendedores() {
         </div>
       </div>
 
-      {/* ── CTA final ── */}
-      <div className="pv-cta">
-        <div className="pv-cta-inner">
-          <span className="pv-cta-icon">🚀</span>
-          <h2 className="pv-cta-title">Pronto para começar?</h2>
-          <p className="pv-cta-text">
-            Regista-te agora e começa a aparecer no mapa hoje mesmo.
-            Sem compromissos, cancela quando quiseres.
-          </p>
-          <div className="pv-cta-actions">
-            <Link to="/vendor-register" className="pv-cta-btn pv-cta-btn--primary">
-              Criar conta gratuita
-            </Link>
-            <Link to="/contacto" className="pv-cta-btn pv-cta-btn--ghost">
-              Falar connosco
-            </Link>
-          </div>
-        </div>
-      </div>
 
     </div>
   );
