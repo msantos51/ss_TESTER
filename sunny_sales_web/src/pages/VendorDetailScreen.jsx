@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL, mediaUrl } from '../config';
 import BackHomeButton from '../components/BackHomeButton';
+import './VendorDetailScreen.css';
 
 export default function VendorDetailScreen() {
   const { id } = useParams();
@@ -63,49 +64,29 @@ export default function VendorDetailScreen() {
     <div className="page-wrapper">
       <BackHomeButton />
 
-      <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+      <div className="vds-header">
         {vendor.profile_photo ? (
           <img
             src={mediaUrl(vendor.profile_photo)}
             alt="Foto do vendedor"
-            className="card-photo"
-            style={{ width: 96, height: 96, cursor: stories.length > 0 ? 'pointer' : 'default' }}
+            className={"card-photo vds-photo" + (stories.length > 0 ? " vds-clickable" : "")}
             onClick={() => stories.length > 0 && setStoryIndex(0)}
           />
         ) : (
           <div
-            className="card-photo"
-            style={{
-              width: 96,
-              height: 96,
-              background: vendor.pin_color || '#ccc',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '2rem',
-              fontWeight: 800,
-              color: '#fff',
-            }}
+            className="card-photo vds-photo vds-placeholder"
+            style={{ background: vendor.pin_color || '#ccc' }}
           >
             {vendor.name?.charAt(0)?.toUpperCase() || '?'}
           </div>
         )}
-        <h2 style={{ margin: '12px 0 4px', wordBreak: 'break-word' }}>{vendor.name}</h2>
-        <p style={{ color: 'var(--text-secondary)', margin: 0 }}>{vendor.product}</p>
+        <h2 className="vds-name">{vendor.name}</h2>
+        <p className="vds-product">{vendor.product}</p>
       </div>
 
       {stories.length > 0 && storyIndex !== null && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.85)',
-            zIndex: 2000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-          }}
+          className="vds-story-overlay"
           onClick={() => {
             if (storyIndex < stories.length - 1) {
               setStoryIndex(storyIndex + 1);
@@ -117,27 +98,20 @@ export default function VendorDetailScreen() {
           <img
             src={mediaUrl(stories[storyIndex].media_url)}
             alt="Story"
-            style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', borderRadius: 'var(--radius-lg)' }}
+            className="vds-story-full"
           />
         </div>
       )}
 
       {stories.length > 0 && (
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div className="vds-stories-row">
           {stories.map((s, i) => (
             <img
               key={s.id}
               src={mediaUrl(s.media_url)}
               onClick={() => setStoryIndex(i)}
               alt="Story"
-              style={{
-                width: 64,
-                height: 64,
-                borderRadius: '50%',
-                objectFit: 'cover',
-                cursor: 'pointer',
-                border: '2.5px solid var(--primary-light-solid)',
-              }}
+              className="vds-story-thumb"
             />
           ))}
         </div>

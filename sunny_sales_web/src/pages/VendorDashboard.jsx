@@ -228,7 +228,7 @@ export default function VendorDashboard() {
     e.preventDefault();
     if (!vendor) return;
     if (!secOldPassword || !secNewPassword) {
-      setSecError('Preenche ambos os campos.');
+      setSecError('Preencha ambos os campos.');
       return;
     }
     if (secNewPassword.length < 8) {

@@ -440,3 +440,8 @@
     padding: 6px 12px;
   }
 }
+
+.info-link {
+  color: var(--primary);
+  font-weight: 600;
+}

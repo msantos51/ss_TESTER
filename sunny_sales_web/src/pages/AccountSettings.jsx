@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import BackHomeButton from '../components/BackHomeButton';
+import './VendorLogin.css';
 
 const isNotificationsEnabled = () =>
   localStorage.getItem('notifications_enabled') === 'true';
@@ -41,7 +42,7 @@ export default function AccountSettings() {
       <h2 className="title">Definições da Conta</h2>
 
       <div className="form">
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div className="settings-row">
           <span>Notificações Ativas</span>
           <input
             type="checkbox"

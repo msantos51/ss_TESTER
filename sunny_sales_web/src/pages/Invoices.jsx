@@ -37,7 +37,7 @@ export default function Invoices() {
           const start = new Date(item.start_date).toLocaleDateString('pt-PT');
           const end = new Date(item.end_date).toLocaleDateString('pt-PT');
           return (
-            <li key={item.id} className="page-list-item" style={{ cursor: 'default' }}>
+            <li key={item.id} className="page-list-item no-hover">
               <span className="page-list-item-title">{start} — {end}</span>
               {item.receipt_url && (
                 <a

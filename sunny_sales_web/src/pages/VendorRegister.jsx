@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import ImageCropper from '../components/ImageCropper';
+import './VendorRegister.css';
 
 const MUNICIPALITIES = [
   "Albufeira", "Alcoutim", "Aljezur", "Castro Marim", "Faro",
@@ -177,27 +178,13 @@ export default function VendorRegister() {
   ];
 
   const renderProgressBar = () => (
-    <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+    <div className="vr-progress-bar">
       {stepTitles.map((title, i) => (
-        <div key={i} style={{ textAlign: 'center', flex: 1 }}>
-          <div
-            style={{
-              width: '2rem',
-              height: '2rem',
-              borderRadius: '50%',
-              background: step > i ? '#2ecc71' : step === i + 1 ? '#3498db' : '#ddd',
-              color: '#fff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 0.3rem',
-              fontWeight: 'bold',
-              fontSize: '0.85rem',
-            }}
-          >
+        <div key={i} className="vr-progress-step">
+          <div className={`vr-progress-circle${step > i ? ' completed' : step === i + 1 ? ' active' : ''}`}>
             {step > i ? '✓' : i + 1}
           </div>
-          <span style={{ fontSize: '0.7rem', color: step === i + 1 ? '#3498db' : '#888' }}>
+          <span className={`vr-progress-label${step === i + 1 ? ' active' : ''}`}>
             {title}
           </span>
         </div>
@@ -207,7 +194,7 @@ export default function VendorRegister() {
 
   const renderStep1 = () => (
     <>
-      <h3 style={{ marginBottom: '1rem', color: '#333' }}>Validação de Licença</h3>
+      <h3 className="vr-step-title">Validação de Licença</h3>
       <span className="input-span">
         <label className="label">Número de Licença / Concessão *</label>
         <input type="text" placeholder="Ex: LIC-2024-001234" value={licenseNumber} onChange={(e) => setLicenseNumber(e.target.value)} />
@@ -237,14 +224,14 @@ export default function VendorRegister() {
       <span className="input-span">
         <label className="label">Comprovativo de Licença (PDF ou imagem) *</label>
         <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={handleLicenseDocChange} />
-        {licenseDocument && <span style={{ fontSize: '0.8rem', color: '#2ecc71' }}>{licenseDocument.name}</span>}
+        {licenseDocument && <span className="vr-file-feedback">{licenseDocument.name}</span>}
       </span>
     </>
   );
 
   const renderStep2 = () => (
     <>
-      <h3 style={{ marginBottom: '1rem', color: '#333' }}>Identificação e Contacto</h3>
+      <h3 className="vr-step-title">Identificação e Contacto</h3>
       <span className="input-span">
         <label className="label">Nome Completo *</label>
         <input type="text" placeholder="Nome completo" value={name} onChange={(e) => setName(e.target.value)} />
@@ -278,7 +265,7 @@ export default function VendorRegister() {
 
   const renderStep3 = () => (
     <>
-      <h3 style={{ marginBottom: '1rem', color: '#333' }}>Dados Operacionais</h3>
+      <h3 className="vr-step-title">Dados Operacionais</h3>
       <span className="input-span">
         <label className="label">Produto Principal *</label>
         <select value={product} onChange={(e) => setProduct(e.target.value)}>
@@ -295,15 +282,15 @@ export default function VendorRegister() {
       <span className="input-span">
         <label className="label">Foto de Perfil *</label>
         <input type="file" accept="image/*" onChange={handlePhotoChange} />
-        {photo && <span style={{ fontSize: '0.8rem', color: '#2ecc71' }}>Foto selecionada</span>}
+        {photo && <span className="vr-file-feedback">Foto selecionada</span>}
       </span>
     </>
   );
 
   const renderStep4 = () => (
     <>
-      <h3 style={{ marginBottom: '1rem', color: '#333' }}>Confirmação e Termos</h3>
-      <div style={{ background: '#f9f9f9', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1rem', fontSize: '0.85rem' }}>
+      <h3 className="vr-step-title">Confirmação e Termos</h3>
+      <div className="vr-summary-box">
         <p><strong>Nome:</strong> {name}</p>
         <p><strong>Email:</strong> {email}</p>
         <p><strong>NIF:</strong> {nif}</p>
@@ -314,17 +301,7 @@ export default function VendorRegister() {
         <p><strong>Produto:</strong> {product}</p>
         {businessName && <p><strong>Firma:</strong> {businessName}</p>}
       </div>
-      <div style={{
-        background: '#fff',
-        border: '1px solid #ddd',
-        borderRadius: '0.5rem',
-        padding: '1rem',
-        marginBottom: '1rem',
-        maxHeight: '200px',
-        overflowY: 'auto',
-        fontSize: '0.8rem',
-        lineHeight: '1.5',
-      }}>
+      <div className="vr-terms-scroll">
         <h4>Termos e Condições</h4>
         <p>Ao registar-se como vendedor na plataforma Sunny Sales, declara e aceita que:</p>
         <ol>
@@ -337,12 +314,12 @@ export default function VendorRegister() {
           <li>Aceita receber comunicações relacionadas com a operação da plataforma.</li>
         </ol>
       </div>
-      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem' }}>
+      <label className="vr-checkbox-label">
         <input
           type="checkbox"
           checked={termsAccepted}
           onChange={(e) => setTermsAccepted(e.target.checked)}
-          style={{ width: '1.2rem', height: '1.2rem' }}
+          className="vr-checkbox"
         />
         Li e aceito os Termos e Condições *
       </label>
@@ -351,21 +328,21 @@ export default function VendorRegister() {
 
   if (success) {
     return (
-      <div className="form-box" style={{ textAlign: 'center' }}>
+      <div className="form-box vr-success">
         <h2 className="title auth-title">Registo de Vendedor</h2>
-        <p style={{ color: '#2ecc71', marginBottom: '1rem', fontSize: '1.1rem' }}>{success}</p>
-        <a href="/vendor-login" style={{ color: '#3498db' }}>Ir para o login</a>
+        <p className="vr-success-msg">{success}</p>
+        <a href="/vendor-login" className="vr-login-link">Ir para o login</a>
       </div>
     );
   }
 
   return (
-    <div className="form-box" style={{ maxWidth: '520px' }}>
+    <div className="form-box vr-form-box">
       <h2 className="title auth-title">Registo de Vendedor</h2>
 
       {renderProgressBar()}
 
-      {error && <p style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</p>}
+      {error && <p className="vr-error">{error}</p>}
 
       <form onSubmit={handleRegister} className="form login-form auth-form">
         {step === 1 && renderStep1()}
@@ -373,18 +350,18 @@ export default function VendorRegister() {
         {step === 3 && renderStep3()}
         {step === 4 && renderStep4()}
 
-        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+        <div className="vr-btn-row">
           {step > 1 && (
-            <button type="button" onClick={prevStep} className="submit" style={{ background: '#95a5a6', flex: 1 }}>
+            <button type="button" onClick={prevStep} className="submit vr-btn-prev">
               Anterior
             </button>
           )}
           {step < totalSteps ? (
-            <button type="button" onClick={nextStep} className="submit" style={{ flex: 1 }}>
+            <button type="button" onClick={nextStep} className="submit vr-btn-next">
               Seguinte
             </button>
           ) : (
-            <button type="submit" className="submit" style={{ flex: 1 }}>
+            <button type="submit" className="submit vr-btn-next">
               Registar
             </button>
           )}

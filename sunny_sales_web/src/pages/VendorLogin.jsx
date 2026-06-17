@@ -1,5 +1,5 @@
 // (em português) Página Web para login de vendedores
-
+import './VendorLogin.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -85,11 +85,11 @@ export default function VendorLogin() {
   return (
     <div className="form-box">
       <h2 className="title auth-title">Login de Vendedor</h2>
-      <p style={{ marginBottom: '1rem', fontStyle: 'italic' }}>
+      <p className="vl-subtitle">
         Esta página destina-se apenas a vendedores.
       </p>
 
-      {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
+      {error && <p className="form-error">{error}</p>}
 
       <div className="form login-form auth-form">
         <span className="input-span">
@@ -125,7 +125,7 @@ export default function VendorLogin() {
           Registar
         </button>
 
-        <p style={{ textAlign: 'center', marginTop: '4px' }}>
+        <p className="vl-forgot-row">
           <span
             className="sign-up-link"
             onClick={() => navigate('/forgot-password')}

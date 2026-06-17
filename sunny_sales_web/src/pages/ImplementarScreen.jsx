@@ -59,7 +59,7 @@ export default function ImplementarScreen() {
               <strong>Contacto inicial</strong> — Envie um e-mail para{' '}
               <a
                 href="mailto:suporte@sunnysales.com"
-                style={{ color: 'var(--primary)', fontWeight: 600 }}
+                className="info-link"
               >
                 suporte@sunnysales.com
               </a>{' '}

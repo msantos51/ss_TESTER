@@ -1,6 +1,7 @@
 import React from 'react';
 import BackHomeButton from '../components/BackHomeButton';
 import './TermsScreen.css';
+import './InfoPage.css';
 
 export default function TermsScreen() {
   return (
@@ -73,7 +74,7 @@ export default function TermsScreen() {
         <h3 className="terms-section-title">9. Contacto</h3>
         <p className="terms-text">
           Para qualquer dúvida ou questão relacionada com estes termos, o utilizador pode contactar a equipa de suporte através do email:{' '}
-          <a href="mailto:suporte@sunnysales.com" style={{ color: 'var(--primary)', fontWeight: 600 }}>
+          <a href="mailto:suporte@sunnysales.com" className="info-link">
             suporte@sunnysales.com
           </a>
         </p>

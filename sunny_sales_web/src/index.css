@@ -775,6 +775,15 @@ h2 {
   transform: translateY(-1px);
 }
 
+.page-list-item.no-hover {
+  cursor: default;
+}
+
+.page-list-item.no-hover:hover {
+  transform: none;
+  box-shadow: var(--shadow-xs);
+}
+
 .page-list-item-main {
   display: flex;
   flex-direction: column;
