@@ -7,6 +7,7 @@ import {
   FiCreditCard, FiMail, FiMapPin, FiLogOut,
   FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
   FiNavigation, FiUser, FiLock, FiCheck,
+  FiChevronRight,
 } from 'react-icons/fi';
 import ImageCropper from '../components/ImageCropper';
 import './VendorDashboard.css';
@@ -312,19 +313,24 @@ export default function VendorDashboard() {
             <div className="vd-profile-divider" />
 
             <div className="vd-profile-details">
-              <div className="vd-detail-item">
-                <span className="vd-detail-label">Email</span>
-                <span className="vd-detail-value">{vendor.email}</span>
+              <div className="vd-detail-row">
+                <span className="vd-detail-row-icon"><FiMail /></span>
+                <span className="vd-detail-row-label">EMAIL</span>
+                <span className="vd-detail-row-value">{vendor.email}</span>
+                <FiChevronRight className="vd-detail-row-chevron" />
               </div>
-              <div className="vd-detail-item">
-                <span className="vd-detail-label">Cor do Pin</span>
-                <span className="vd-detail-value vd-pin-row">
+              <div className="vd-detail-row">
+                <span className="vd-detail-row-icon">
                   <span className="vd-pin-dot" style={{ backgroundColor: pinColor }} />
                 </span>
+                <span className="vd-detail-row-label">COR DO PIN</span>
+                <span className="vd-detail-row-value" />
+                <FiChevronRight className="vd-detail-row-chevron" />
               </div>
               {vendor.payment_methods && (
-                <div className="vd-detail-item vd-detail-payments">
-                  <span className="vd-detail-label">Pagamentos</span>
+                <div className="vd-detail-row vd-detail-row-payments">
+                  <span className="vd-detail-row-icon"><FiCreditCard /></span>
+                  <span className="vd-detail-row-label">PAGAMENTOS</span>
                   <div className="vd-payments-row">
                     {vendor.payment_methods.split(',').filter(Boolean).map(m => (
                       <span key={m} className="vd-payment-badge" title={m}>
@@ -378,27 +384,35 @@ export default function VendorDashboard() {
         <div className="vd-quick-grid">
           <button className="vd-quick-item" onClick={openProfileModal}>
             <span className="vd-quick-icon"><FiUser /></span>
-            <span className="vd-quick-label">Perfil</span>
+            <div className="vd-quick-text">
+              <span className="vd-quick-label">Perfil</span>
+              <span className="vd-quick-desc">Ver e editar informações</span>
+            </div>
+            <FiChevronRight className="vd-quick-chevron" />
           </button>
           <button className="vd-quick-item" onClick={() => navigate('/routes')}>
             <span className="vd-quick-icon"><FiNavigation /></span>
-            <span className="vd-quick-label">Trajetos</span>
-          </button>
-          <button className="vd-quick-item" onClick={paySubscription}>
-            <span className="vd-quick-icon"><FiCreditCard /></span>
-            <span className="vd-quick-label">Ativar Subscrição</span>
+            <div className="vd-quick-text">
+              <span className="vd-quick-label">Trajetos</span>
+              <span className="vd-quick-desc">Ver histórico de rotas</span>
+            </div>
+            <FiChevronRight className="vd-quick-chevron" />
           </button>
           <button className="vd-quick-item" onClick={() => navigate('/paid-weeks')}>
-            <span className="vd-quick-icon"><FiCalendar /></span>
-            <span className="vd-quick-label">Subscrições</span>
+            <span className="vd-quick-icon"><FiCreditCard /></span>
+            <div className="vd-quick-text">
+              <span className="vd-quick-label">Pagamentos</span>
+              <span className="vd-quick-desc">Gerir métodos e contas</span>
+            </div>
+            <FiChevronRight className="vd-quick-chevron" />
           </button>
           <button className="vd-quick-item" onClick={() => navigate('/invoices')}>
-            <span className="vd-quick-icon"><FiFileText /></span>
-            <span className="vd-quick-label">Faturas</span>
-          </button>
-          <button className="vd-quick-item" onClick={() => { window.location.href = 'mailto:suporte@sunnysales.com'; }}>
-            <span className="vd-quick-icon"><FiMail /></span>
-            <span className="vd-quick-label">Contactar Suporte</span>
+            <span className="vd-quick-icon"><FiCalendar /></span>
+            <div className="vd-quick-text">
+              <span className="vd-quick-label">Agenda</span>
+              <span className="vd-quick-desc">Gerir disponibilidade</span>
+            </div>
+            <FiChevronRight className="vd-quick-chevron" />
           </button>
         </div>
 
@@ -406,6 +420,11 @@ export default function VendorDashboard() {
           <FiLogOut size={15} />
           Terminar Sessão
         </button>
+
+        {/* Eco banner */}
+        <div className="vd-eco-banner">
+          Praia limpa, planeta feliz.
+        </div>
       </div>
 
       {/* Profile edit modal */}
