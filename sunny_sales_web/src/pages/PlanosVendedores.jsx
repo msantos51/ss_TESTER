@@ -83,9 +83,9 @@ export default function PlanosVendedores() {
       <div className="pv-hero">
         <div className="pv-hero-blur pv-hero-blur-1" />
         <div className="pv-hero-blur pv-hero-blur-2" />
-        <h1 className="pv-hero-title">Leva o teu negócio<br />para a praia</h1>
+        <h1 className="pv-hero-title">O teu negócio</h1>
         <p className="pv-hero-lead">
-          Junta-te à plataforma que coloca os vendedores de praia no mapa —
+          Junta-te à plataforma que coloca os vendedores de praia no mapa,
           literalmente. Mais visibilidade, mais clientes, mais vendas.
         </p>
       </div>
@@ -152,7 +152,7 @@ export default function PlanosVendedores() {
       <div className="pv-compare-note">
         <FiTrendingUp size={16} />
         <span>
-          Com o plano <strong>Mensal</strong> pagas apenas <strong>€0,83/dia</strong> — menos de um café —
+          Com o plano <strong>Mensal</strong> pagas apenas <strong>€0,83/dia</strong>, menos de um café,
           e tens visibilidade máxima durante todo o mês.
         </span>
       </div>

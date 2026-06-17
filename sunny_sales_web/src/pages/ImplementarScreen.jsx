@@ -56,7 +56,7 @@ export default function ImplementarScreen() {
           <li>
             <div className="info-timeline-number">1</div>
             <div className="info-timeline-body">
-              <strong>Contacto inicial</strong> — Envie um e-mail para{' '}
+              <strong>Contacto inicial:</strong> Envie um e-mail para{' '}
               <a
                 href="mailto:suporte@sunnysales.com"
                 className="info-link"
@@ -69,14 +69,14 @@ export default function ImplementarScreen() {
           <li>
             <div className="info-timeline-number">2</div>
             <div className="info-timeline-body">
-              <strong>Demonstração</strong> — Agendaremos uma apresentação breve, presencial
+              <strong>Demonstração:</strong> Agendaremos uma apresentação breve, presencial
               ou online, adaptada à realidade da vossa praia e necessidades locais.
             </div>
           </li>
           <li>
             <div className="info-timeline-number">3</div>
             <div className="info-timeline-body">
-              <strong>Integração</strong> — Em poucos dias, a praia fica integrada no sistema,
+              <strong>Integração:</strong> Em poucos dias, a praia fica integrada no sistema,
               com QR Codes e acesso configurado para os vendedores locais.
             </div>
           </li>
