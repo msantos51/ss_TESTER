@@ -45,7 +45,7 @@ export default function Sessions() {
       )}
       <ul className="page-list">
         {sessions.map((s) => (
-          <li key={s.id} className="page-list-item" style={{ cursor: 'default' }}>
+          <li key={s.id} className="page-list-item no-hover">
             <div className="page-list-item-main">
               <span className="page-list-item-title">
                 {s.user_agent || 'Dispositivo desconhecido'}

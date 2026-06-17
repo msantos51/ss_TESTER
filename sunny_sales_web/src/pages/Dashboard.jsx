@@ -6,5 +6,5 @@ export default function Dashboard() {
   const hasVendor = !!localStorage.getItem('user');
 
   if (hasVendor) return <VendorDashboard />;
-  return <p style={{ padding: '2rem', textAlign: 'center' }}>Utilizador não autenticado.</p>;
+  return <p className="page-empty">Utilizador não autenticado.</p>;
 }

@@ -123,7 +123,7 @@ export default function ManageAccount() {
     return (
       <div className="ma-wrapper">
         <BackHomeButton />
-        <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Utilizador não autenticado.</p>
+        <p className="page-empty">Utilizador não autenticado.</p>
       </div>
     );
   }

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import LoadingDots from '../components/LoadingDots';
+import './VendorLogin.css';
 
 // Página para solicitar reposição da palavra-passe
 export default function ForgotPassword() {
@@ -30,9 +31,9 @@ export default function ForgotPassword() {
 
   return (
     <div className="form-box">
-      <h2 className="title">Recuperar Palavra-passe</h2>
-      {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
-      {message && <p style={{ color: 'green', marginBottom: '1rem' }}>{message}</p>}
+      <h2 className="title auth-title">Recuperar Palavra-passe</h2>
+      {error && <p className="form-error">{error}</p>}
+      {message && <p className="form-success">{message}</p>}
       <div className="form">
         <span className="input-span">
           <label className="label">Email</label>

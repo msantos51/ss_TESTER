@@ -4,6 +4,8 @@ import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 import ImageCropper from '../components/ImageCropper';
 import BackHomeButton from '../components/BackHomeButton';
+import './VendorLogin.css';
+import './VendorRegister.css';
 
 // Ecrã para edição dos dados do utilizador autenticado
 export default function EditProfileScreen() {
@@ -80,7 +82,7 @@ export default function EditProfileScreen() {
     <div className="form-box">
       <BackHomeButton />
       <h2 className="title">Editar Perfil</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className="form-error">{error}</p>}
       <form onSubmit={save} className="form">
         <span className="input-span">
           <label className="label">Nome</label>
@@ -115,7 +117,7 @@ export default function EditProfileScreen() {
           <label className="label">Foto</label>
           <input type="file" onChange={handlePhoto} />
         </span>
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+        <div className="vr-btn-row">
           <button type="submit" className="submit">Guardar</button>
           <button type="button" className="submit" onClick={() => navigate('/dashboard')}>Cancelar</button>
         </div>
