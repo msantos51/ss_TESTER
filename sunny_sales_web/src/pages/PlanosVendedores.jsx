@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FiCheck, FiZap, FiStar, FiTrendingUp } from 'react-icons/fi';
+import BackHomeButton from '../components/BackHomeButton';
 import './PlanosVendedores.css';
 
 const PLANS = [
@@ -76,6 +77,7 @@ const FAQS = [
 export default function PlanosVendedores() {
   return (
     <div className="pv-page">
+      <BackHomeButton />
 
       {/* ── Hero ── */}
       <div className="pv-hero">
