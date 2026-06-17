@@ -8,7 +8,7 @@
 .pv-hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, #0fb8bc 100%);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, #6BBDE0 100%);
   border-radius: var(--radius-xl);
   padding: 36px 28px 32px;
   text-align: center;
