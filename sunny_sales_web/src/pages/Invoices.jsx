@@ -38,7 +38,7 @@ export default function Invoices() {
           const end = new Date(item.end_date).toLocaleDateString('pt-PT');
           return (
             <li key={item.id} className="page-list-item no-hover">
-              <span className="page-list-item-title">{start} — {end}</span>
+              <span className="page-list-item-title">{start} a {end}</span>
               {item.receipt_url && (
                 <a
                   href={item.receipt_url}

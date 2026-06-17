@@ -11,7 +11,7 @@ export default function SobreProjeto() {
         <h1 className="info-hero-title">Sobre o Projeto</h1>
         <p className="info-hero-lead">
           O <strong>Sunny Sales</strong> conecta vendedores ambulantes de praia a banhistas
-          através de um mapa interativo em tempo real — unindo tradição, tecnologia e
+          através de um mapa interativo em tempo real, unindo tradição, tecnologia e
           sustentabilidade nas praias portuguesas.
         </p>
       </div>
@@ -27,7 +27,7 @@ export default function SobreProjeto() {
 
           <h3 className="info-card-title">Quem Somos</h3>
           <p className="info-card-text">
-            Somos uma plataforma digital que valoriza o comércio ambulante tradicional de praia —
+            Somos uma plataforma digital que valoriza o comércio ambulante tradicional de praia,
             desde bolas de Berlim e gelados até acessórios e bebidas. Integramos tradição e
             tecnologia para que nenhum vendedor ou banhista fique sem se encontrar.
           </p>
@@ -62,7 +62,7 @@ export default function SobreProjeto() {
           <li>
             <div className="info-timeline-number">1</div>
             <div className="info-timeline-body">
-              O vendedor abre a aplicação e ativa a localização — fica imediatamente visível
+              O vendedor abre a aplicação e ativa a localização, ficando imediatamente visível
               no mapa para todos os banhistas nas proximidades.
             </div>
           </li>
@@ -76,8 +76,8 @@ export default function SobreProjeto() {
           <li>
             <div className="info-timeline-number">3</div>
             <div className="info-timeline-body">
-              O vendedor passa e o banhista recebe o produto sem ter de se levantar — mais
-              prático e eficiente para ambos.
+              O vendedor passa e o banhista recebe o produto sem ter de se levantar, de forma
+              prática e eficiente para ambos.
             </div>
           </li>
         </ul>

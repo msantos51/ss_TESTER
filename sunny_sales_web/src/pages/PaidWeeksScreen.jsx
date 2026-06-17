@@ -86,7 +86,7 @@ export default function PaidWeeksScreen() {
                   </div>
                   <div className="pw-item-body">
                     <div className="pw-item-top">
-                      <span className="pw-item-dates">{startStr} — {endStr}</span>
+                      <span className="pw-item-dates">{startStr} a {endStr}</span>
                       {isActive && (
                         <span className="pw-badge-active">
                           <FiCheckCircle />Ativa

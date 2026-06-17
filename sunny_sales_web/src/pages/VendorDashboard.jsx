@@ -361,7 +361,7 @@ export default function VendorDashboard() {
           <div className="vd-location-text">
             <span className="vd-location-title">Partilha de Localização</span>
             <span className="vd-location-status">
-              {sharing ? 'Ativo — visível no mapa' : 'Desligado'}
+              {sharing ? 'Ativo e visível no mapa' : 'Desligado'}
             </span>
           </div>
           <label className="vendor-switch" aria-label="Ativar/desativar localização">

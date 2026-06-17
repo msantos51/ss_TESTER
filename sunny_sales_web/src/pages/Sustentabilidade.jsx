@@ -58,7 +58,7 @@ export default function Sustentabilidade() {
         <h3 className="info-section-title">Consciencialização dos Banhistas</h3>
         <ul className="info-list">
           <li data-bullet="✓">
-            Recolher todo o lixo após a permanência na praia — incluindo beatas e plásticos
+            Recolher todo o lixo após a permanência na praia, incluindo beatas e plásticos
             pequenos muitas vezes esquecidos.
           </li>
           <li data-bullet="✓">
@@ -73,8 +73,8 @@ export default function Sustentabilidade() {
             reutilizáveis.
           </li>
           <li data-bullet="✓">
-            Participar em ações de limpeza de praia organizadas pela comunidade local —
-            cada gesto faz diferença.
+            Participar em ações de limpeza de praia organizadas pela comunidade local.
+            Cada gesto faz diferença.
           </li>
         </ul>
       </div>
