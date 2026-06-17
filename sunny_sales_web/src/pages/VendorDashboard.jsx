@@ -7,7 +7,7 @@ import {
   FiCreditCard, FiMail, FiMapPin, FiLogOut,
   FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
   FiNavigation, FiUser, FiLock, FiCheck,
-  FiChevronRight,
+  FiChevronRight, FiSend, FiCheckSquare,
 } from 'react-icons/fi';
 import ImageCropper from '../components/ImageCropper';
 import './VendorDashboard.css';
@@ -382,37 +382,35 @@ export default function VendorDashboard() {
 
         {/* Quick actions grid */}
         <div className="vd-quick-grid">
-          <button className="vd-quick-item" onClick={openProfileModal}>
+          <button className="vd-quick-card" onClick={openProfileModal}>
             <span className="vd-quick-icon"><FiUser /></span>
-            <div className="vd-quick-text">
-              <span className="vd-quick-label">Perfil</span>
-              <span className="vd-quick-desc">Ver e editar informações</span>
-            </div>
-            <FiChevronRight className="vd-quick-chevron" />
+            <span className="vd-quick-label">Perfil</span>
+            <span className="vd-quick-desc">Ver e editar informações pessoais</span>
           </button>
-          <button className="vd-quick-item" onClick={() => navigate('/routes')}>
-            <span className="vd-quick-icon"><FiNavigation /></span>
-            <div className="vd-quick-text">
-              <span className="vd-quick-label">Trajetos</span>
-              <span className="vd-quick-desc">Ver histórico de rotas</span>
-            </div>
-            <FiChevronRight className="vd-quick-chevron" />
+          <button className="vd-quick-card" onClick={() => navigate('/routes')}>
+            <span className="vd-quick-icon"><FiSend /></span>
+            <span className="vd-quick-label">Trajetos</span>
+            <span className="vd-quick-desc">Consultar histórico de rotas</span>
           </button>
-          <button className="vd-quick-item" onClick={() => navigate('/paid-weeks')}>
-            <span className="vd-quick-icon"><FiCreditCard /></span>
-            <div className="vd-quick-text">
-              <span className="vd-quick-label">Pagamentos</span>
-              <span className="vd-quick-desc">Gerir métodos e contas</span>
-            </div>
-            <FiChevronRight className="vd-quick-chevron" />
+          <button className="vd-quick-card" onClick={paySubscription}>
+            <span className="vd-quick-icon"><FiCheckSquare /></span>
+            <span className="vd-quick-label">Ativar Subscrição</span>
+            <span className="vd-quick-desc">Ativar ou renovar o plano</span>
           </button>
-          <button className="vd-quick-item" onClick={() => navigate('/invoices')}>
+          <button className="vd-quick-card" onClick={() => navigate('/paid-weeks')}>
             <span className="vd-quick-icon"><FiCalendar /></span>
-            <div className="vd-quick-text">
-              <span className="vd-quick-label">Agenda</span>
-              <span className="vd-quick-desc">Gerir disponibilidade</span>
-            </div>
-            <FiChevronRight className="vd-quick-chevron" />
+            <span className="vd-quick-label">Subscrições</span>
+            <span className="vd-quick-desc">Gerir planos e semanas pagas</span>
+          </button>
+          <button className="vd-quick-card" onClick={() => navigate('/invoices')}>
+            <span className="vd-quick-icon"><FiFileText /></span>
+            <span className="vd-quick-label">Faturas</span>
+            <span className="vd-quick-desc">Consultar faturas e recibos</span>
+          </button>
+          <button className="vd-quick-card" onClick={() => navigate('/contacto')}>
+            <span className="vd-quick-icon"><FiMail /></span>
+            <span className="vd-quick-label">Contactar Suporte</span>
+            <span className="vd-quick-desc">Enviar mensagem à equipa</span>
           </button>
         </div>
 
