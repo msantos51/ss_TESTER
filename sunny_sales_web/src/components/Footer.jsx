@@ -52,7 +52,36 @@ const messages = [
   "Cada beata recolhida é uma vitória.",
   "Não há planeta B.",
   "A tua atitude inspira os outros.",
-  "Praia limpa, alma leve."
+  "Praia limpa, alma leve.",
+  "Nunca nades sozinho — o mar é imprevisível.",
+  "Respeita as bandeiras na praia, elas salvam vidas.",
+  "Correntes fortes? Nada paralelo à costa.",
+  "Vigia sempre as crianças junto à água.",
+  "Conhece os sinais de perigo antes de entrar no mar.",
+  "Não mergulhes em águas desconhecidas.",
+  "O nadador-salvador é teu aliado, respeita as indicações.",
+  "Mar calmo nem sempre é mar seguro.",
+  "Usa protetor solar de 2 em 2 horas.",
+  "O sol é mais forte entre as 12h e as 16h — protege-te.",
+  "Chapéu, óculos e protetor: o trio essencial.",
+  "Protege a pele das crianças com fator 50+.",
+  "Mesmo com nuvens, os raios UV atuam — usa proteção.",
+  "Bebe água regularmente, mesmo sem sede.",
+  "A desidratação começa antes de sentires sede.",
+  "Leva sempre água fresca para a praia.",
+  "Evita bebidas alcoólicas sob exposição solar intensa.",
+  "Hidrata-te antes, durante e depois da praia.",
+  "Respeita o espaço dos outros na praia.",
+  "Mantém o volume da música baixo — a praia é de todos.",
+  "Cuidado com os jogos de bola perto dos outros banhistas.",
+  "Sê educado com quem partilha a praia contigo.",
+  "Respeita as zonas de banho e as zonas desportivas.",
+  "Prefere produtos solares amigos do oceano.",
+  "Escolhe garrafas reutilizáveis em vez de plástico descartável.",
+  "Leva sacos reutilizáveis para guardar o teu lixo.",
+  "Apoia negócios locais que respeitam o ambiente.",
+  "Uma praia sustentável começa em escolhas conscientes.",
+  "Reduz o uso de plástico descartável na praia."
 ];
 
 export default function Footer() {
@@ -69,7 +98,7 @@ export default function Footer() {
   return (
     <footer className="footer-wrapper">
       <div className="footer-message">
-        <FiRefreshCw size={13} className="footer-icon" />
+        <FiRefreshCw size={11} className="footer-icon" />
         {messages[index]}
       </div>
     </footer>
