@@ -45,7 +45,7 @@
   --transition-slow: 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 
   --navbar-h: 64px;
-  --footer-h: 44px;
+  --footer-h: 32px;
 
   font-family: 'Inter', 'Roboto', sans-serif;
   color: var(--text);
