@@ -508,19 +508,6 @@
   box-shadow: var(--shadow-xs);
 }
 
-/* ── Eco banner ──────────────────────────────────────── */
-
-.vd-eco-banner {
-  background: var(--secondary);
-  color: #fff;
-  text-align: center;
-  padding: 12px 20px;
-  border-radius: var(--radius-lg);
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  margin-top: 4px;
-}
 
 /* ── Location toggle switch ──────────────────────────── */
 

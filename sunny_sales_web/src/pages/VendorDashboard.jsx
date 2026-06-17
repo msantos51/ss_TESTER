@@ -419,10 +419,6 @@ export default function VendorDashboard() {
           Terminar Sessão
         </button>
 
-        {/* Eco banner */}
-        <div className="vd-eco-banner">
-          Praia limpa, planeta feliz.
-        </div>
       </div>
 
       {/* Profile edit modal */}
