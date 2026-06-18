@@ -163,9 +163,9 @@ CANCEL_URL = os.getenv("CANCEL_URL", "https://example.com/cancel")
 
 # Price IDs dos planos de subscrição (Stripe)
 STRIPE_PLAN_PRICE_IDS = {
-    "semanal": os.getenv("STRIPE_PRICE_ID_SEMANAL", "price_1TitkNIUkNjcmfnZtCCHYsev"),
-    "quinzenal": os.getenv("STRIPE_PRICE_ID_QUINZENAL", "price_1TjgjNIUkNjcmfnZDnYLvkf4"),
-    "mensal": os.getenv("STRIPE_PRICE_ID_MENSAL", "price_1TjgjNIUkNjcmfnZ2YS7j2it"),
+    "semanal": os.getenv("STRIPE_PRICE_ID_SEMANAL", "price_1TjhC7IUkNjcmfnZf8Kzjsam"),
+    "quinzenal": os.getenv("STRIPE_PRICE_ID_QUINZENAL", "price_1TjhBKIUkNjcmfnZF5tlmASF"),
+    "mensal": os.getenv("STRIPE_PRICE_ID_MENSAL", "price_1TjhCMIUkNjcmfnZECNOhR4y"),
 }
 
 

@@ -94,6 +94,7 @@ export default function PlanosVendedores() {
         window.open(data.checkout_url, '_blank');
       } catch (err) {
         console.error('Erro ao criar sessão de pagamento:', err);
+        alert(err.response?.data?.detail || 'Não foi possível iniciar o pagamento. Tenta novamente.');
       }
     } else {
       navigate('/vendor-login');
