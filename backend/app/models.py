@@ -97,18 +97,6 @@ class Client(Base):
 
 
 
-# ClientPresence
-class ClientPresence(Base):
-    """Presença anónima de visitantes com o site aberto (usado para zonas quentes)."""
-
-    __tablename__ = "client_presences"
-
-    id = Column(Integer, primary_key=True, index=True)
-    session_id = Column(String, unique=True, index=True)
-    lat = Column(Float)
-    lng = Column(Float)
-    last_seen = Column(DateTime, default=utcnow)
-
 
 # Route
 class Route(Base):
