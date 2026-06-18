@@ -548,7 +548,7 @@ async def create_vendor(
         hashed_password=hashed_password,
         product=product,
         profile_photo=photo_path,
-        pin_color="#FFB6C1",
+        pin_color="#7B61FF",
         email_confirmed=False,
         confirmation_token=confirmation_token,
         license_number=license_number,

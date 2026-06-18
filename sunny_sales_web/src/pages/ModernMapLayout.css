@@ -737,31 +737,69 @@ body {
 /* ── Client / user location pin ───────────────────────── */
 
 .client-pin,
-.vendor-own-pin {
+.vendor-own-pin,
+.vendor-pin {
   background: transparent !important;
   border: none !important;
 }
 
-.vendor-location-marker {
+.vendor-pin-stack {
   position: relative;
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vendor-pin-teardrop {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 3px solid white;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.vendor-location-dot {
-  position: relative;
-  width: 22px;
-  height: 22px;
+.vendor-pin-photo {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  border: 2.5px solid white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  transform: rotate(45deg);
+  background: rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.vendor-pin-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.vendor-pin-arrow {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.vendor-pin-tip {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-top: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .user-location-marker {

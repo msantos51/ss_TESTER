@@ -23,7 +23,7 @@ export default function ManageAccount() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [product, setProduct] = useState('');
-  const [pinColor, setPinColor] = useState('#FFB6C1');
+  const [pinColor, setPinColor] = useState('#7B61FF');
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [cropSrc, setCropSrc] = useState(null);
@@ -44,7 +44,7 @@ export default function ManageAccount() {
       setName(v.name || '');
       setEmail(v.email || '');
       setProduct(v.product || '');
-      setPinColor(v.pin_color || '#FFB6C1');
+      setPinColor(v.pin_color || '#7B61FF');
       if (v.payment_methods) {
         setPaymentMethods(v.payment_methods.split(',').filter(Boolean));
       }
@@ -90,7 +90,7 @@ export default function ManageAccount() {
         data.append('old_password', oldPassword);
       }
       if (product !== vendor.product) data.append('product', product);
-      if (pinColor !== (vendor.pin_color || '#FFB6C1')) data.append('pin_color', pinColor);
+      if (pinColor !== (vendor.pin_color || '#7B61FF')) data.append('pin_color', pinColor);
       if (photo) data.append('profile_photo', new File([photo], 'profile.jpg', { type: 'image/jpeg' }));
 
       const newMethods = paymentMethods.join(',');

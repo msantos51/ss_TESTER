@@ -32,7 +32,7 @@ function getGreeting() {
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
-  const [pinColor, setPinColor] = useState('#FFB6C1');
+  const [pinColor, setPinColor] = useState('#7B61FF');
   const navigate = useNavigate();
 
   // Profile modal state
@@ -44,7 +44,7 @@ export default function VendorDashboard() {
   const [editPhoto, setEditPhoto] = useState(null);
   const [editPhotoPreview, setEditPhotoPreview] = useState(null);
   const [editCropSrc, setEditCropSrc] = useState(null);
-  const [editPinColor, setEditPinColor] = useState('#FFB6C1');
+  const [editPinColor, setEditPinColor] = useState('#7B61FF');
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState('');
   // Security tab state
@@ -107,7 +107,7 @@ export default function VendorDashboard() {
     if (stored) {
       const v = JSON.parse(stored);
       setVendor(v);
-      setPinColor(v.pin_color || '#FFB6C1');
+      setPinColor(v.pin_color || '#7B61FF');
     }
     const share = localStorage.getItem('sharingLocation') === 'true';
     setSharing(share);
@@ -154,7 +154,7 @@ export default function VendorDashboard() {
     setEditPhoto(null);
     setEditPhotoPreview(null);
     setEditCropSrc(null);
-    setEditPinColor(vendor.pin_color || '#FFB6C1');
+    setEditPinColor(vendor.pin_color || '#7B61FF');
     setEditError('');
     setSecOldPassword('');
     setSecNewPassword('');
@@ -203,7 +203,7 @@ export default function VendorDashboard() {
       if (editName !== vendor.name) data.append('name', editName);
       if (editEmail !== vendor.email) data.append('email', editEmail);
       if (editProduct !== vendor.product) data.append('product', editProduct);
-      if (editPinColor !== (vendor.pin_color || '#FFB6C1')) data.append('pin_color', editPinColor);
+      if (editPinColor !== (vendor.pin_color || '#7B61FF')) data.append('pin_color', editPinColor);
       if (editPhoto) {
         const file = new File([editPhoto], 'profile.jpg', { type: 'image/jpeg' });
         data.append('profile_photo', file);
@@ -216,7 +216,7 @@ export default function VendorDashboard() {
       const updated = res.data;
       localStorage.setItem('user', JSON.stringify(updated));
       setVendor(updated);
-      setPinColor(updated.pin_color || '#FFB6C1');
+      setPinColor(updated.pin_color || '#7B61FF');
       closeProfileModal();
     } catch {
       setEditError('Erro ao guardar alterações');
