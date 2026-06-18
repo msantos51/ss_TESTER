@@ -9,7 +9,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [product, setProduct] = useState(user?.product || '');
-  const [pinColor, setPinColor] = useState(user?.pin_color || '#FFB6C1');
+  const [pinColor, setPinColor] = useState(user?.pin_color || '#7B61FF');
   const [paymentMethods, setPaymentMethods] = useState(
     user?.payment_methods ? user.payment_methods.split(',').filter(Boolean) : []
   );
@@ -43,7 +43,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
       if (name !== user.name) data.append('name', name);
       if (email !== user.email) data.append('email', email);
       if (product !== user.product) data.append('product', product);
-      if (pinColor !== (user.pin_color || '#FFB6C1')) data.append('pin_color', pinColor);
+      if (pinColor !== (user.pin_color || '#7B61FF')) data.append('pin_color', pinColor);
       const newMethods = paymentMethods.join(',');
       if (newMethods !== (user.payment_methods || '')) data.append('payment_methods', newMethods);
       if (photo) data.append('profile_photo', photo);
