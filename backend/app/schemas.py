@@ -17,12 +17,6 @@ class UserLogin(BaseModel):
     password: str
     force: bool = False
 
-# PresencePing
-class PresencePing(BaseModel):
-    session_id: str
-    lat: float
-    lng: float
-
 # VendorProfileUpdate
 class VendorProfileUpdate(BaseModel):
     name: Optional[str] = None
