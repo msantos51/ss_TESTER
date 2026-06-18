@@ -4,10 +4,12 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.PowerManager;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -26,6 +28,7 @@ public class LocationForegroundService extends Service {
 
     private FusedLocationProviderClient fusedClient;
     private LocationCallback locationCallback;
+    private PowerManager.WakeLock wakeLock;
 
     public interface LocationListener {
         void onLocationUpdate(double lat, double lng);
@@ -59,8 +62,21 @@ public class LocationForegroundService extends Service {
             startForeground(NOTIFICATION_ID, notification);
         }
 
+        acquireWakeLock();
         startLocationUpdates();
         return START_STICKY;
+    }
+
+    private void acquireWakeLock() {
+        if (wakeLock != null && wakeLock.isHeld()) {
+            return;
+        }
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(
+                PowerManager.PARTIAL_WAKE_LOCK,
+                "SunnySales:LocationWakeLock"
+        );
+        wakeLock.acquire(10 * 60 * 60 * 1000L);
     }
 
     private void startLocationUpdates() {
@@ -102,10 +118,24 @@ public class LocationForegroundService extends Service {
     }
 
     @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        Intent restartIntent = new Intent(getApplicationContext(), LocationForegroundService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getApplicationContext().startForegroundService(restartIntent);
+        } else {
+            getApplicationContext().startService(restartIntent);
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         if (fusedClient != null && locationCallback != null) {
             fusedClient.removeLocationUpdates(locationCallback);
+        }
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
         }
         listener = null;
     }
