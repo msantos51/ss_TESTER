@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Geolocation } from '@capacitor/geolocation';
+import { registerPlugin } from '@capacitor/core';
 import { BASE_URL, WEB_URL } from '../config.js';
 
-const LOCATION_INTERVAL_MS = 5000;
+const LocationTracker = registerPlugin('LocationTracker');
 
 export default function Dashboard({ auth, onLogout }) {
   const { token, user, vendorId } = auth;
@@ -11,14 +12,12 @@ export default function Dashboard({ auth, onLogout }) {
   const [error, setError] = useState(null);
   const [status, setStatus] = useState('');
   const [coords, setCoords] = useState(null);
-  const intervalRef = useRef(null);
+  const listenerRef = useRef(null);
 
   const authHeader = { Authorization: `Bearer ${token}` };
 
-  const sendLocation = useCallback(async () => {
+  const sendLocation = useCallback(async (lat, lng) => {
     try {
-      const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
-      const { latitude: lat, longitude: lng } = pos.coords;
       setCoords({ lat, lng });
       await fetch(`${BASE_URL}/vendors/${vendorId}/location`, {
         method: 'PUT',
@@ -50,10 +49,14 @@ export default function Dashboard({ auth, onLogout }) {
         throw new Error(err.detail || 'Erro ao iniciar partilha');
       }
 
+      listenerRef.current = await LocationTracker.addListener('locationUpdate', ({ lat, lng }) => {
+        sendLocation(lat, lng);
+      });
+
+      await LocationTracker.startTracking();
+
       setSharing(true);
       setStatus('A partilhar localização…');
-      await sendLocation();
-      intervalRef.current = setInterval(sendLocation, LOCATION_INTERVAL_MS);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -64,8 +67,15 @@ export default function Dashboard({ auth, onLogout }) {
   const stopSharing = async () => {
     setLoading(true);
     setError(null);
-    clearInterval(intervalRef.current);
-    intervalRef.current = null;
+    try {
+      if (listenerRef.current) {
+        await listenerRef.current.remove();
+        listenerRef.current = null;
+      }
+      await LocationTracker.stopTracking();
+    } catch (err) {
+      console.error('Erro ao parar tracking nativo:', err);
+    }
     try {
       await fetch(`${BASE_URL}/vendors/${vendorId}/routes/stop`, {
         method: 'POST',
@@ -92,7 +102,11 @@ export default function Dashboard({ auth, onLogout }) {
   };
 
   useEffect(() => {
-    return () => clearInterval(intervalRef.current);
+    return () => {
+      if (listenerRef.current) {
+        listenerRef.current.remove();
+      }
+    };
   }, []);
 
   const openWebsite = () => {
@@ -184,7 +198,7 @@ export default function Dashboard({ auth, onLogout }) {
 
           {sharing && (
             <p className="sharing-note">
-              A tua localização é atualizada a cada {LOCATION_INTERVAL_MS / 1000} segundos.
+              A tua localização é atualizada a cada segundo.
             </p>
           )}
         </div>
