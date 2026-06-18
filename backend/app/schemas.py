@@ -87,6 +87,7 @@ class VendorPublicOut(BaseModel):
     last_seen: Optional[str] = None
     beaches: Optional[str] = None
     product_categories: Optional[str] = None
+    payment_methods: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 
