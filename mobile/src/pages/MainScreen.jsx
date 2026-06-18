@@ -5,6 +5,7 @@ import { registerPlugin } from '@capacitor/core';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { BASE_URL, WEB_URL } from '../config.js';
+import ProfileScreen from './ProfileScreen.jsx';
 
 const LocationTracker = registerPlugin('LocationTracker');
 
@@ -23,13 +24,14 @@ function FollowPosition({ position }) {
   return null;
 }
 
-export default function MainScreen({ auth, onLogout }) {
+export default function MainScreen({ auth, onLogout, onUserUpdate }) {
   const { token, user, vendorId } = auth;
   const [sharing, setSharing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [position, setPosition] = useState(null);
   const [mapError, setMapError] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
   const listenerRef = useRef(null);
   const watchIdRef = useRef(null);
 
@@ -186,12 +188,12 @@ export default function MainScreen({ auth, onLogout }) {
 
       {/* Top bar */}
       <div className="main-top-bar">
-        <div className="vendor-info">
-          <div className="vendor-avatar">
+        <button className="vendor-info vendor-info-btn" onClick={() => setShowProfile(true)} title="Editar perfil">
+          <div className="vendor-avatar" style={{ borderColor: user?.pin_color }}>
             {vendorName.charAt(0).toUpperCase()}
           </div>
           <span className="vendor-name">{vendorName}</span>
-        </div>
+        </button>
         <button className="btn-icon logout-btn" onClick={handleLogout} title="Sair">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -200,6 +202,10 @@ export default function MainScreen({ auth, onLogout }) {
           </svg>
         </button>
       </div>
+
+      {showProfile && (
+        <ProfileScreen auth={auth} onClose={() => setShowProfile(false)} onUserUpdate={onUserUpdate} />
+      )}
 
       {/* Bottom overlay controls */}
       <div className="main-bottom-controls">
