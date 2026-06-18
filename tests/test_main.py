@@ -11,6 +11,8 @@ from fastapi.testclient import TestClient
 def client(tmp_path):
     # setup DATABASE_URL for tests
     os.environ["DATABASE_URL"] = f"sqlite:///{tmp_path}/test.db?check_same_thread=False"
+    os.environ["ADMIN_TOKEN"] = "test-admin-token"
+    os.environ["STRIPE_WEBHOOK_SECRET"] = "test-webhook-secret"
 
     # reload application modules so they pick up the new DATABASE_URL
     from backend.app import database, models, main
@@ -24,6 +26,10 @@ def client(tmp_path):
         sent_emails.append({"to": to, "subject": subject, "body": body})
 
     main.send_email = fake_send_email
+
+    # nos testes não há um pedido Stripe real assinado; simular a verificação
+    # da assinatura para se poder testar o fluxo do webhook isoladamente
+    main.stripe.Webhook.construct_event = lambda payload, sig, secret: __import__("json").loads(payload)
 
     # create tables
     models.Base.metadata.create_all(bind=database.engine)
@@ -51,7 +57,7 @@ def activate_subscription(client, vendor_id):
     token = get_token(client)
     resp = client.post(
         f"/vendors/{vendor_id}/activate-subscription",
-        headers={"Authorization": f"Bearer {token}"},
+        headers={"X-Admin-Token": os.environ["ADMIN_TOKEN"]},
     )
     assert resp.status_code == 200
     return token
@@ -356,7 +362,13 @@ def test_paid_weeks_listing(client):
 
     event = {
         "type": "checkout.session.completed",
-        "data": {"object": {"metadata": {"vendor_id": vendor_id}, "url": "http://r"}},
+        "data": {
+            "object": {
+                "metadata": {"vendor_id": vendor_id},
+                "url": "http://r",
+                "payment_status": "paid",
+            }
+        },
     }
     resp = client.post("/stripe/webhook", json=event)
     assert resp.status_code == 200

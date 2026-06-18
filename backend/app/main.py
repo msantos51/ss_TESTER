@@ -151,7 +151,9 @@ BASE_APP_URL = os.getenv("BASE_APP_URL", "https://ss-tester.onrender.com")
 
 def send_email(to: str, subject: str, body: str) -> None:
     """Send an email notification. Patch this in tests or integrate a real provider."""
-    print(f"[Email] To: {to}\nSubject: {subject}\n{body}")
+    # O corpo do email contém tokens secretos (confirmação/reset de password);
+    # nunca o registar em logs.
+    print(f"[Email] To: {to}\nSubject: {subject}")
 
 # Configuração do Stripe
 stripe.api_key = os.getenv("STRIPE_API_KEY", "")
@@ -579,7 +581,7 @@ async def create_vendor(
 # --------------------------
 # Listar vendedores
 # --------------------------
-@app.get("/vendors/", response_model=list[schemas.VendorOut])
+@app.get("/vendors/", response_model=list[schemas.VendorPublicOut])
 # list_vendors
 def list_vendors(
     current_vendor: models.Vendor | None = Depends(get_current_vendor_optional),
@@ -1026,19 +1028,22 @@ def list_stories(vendor_id: int, db: Session = Depends(get_db)):
 @app.post("/stripe/webhook")
 # stripe_webhook
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
+    if not STRIPE_WEBHOOK_SECRET:
+        # Sem segredo configurado não é possível verificar a autenticidade do
+        # pedido; rejeitar em vez de confiar em JSON não assinado.
+        raise HTTPException(status_code=500, detail="Webhook not configured")
+
     payload = await request.body()
     sig = request.headers.get("stripe-signature")
-    if STRIPE_WEBHOOK_SECRET:
-        try:
-            event = stripe.Webhook.construct_event(payload, sig, STRIPE_WEBHOOK_SECRET)
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid webhook")
-    else:
-        # Sem segredo definido, interpretar payload como JSON bruto
-        event = json.loads(payload)
+    try:
+        event = stripe.Webhook.construct_event(payload, sig, STRIPE_WEBHOOK_SECRET)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid webhook")
 
     if event.get("type") == "checkout.session.completed":
         session = event["data"]["object"]
+        if session.get("payment_status") != "paid":
+            return {"status": "ignored"}
         vendor_id = int(session.get("client_reference_id") or session.get("metadata", {}).get("vendor_id") or 0)
         vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
         if vendor:
@@ -1056,20 +1061,22 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 
 
 # --------------------------
-# Endpoint para ativar pagamento manualmente
+# Endpoint para ativar pagamento manualmente (ex.: pagamento por transferência)
+# Apenas acessível por administradores - nunca pelo próprio vendedor.
 # --------------------------
 @app.post("/vendors/{vendor_id}/activate-subscription")
 # activate_subscription_manual
 def activate_subscription_manual(
     vendor_id: int,
     db: Session = Depends(get_db),
-    current_vendor: models.Vendor = Depends(get_current_vendor),
+    admin: bool = Depends(get_admin),
 ):
-    if current_vendor.id != vendor_id:
-        raise HTTPException(status_code=403, detail="Not authorized")
+    vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendor not found")
 
-    current_vendor.subscription_active = True
-    current_vendor.subscription_valid_until = utcnow() + timedelta(days=7)
+    vendor.subscription_active = True
+    vendor.subscription_valid_until = utcnow() + timedelta(days=7)
     paid = models.PaidWeek(
         vendor_id=vendor_id,
         start_date=utcnow(),

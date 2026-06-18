@@ -74,6 +74,22 @@ class VendorOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+# VendorPublicOut - subconjunto seguro exposto a utilizadores não autenticados
+# (mapa público). Nunca incluir email, nif, phone, license_number, business_name.
+class VendorPublicOut(BaseModel):
+    id: int
+    name: str
+    product: str
+    profile_photo: str
+    pin_color: Optional[str] = None
+    current_lat: Optional[float] = None
+    current_lng: Optional[float] = None
+    last_seen: Optional[str] = None
+    beaches: Optional[str] = None
+    product_categories: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+
 # RoutePoint
 class RoutePoint(BaseModel):
     lat: float
