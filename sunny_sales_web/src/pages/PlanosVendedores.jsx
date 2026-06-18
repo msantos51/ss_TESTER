@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { FiCheck, FiZap, FiStar, FiTrendingUp } from 'react-icons/fi';
 import BackHomeButton from '../components/BackHomeButton';
+import { BASE_URL } from '../config';
 import './PlanosVendedores.css';
-
-const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/test_28E3cvaRX1xWdIzd2ZeUU00';
 
 const PLANS = [
   {
@@ -79,13 +79,22 @@ const FAQS = [
 export default function PlanosVendedores() {
   const navigate = useNavigate();
 
-  const handlePlanClick = (e) => {
+  const handlePlanClick = async (e, planId) => {
     e.preventDefault();
     const user = localStorage.getItem('user');
     const token = localStorage.getItem('token');
     if (user && token) {
       const vendor = JSON.parse(user);
-      window.open(`${STRIPE_PAYMENT_LINK}?client_reference_id=${vendor.id}`, '_blank');
+      try {
+        const { data } = await axios.post(
+          `${BASE_URL}/vendors/${vendor.id}/create-checkout-session`,
+          null,
+          { params: { plan: planId }, headers: { Authorization: `Bearer ${token}` } }
+        );
+        window.open(data.checkout_url, '_blank');
+      } catch (err) {
+        console.error('Erro ao criar sessão de pagamento:', err);
+      }
     } else {
       navigate('/vendor-login');
     }
@@ -155,7 +164,7 @@ export default function PlanosVendedores() {
             </ul>
 
             <button
-              onClick={handlePlanClick}
+              onClick={(e) => handlePlanClick(e, plan.id)}
               className={`pv-plan-cta${plan.highlight ? ' pv-plan-cta--highlight' : ''}`}
             >
               {plan.cta}
