@@ -106,7 +106,8 @@ ss_TESTER/
    - `DATABASE_URL` — ligação à base de dados (PostgreSQL ou SQLite)
    - `SECRET_KEY` — chave para assinar tokens JWT
    - `SMTP_USER` e `SMTP_PASSWORD` — envio de emails (opcional)
-   - `STRIPE_API_KEY`, `STRIPE_PRICE_ID` — pagamentos (opcional)
+   - `STRIPE_API_KEY` — pagamentos (opcional)
+   - `STRIPE_PRICE_ID_SEMANAL`, `STRIPE_PRICE_ID_QUINZENAL`, `STRIPE_PRICE_ID_MENSAL` — price IDs dos planos de subscrição (opcional, têm valores por omissão)
 4. Execute o servidor:
    ```bash
    uvicorn backend.app.main:app --reload

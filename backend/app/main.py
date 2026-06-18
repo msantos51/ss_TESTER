@@ -157,10 +157,16 @@ def send_email(to: str, subject: str, body: str) -> None:
 
 # Configuração do Stripe
 stripe.api_key = os.getenv("STRIPE_API_KEY", "")
-STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 SUCCESS_URL = os.getenv("SUCCESS_URL", "https://example.com/success")
 CANCEL_URL = os.getenv("CANCEL_URL", "https://example.com/cancel")
+
+# Price IDs dos planos de subscrição (Stripe)
+STRIPE_PLAN_PRICE_IDS = {
+    "semanal": os.getenv("STRIPE_PRICE_ID_SEMANAL", "price_1TitkNIUkNjcmfnZtCCHYsev"),
+    "quinzenal": os.getenv("STRIPE_PRICE_ID_QUINZENAL", "price_1TjgjNIUkNjcmfnZDnYLvkf4"),
+    "mensal": os.getenv("STRIPE_PRICE_ID_MENSAL", "price_1TjgjNIUkNjcmfnZ2YS7j2it"),
+}
 
 
 # validate_password
@@ -927,6 +933,7 @@ async def show_password_reset_form(token: str):
 # create_checkout_session
 def create_checkout_session(
     vendor_id: int,
+    plan: str = "mensal",
     db: Session = Depends(get_db),
     current_vendor: models.Vendor = Depends(get_current_vendor),
 ):
@@ -935,15 +942,16 @@ def create_checkout_session(
         raise HTTPException(status_code=404, detail="Vendor not found")
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
-    if not STRIPE_PRICE_ID:
-        raise HTTPException(status_code=500, detail="Stripe not configured")
+    price_id = STRIPE_PLAN_PRICE_IDS.get(plan)
+    if not price_id:
+        raise HTTPException(status_code=400, detail="Invalid plan")
     try:
         session = stripe.checkout.Session.create(
             mode="subscription",
-            line_items=[{"price": STRIPE_PRICE_ID, "quantity": 1}],
+            line_items=[{"price": price_id, "quantity": 1}],
             success_url=SUCCESS_URL,
             cancel_url=CANCEL_URL,
-            metadata={"vendor_id": vendor_id},
+            metadata={"vendor_id": vendor_id, "plan": plan},
         )
         return {"checkout_url": session.url}
     except Exception as exc:
