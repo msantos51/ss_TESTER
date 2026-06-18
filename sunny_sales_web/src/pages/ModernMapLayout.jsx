@@ -7,6 +7,7 @@ import { BASE_URL, mediaUrl } from '../config';
 import LocateButton from '../components/LocateButton';
 import VendorLocateButton from '../components/VendorLocateButton';
 import LocateHint from '../components/LocateHint';
+import HeatZones from '../components/HeatZones';
 import WelcomeCard from '../components/WelcomeCard';
 import WeatherCard from '../components/WeatherCard';
 import {
@@ -292,6 +293,37 @@ export default function ModernMapLayout() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
+  // Envia presença anónima (sem identificar o user) para alimentar as zonas
+  // quentes que os vendedores veem no mapa.
+  const clientPosRef = useRef(clientPos);
+  clientPosRef.current = clientPos;
+
+  useEffect(() => {
+    if (isVendorLogged) return;
+
+    let sessionId = localStorage.getItem('presence_session_id');
+    if (!sessionId) {
+      sessionId = crypto.randomUUID();
+      localStorage.setItem('presence_session_id', sessionId);
+    }
+
+    const sendPing = () => {
+      const pos = clientPosRef.current;
+      if (!pos) return;
+      axios
+        .post(`${BASE_URL}/presence/ping`, {
+          session_id: sessionId,
+          lat: pos.lat,
+          lng: pos.lng,
+        })
+        .catch((err) => console.error('Erro ao enviar presença:', err));
+    };
+
+    sendPing();
+    const interval = setInterval(sendPing, 20000);
+    return () => clearInterval(interval);
+  }, [isVendorLogged]);
+
   // iOS 13+ requires a user gesture to call requestPermission for DeviceOrientationEvent.
   // Try immediately (works when permission was already granted in a previous visit);
   // if that fails (first visit), auto-show the compass permission modal.
@@ -527,6 +559,7 @@ export default function ModernMapLayout() {
                   vendor={loggedVendor}
                   onLocate={() => setIsAutoFollowing(true)}
                 />
+                <HeatZones />
               </>
             )}
           </MapContainer>
