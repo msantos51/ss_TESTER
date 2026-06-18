@@ -55,29 +55,13 @@ function escapeHtml(str) {
   }[c]));
 }
 
-function getInitials(name) {
-  const parts = String(name ?? '').trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return '?';
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
-}
-
-function getVendorPinHtml(color, heading, photoUrl, name) {
-  const hasHeading = heading !== null && !isNaN(heading);
-  const arrow = hasHeading
-    ? `<svg viewBox="0 0 20 20" width="11" height="11" style="display:block;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
-    : '';
-  const inner = photoUrl
-    ? `<img src="${escapeHtml(photoUrl)}" alt="" />`
-    : `<span>${escapeHtml(getInitials(name))}</span>`;
+function getVendorPinHtml(color) {
+  const safeColor = escapeHtml(color);
   return `
-    <div class="vendor-pin-stack">
-      <div class="vendor-pin-teardrop" style="background:${color}">
-        <div class="vendor-pin-photo">${inner}</div>
-        ${hasHeading ? `<div class="vendor-pin-arrow">${arrow}</div>` : ''}
-      </div>
-      <div class="vendor-pin-tip" style="background:${color}"></div>
-    </div>`;
+    <svg width="32" height="44" viewBox="0 0 32 44" xmlns="http://www.w3.org/2000/svg" class="vendor-pin-svg">
+      <path d="M16 0C7.163 0 0 7.163 0 16c0 11.5 16 28 16 28s16-16.5 16-28C32 7.163 24.837 0 16 0z" fill="${safeColor}" stroke="white" stroke-width="2"/>
+      <circle cx="16" cy="16" r="6" fill="white"/>
+    </svg>`;
 }
 
 function MapBearingController({ targetBearingRef }) {
@@ -499,16 +483,15 @@ export default function ModernMapLayout() {
             {filteredVendors.map((v) => {
               const isOwn = loggedVendor && Number(v.id) === Number(loggedVendor.id);
               const pinColor = v.pin_color || '#7B61FF';
-              const photoUrl = v.profile_photo ? mediaUrl(v.profile_photo) : null;
               return (
                 <Marker
                   key={v.id}
                   position={[v.current_lat, v.current_lng]}
                   icon={L.divIcon({
                     className: isOwn ? 'vendor-own-pin' : 'vendor-pin',
-                    html: getVendorPinHtml(pinColor, isOwn ? heading : null, photoUrl, v.name),
-                    iconSize: [44, 58],
-                    iconAnchor: [22, 58],
+                    html: getVendorPinHtml(pinColor),
+                    iconSize: [32, 44],
+                    iconAnchor: [16, 44],
                   })}
                   eventHandlers={{
                     click: () => focusVendor(v),
