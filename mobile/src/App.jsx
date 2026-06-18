@@ -28,7 +28,12 @@ export default function App() {
     setAuth(null);
   };
 
+  const handleUserUpdate = (updatedUser) => {
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setAuth((prev) => ({ ...prev, user: updatedUser }));
+  };
+
   if (!auth) return <Login onLogin={handleLogin} />;
 
-  return <MainScreen auth={auth} onLogout={handleLogout} />;
+  return <MainScreen auth={auth} onLogout={handleLogout} onUserUpdate={handleUserUpdate} />;
 }
