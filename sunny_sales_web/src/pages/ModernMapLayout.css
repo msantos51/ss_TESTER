@@ -743,12 +743,41 @@ body {
   border: none !important;
 }
 
-.vendor-pin-svg {
-  display: block;
+.vendor-pin-marker {
+  position: relative;
+  width: 30px;
+  height: 37px;
+  box-sizing: border-box;
+}
+
+.vendor-pin-marker::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 30px;
+  box-sizing: border-box;
+  border: 9px solid var(--pin-color, #7B61FF);
+  border-radius: 50% 50% 0;
+  transform: rotate(45deg);
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35));
 }
 
-.vendor-own-pin .vendor-pin-svg {
+.vendor-pin-marker::before {
+  content: '';
+  position: absolute;
+  top: 36px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 14px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.vendor-own-pin .vendor-pin-marker::after {
   filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.5));
 }
 
