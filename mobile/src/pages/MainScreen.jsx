@@ -47,6 +47,16 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
           if (active) setMapError('Permissão de localização negada. Ativa nas definições do telemóvel.');
           return;
         }
+        // Pede já uma posição rápida (baixa precisão) para mostrar o mapa sem
+        // esperar pela primeira leitura de GPS de alta precisão, que pode demorar muito.
+        try {
+          const quickPos = await Geolocation.getCurrentPosition({ enableHighAccuracy: false, timeout: 5000 });
+          if (active && quickPos) {
+            setPosition([quickPos.coords.latitude, quickPos.coords.longitude]);
+          }
+        } catch {
+          // ignora; o watchPosition abaixo continua a tentar
+        }
         watchIdRef.current = await Geolocation.watchPosition(
           { enableHighAccuracy: true },
           (pos, err) => {
