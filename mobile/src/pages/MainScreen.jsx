@@ -180,7 +180,7 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
         {position ? (
           <MapContainer center={position} zoom={16} className="map-container" zoomControl={false}>
             <TileLayer
-              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
+              url="https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
               attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
             />
             <Marker position={position} icon={vendorIcon} />
