@@ -145,176 +145,167 @@ body {
   text-align: center;
 }
 
-/* ── Dashboard ─────────────────────────────────── */
-.dashboard-screen {
+/* ── Main Screen (single screen) ─────────────── */
+.main-screen {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.main-map-area {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.main-map-area .map-container {
+  width: 100%;
+  height: 100%;
+}
+
+.main-map-area .map-loading {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-muted);
   background: var(--bg);
 }
 
-.dashboard-header {
-  background: var(--white);
-  padding: 16px 20px;
-  box-shadow: 0 1px 0 var(--border);
-  position: sticky;
+/* Top bar overlay */
+.main-top-bar {
+  position: absolute;
   top: 0;
-  z-index: 10;
-}
-
-.header-top {
+  left: 0;
+  right: 0;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: calc(12px + env(safe-area-inset-top, 0)) 16px 12px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
 }
 
-.vendor-info {
+.main-top-bar .vendor-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
-.vendor-avatar {
-  width: 44px;
-  height: 44px;
+.main-top-bar .vendor-avatar {
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary), var(--navy));
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.vendor-name {
   font-size: 16px;
   font-weight: 700;
-  color: var(--text);
-}
-
-.vendor-product {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.dashboard-main {
-  padding: 20px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* ── Location Card ─────────────────────────────── */
-.location-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 24px 20px;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-}
-
-.location-card.sharing {
-  border-color: var(--primary);
-}
-
-.location-status {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
   flex-shrink: 0;
 }
 
-.status-dot.active {
-  background: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
-  animation: pulse 2s infinite;
-}
-
-.status-dot.inactive {
-  background: var(--border);
-}
-
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2); }
-  50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.1); }
-}
-
-.status-label {
+.main-top-bar .vendor-name {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text);
 }
 
-.coords-display {
+/* Bottom controls overlay */
+.main-bottom-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   display: flex;
-  gap: 12px;
-  background: var(--primary-light);
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0));
+  background: linear-gradient(to top, rgba(255,255,255,0.97) 60%, rgba(255,255,255,0));
+  pointer-events: none;
+}
+
+.main-bottom-controls > * {
+  pointer-events: auto;
+}
+
+.sharing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
   border-radius: var(--radius-sm);
-  padding: 10px 14px;
-}
-
-.coords-display span {
-  font-size: 12px;
-  font-family: monospace;
-  color: var(--primary-dark);
-  font-weight: 600;
-}
-
-.sharing-note {
-  font-size: 12px;
-  color: var(--text-muted);
-  text-align: center;
-}
-
-/* ── Website Card ─────────────────────────────── */
-.website-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 18px 20px;
+  padding: 10px 16px;
   box-shadow: var(--shadow);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #16a34a;
 }
 
-.website-card-content {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+.btn-website {
+  background: var(--white);
+  color: var(--primary-dark);
+  border: 1.5px solid var(--primary);
+  width: 100%;
+  font-size: 15px;
 }
 
-.website-card-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+.btn-website:active {
   background: var(--primary-light);
-  color: var(--primary);
+}
+
+/* ── Map ─────────────────────────────────── */
+.map-overlay-alert {
+  position: absolute;
+  top: 80px;
+  left: 16px;
+  right: 16px;
+  z-index: 1000;
+}
+
+.vendor-location-marker {
+  position: relative;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
 }
 
-.website-card-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
+.vendor-location-pulse {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(75, 163, 195, 0.28);
+  animation: vendor-pulse 2s ease-out infinite;
+  pointer-events: none;
 }
 
-.website-card-desc {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 2px;
+.vendor-location-dot {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 2.5px solid white;
+  box-shadow: 0 2px 8px rgba(75, 163, 195, 0.55);
+  z-index: 1;
+}
+
+@keyframes vendor-pulse {
+  0%   { transform: scale(0.4); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
 }
 
 /* ── Alerts ─────────────────────────────────── */
@@ -413,6 +404,7 @@ body {
 .location-toggle-btn {
   padding: 16px;
   font-size: 16px;
+  box-shadow: var(--shadow-lg);
 }
 
 /* ── Error ─────────────────────────────────── */
@@ -449,114 +441,25 @@ body {
   40% { transform: scale(1); opacity: 1; }
 }
 
-/* ── App shell / bottom nav ─────────────────────── */
-.app-shell {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  height: 100dvh;
-}
-
-.app-shell-content {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0;
-}
-
-.app-shell-content .screen {
-  min-height: 100%;
-  height: 100%;
-}
-
-.bottom-nav {
-  display: flex;
-  background: var(--gold);
-  padding: 6px env(safe-area-inset-right, 0) calc(6px + env(safe-area-inset-bottom, 0)) env(safe-area-inset-left, 0);
-  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.15);
+/* ── Status dot ─────────────────────────────── */
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
-.bottom-nav-item {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.8);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 4px;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 12px;
-  transition: color 0.15s, background 0.15s;
+.status-dot.active {
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+  animation: pulse 2s infinite;
 }
 
-.bottom-nav-item.active {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.18);
+.status-dot.inactive {
+  background: var(--border);
 }
 
-/* ── Map screen ─────────────────────────────────── */
-.map-screen {
-  height: 100%;
-  position: relative;
-}
-
-.map-container {
-  width: 100%;
-  height: 100%;
-}
-
-.map-overlay-alert {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  right: 16px;
-  z-index: 1000;
-}
-
-.map-loading {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  color: var(--text-muted);
-}
-
-.vendor-location-marker {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.vendor-location-pulse {
-  position: absolute;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(75, 163, 195, 0.28);
-  animation: vendor-pulse 2s ease-out infinite;
-  pointer-events: none;
-}
-
-.vendor-location-dot {
-  position: relative;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--primary);
-  border: 2.5px solid white;
-  box-shadow: 0 2px 8px rgba(75, 163, 195, 0.55);
-  z-index: 1;
-}
-
-@keyframes vendor-pulse {
-  0%   { transform: scale(0.4); opacity: 1; }
-  100% { transform: scale(1.4); opacity: 0; }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2); }
+  50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.1); }
 }
