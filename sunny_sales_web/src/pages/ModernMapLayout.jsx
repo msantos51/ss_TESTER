@@ -57,11 +57,7 @@ function escapeHtml(str) {
 
 function getVendorPinHtml(color) {
   const safeColor = escapeHtml(color);
-  return `
-    <svg width="32" height="44" viewBox="0 0 32 44" xmlns="http://www.w3.org/2000/svg" class="vendor-pin-svg">
-      <path d="M16 0C7.163 0 0 7.163 0 16c0 11.5 16 28 16 28s16-16.5 16-28C32 7.163 24.837 0 16 0z" fill="${safeColor}" stroke="white" stroke-width="2"/>
-      <circle cx="16" cy="16" r="6" fill="white"/>
-    </svg>`;
+  return `<div class="vendor-pin-marker" style="--pin-color: ${safeColor};"></div>`;
 }
 
 function MapBearingController({ targetBearingRef }) {
@@ -490,8 +486,8 @@ export default function ModernMapLayout() {
                   icon={L.divIcon({
                     className: isOwn ? 'vendor-own-pin' : 'vendor-pin',
                     html: getVendorPinHtml(pinColor),
-                    iconSize: [32, 44],
-                    iconAnchor: [16, 44],
+                    iconSize: [30, 37],
+                    iconAnchor: [15, 36],
                   })}
                   eventHandlers={{
                     click: () => focusVendor(v),
