@@ -105,9 +105,9 @@ class Route(Base):
     __tablename__ = "routes"
 
     id = Column(Integer, primary_key=True, index=True)
-    vendor_id = Column(Integer, ForeignKey("vendors.id"))
+    vendor_id = Column(Integer, ForeignKey("vendors.id"), index=True)
     start_time = Column(DateTime, default=utcnow)
-    end_time = Column(DateTime, nullable=True)
+    end_time = Column(DateTime, nullable=True, index=True)
     points = Column(String)
     distance_m = Column(Float, default=0.0)
 
@@ -121,7 +121,7 @@ class PaidWeek(Base):
     __tablename__ = "paid_weeks"
 
     id = Column(Integer, primary_key=True, index=True)
-    vendor_id = Column(Integer, ForeignKey("vendors.id"))
+    vendor_id = Column(Integer, ForeignKey("vendors.id"), index=True)
     start_date = Column(DateTime, default=utcnow)
     end_date = Column(DateTime)
     receipt_url = Column(String, nullable=True)
@@ -136,10 +136,10 @@ class Story(Base):
     __tablename__ = "stories"
 
     id = Column(Integer, primary_key=True, index=True)
-    vendor_id = Column(Integer, ForeignKey("vendors.id"))
+    vendor_id = Column(Integer, ForeignKey("vendors.id"), index=True)
     media_path = Column(String)
     created_at = Column(DateTime, default=utcnow)
-    expires_at = Column(DateTime)
+    expires_at = Column(DateTime, index=True)
 
     vendor = relationship("Vendor")
 
