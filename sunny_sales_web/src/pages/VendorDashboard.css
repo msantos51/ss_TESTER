@@ -723,6 +723,44 @@
   padding: 0;
 }
 
+.vd-modal-payments-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vd-modal-payment-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 7px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  min-height: auto;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.vd-modal-payment-chip-icon {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.vd-modal-payment-chip.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary-dark);
+}
+
+.vd-modal-payment-chip:hover {
+  border-color: var(--primary-light-solid);
+}
+
 .vd-modal-error {
   color: #c62828;
   font-size: 0.82rem;

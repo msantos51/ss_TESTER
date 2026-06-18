@@ -7,7 +7,7 @@ import {
   FiCreditCard, FiMail, FiMapPin, FiLogOut,
   FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
   FiNavigation, FiUser, FiLock, FiCheck,
-  FiChevronRight, FiSend, FiCheckSquare,
+  FiSend, FiCheckSquare,
 } from 'react-icons/fi';
 import ImageCropper from '../components/ImageCropper';
 import './VendorDashboard.css';
@@ -45,6 +45,7 @@ export default function VendorDashboard() {
   const [editPhotoPreview, setEditPhotoPreview] = useState(null);
   const [editCropSrc, setEditCropSrc] = useState(null);
   const [editPinColor, setEditPinColor] = useState('#7B61FF');
+  const [editPaymentMethods, setEditPaymentMethods] = useState([]);
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState('');
   // Security tab state
@@ -163,6 +164,7 @@ export default function VendorDashboard() {
     setEditPhotoPreview(null);
     setEditCropSrc(null);
     setEditPinColor(vendor.pin_color || '#7B61FF');
+    setEditPaymentMethods(vendor.payment_methods ? vendor.payment_methods.split(',').filter(Boolean) : []);
     setEditError('');
     setSecOldPassword('');
     setSecNewPassword('');
@@ -192,6 +194,12 @@ export default function VendorDashboard() {
     setEditCropSrc(null);
   };
 
+  const togglePaymentMethod = (method) => {
+    setEditPaymentMethods((prev) =>
+      prev.includes(method) ? prev.filter((m) => m !== method) : [...prev, method]
+    );
+  };
+
   const handleEditCropComplete = (blob) => {
     if (editCropSrc) URL.revokeObjectURL(editCropSrc);
     setEditCropSrc(null);
@@ -212,6 +220,8 @@ export default function VendorDashboard() {
       if (editEmail !== vendor.email) data.append('email', editEmail);
       if (editProduct !== vendor.product) data.append('product', editProduct);
       if (editPinColor !== (vendor.pin_color || '#7B61FF')) data.append('pin_color', editPinColor);
+      const newPaymentMethods = editPaymentMethods.join(',');
+      if (newPaymentMethods !== (vendor.payment_methods || '')) data.append('payment_methods', newPaymentMethods);
       if (editPhoto) {
         const file = new File([editPhoto], 'profile.jpg', { type: 'image/jpeg' });
         data.append('profile_photo', file);
@@ -325,7 +335,6 @@ export default function VendorDashboard() {
                 <span className="vd-detail-row-icon"><FiMail /></span>
                 <span className="vd-detail-row-label">EMAIL</span>
                 <span className="vd-detail-row-value">{vendor.email}</span>
-                <FiChevronRight className="vd-detail-row-chevron" />
               </div>
               <div className="vd-detail-row">
                 <span className="vd-detail-row-icon">
@@ -333,7 +342,6 @@ export default function VendorDashboard() {
                 </span>
                 <span className="vd-detail-row-label">COR DO PIN</span>
                 <span className="vd-detail-row-value" />
-                <FiChevronRight className="vd-detail-row-chevron" />
               </div>
               {vendor.payment_methods && (
                 <div className="vd-detail-row vd-detail-row-payments">
@@ -360,7 +368,7 @@ export default function VendorDashboard() {
               <span className="vd-cta-title">Subscrição Inativa</span>
               <span className="vd-cta-desc">Ative para aparecer no mapa</span>
             </div>
-            <button className="vd-cta-btn" onClick={paySubscription}>
+            <button className="vd-cta-btn" onClick={() => navigate('/planos')}>
               Ativar
             </button>
           </div>
@@ -526,6 +534,22 @@ export default function VendorDashboard() {
                         className="vd-modal-pin-input"
                       />
                     </label>
+                  </div>
+                </div>
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Métodos de pagamento aceites</label>
+                  <div className="vd-modal-payments-grid">
+                    {Object.keys(PAYMENT_ICONS).map((method) => (
+                      <button
+                        type="button"
+                        key={method}
+                        className={`vd-modal-payment-chip${editPaymentMethods.includes(method) ? ' active' : ''}`}
+                        onClick={() => togglePaymentMethod(method)}
+                      >
+                        <span className="vd-modal-payment-chip-icon">{PAYMENT_ICONS[method]}</span>
+                        {method}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
