@@ -237,7 +237,11 @@ export default function ModernMapLayout() {
       }
     };
     fetchVendors();
-    interval = setInterval(fetchVendors, 1000);
+    // Posições em tempo real chegam via WebSocket (/ws/locations) abaixo;
+    // este polling serve apenas para sincronizar a lista completa
+    // (novos vendedores, dados que não viajam no WS), por isso não precisa
+    // de correr a cada segundo.
+    interval = setInterval(fetchVendors, 15000);
     return () => {
       if (interval) clearInterval(interval);
     };

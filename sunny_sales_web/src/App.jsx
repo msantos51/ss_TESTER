@@ -7,32 +7,34 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { FiUser, FiMenu, FiX, FiSun } from 'react-icons/fi';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import axios from 'axios';
 import { BASE_URL } from './config';
-import About from './pages/About';
-import AccountSettings from './pages/AccountSettings';
-import VendorLogin from './pages/VendorLogin';
-import ManageAccount from './pages/ManageAccount';
-import PaidWeeksScreen from './pages/PaidWeeksScreen.jsx';
-import VendorRegister from './pages/VendorRegister';
-import RouteDetail from './pages/RouteDetail';
-import RoutesScreen from './pages/RoutesScreen';
-import StatsScreen from './pages/StatsScreen';
-import TermsScreen from './pages/TermsScreen';
-import VendorDetailScreen from './pages/VendorDetailScreen';
-import Invoices from './pages/Invoices';
-import Dashboard from './pages/Dashboard';
 import ModernMapLayout from './pages/ModernMapLayout';
-import SobreProjeto from './pages/SobreProjeto';
-import Sustentabilidade from './pages/Sustentabilidade';
-
-import Sessions from './pages/Sessions';
-import ForgotPassword from './pages/ForgotPassword';
-import Contacto from './pages/Contacto';
-import PlanosVendedores from './pages/PlanosVendedores';
 import Footer from './components/Footer';
 import './index.css';
+
+// Code-splitting: estas páginas só são transferidas quando o utilizador
+// navega para elas, reduzindo o bundle inicial carregado em "/".
+const About = lazy(() => import('./pages/About'));
+const AccountSettings = lazy(() => import('./pages/AccountSettings'));
+const VendorLogin = lazy(() => import('./pages/VendorLogin'));
+const ManageAccount = lazy(() => import('./pages/ManageAccount'));
+const PaidWeeksScreen = lazy(() => import('./pages/PaidWeeksScreen.jsx'));
+const VendorRegister = lazy(() => import('./pages/VendorRegister'));
+const RouteDetail = lazy(() => import('./pages/RouteDetail'));
+const RoutesScreen = lazy(() => import('./pages/RoutesScreen'));
+const StatsScreen = lazy(() => import('./pages/StatsScreen'));
+const TermsScreen = lazy(() => import('./pages/TermsScreen'));
+const VendorDetailScreen = lazy(() => import('./pages/VendorDetailScreen'));
+const Invoices = lazy(() => import('./pages/Invoices'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const SobreProjeto = lazy(() => import('./pages/SobreProjeto'));
+const Sustentabilidade = lazy(() => import('./pages/Sustentabilidade'));
+const Sessions = lazy(() => import('./pages/Sessions'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const Contacto = lazy(() => import('./pages/Contacto'));
+const PlanosVendedores = lazy(() => import('./pages/PlanosVendedores'));
 
 export default function App() {
   return (
@@ -47,23 +49,30 @@ function AppLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
   const navLinksRef = useRef(null);
+  const lastCheckedToken = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
+      lastCheckedToken.current = null;
       localStorage.removeItem('user');
       setIsLoggedIn(false);
       return;
     }
+    // Evita revalidar o token em cada mudança de rota: só verifica
+    // quando o token muda (login/logout) em vez de em todas as navegações.
+    if (token === lastCheckedToken.current) return;
     axios
       .get(`${BASE_URL}/vendors/me`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
+        lastCheckedToken.current = token;
         localStorage.setItem('user', JSON.stringify(res.data));
         setIsLoggedIn(true);
       })
       .catch(() => {
+        lastCheckedToken.current = null;
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         setIsLoggedIn(false);
@@ -158,31 +167,33 @@ function AppLayout() {
       />
 
       <div className="container">
-        <Routes>
-          <Route path="/" element={<ModernMapLayout />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/sobre-projeto" element={<SobreProjeto />} />
-          <Route path="/sustentabilidade" element={<Sustentabilidade />} />
-          <Route path="/settings" element={<AccountSettings />} />
-          <Route path="/login" element={<VendorLogin />} />
-          <Route path="/vendor-login" element={<VendorLogin />} />
-          <Route path="/vendor-register" element={<VendorRegister />} />
-          <Route path="/register" element={<VendorRegister />} />
-          <Route path="/account" element={<ManageAccount />} />
-          <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
-          <Route path="/invoices" element={<Invoices />} />
-          <Route path="/map" element={<ModernMapLayout />} />
-          <Route path="/route-detail" element={<RouteDetail />} />
-          <Route path="/routes" element={<RoutesScreen />} />
-          <Route path="/stats" element={<StatsScreen />} />
-          <Route path="/sessions" element={<Sessions />} />
-          <Route path="/terms" element={<TermsScreen />} />
-          <Route path="/vendors/:id" element={<VendorDetailScreen />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/contacto" element={<Contacto />} />
-          <Route path="/planos" element={<PlanosVendedores />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route path="/" element={<ModernMapLayout />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/sobre-projeto" element={<SobreProjeto />} />
+            <Route path="/sustentabilidade" element={<Sustentabilidade />} />
+            <Route path="/settings" element={<AccountSettings />} />
+            <Route path="/login" element={<VendorLogin />} />
+            <Route path="/vendor-login" element={<VendorLogin />} />
+            <Route path="/vendor-register" element={<VendorRegister />} />
+            <Route path="/register" element={<VendorRegister />} />
+            <Route path="/account" element={<ManageAccount />} />
+            <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
+            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/map" element={<ModernMapLayout />} />
+            <Route path="/route-detail" element={<RouteDetail />} />
+            <Route path="/routes" element={<RoutesScreen />} />
+            <Route path="/stats" element={<StatsScreen />} />
+            <Route path="/sessions" element={<Sessions />} />
+            <Route path="/terms" element={<TermsScreen />} />
+            <Route path="/vendors/:id" element={<VendorDetailScreen />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/contacto" element={<Contacto />} />
+            <Route path="/planos" element={<PlanosVendedores />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
+        </Suspense>
       </div>
       <Footer />
     </div>

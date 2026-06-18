@@ -26,8 +26,8 @@ else:
         DATABASE_URL,
         pool_pre_ping=True,
         pool_recycle=280,
-        pool_size=5,
-        max_overflow=2,
+        pool_size=20,
+        max_overflow=10,
     )
 
 # Sessão
@@ -77,3 +77,18 @@ def ensure_latest_schema():
             for col, stmt in migrations:
                 if col not in columns:
                     conn.execute(text(stmt))
+
+    # Índices adicionais em colunas muito consultadas (idempotente)
+    index_statements = [
+        "CREATE INDEX IF NOT EXISTS ix_routes_vendor_id ON routes (vendor_id)",
+        "CREATE INDEX IF NOT EXISTS ix_routes_end_time ON routes (end_time)",
+        "CREATE INDEX IF NOT EXISTS ix_paid_weeks_vendor_id ON paid_weeks (vendor_id)",
+        "CREATE INDEX IF NOT EXISTS ix_stories_vendor_id ON stories (vendor_id)",
+        "CREATE INDEX IF NOT EXISTS ix_stories_expires_at ON stories (expires_at)",
+    ]
+    with engine.begin() as conn:
+        for stmt in index_statements:
+            try:
+                conn.execute(text(stmt))
+            except Exception:
+                pass
