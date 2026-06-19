@@ -760,9 +760,8 @@ body {
   box-sizing: border-box;
   border: 9px solid var(--pin-color, #7B61FF);
   border-radius: 50% 50% 0;
-  background: #fff;
+  background: transparent;
   transform: rotate(45deg);
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35));
 }
 
 .vendor-pin-marker::before {
@@ -776,10 +775,6 @@ body {
   height: 4px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.25);
-}
-
-.vendor-own-pin .vendor-pin-marker::after {
-  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.5));
 }
 
 .user-location-marker {
