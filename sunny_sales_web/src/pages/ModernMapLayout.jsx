@@ -41,6 +41,51 @@ function haversineDistance(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+// Marker que anima suavemente entre posições em vez de saltar instantaneamente
+// para a nova posição recebida via WebSocket — disfarça pequenas oscilações
+// de GPS que ainda cheguem ao mapa.
+function AnimatedVendorMarker({ position, icon, eventHandlers }) {
+  const markerRef = useRef(null);
+  const displayedRef = useRef(position);
+  const animFrameRef = useRef(null);
+
+  useEffect(() => {
+    const marker = markerRef.current;
+    if (!marker) {
+      displayedRef.current = position;
+      return;
+    }
+    const from = displayedRef.current;
+    const to = position;
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+
+    const duration = 500;
+    const start = performance.now();
+
+    const step = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const lat = from[0] + (to[0] - from[0]) * t;
+      const lng = from[1] + (to[1] - from[1]) * t;
+      marker.setLatLng([lat, lng]);
+      if (t < 1) {
+        animFrameRef.current = requestAnimationFrame(step);
+      } else {
+        displayedRef.current = to;
+      }
+    };
+    animFrameRef.current = requestAnimationFrame(step);
+
+    return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [position[0], position[1]]);
+
+  return (
+    <Marker ref={markerRef} position={displayedRef.current} icon={icon} eventHandlers={eventHandlers} />
+  );
+}
+
 function getClientPinHtml(heading) {
   const hasHeading = heading !== null && !isNaN(heading);
   const arrow = hasHeading
@@ -480,7 +525,7 @@ export default function ModernMapLayout() {
               const isOwn = loggedVendor && Number(v.id) === Number(loggedVendor.id);
               const pinColor = v.pin_color || '#7B61FF';
               return (
-                <Marker
+                <AnimatedVendorMarker
                   key={v.id}
                   position={[v.current_lat, v.current_lng]}
                   icon={L.divIcon({

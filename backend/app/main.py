@@ -189,6 +189,11 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     return R * c
 
+# Distância mínima (metros) entre leituras de GPS consecutivas para serem
+# consideradas movimento real. Abaixo deste valor é ruído típico de GPS
+# e o ponto é ignorado, evitando que o trajeto "ande sozinho" parado.
+MIN_GPS_DISTANCE_M = 8.0
+
 # Gerenciador de WebSockets
 class ConnectionManager:
     # __init__
@@ -700,15 +705,23 @@ async def update_vendor_location(
     if not active_route:
         raise HTTPException(status_code=400, detail="Location sharing inactive")
 
+    points = json.loads(active_route.points or "[]")
+    last_point = points[-1] if points else None
+
+    # Ignora leituras de GPS demasiado próximas da última posição gravada:
+    # ruído de GPS (poucos metros) não deve ser contabilizado como movimento
+    # nem propagado ao mapa, para não dar a impressão de o vendedor estar
+    # sempre a deslocar-se enquanto está parado.
+    if last_point is not None:
+        moved = haversine(last_point["lat"], last_point["lng"], lat, lng)
+        if moved < MIN_GPS_DISTANCE_M:
+            return {"message": "Localização ignorada (ruído de GPS)"}
+
     vendor.current_lat = lat
     vendor.current_lng = lng
+    points.append({"lat": lat, "lng": lng, "t": utcnow().isoformat()})
+    active_route.points = json.dumps(points)
     db.commit()
-
-    if active_route:
-        points = json.loads(active_route.points or "[]")
-        points.append({"lat": lat, "lng": lng, "t": utcnow().isoformat()})
-        active_route.points = json.dumps(points)
-        db.commit()
 
     await manager.broadcast({"vendor_id": vendor_id, "lat": lat, "lng": lng})
     return {"message": "Localização atualizada com sucesso"}

@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
@@ -26,9 +27,16 @@ public class LocationForegroundService extends Service {
     private static final String CHANNEL_ID = "location_channel";
     private static final int NOTIFICATION_ID = 1;
 
+    // Distância mínima (m) entre leituras para serem aceites como movimento real,
+    // e precisão máxima (m) aceitável — leituras piores são ruído e descartadas,
+    // evitando que o pin "mexa" estando o vendedor parado.
+    private static final float MIN_UPDATE_DISTANCE_METERS = 8f;
+    private static final float MAX_ACCEPTABLE_ACCURACY_METERS = 20f;
+
     private FusedLocationProviderClient fusedClient;
     private LocationCallback locationCallback;
     private PowerManager.WakeLock wakeLock;
+    private Location lastAcceptedLocation;
 
     public interface LocationListener {
         void onLocationUpdate(double lat, double lng);
@@ -83,17 +91,25 @@ public class LocationForegroundService extends Service {
         LocationRequest request = new LocationRequest.Builder(1000)
                 .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
                 .setMinUpdateIntervalMillis(1000)
+                .setMinUpdateDistanceMeters(MIN_UPDATE_DISTANCE_METERS)
                 .build();
 
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult result) {
-                if (result.getLastLocation() != null && listener != null) {
-                    listener.onLocationUpdate(
-                            result.getLastLocation().getLatitude(),
-                            result.getLastLocation().getLongitude()
-                    );
+                Location location = result.getLastLocation();
+                if (location == null || listener == null) {
+                    return;
                 }
+                if (location.hasAccuracy() && location.getAccuracy() > MAX_ACCEPTABLE_ACCURACY_METERS) {
+                    return;
+                }
+                if (lastAcceptedLocation != null
+                        && lastAcceptedLocation.distanceTo(location) < MIN_UPDATE_DISTANCE_METERS) {
+                    return;
+                }
+                lastAcceptedLocation = location;
+                listener.onLocationUpdate(location.getLatitude(), location.getLongitude());
             }
         };
 
