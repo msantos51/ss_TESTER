@@ -12,6 +12,20 @@ import {
 import ImageCropper from '../components/ImageCropper';
 import './VendorDashboard.css';
 
+// Distância mínima (m) entre leituras de GPS para serem aceites como
+// movimento real; abaixo disto é ruído típico de GPS e a leitura é ignorada.
+const MIN_GPS_DISTANCE_M = 8;
+
+function haversineDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lng2 - lng1) * Math.PI) / 180;
+  const a = Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 const PAYMENT_ICONS = {
   'Numerário': <FiDollarSign />,
   'MB Way': <FiSmartphone />,
@@ -21,6 +35,7 @@ const PAYMENT_ICONS = {
 };
 
 let watchId = null;
+let lastSentLocation = null;
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -77,14 +92,26 @@ export default function VendorDashboard() {
       await axios.post(`${BASE_URL}/vendors/${vendor.id}/routes/start`, null, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      lastSentLocation = null;
       watchId = navigator.geolocation.watchPosition(
         async (pos) => {
+          const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+          // Descarta leituras pouco precisas ou demasiado próximas da última
+          // posição enviada (ruído de GPS), para o pin não "tremer" parado.
+          if (accuracy != null && accuracy > 20) return;
+          if (
+            lastSentLocation &&
+            haversineDistance(lastSentLocation.lat, lastSentLocation.lng, lat, lng) < MIN_GPS_DISTANCE_M
+          ) {
+            return;
+          }
           try {
             await axios.put(
               `${BASE_URL}/vendors/${vendor.id}/location`,
-              { lat: pos.coords.latitude, lng: pos.coords.longitude },
+              { lat, lng },
               { headers: { Authorization: `Bearer ${token}` } }
             );
+            lastSentLocation = { lat, lng };
           } catch (err) {
             console.error('Erro ao enviar localização:', err);
           }
