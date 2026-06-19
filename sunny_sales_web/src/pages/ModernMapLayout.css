@@ -760,6 +760,7 @@ body {
   box-sizing: border-box;
   border: 9px solid var(--pin-color, #7B61FF);
   border-radius: 50% 50% 0;
+  background: #fff;
   transform: rotate(45deg);
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35));
 }
