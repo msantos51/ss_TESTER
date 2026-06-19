@@ -639,12 +639,6 @@ export default function ModernMapLayout() {
                 <div className="filter-section">
                   <div className="filter-section-row">
                     <span className="filter-section-title">Vendedores</span>
-                    <button
-                      className="filter-reset-link"
-                      onClick={() => setPendingProducts([])}
-                    >
-                      Repor
-                    </button>
                   </div>
                   {PRODUCTS.map((p) => {
                     const active = pendingProducts.includes(p);
@@ -670,12 +664,6 @@ export default function ModernMapLayout() {
                       <FiMapPin size={14} style={{ marginRight: 6 }} />
                       Distância
                     </span>
-                    <button
-                      className="filter-reset-link"
-                      onClick={() => setPendingDistance(null)}
-                    >
-                      Repor
-                    </button>
                   </div>
                   <div className="filter-distance-row">
                     {DISTANCE_OPTIONS.map((opt) => (
