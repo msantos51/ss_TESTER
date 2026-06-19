@@ -1073,11 +1073,19 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         if vendor:
             vendor.subscription_active = True
             vendor.subscription_valid_until = utcnow() + timedelta(days=7)
+            receipt_url = None
+            invoice_id = session.get("invoice")
+            if invoice_id:
+                try:
+                    invoice = stripe.Invoice.retrieve(invoice_id)
+                    receipt_url = invoice.get("hosted_invoice_url") or invoice.get("invoice_pdf")
+                except Exception:
+                    receipt_url = None
             paid = models.PaidWeek(
                 vendor_id=vendor_id,
                 start_date=utcnow(),
                 end_date=utcnow() + timedelta(days=7),
-                receipt_url=session.get("receipt_url") or session.get("url"),
+                receipt_url=receipt_url,
             )
             db.add(paid)
             db.commit()
