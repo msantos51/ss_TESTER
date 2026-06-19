@@ -36,6 +36,11 @@ const PAYMENT_ICONS = {
 
 let watchId = null;
 let lastSentLocation = null;
+let lastSentAt = 0;
+
+// Tempo máximo (ms) sem enviar localização, mesmo sem movimento suficiente,
+// para o vendedor não desaparecer/demorar a aparecer no mapa quando está parado.
+const LOCATION_HEARTBEAT_MS = 25000;
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -93,13 +98,16 @@ export default function VendorDashboard() {
         headers: { Authorization: `Bearer ${token}` },
       });
       lastSentLocation = null;
+      lastSentAt = 0;
       watchId = navigator.geolocation.watchPosition(
         async (pos) => {
           const { latitude: lat, longitude: lng, accuracy } = pos.coords;
           // Descarta leituras pouco precisas ou demasiado próximas da última
           // posição enviada (ruído de GPS), para o pin não "tremer" parado.
           if (accuracy != null && accuracy > 20) return;
+          const stale = Date.now() - lastSentAt > LOCATION_HEARTBEAT_MS;
           if (
+            !stale &&
             lastSentLocation &&
             haversineDistance(lastSentLocation.lat, lastSentLocation.lng, lat, lng) < MIN_GPS_DISTANCE_M
           ) {
@@ -108,10 +116,11 @@ export default function VendorDashboard() {
           try {
             await axios.put(
               `${BASE_URL}/vendors/${vendor.id}/location`,
-              { lat, lng },
+              { lat, lng, heartbeat: stale },
               { headers: { Authorization: `Bearer ${token}` } }
             );
             lastSentLocation = { lat, lng };
+            lastSentAt = Date.now();
           } catch (err) {
             console.error('Erro ao enviar localização:', err);
           }

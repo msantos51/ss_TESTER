@@ -197,6 +197,10 @@ def haversine(lat1, lon1, lat2, lon2):
 # valores mais baixos deixavam passar oscilações dentro do raio de erro do GPS.
 MIN_GPS_DISTANCE_M = 15.0
 
+# Tempo máximo (s) sem registar uma posição, mesmo sem movimento suficiente,
+# para o vendedor não demorar minutos a aparecer/atualizar no mapa parado.
+LOCATION_HEARTBEAT_SECONDS = 30
+
 # Gerenciador de WebSockets
 class ConnectionManager:
     # __init__
@@ -687,6 +691,7 @@ async def update_vendor_location(
     vendor_id: int,
     lat: float = Body(...),
     lng: float = Body(...),
+    heartbeat: bool = Body(False),
     db: Session = Depends(get_db),
     current_vendor: models.Vendor = Depends(get_current_vendor),
 ):
@@ -715,9 +720,11 @@ async def update_vendor_location(
     # ruído de GPS (poucos metros) não deve ser contabilizado como movimento
     # nem propagado ao mapa, para não dar a impressão de o vendedor estar
     # sempre a deslocar-se enquanto está parado.
-    if last_point is not None:
+    if last_point is not None and not heartbeat:
         moved = haversine(last_point["lat"], last_point["lng"], lat, lng)
-        if moved < MIN_GPS_DISTANCE_M:
+        last_t = datetime.fromisoformat(last_point["t"])
+        stale = (utcnow() - last_t).total_seconds() > LOCATION_HEARTBEAT_SECONDS
+        if moved < MIN_GPS_DISTANCE_M and not stale:
             return {"message": "Localização ignorada (ruído de GPS)"}
 
     vendor.current_lat = lat
