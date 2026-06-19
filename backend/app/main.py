@@ -716,6 +716,80 @@ async def update_vendor_location(
     return {"message": "Localização atualizada com sucesso"}
 
 # --------------------------
+# Zonas quentes (presença de visitantes, apenas para vendedores)
+# --------------------------
+PRESENCE_ONLINE_WINDOW = timedelta(minutes=2)
+PRESENCE_STALE_WINDOW = timedelta(minutes=15)
+HEATMAP_GRID_SIZE = 0.003  # ~300m
+HEATMAP_MIN_USERS = 2
+
+# ping_presence
+@app.post("/presence/ping")
+def ping_presence(payload: schemas.PresencePing, db: Session = Depends(get_db)):
+    """Regista que um visitante anónimo tem o site aberto numa dada zona."""
+    now = utcnow()
+    db.query(models.ClientPresence).filter(
+        models.ClientPresence.last_seen < now - PRESENCE_STALE_WINDOW
+    ).delete()
+
+    presence = (
+        db.query(models.ClientPresence)
+        .filter(models.ClientPresence.session_id == payload.session_id)
+        .first()
+    )
+    if presence:
+        presence.lat = payload.lat
+        presence.lng = payload.lng
+        presence.last_seen = now
+    else:
+        db.add(
+            models.ClientPresence(
+                session_id=payload.session_id,
+                lat=payload.lat,
+                lng=payload.lng,
+                last_seen=now,
+            )
+        )
+    db.commit()
+    return {"status": "ok"}
+
+# get_presence_heatmap
+@app.get("/presence/heatmap")
+def get_presence_heatmap(
+    db: Session = Depends(get_db),
+    current_vendor: models.Vendor = Depends(get_current_vendor),
+):
+    """Devolve zonas de maior concentração de visitantes (sem expor posições exatas)."""
+    cutoff = utcnow() - PRESENCE_ONLINE_WINDOW
+    active = (
+        db.query(models.ClientPresence)
+        .filter(models.ClientPresence.last_seen >= cutoff)
+        .all()
+    )
+
+    cells: dict[tuple[int, int], dict] = {}
+    for p in active:
+        key = (
+            round(p.lat / HEATMAP_GRID_SIZE),
+            round(p.lng / HEATMAP_GRID_SIZE),
+        )
+        cell = cells.setdefault(key, {"lat_sum": 0.0, "lng_sum": 0.0, "count": 0})
+        cell["lat_sum"] += p.lat
+        cell["lng_sum"] += p.lng
+        cell["count"] += 1
+
+    zones = [
+        {
+            "lat": cell["lat_sum"] / cell["count"],
+            "lng": cell["lng_sum"] / cell["count"],
+            "count": cell["count"],
+        }
+        for cell in cells.values()
+        if cell["count"] >= HEATMAP_MIN_USERS
+    ]
+    return zones
+
+# --------------------------
 # Iniciar e terminar trajetos
 # --------------------------
 @app.post("/vendors/{vendor_id}/routes/start", response_model=schemas.RouteOut)
