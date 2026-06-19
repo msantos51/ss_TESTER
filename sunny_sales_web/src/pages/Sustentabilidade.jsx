@@ -22,38 +22,6 @@ export default function Sustentabilidade() {
         <div className="info-badge">Praias mais limpas</div>
       </div>
 
-      <div className="info-cards">
-        <div className="info-card">
-
-          <h3 className="info-card-title">Redução da Pegada Ecológica</h3>
-          <p className="info-card-text">
-            Ao otimizar os percursos dos vendedores com base na localização real dos clientes,
-            reduzimos as deslocações desnecessárias, diminuindo o esforço físico e o impacto
-            ambiental de cada jornada de trabalho.
-          </p>
-        </div>
-
-        <div className="info-card accent">
-
-          <h3 className="info-card-title">Embalagens Sustentáveis</h3>
-          <p className="info-card-text">
-            Incentivamos ativamente os vendedores parceiros a utilizarem sacos biodegradáveis,
-            embalagens reutilizáveis e materiais amigos do ambiente. A plataforma destaca os
-            vendedores com práticas sustentáveis certificadas.
-          </p>
-        </div>
-
-        <div className="info-card">
-
-          <h3 className="info-card-title">Apoio a Campanhas</h3>
-          <p className="info-card-text">
-            Divulgamos e colaboramos com iniciativas de limpeza de praias, sensibilização
-            ambiental e educação para a sustentabilidade. Juntos, construímos praias
-            melhores para as gerações futuras.
-          </p>
-        </div>
-      </div>
-
       <div className="info-section">
         <h3 className="info-section-title">Consciencialização dos Banhistas</h3>
         <ul className="info-list">

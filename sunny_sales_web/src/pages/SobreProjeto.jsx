@@ -22,38 +22,6 @@ export default function SobreProjeto() {
         <div className="info-badge">Web &amp; Mobile</div>
       </div>
 
-      <div className="info-cards">
-        <div className="info-card accent">
-          <div className="info-card-icon">🏖️</div>
-          <h3 className="info-card-title">Quem Somos</h3>
-          <p className="info-card-text">
-            Uma plataforma digital que valoriza o comércio ambulante de praia — de bolas de
-            Berlim e gelados a acessórios e bebidas — unindo tradição e tecnologia.
-          </p>
-        </div>
-
-        <div className="info-card">
-          <div className="info-card-icon">💡</div>
-          <h3 className="info-card-title">A Nossa Motivação</h3>
-          <p className="info-card-text">
-            Banhistas perdem tempo a procurar vendedores e estes percorrem longas distâncias
-            sem saber onde estão os clientes. O Sunny Sales resolve isto em tempo real.
-          </p>
-        </div>
-
-        <div className="info-card">
-          <div className="info-card-icon">✅</div>
-          <h3 className="info-card-title">Benefícios</h3>
-          <ul className="info-card-list">
-            <li>Menos tempo a procurar vendedores</li>
-            <li>Vendedores direcionados ao público certo</li>
-            <li>Menos deslocações desnecessárias</li>
-            <li>Comércio local mais organizado</li>
-            <li>Promoção da sustentabilidade balnear</li>
-          </ul>
-        </div>
-      </div>
-
       <div className="info-section">
         <h3 className="info-section-title">Como Funciona</h3>
         <ul className="info-timeline">
