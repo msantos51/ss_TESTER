@@ -31,7 +31,7 @@ public class LocationForegroundService extends Service {
     // e precisão máxima (m) aceitável — leituras piores são ruído e descartadas,
     // evitando que o pin "mexa" estando o vendedor parado.
     private static final float MIN_UPDATE_DISTANCE_METERS = 8f;
-    private static final float MAX_ACCEPTABLE_ACCURACY_METERS = 20f;
+    private static final float MAX_ACCEPTABLE_ACCURACY_METERS = 15f;
 
     private FusedLocationProviderClient fusedClient;
     private LocationCallback locationCallback;
@@ -104,9 +104,21 @@ public class LocationForegroundService extends Service {
                 if (location.hasAccuracy() && location.getAccuracy() > MAX_ACCEPTABLE_ACCURACY_METERS) {
                     return;
                 }
-                if (lastAcceptedLocation != null
-                        && lastAcceptedLocation.distanceTo(location) < MIN_UPDATE_DISTANCE_METERS) {
-                    return;
+                if (lastAcceptedLocation != null) {
+                    // O raio de incerteza do GPS (accuracy) pode por si só explicar a
+                    // distância entre duas leituras com o vendedor parado, por isso o
+                    // limiar de aceitação sobe com a pior das duas precisões em vez de
+                    // usar sempre um valor fixo de 8m.
+                    float requiredDistance = MIN_UPDATE_DISTANCE_METERS;
+                    if (location.hasAccuracy()) {
+                        requiredDistance = Math.max(requiredDistance, location.getAccuracy());
+                    }
+                    if (lastAcceptedLocation.hasAccuracy()) {
+                        requiredDistance = Math.max(requiredDistance, lastAcceptedLocation.getAccuracy());
+                    }
+                    if (lastAcceptedLocation.distanceTo(location) < requiredDistance) {
+                        return;
+                    }
                 }
                 lastAcceptedLocation = location;
                 listener.onLocationUpdate(location.getLatitude(), location.getLongitude());

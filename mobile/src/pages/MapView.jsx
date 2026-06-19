@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import AnimatedMarker from '../components/AnimatedMarker.jsx';
 
 const vendorIcon = L.divIcon({
   className: '',
@@ -71,7 +72,7 @@ export default function MapView() {
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
             attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
           />
-          <Marker position={position} icon={vendorIcon} />
+          <AnimatedMarker position={position} icon={vendorIcon} />
           <FollowPosition position={position} />
         </MapContainer>
       ) : (

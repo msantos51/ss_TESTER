@@ -192,7 +192,10 @@ def haversine(lat1, lon1, lat2, lon2):
 # Distância mínima (metros) entre leituras de GPS consecutivas para serem
 # consideradas movimento real. Abaixo deste valor é ruído típico de GPS
 # e o ponto é ignorado, evitando que o trajeto "ande sozinho" parado.
-MIN_GPS_DISTANCE_M = 8.0
+# Alinhado com a precisão máxima aceite no dispositivo (ver
+# MAX_ACCEPTABLE_ACCURACY_METERS em LocationForegroundService.java), já que
+# valores mais baixos deixavam passar oscilações dentro do raio de erro do GPS.
+MIN_GPS_DISTANCE_M = 15.0
 
 # Gerenciador de WebSockets
 class ConnectionManager:

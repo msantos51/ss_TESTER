@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import { registerPlugin } from '@capacitor/core';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { BASE_URL, WEB_URL } from '../config.js';
 import ProfileScreen from './ProfileScreen.jsx';
+import AnimatedMarker from '../components/AnimatedMarker.jsx';
 
 const LocationTracker = registerPlugin('LocationTracker');
 
@@ -173,7 +174,7 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
               url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
               attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
             />
-            <Marker position={position} icon={vendorIcon} />
+            <AnimatedMarker position={position} icon={vendorIcon} />
             <FollowPosition position={position} />
           </MapContainer>
         ) : (
