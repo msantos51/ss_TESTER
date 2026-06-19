@@ -372,9 +372,9 @@
 .info-footer-text {
   text-align: justify;
   font-size: 0.95rem;
-  color: var(--text-secondary);
-  background: var(--surface-warm);
-  border: 1px solid var(--border);
+  color: white;
+  background: #EE9B00;
+  border: 1px solid #EE9B00;
   border-radius: var(--radius-lg);
   padding: 18px 24px;
   margin-top: 1rem;
