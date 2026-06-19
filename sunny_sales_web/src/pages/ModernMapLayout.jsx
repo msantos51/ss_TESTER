@@ -66,22 +66,40 @@ function MapBearingController({ targetBearingRef }) {
   useEffect(() => {
     const current = { val: null };
     let rafId;
+    let lastApplied = null;
+    let lastApplyTs = 0;
     const LERP = 0.18;
+    // leaflet-rotate recomputes the tile grid bounds on every setBearing()
+    // call. Calling it every animation frame (even for sub-degree changes
+    // from compass noise) thrashes the tile layer and tiles never finish
+    // loading, leaving permanent gaps. Throttle real updates and skip
+    // imperceptible changes.
+    const MIN_INTERVAL_MS = 100;
+    const MIN_DELTA_DEG = 1;
 
-    const tick = () => {
+    const tick = (now) => {
       const target = targetBearingRef.current;
       if (target !== null && !isNaN(target)) {
         if (current.val === null) {
           current.val = target;
-          map.setBearing(target);
         } else {
           let diff = target - current.val;
           if (diff > 180) diff -= 360;
           if (diff < -180) diff += 360;
           if (Math.abs(diff) > 0.08) {
             current.val = (current.val + diff * LERP + 360) % 360;
-            map.setBearing(current.val);
           }
+        }
+
+        const sinceLast = now - lastApplyTs;
+        const appliedDiff =
+          lastApplied === null
+            ? Infinity
+            : Math.abs(((current.val - lastApplied + 540) % 360) - 180);
+        if (sinceLast >= MIN_INTERVAL_MS && appliedDiff >= MIN_DELTA_DEG) {
+          map.setBearing(current.val);
+          lastApplied = current.val;
+          lastApplyTs = now;
         }
       }
       rafId = requestAnimationFrame(tick);
