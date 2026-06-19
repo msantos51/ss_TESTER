@@ -53,7 +53,7 @@ class VendorOut(BaseModel):
     name: str
     email: str
     product: str
-    profile_photo: str
+    profile_photo: Optional[str] = None
     pin_color: Optional[str] = None
     current_lat: Optional[float] = None
     current_lng: Optional[float] = None
@@ -80,7 +80,7 @@ class VendorPublicOut(BaseModel):
     id: int
     name: str
     product: str
-    profile_photo: str
+    profile_photo: Optional[str] = None
     pin_color: Optional[str] = None
     current_lat: Optional[float] = None
     current_lng: Optional[float] = None
