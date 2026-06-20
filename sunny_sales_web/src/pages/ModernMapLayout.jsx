@@ -10,7 +10,7 @@ import LocateHint from '../components/LocateHint';
 import WelcomeCard from '../components/WelcomeCard';
 import WeatherCard from '../components/WeatherCard';
 import {
-  FiMapPin, FiFilter, FiCheck,
+  FiMapPin, FiFilter, FiCheck, FiArrowLeft,
   FiDollarSign, FiSmartphone, FiTerminal, FiCreditCard, FiWifi, FiTag,
 } from 'react-icons/fi';
 import './ModernMapLayout.css';
@@ -625,6 +625,14 @@ export default function ModernMapLayout() {
               <div className="filter-sheet" onClick={(e) => e.stopPropagation()}>
                 <div className="filter-sheet-handle" />
                 <div className="filter-sheet-header">
+                  <button
+                    className="filter-back-btn"
+                    onClick={() => setFilterOpen(false)}
+                    aria-label="Voltar"
+                  >
+                    <FiArrowLeft size={16} />
+                    <span>Voltar</span>
+                  </button>
                   <span className="filter-sheet-label">Filtrar por:</span>
                   <button
                     className="filter-close-btn"
