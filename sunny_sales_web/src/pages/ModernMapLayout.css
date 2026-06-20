@@ -231,6 +231,29 @@ body {
   letter-spacing: 0.08em;
 }
 
+.filter-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: auto;
+  padding: 6px 10px 6px 6px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.filter-back-btn:hover {
+  background: var(--surface-alt);
+  color: var(--primary);
+  transform: none;
+  box-shadow: none;
+}
+
 .filter-close-btn {
   width: 28px;
   height: 28px;
