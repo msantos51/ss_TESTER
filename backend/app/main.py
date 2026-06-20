@@ -21,6 +21,8 @@ import json
 import base64
 import hmac
 import hashlib
+import smtplib
+from email.message import EmailMessage
 from math import radians, sin, cos, sqrt, atan2
 from supabase import create_client
 
@@ -148,12 +150,31 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 BASE_APP_URL = os.getenv("BASE_APP_URL", "https://ss-tester.onrender.com")
 
+SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USER = os.getenv("SMTP_USER", "")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
+SMTP_FROM = os.getenv("SMTP_FROM", SMTP_USER)
+
 
 def send_email(to: str, subject: str, body: str) -> None:
-    """Send an email notification. Patch this in tests or integrate a real provider."""
+    """Send an email notification via SMTP. Patch this in tests or integrate another provider."""
     # O corpo do email contém tokens secretos (confirmação/reset de password);
     # nunca o registar em logs.
-    print(f"[Email] To: {to}\nSubject: {subject}")
+    if not SMTP_USER or not SMTP_PASSWORD:
+        print(f"[Email] SMTP não configurado. Para: {to}\nAssunto: {subject}")
+        return
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = SMTP_FROM
+    msg["To"] = to
+    msg.set_content(body)
+
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+        server.starttls()
+        server.login(SMTP_USER, SMTP_PASSWORD)
+        server.send_message(msg)
 
 # Configuração do Stripe
 stripe.api_key = os.getenv("STRIPE_API_KEY", "")
