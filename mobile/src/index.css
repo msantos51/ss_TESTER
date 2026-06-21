@@ -311,6 +311,9 @@ body {
   background: var(--primary);
   border: 2.5px solid white;
   box-shadow: 0 2px 8px rgba(75, 163, 195, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1;
 }
 
