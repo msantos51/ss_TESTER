@@ -11,12 +11,21 @@ import useDeviceHeading from '../hooks/useDeviceHeading.js';
 
 const LocationTracker = registerPlugin('LocationTracker');
 
-function getVendorLocationHtml(heading) {
+function hexToRgba(hex, alpha) {
+  const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
+  if (!match) return `rgba(75, 163, 195, ${alpha})`;
+  const [r, g, b] = match.slice(1).map((h) => parseInt(h, 16));
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function getVendorLocationHtml(heading, color) {
   const hasHeading = heading !== null && !isNaN(heading);
   const arrow = hasHeading
     ? `<svg viewBox="0 0 20 20" width="10" height="10" style="display:block;flex-shrink:0;transform:rotate(${heading}deg);"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
     : '';
-  return `<div class="vendor-location-marker"><div class="vendor-location-pulse"></div><div class="vendor-location-dot">${arrow}</div></div>`;
+  const pinColor = color || '#4BA3C3';
+  const pulseColor = hexToRgba(pinColor, 0.28);
+  return `<div class="vendor-location-marker"><div class="vendor-location-pulse" style="background:${pulseColor};"></div><div class="vendor-location-dot" style="background:${pinColor};">${arrow}</div></div>`;
 }
 
 function FollowPosition({ position }) {
@@ -40,10 +49,10 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
   const { heading, reportGpsHeading } = useDeviceHeading();
   const vendorIcon = useMemo(() => L.divIcon({
     className: '',
-    html: getVendorLocationHtml(heading),
+    html: getVendorLocationHtml(heading, user?.pin_color),
     iconSize: [40, 40],
     iconAnchor: [20, 20],
-  }), [heading]);
+  }), [heading, user?.pin_color]);
 
   const authHeader = { Authorization: `Bearer ${token}` };
   const subscriptionActive = user?.subscription_active;
