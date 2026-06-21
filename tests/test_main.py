@@ -1,6 +1,7 @@
 # Testes automatizados do backend com pytest
 import os
 import importlib
+import itertools
 import shutil
 
 import pytest
@@ -42,14 +43,40 @@ def client(tmp_path):
     if os.path.exists("profile_photos"):
         shutil.rmtree("profile_photos")
 
+_nif_counter = itertools.count(1)
+
+
+def make_nif():
+    """Gera um NIF português válido e único para cada registo de teste."""
+    base = f"1{next(_nif_counter):07d}"
+    check = sum(int(base[i]) * (9 - i) for i in range(8))
+    remainder = check % 11
+    control = 0 if remainder < 2 else 11 - remainder
+    return base + str(control)
+
+
 def register_vendor(client, email="vendor@example.com", password="Secret123", name="Vendor"):
     data = {
         "name": name,
         "email": email,
         "password": password,
         "product": "Bolas de Berlim",
+        "license_number": "LIC-123",
+        "license_municipality": "Lisboa",
+        "license_expiry": "2030-01-01",
+        "license_type": "Ambulante",
+        "nif": make_nif(),
+        "id_document_number": "12345678",
+        "phone": "912345678",
+        "address": "Rua de Teste 1",
+        "beaches": "Carcavelos",
+        "product_categories": "Bolas de Berlim",
+        "terms_accepted": "true",
     }
-    files = {"profile_photo": ("test.png", b"fakeimage", "image/png")}
+    files = {
+        "profile_photo": ("test.png", b"fakeimage", "image/png"),
+        "license_document": ("license.pdf", b"fakedoc", "application/pdf"),
+    }
     return client.post("/vendors/", data=data, files=files)
 
 
@@ -190,10 +217,12 @@ def test_vendor_listing(client):
     resp = client.get("/vendors/")
     assert resp.status_code == 200
     vendors = resp.json()
-    emails = [v["email"] for v in vendors]
-    assert "first@example.com" in emails and "second@example.com" in emails
+    # A listagem pública não expõe email (ver VendorPublicOut); identifica pelo nome.
+    names = [v["name"] for v in vendors]
+    assert "First" in names and "Second" in names
     for v in vendors:
         assert "current_lat" in v and "current_lng" in v
+        assert "email" not in v
 
 
 def test_vendor_listing_authenticated_vendor(client):
@@ -356,6 +385,11 @@ def test_password_reset_form(client):
 
 
 def test_paid_weeks_listing(client):
+    from backend.app import main
+
+    # O recibo é obtido a partir da fatura Stripe associada à sessão.
+    main.stripe.Invoice.retrieve = lambda invoice_id: {"hosted_invoice_url": "http://r"}
+
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
@@ -365,7 +399,7 @@ def test_paid_weeks_listing(client):
         "data": {
             "object": {
                 "metadata": {"vendor_id": vendor_id},
-                "url": "http://r",
+                "invoice": "in_test",
                 "payment_status": "paid",
             }
         },

@@ -8,7 +8,7 @@ Plataforma que liga **vendedores de praia** a **banhistas** em praias portuguesa
 
 ### O que é
 
-O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma aplicação móvel (React Native/Expo) e um backend FastAPI. Destina-se a:
+O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma aplicação móvel (Capacitor + React) e um backend FastAPI. Destina-se a:
 
 - **Banhistas** — encontram vendedores de praia no mapa em tempo real, filtram por produto ou distância e acedem ao perfil do vendedor.
 - **Vendedores** — ativam a partilha de localização, gerem rotas, veem estatísticas e gerem a subscrição paga.
@@ -58,11 +58,11 @@ ss_TESTER/
 │       ├── pages/            # Dashboard, Rotas, Stats, Login, Registo, ...
 │       ├── components/       # Botões de mapa, cropper de imagem, footer, ...
 │       └── config.js         # BASE_URL do backend
-├── sunny_sales_mobile/       # React Native / Expo (móvel)
+├── mobile/                   # Capacitor + React + Vite (móvel Android)
 │   └── src/
-│       ├── screens/          # Login, Registo, Home
-│       ├── navigation/       # Stack navigation
-│       └── context/          # AuthContext
+│       ├── pages/            # Login, MainScreen (mapa), ProfileScreen
+│       ├── components/       # AnimatedMarker
+│       └── hooks/            # useDeviceHeading (bússola)
 ├── scripts/                  # Utilitários (simulação de movimento, ...)
 ├── requirements.txt          # Dependências Python
 └── start.sh                  # Script de arranque
@@ -76,7 +76,7 @@ ss_TESTER/
 |---|---|
 | Backend | FastAPI, SQLAlchemy, PostgreSQL / SQLite, JWT, bcrypt, Stripe, WebSocket |
 | Web frontend | React 19, Vite, React Router, Leaflet + react-leaflet, Recharts, Axios |
-| Mobile | React Native 0.76, Expo 56, TypeScript, expo-location, AsyncStorage |
+| Mobile | Capacitor 7 (Android), React 18, Vite, Leaflet, @capacitor/geolocation |
 | Mapas | Leaflet com tiles CARTO, leaflet-rotate (bússola), Haversine (distâncias) |
 | Pagamentos | Stripe Checkout + Webhooks, semanas pagas com recibos |
 | Autenticação | JWT Bearer tokens, gestão de sessões multi-dispositivo |

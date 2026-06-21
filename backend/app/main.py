@@ -103,7 +103,6 @@ def utcnow():
 
 # Endpoint de verificação de funcionamento da API
 @app.get("/api/status")
-# read_root
 def read_root():
     return {"status": "ok"}
 
@@ -190,7 +189,6 @@ STRIPE_PLAN_PRICE_IDS = {
 }
 
 
-# validate_password
 def validate_password(password: str):
     if len(password) < 8 or password.lower() == password or not any(c.isdigit() for c in password):
         raise HTTPException(
@@ -199,7 +197,6 @@ def validate_password(password: str):
         )
 
 
-# haversine
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371000
     phi1 = radians(lat1)
@@ -220,21 +217,17 @@ MIN_GPS_DISTANCE_M = 15.0
 
 # Gerenciador de WebSockets
 class ConnectionManager:
-    # __init__
     def __init__(self):
         self.active_connections: list[WebSocket] = []
 
-    # connect
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
 
-    # disconnect
     def disconnect(self, websocket: WebSocket):
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
 
-    # broadcast
     async def broadcast(self, message: dict):
         for connection in list(self.active_connections):
             try:
@@ -258,18 +251,15 @@ if not SECRET_KEY:
     SECRET_KEY = "dev-insecure-secret-change-in-production"
 bearer_scheme = HTTPBearer(auto_error=False)
 
-# _b64
 def _b64(data: dict | bytes) -> str:
     if isinstance(data, dict):
         data = json.dumps(data, separators=(",", ":"), sort_keys=True).encode()
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
 
-# _b64decode
 def _b64decode(segment: str) -> bytes:
     padded = segment + "=" * (-len(segment) % 4)
     return base64.urlsafe_b64decode(padded)
 
-# create_access_token
 def create_access_token(payload: dict, expires_sec: int = 604800) -> str:
     data = payload.copy()
     data["exp"] = int(time.time()) + expires_sec
@@ -282,7 +272,6 @@ def create_access_token(payload: dict, expires_sec: int = 604800) -> str:
     segments.append(_b64(sig))
     return ".".join(segments)
 
-# decode_token
 def decode_token(token: str) -> dict:
     try:
         header_b64, payload_b64, sig_b64 = token.split(".")
@@ -299,7 +288,6 @@ def decode_token(token: str) -> dict:
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-# get_current_vendor
 def get_current_vendor(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
     db: Session = Depends(get_db),
@@ -322,7 +310,6 @@ def get_current_vendor(
     return vendor
 
 
-# get_current_vendor_optional
 def get_current_vendor_optional(request: Request, db: Session = Depends(get_db)):
     """Return the authenticated vendor if token is provided, otherwise None."""
     auth = request.headers.get("Authorization")
@@ -347,7 +334,6 @@ def get_current_vendor_optional(request: Request, db: Session = Depends(get_db))
 
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
 
-# get_admin
 def get_admin(request: Request):
     token = request.headers.get("X-Admin-Token")
     if not ADMIN_TOKEN or token != ADMIN_TOKEN:
@@ -355,7 +341,7 @@ def get_admin(request: Request):
     return True
 
 # --------------------------
-# Subscrip\xE7\xE3o
+# Subscrição
 # --------------------------
 def verify_active_subscription(vendor: models.Vendor, db: Session):
     """Ensure subscription is active and not expired."""
@@ -374,7 +360,6 @@ def verify_active_subscription(vendor: models.Vendor, db: Session):
 # Login do vendedor
 # --------------------------
 @app.post("/login", response_model=schemas.VendorOut)
-# login
 def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     """Autentica um vendedor a partir do email ou username."""
 
@@ -402,7 +387,6 @@ def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
 # Endpoint para obter JWT
 # --------------------------
 @app.post("/token")
-# generate_token
 async def generate_token(
 
     request: Request,
@@ -617,7 +601,6 @@ async def create_vendor(
 # Listar vendedores
 # --------------------------
 @app.get("/vendors/", response_model=list[schemas.VendorPublicOut])
-# list_vendors
 def list_vendors(
     current_vendor: models.Vendor | None = Depends(get_current_vendor_optional),
     db: Session = Depends(get_db),
@@ -645,7 +628,6 @@ def list_vendors(
 # Atualizar perfil do vendedor (agora com PATCH)
 # --------------------------
 @app.patch("/vendors/{vendor_id}/profile", response_model=schemas.VendorOut)
-# update_vendor_profile
 async def update_vendor_profile(
     vendor_id: int,
     name: str = Form(None),
@@ -703,7 +685,6 @@ async def update_vendor_profile(
 # Atualizar localização do vendedor
 # --------------------------
 @app.put("/vendors/{vendor_id}/location")
-# update_vendor_location
 async def update_vendor_location(
     vendor_id: int,
     lat: float = Body(...),
@@ -754,7 +735,6 @@ async def update_vendor_location(
 # Iniciar e terminar trajetos
 # --------------------------
 @app.post("/vendors/{vendor_id}/routes/start", response_model=schemas.RouteOut)
-# start_route
 def start_route(
     vendor_id: int,
     db: Session = Depends(get_db),
@@ -793,7 +773,6 @@ def start_route(
 
 
 @app.post("/vendors/{vendor_id}/routes/stop", response_model=schemas.RouteOut)
-# stop_route
 async def stop_route(
     vendor_id: int,
     db: Session = Depends(get_db),
@@ -830,11 +809,11 @@ async def stop_route(
     db.refresh(current_vendor)
     # Notify via websocket that the vendor stopped sharing location
     await manager.broadcast({
-    "vendor_id": vendor_id,
-    "lat": None,
-    "lng": None,
-    "remove": True  # 👈 Esta linha é essencial!
-})
+        "vendor_id": vendor_id,
+        "lat": None,
+        "lng": None,
+        "remove": True,
+    })
 
     return {
         "id": latest.id,
@@ -846,7 +825,6 @@ async def stop_route(
 
 
 @app.get("/vendors/{vendor_id}/routes", response_model=list[schemas.RouteOut])
-# list_routes
 def list_routes(
     vendor_id: int,
     db: Session = Depends(get_db),
@@ -875,7 +853,6 @@ def list_routes(
 
 
 @app.get("/vendors/{vendor_id}/paid-weeks", response_model=list[schemas.PaidWeekOut])
-# list_paid_weeks
 def list_paid_weeks(
     vendor_id: int,
     db: Session = Depends(get_db),
@@ -944,7 +921,6 @@ async def reset_password(token: str, request: Request, db: Session = Depends(get
 
 
 @app.get("/password-reset/{token}", response_class=HTMLResponse)
-# show_password_reset_form
 async def show_password_reset_form(token: str):
     return f"""
     <!DOCTYPE html>
@@ -967,7 +943,6 @@ async def show_password_reset_form(token: str):
 # Criar sessão de pagamento no Stripe
 # --------------------------
 @app.post("/vendors/{vendor_id}/create-checkout-session")
-# create_checkout_session
 def create_checkout_session(
     vendor_id: int,
     plan: str = "mensal",
@@ -998,7 +973,6 @@ def create_checkout_session(
 # WebSocket para localização em tempo real
 # --------------------------
 @app.websocket("/ws/locations")
-# websocket_locations
 async def websocket_locations(websocket: WebSocket):
     await manager.connect(websocket)
     try:
@@ -1008,7 +982,6 @@ async def websocket_locations(websocket: WebSocket):
         manager.disconnect(websocket)
 
 @app.post("/vendors/{vendor_id}/stories", response_model=schemas.StoryOut)
-# create_story
 async def create_story(
     vendor_id: int,
     file: UploadFile = File(...),
@@ -1037,7 +1010,6 @@ async def create_story(
 
 
 @app.get("/vendors/{vendor_id}/stories", response_model=list[schemas.StoryOut])
-# list_stories
 def list_stories(vendor_id: int, db: Session = Depends(get_db)):
     now = utcnow()
 
@@ -1071,7 +1043,6 @@ def list_stories(vendor_id: int, db: Session = Depends(get_db)):
 # Webhook do Stripe
 # --------------------------
 @app.post("/stripe/webhook")
-# stripe_webhook
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     if not STRIPE_WEBHOOK_SECRET:
         # Sem segredo configurado não é possível verificar a autenticidade do
@@ -1118,7 +1089,6 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 # Apenas acessível por administradores - nunca pelo próprio vendedor.
 # --------------------------
 @app.post("/vendors/{vendor_id}/activate-subscription")
-# activate_subscription_manual
 def activate_subscription_manual(
     vendor_id: int,
     db: Session = Depends(get_db),
@@ -1143,13 +1113,11 @@ def activate_subscription_manual(
 # Admin endpoints simples
 # --------------------------
 @app.get("/admin/vendors", response_model=list[schemas.VendorOut])
-# admin_list_vendors
 def admin_list_vendors(db: Session = Depends(get_db), admin: bool = Depends(get_admin)):
     vendors = db.query(models.Vendor).all()
     return vendors
 
 @app.post("/admin/vendors/{vendor_id}/deactivate")
-# admin_deactivate_vendor
 def admin_deactivate_vendor(vendor_id: int, db: Session = Depends(get_db), admin: bool = Depends(get_admin)):
     vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
     if not vendor:
