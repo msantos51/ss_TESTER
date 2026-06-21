@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import { registerPlugin } from '@capacitor/core';
@@ -7,15 +7,17 @@ import 'leaflet/dist/leaflet.css';
 import { BASE_URL, WEB_URL } from '../config.js';
 import ProfileScreen from './ProfileScreen.jsx';
 import AnimatedMarker from '../components/AnimatedMarker.jsx';
+import useDeviceHeading from '../hooks/useDeviceHeading.js';
 
 const LocationTracker = registerPlugin('LocationTracker');
 
-const vendorIcon = L.divIcon({
-  className: '',
-  html: '<div class="vendor-location-marker"><div class="vendor-location-pulse"></div><div class="vendor-location-dot"></div></div>',
-  iconSize: [40, 40],
-  iconAnchor: [20, 20],
-});
+function getVendorLocationHtml(heading) {
+  const hasHeading = heading !== null && !isNaN(heading);
+  const arrow = hasHeading
+    ? `<svg viewBox="0 0 20 20" width="10" height="10" style="display:block;flex-shrink:0;transform:rotate(${heading}deg);"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
+    : '';
+  return `<div class="vendor-location-marker"><div class="vendor-location-pulse"></div><div class="vendor-location-dot">${arrow}</div></div>`;
+}
 
 function FollowPosition({ position }) {
   const map = useMap();
@@ -35,6 +37,13 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
   const [showProfile, setShowProfile] = useState(false);
   const listenerRef = useRef(null);
   const watchIdRef = useRef(null);
+  const { heading, reportGpsHeading } = useDeviceHeading();
+  const vendorIcon = useMemo(() => L.divIcon({
+    className: '',
+    html: getVendorLocationHtml(heading),
+    iconSize: [40, 40],
+    iconAnchor: [20, 20],
+  }), [heading]);
 
   const authHeader = { Authorization: `Bearer ${token}` };
   const subscriptionActive = user?.subscription_active;
@@ -59,6 +68,7 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
             if (pos) {
               setMapError(null);
               setPosition([pos.coords.latitude, pos.coords.longitude]);
+              reportGpsHeading(pos.coords.heading, pos.coords.speed);
             }
           }
         );

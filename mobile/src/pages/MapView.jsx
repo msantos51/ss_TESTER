@@ -1,16 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import AnimatedMarker from '../components/AnimatedMarker.jsx';
+import useDeviceHeading from '../hooks/useDeviceHeading.js';
 
-const vendorIcon = L.divIcon({
-  className: '',
-  html: '<div class="vendor-location-marker"><div class="vendor-location-pulse"></div><div class="vendor-location-dot"></div></div>',
-  iconSize: [40, 40],
-  iconAnchor: [20, 20],
-});
+function getVendorLocationHtml(heading) {
+  const hasHeading = heading !== null && !isNaN(heading);
+  const arrow = hasHeading
+    ? `<svg viewBox="0 0 20 20" width="10" height="10" style="display:block;flex-shrink:0;transform:rotate(${heading}deg);"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
+    : '';
+  return `<div class="vendor-location-marker"><div class="vendor-location-pulse"></div><div class="vendor-location-dot">${arrow}</div></div>`;
+}
 
 function FollowPosition({ position }) {
   const map = useMap();
@@ -24,6 +26,13 @@ export default function MapView() {
   const [position, setPosition] = useState(null);
   const [error, setError] = useState(null);
   const watchIdRef = useRef(null);
+  const { heading, reportGpsHeading } = useDeviceHeading();
+  const vendorIcon = useMemo(() => L.divIcon({
+    className: '',
+    html: getVendorLocationHtml(heading),
+    iconSize: [40, 40],
+    iconAnchor: [20, 20],
+  }), [heading]);
 
   useEffect(() => {
     let active = true;
@@ -46,6 +55,7 @@ export default function MapView() {
             if (pos) {
               setError(null);
               setPosition([pos.coords.latitude, pos.coords.longitude]);
+              reportGpsHeading(pos.coords.heading, pos.coords.speed);
             }
           }
         );
