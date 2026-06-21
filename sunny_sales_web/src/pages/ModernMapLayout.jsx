@@ -528,12 +528,19 @@ export default function ModernMapLayout() {
                 <AnimatedVendorMarker
                   key={v.id}
                   position={[v.current_lat, v.current_lng]}
-                  icon={L.divIcon({
-                    className: isOwn ? 'vendor-own-pin' : 'vendor-pin',
-                    html: getVendorPinHtml(pinColor),
-                    iconSize: [30, 37],
-                    iconAnchor: [15, 36],
-                  })}
+                  icon={isOwn
+                    ? L.divIcon({
+                        className: 'client-pin',
+                        html: getClientPinHtml(heading),
+                        iconSize: [50, 50],
+                        iconAnchor: [25, 25],
+                      })
+                    : L.divIcon({
+                        className: 'vendor-pin',
+                        html: getVendorPinHtml(pinColor),
+                        iconSize: [30, 37],
+                        iconAnchor: [15, 36],
+                      })}
                   eventHandlers={{
                     click: () => focusVendor(v),
                   }}
