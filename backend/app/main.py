@@ -162,10 +162,8 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 SMTP_FROM = os.getenv("SMTP_FROM", SMTP_USER)
 
 
-def send_email(to: str, subject: str, body: str) -> None:
+def send_email(to: str, subject: str, body: str, html: str | None = None) -> None:
     """Send an email notification via SMTP. Patch this in tests or integrate another provider."""
-    # O corpo do email contém tokens secretos (confirmação/reset de password);
-    # nunca o registar em logs.
     if not SMTP_USER or not SMTP_PASSWORD:
         print(f"[Email] SMTP não configurado. Para: {to}\nAssunto: {subject}")
         return
@@ -175,6 +173,8 @@ def send_email(to: str, subject: str, body: str) -> None:
     msg["From"] = SMTP_FROM
     msg["To"] = to
     msg.set_content(body)
+    if html:
+        msg.add_alternative(html, subtype="html")
 
     with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
         server.starttls()
@@ -595,10 +595,37 @@ async def create_vendor(
     db.add(new_vendor)
     db.commit()
     db.refresh(new_vendor)
+    confirm_link = f"{BASE_APP_URL}/confirm-email/{confirmation_token}"
     send_email(
         to=email,
-        subject="Confirma o teu email",
-        body=f"Clica no link para confirmares a tua conta: {BASE_APP_URL}/confirm-email/{confirmation_token}",
+        subject="Sunny Sales - Confirma o teu email",
+        body=f"Olá {name},\n\nObrigado por te registares na Sunny Sales!\n\nClica no link para confirmares a tua conta:\n{confirm_link}\n\nSe não criaste esta conta, ignora este email.\n\nCumprimentos,\nEquipa Sunny Sales",
+        html=f"""<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
+    <tr><td align="center">
+      <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <tr><td style="background:linear-gradient(135deg,#FCB454,#F7931E);padding:30px;text-align:center;">
+          <h1 style="margin:0;color:#ffffff;font-size:24px;">&#9728;&#65039; Sunny Sales</h1>
+        </td></tr>
+        <tr><td style="padding:30px;">
+          <h2 style="color:#333;margin-top:0;">Olá {name}!</h2>
+          <p style="color:#555;font-size:16px;line-height:1.6;">Obrigado por te registares na <strong>Sunny Sales</strong>. Para ativares a tua conta, confirma o teu email clicando no botão abaixo:</p>
+          <div style="text-align:center;margin:30px 0;">
+            <a href="{confirm_link}" style="background:#FCB454;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Confirmar Email</a>
+          </div>
+          <p style="color:#888;font-size:13px;">Se o botão não funcionar, copia e cola este link no teu navegador:</p>
+          <p style="color:#888;font-size:13px;word-break:break-all;">{confirm_link}</p>
+          <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
+          <p style="color:#aaa;font-size:12px;text-align:center;">Se não criaste esta conta, ignora este email.<br>Equipa Sunny Sales</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>""",
     )
     return new_vendor
 
@@ -875,15 +902,36 @@ def list_paid_weeks(
     return weeks
 
 
-@app.get("/confirm-email/{token}")
+@app.get("/confirm-email/{token}", response_class=HTMLResponse)
 def confirm_email(token: str, db: Session = Depends(get_db)):
     vendor = db.query(models.Vendor).filter(models.Vendor.confirmation_token == token).first()
     if not vendor:
-        raise HTTPException(status_code=404, detail="Invalid or expired confirmation token")
+        return HTMLResponse(
+            status_code=404,
+            content="""<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<title>Link Inválido</title></head>
+<body style="font-family:'Roboto',sans-serif;background:#f4f4f4;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;">
+<div style="background:#fff;border-radius:12px;padding:40px;text-align:center;max-width:420px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+<h2 style="color:#c62828;">&#10060; Link inválido ou expirado</h2>
+<p style="color:#555;">Este link de confirmação já não é válido. Se já confirmaste o teu email, podes fazer login normalmente.</p>
+<a href="/" style="display:inline-block;margin-top:20px;background:#FCB454;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:bold;">Ir para a página inicial</a>
+</div></body></html>""",
+        )
     vendor.email_confirmed = True
     vendor.confirmation_token = None
     db.commit()
-    return {"status": "Email confirmed successfully"}
+    return HTMLResponse(content=f"""<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<title>Email Confirmado</title></head>
+<body style="font-family:'Roboto',sans-serif;background:#f4f4f4;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;">
+<div style="background:#fff;border-radius:12px;padding:40px;text-align:center;max-width:420px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+<h2 style="color:#2e7d32;">&#9989; Email confirmado com sucesso!</h2>
+<p style="color:#555;">Olá <strong>{vendor.name}</strong>, a tua conta Sunny Sales está agora ativa. Já podes fazer login.</p>
+<a href="/" style="display:inline-block;margin-top:20px;background:#FCB454;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:bold;">Fazer Login</a>
+</div></body></html>""")
 
 
 @app.post("/password-reset-request")
