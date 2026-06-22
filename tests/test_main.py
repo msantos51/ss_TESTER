@@ -196,9 +196,9 @@ def test_login_with_vendor_name(client):
 def test_password_reset_flow(client):
     register_vendor(client)
     confirm_latest_email(client)
-    client.post("/password-reset-request", data={"email": "vendor@example.com"})
+    client.post("/password-reset-request", json={"email": "vendor@example.com"})
     body = client.sent_emails[-1]["body"]
-    token = body.split("/password-reset/")[1]
+    token = body.split("/password-reset/")[1].split()[0].strip()
     resp = client.post(f"/password-reset/{token}", data={"new_password": "Newpass1"})
     assert resp.status_code == 200
     resp = client.post("/token", json={"email": "vendor@example.com", "password": "Newpass1"})
@@ -371,9 +371,9 @@ def test_routes_flow(client):
 def test_password_reset_form(client):
     register_vendor(client)
     confirm_latest_email(client)
-    client.post("/password-reset-request", data={"email": "vendor@example.com"})
+    client.post("/password-reset-request", json={"email": "vendor@example.com"})
     body = client.sent_emails[-1]["body"]
-    token = body.split("/password-reset/")[1]
+    token = body.split("/password-reset/")[1].split()[0].strip()
 
     resp = client.get(f"/password-reset/{token}")
     assert resp.status_code == 200
