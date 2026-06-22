@@ -9,7 +9,6 @@ def utcnow():
     """Return current UTC time as a naive datetime."""
     return datetime.now(timezone.utc).replace(tzinfo=None)
 
-# Vendor
 class Vendor(Base):
     """Tabela principal de vendedores (utilizadores)."""
 
@@ -62,7 +61,6 @@ class Vendor(Base):
     )
 
 
-# VendorSession
 class VendorSession(Base):
     """Sessões ativas de cada vendedor."""
 
@@ -77,7 +75,6 @@ class VendorSession(Base):
     vendor = relationship("Vendor", back_populates="sessions")
 
 
-# Client
 class Client(Base):
     """Utilizador cliente que pode avaliar e guardar favoritos."""
 
@@ -98,7 +95,6 @@ class Client(Base):
 
 
 
-# Route
 class Route(Base):
     """Trajetos percorridos pelos vendedores."""
 
@@ -114,7 +110,6 @@ class Route(Base):
     vendor = relationship("Vendor", back_populates="routes")
 
 
-# PaidWeek
 class PaidWeek(Base):
     """Registo de semanas pagas pelos vendedores."""
 
@@ -129,7 +124,6 @@ class PaidWeek(Base):
     vendor = relationship("Vendor")
 
 
-# Story
 class Story(Base):
     """Stories efêmeras publicadas pelos vendedores."""
 

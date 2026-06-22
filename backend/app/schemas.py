@@ -3,7 +3,6 @@ from pydantic import BaseModel, ConfigDict
 from typing import Optional, Literal
 from datetime import datetime
 
-# UserLogin
 class UserLogin(BaseModel):
     """Schema usado para autenticação de vendedores.
 
@@ -17,7 +16,6 @@ class UserLogin(BaseModel):
     password: str
     force: bool = False
 
-# VendorProfileUpdate
 class VendorProfileUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
@@ -26,7 +24,6 @@ class VendorProfileUpdate(BaseModel):
     profile_photo: Optional[str] = None
     pin_color: Optional[str] = None
 
-# VendorCreate
 class VendorCreate(BaseModel):
     name: str
     email: str
@@ -47,7 +44,6 @@ class VendorCreate(BaseModel):
     business_name: Optional[str] = None
     terms_accepted: bool
 
-# VendorOut
 class VendorOut(BaseModel):
     id: int
     name: str
@@ -91,14 +87,12 @@ class VendorPublicOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# RoutePoint
 class RoutePoint(BaseModel):
     lat: float
     lng: float
     t: str
 
 
-# RouteOut
 class RouteOut(BaseModel):
     id: int
     start_time: str
@@ -110,7 +104,6 @@ class RouteOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# PaidWeekOut
 class PaidWeekOut(BaseModel):
     id: int
     start_date: datetime
@@ -121,7 +114,6 @@ class PaidWeekOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# StoryOut
 class StoryOut(BaseModel):
     id: int
     media_url: str
