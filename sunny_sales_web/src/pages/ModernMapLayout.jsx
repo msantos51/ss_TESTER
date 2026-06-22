@@ -86,12 +86,15 @@ function AnimatedVendorMarker({ position, icon, eventHandlers }) {
   );
 }
 
-function getClientPinHtml(heading) {
+function getClientPinHtml(heading, color) {
   const hasHeading = heading !== null && !isNaN(heading);
   const arrow = hasHeading
     ? `<svg viewBox="0 0 20 20" width="12" height="12" style="display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
     : '';
-  return `<div class="user-location-marker"><div class="user-location-pulse"></div><div class="user-location-dot">${arrow}</div></div>`;
+  const safeColor = color ? escapeHtml(color) : '';
+  const pulseStyle = safeColor ? ` style="background:${safeColor}33;"` : '';
+  const dotStyle = safeColor ? ` style="background:${safeColor};box-shadow:0 2px 8px ${safeColor}88;"` : '';
+  return `<div class="user-location-marker"><div class="user-location-pulse"${pulseStyle}></div><div class="user-location-dot"${dotStyle}>${arrow}</div></div>`;
 }
 
 function escapeHtml(str) {
@@ -531,7 +534,7 @@ export default function ModernMapLayout() {
                   icon={isOwn
                     ? L.divIcon({
                         className: 'client-pin',
-                        html: getClientPinHtml(heading),
+                        html: getClientPinHtml(heading, pinColor),
                         iconSize: [50, 50],
                         iconAnchor: [25, 25],
                       })
