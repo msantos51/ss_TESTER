@@ -20,7 +20,7 @@ class VendorProfileUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
     password: Optional[str] = None
-    product: Optional[Literal["Bolas de Berlim", "Gelados", "Acessórios"]] = None
+    product: Optional[Literal["Bolas de Berlim", "Gelados", "Acessórios de Praia"]] = None
     profile_photo: Optional[str] = None
     pin_color: Optional[str] = None
 
@@ -28,7 +28,7 @@ class VendorCreate(BaseModel):
     name: str
     email: str
     password: str
-    product: Literal["Bolas de Berlim", "Gelados", "Acessórios"]
+    product: Literal["Bolas de Berlim", "Gelados", "Acessórios de Praia"]
     profile_photo: str
     license_number: str
     license_municipality: str

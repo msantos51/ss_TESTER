@@ -100,6 +100,20 @@ export default function VendorRegister() {
         setError('O NIF deve ter exatamente 9 dígitos.');
         return false;
       }
+      if (!'12356789'.includes(nif[0])) {
+        setError('NIF inválido.');
+        return false;
+      }
+      {
+        let check = 0;
+        for (let i = 0; i < 8; i++) check += parseInt(nif[i]) * (9 - i);
+        const remainder = check % 11;
+        const control = remainder < 2 ? 0 : 11 - remainder;
+        if (parseInt(nif[8]) !== control) {
+          setError('NIF inválido (dígito de controlo incorreto).');
+          return false;
+        }
+      }
     } else if (s === 3) {
       if (!product) {
         setError('Selecione um produto principal.');
@@ -157,6 +171,7 @@ export default function VendorRegister() {
       setSuccess('Registo efetuado com sucesso! Verifique o seu email para confirmar a conta.');
     } catch (err) {
       console.error('Erro:', err);
+      console.error('Resposta do servidor:', err.response?.data);
       const detail = err.response?.data?.detail;
       if (Array.isArray(detail)) {
         setError(detail.map((e) => e.msg).join('; '));
