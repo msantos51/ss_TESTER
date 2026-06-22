@@ -21,8 +21,6 @@ import json
 import base64
 import hmac
 import hashlib
-import smtplib
-from email.message import EmailMessage
 from math import radians, sin, cos, sqrt, atan2
 from supabase import create_client
 import httpx
@@ -170,31 +168,29 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 BASE_APP_URL = os.getenv("BASE_APP_URL", "https://ss-tester.onrender.com")
 
-SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-SMTP_USER = os.getenv("SMTP_USER", "")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
-SMTP_FROM = os.getenv("SMTP_FROM", SMTP_USER)
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+RESEND_FROM = os.getenv("RESEND_FROM", "Sunny Sales <onboarding@resend.dev>")
 
 
 def send_email(to: str, subject: str, body: str, html: str | None = None) -> bool:
-    """Send an email via SMTP. Returns True if sent, False if SMTP not configured."""
-    if not SMTP_USER or not SMTP_PASSWORD:
-        print(f"[Email] SMTP não configurado. Para: {to}\nAssunto: {subject}")
+    """Send an email via Resend. Returns True if sent, False if Resend not configured."""
+    if not RESEND_API_KEY:
+        print(f"[Email] Resend não configurado. Para: {to}\nAssunto: {subject}")
         return False
 
-    msg = EmailMessage()
-    msg["Subject"] = subject
-    msg["From"] = SMTP_FROM
-    msg["To"] = to
-    msg.set_content(body)
-    if html:
-        msg.add_alternative(html, subtype="html")
-
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as server:
-        server.starttls()
-        server.login(SMTP_USER, SMTP_PASSWORD)
-        server.send_message(msg)
+    response = httpx.post(
+        "https://api.resend.com/emails",
+        headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+        json={
+            "from": RESEND_FROM,
+            "to": [to],
+            "subject": subject,
+            "text": body,
+            **({"html": html} if html else {}),
+        },
+        timeout=15,
+    )
+    response.raise_for_status()
     return True
 
 # Configuração do Stripe
@@ -575,7 +571,7 @@ async def resend_confirmation_email(
     if not vendor.confirmation_token:
         vendor.confirmation_token = uuid4().hex
         db.commit()
-    if not SMTP_USER or not SMTP_PASSWORD:
+    if not RESEND_API_KEY:
         raise HTTPException(status_code=503, detail="Não foi possível enviar o email. Tente novamente mais tarde.")
     background_tasks.add_task(_send_confirmation_email, vendor.name, vendor.email, vendor.confirmation_token)
     return {"detail": "Email de confirmação reenviado com sucesso"}
