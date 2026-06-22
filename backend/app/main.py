@@ -1,6 +1,6 @@
 # main.py - aplicação FastAPI com rotas principais e PATCH otimizado
 
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form, Body, WebSocket, WebSocketDisconnect, Request
+from fastapi import BackgroundTasks, FastAPI, Depends, HTTPException, UploadFile, File, Form, Body, WebSocket, WebSocketDisconnect, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -176,7 +176,7 @@ def send_email(to: str, subject: str, body: str, html: str | None = None) -> boo
     if html:
         msg.add_alternative(html, subtype="html")
 
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as server:
         server.starttls()
         server.login(SMTP_USER, SMTP_PASSWORD)
         server.send_message(msg)
@@ -549,6 +549,7 @@ def _send_confirmation_email(name: str, email: str, confirmation_token: str) -> 
 @app.post("/vendors/resend-confirmation")
 async def resend_confirmation_email(
     email: str = Body(..., embed=True),
+    background_tasks: BackgroundTasks = BackgroundTasks(),
     db: Session = Depends(get_db),
 ):
     vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
@@ -559,9 +560,9 @@ async def resend_confirmation_email(
     if not vendor.confirmation_token:
         vendor.confirmation_token = uuid4().hex
         db.commit()
-    sent = _send_confirmation_email(vendor.name, vendor.email, vendor.confirmation_token)
-    if not sent:
+    if not SMTP_USER or not SMTP_PASSWORD:
         raise HTTPException(status_code=503, detail="Não foi possível enviar o email. Tente novamente mais tarde.")
+    background_tasks.add_task(_send_confirmation_email, vendor.name, vendor.email, vendor.confirmation_token)
     return {"detail": "Email de confirmação reenviado com sucesso"}
 
 
@@ -581,6 +582,7 @@ async def create_vendor(
     iban: str = Form(""),
     business_name: str = Form(""),
     terms_accepted: bool = Form(...),
+    background_tasks: BackgroundTasks = BackgroundTasks(),
     db: Session = Depends(get_db),
 ):
     if not terms_accepted:
@@ -628,10 +630,10 @@ async def create_vendor(
     db.commit()
     db.refresh(new_vendor)
 
-    email_sent = _send_confirmation_email(name, email, confirmation_token)
+    background_tasks.add_task(_send_confirmation_email, name, email, confirmation_token)
 
     vendor_data = schemas.VendorOut.model_validate(new_vendor).model_dump(mode="json")
-    vendor_data["email_sent"] = email_sent
+    vendor_data["email_sent"] = True
     return JSONResponse(content=vendor_data, status_code=201)
 
 
@@ -940,7 +942,11 @@ def confirm_email(token: str, db: Session = Depends(get_db)):
 
 
 @app.post("/password-reset-request")
-async def password_reset_request(request: Request, db: Session = Depends(get_db)):
+async def password_reset_request(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
     form = await request.form()
     email = form.get("email", "")
     vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
@@ -949,14 +955,12 @@ async def password_reset_request(request: Request, db: Session = Depends(get_db)
         vendor.password_reset_token = token
         vendor.password_reset_expires = utcnow() + timedelta(hours=2)
         db.commit()
-        try:
-            send_email(
-                to=email,
-                subject="Redefinir Palavra-passe",
-                body=f"Clica no link para redefenires a tua palavra-passe: {BASE_APP_URL}/password-reset/{token}",
-            )
-        except Exception as exc:
-            print(f"[Email] Falha ao enviar email de reset para {email}: {exc}")
+        background_tasks.add_task(
+            send_email,
+            to=email,
+            subject="Redefinir Palavra-passe",
+            body=f"Clica no link para redefenires a tua palavra-passe: {BASE_APP_URL}/password-reset/{token}",
+        )
     return {"status": "ok"}
 
 
