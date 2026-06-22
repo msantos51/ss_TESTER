@@ -61,10 +61,6 @@ def register_vendor(client, email="vendor@example.com", password="Secret123", na
         "email": email,
         "password": password,
         "product": "Bolas de Berlim",
-        "license_number": "LIC-123",
-        "license_municipality": "Lisboa",
-        "license_expiry": "2030-01-01",
-        "license_type": "Ambulante",
         "nif": make_nif(),
         "id_document_number": "12345678",
         "phone": "912345678",
@@ -75,7 +71,6 @@ def register_vendor(client, email="vendor@example.com", password="Secret123", na
     }
     files = {
         "profile_photo": ("test.png", b"fakeimage", "image/png"),
-        "license_document": ("license.pdf", b"fakedoc", "application/pdf"),
     }
     return client.post("/vendors/", data=data, files=files)
 

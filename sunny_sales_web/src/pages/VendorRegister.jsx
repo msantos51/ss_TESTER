@@ -4,30 +4,9 @@ import { BASE_URL } from '../config';
 import ImageCropper from '../components/ImageCropper';
 import './VendorRegister.css';
 
-const MUNICIPALITIES = [
-  "Albufeira", "Alcoutim", "Aljezur", "Castro Marim", "Faro",
-  "Lagoa", "Lagos", "Loulé", "Monchique", "Olhão",
-  "Portimão", "São Brás de Alportel", "Silves", "Tavira",
-  "Vila do Bispo", "Vila Real de Santo António",
-  "Almada", "Cascais", "Grândola", "Lisboa", "Oeiras",
-  "Santiago do Cacém", "Sesimbra", "Setúbal", "Sines",
-  "Sintra", "Torres Vedras", "Peniche", "Nazaré",
-  "Espinho", "Matosinhos", "Porto", "Vila Nova de Gaia",
-  "Viana do Castelo", "Caminha", "Vila do Conde", "Póvoa de Varzim",
-];
-
-const LICENSE_TYPES = [
-  "Vendedor Ambulante / Itinerante",
-  "Barraca Fixa",
-  "Concessão de Praia",
-  "Venda Ambulante de Gelados",
-  "Aluguer de Equipamentos",
-];
-
-
 export default function VendorRegister() {
   const [step, setStep] = useState(1);
-  const totalSteps = 4;
+  const totalSteps = 3;
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -35,12 +14,6 @@ export default function VendorRegister() {
   const [product, setProduct] = useState('');
   const [photo, setPhoto] = useState(null);
   const [cropSrc, setCropSrc] = useState(null);
-
-  const [licenseNumber, setLicenseNumber] = useState('');
-  const [licenseMunicipality, setLicenseMunicipality] = useState('');
-  const [licenseExpiry, setLicenseExpiry] = useState('');
-  const [licenseType, setLicenseType] = useState('');
-  const [licenseDocument, setLicenseDocument] = useState(null);
 
   const [nif, setNif] = useState('');
   const [idDocumentNumber, setIdDocumentNumber] = useState('');
@@ -71,23 +44,9 @@ export default function VendorRegister() {
     setPhoto(blob);
   };
 
-  const handleLicenseDocChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setLicenseDocument(file);
-  };
-
   const validateStep = (s) => {
     setError('');
     if (s === 1) {
-      if (!licenseNumber || !licenseMunicipality || !licenseExpiry || !licenseType) {
-        setError('Preencha todos os campos de licença.');
-        return false;
-      }
-      if (!licenseDocument) {
-        setError('Faça upload do comprovativo de licença.');
-        return false;
-      }
-    } else if (s === 2) {
       if (!name || !email || !password || !nif || !idDocumentNumber || !phone || !address) {
         setError('Preencha todos os campos de identificação.');
         return false;
@@ -114,7 +73,7 @@ export default function VendorRegister() {
           return false;
         }
       }
-    } else if (s === 3) {
+    } else if (s === 2) {
       if (!product) {
         setError('Selecione um produto principal.');
         return false;
@@ -123,7 +82,7 @@ export default function VendorRegister() {
         setError('É necessária uma foto de perfil.');
         return false;
       }
-    } else if (s === 4) {
+    } else if (s === 3) {
       if (!termsAccepted) {
         setError('É necessário aceitar os Termos e Condições.');
         return false;
@@ -146,7 +105,7 @@ export default function VendorRegister() {
     setError('');
     setSuccess('');
 
-    if (!validateStep(4)) return;
+    if (!validateStep(3)) return;
 
     const formData = new FormData();
     formData.append('name', name);
@@ -154,11 +113,6 @@ export default function VendorRegister() {
     formData.append('password', password);
     formData.append('product', product);
     formData.append('profile_photo', new File([photo], 'profile.jpg', { type: 'image/jpeg' }));
-    formData.append('license_number', licenseNumber);
-    formData.append('license_municipality', licenseMunicipality);
-    formData.append('license_expiry', licenseExpiry);
-    formData.append('license_type', licenseType);
-    formData.append('license_document', licenseDocument);
     formData.append('nif', nif);
     formData.append('id_document_number', idDocumentNumber);
     formData.append('phone', phone);
@@ -186,7 +140,6 @@ export default function VendorRegister() {
   };
 
   const stepTitles = [
-    'Validação de Licença',
     'Identificação',
     'Dados Operacionais',
     'Confirmação',
@@ -208,43 +161,6 @@ export default function VendorRegister() {
   );
 
   const renderStep1 = () => (
-    <>
-      <h3 className="vr-step-title">Validação de Licença</h3>
-      <span className="input-span">
-        <label className="label">Número de Licença / Concessão *</label>
-        <input type="text" placeholder="Ex: LIC-2024-001234" value={licenseNumber} onChange={(e) => setLicenseNumber(e.target.value)} />
-      </span>
-      <span className="input-span">
-        <label className="label">Câmara Municipal *</label>
-        <select value={licenseMunicipality} onChange={(e) => setLicenseMunicipality(e.target.value)}>
-          <option value="">Selecione a câmara</option>
-          {MUNICIPALITIES.map((m) => (
-            <option key={m} value={m}>{m}</option>
-          ))}
-        </select>
-      </span>
-      <span className="input-span">
-        <label className="label">Data de Validade *</label>
-        <input type="date" value={licenseExpiry} onChange={(e) => setLicenseExpiry(e.target.value)} />
-      </span>
-      <span className="input-span">
-        <label className="label">Tipo de Licença *</label>
-        <select value={licenseType} onChange={(e) => setLicenseType(e.target.value)}>
-          <option value="">Selecione o tipo</option>
-          {LICENSE_TYPES.map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
-      </span>
-      <span className="input-span">
-        <label className="label">Comprovativo de Licença (PDF ou imagem) *</label>
-        <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={handleLicenseDocChange} />
-        {licenseDocument && <span className="vr-file-feedback">{licenseDocument.name}</span>}
-      </span>
-    </>
-  );
-
-  const renderStep2 = () => (
     <>
       <h3 className="vr-step-title">Identificação e Contacto</h3>
       <span className="input-span">
@@ -278,7 +194,7 @@ export default function VendorRegister() {
     </>
   );
 
-  const renderStep3 = () => (
+  const renderStep2 = () => (
     <>
       <h3 className="vr-step-title">Dados Operacionais</h3>
       <span className="input-span">
@@ -302,7 +218,7 @@ export default function VendorRegister() {
     </>
   );
 
-  const renderStep4 = () => (
+  const renderStep3 = () => (
     <>
       <h3 className="vr-step-title">Confirmação e Termos</h3>
       <div className="vr-summary-box">
@@ -310,9 +226,6 @@ export default function VendorRegister() {
         <p><strong>Email:</strong> {email}</p>
         <p><strong>NIF:</strong> {nif}</p>
         <p><strong>Telemóvel:</strong> {phone}</p>
-        <p><strong>Licença:</strong> {licenseNumber} ({licenseMunicipality})</p>
-        <p><strong>Tipo:</strong> {licenseType}</p>
-        <p><strong>Validade:</strong> {licenseExpiry}</p>
         <p><strong>Produto:</strong> {product}</p>
         {businessName && <p><strong>Firma:</strong> {businessName}</p>}
       </div>
@@ -363,7 +276,6 @@ export default function VendorRegister() {
         {step === 1 && renderStep1()}
         {step === 2 && renderStep2()}
         {step === 3 && renderStep3()}
-        {step === 4 && renderStep4()}
 
         <div className="vr-btn-row">
           {step > 1 && (

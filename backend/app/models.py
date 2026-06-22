@@ -32,13 +32,6 @@ class Vendor(Base):
     session_token = Column(String, nullable=True, index=True)
     payment_methods = Column(String, nullable=True)
 
-    # Licença
-    license_number = Column(String, nullable=True)
-    license_municipality = Column(String, nullable=True)
-    license_expiry = Column(DateTime, nullable=True)
-    license_type = Column(String, nullable=True)
-    license_document = Column(String, nullable=True)
-
     # Identificação e compliance
     nif = Column(String, nullable=True, unique=True, index=True)
     id_document_number = Column(String, nullable=True)

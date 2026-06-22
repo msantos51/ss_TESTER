@@ -492,16 +492,6 @@ def delete_session(
 # --------------------------
 # Registo de vendedor
 # --------------------------
-ALLOWED_DOC_TYPES = {"application/pdf", "image/jpeg", "image/png", "image/webp"}
-ALLOWED_DOC_EXTENSIONS = {".pdf", ".jpg", ".jpeg", ".png", ".webp"}
-LICENSE_DOC_DIR = "license_docs"
-LICENSE_DOC_BUCKET = "license-docs"
-
-if not supabase:
-    os.makedirs(LICENSE_DOC_DIR, exist_ok=True)
-
-BUCKET_MAP[LICENSE_DOC_DIR] = LICENSE_DOC_BUCKET
-
 
 def _validate_nif(nif: str) -> bool:
     if len(nif) != 9 or not nif.isdigit():
@@ -523,11 +513,6 @@ async def create_vendor(
     password: str = Form(...),
     product: str = Form(...),
     profile_photo: UploadFile = File(...),
-    license_number: str = Form(...),
-    license_municipality: str = Form(...),
-    license_expiry: str = Form(...),
-    license_type: str = Form(...),
-    license_document: UploadFile = File(...),
     nif: str = Form(...),
     id_document_number: str = Form(...),
     phone: str = Form(...),
@@ -555,16 +540,9 @@ async def create_vendor(
 
     validate_password(password)
     validate_upload(profile_photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto de perfil")
-    validate_upload(license_document, ALLOWED_DOC_TYPES, ALLOWED_DOC_EXTENSIONS, "documento de licença")
-
-    try:
-        parsed_expiry = datetime.strptime(license_expiry, "%Y-%m-%d")
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Data de validade da licença inválida (formato: AAAA-MM-DD)")
 
     hashed_password = pwd_context.hash(password)
     photo_path = _upload_file(profile_photo, PROFILE_PHOTO_DIR)
-    license_doc_path = _upload_file(license_document, LICENSE_DOC_DIR)
 
     confirmation_token = uuid4().hex
     new_vendor = models.Vendor(
@@ -576,11 +554,6 @@ async def create_vendor(
         pin_color="#7B61FF",
         email_confirmed=False,
         confirmation_token=confirmation_token,
-        license_number=license_number,
-        license_municipality=license_municipality,
-        license_expiry=parsed_expiry,
-        license_type=license_type,
-        license_document=license_doc_path,
         nif=nif,
         id_document_number=id_document_number,
         phone=phone,

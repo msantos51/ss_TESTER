@@ -30,10 +30,6 @@ class VendorCreate(BaseModel):
     password: str
     product: Literal["Bolas de Berlim", "Gelados", "Acessórios de Praia"]
     profile_photo: str
-    license_number: str
-    license_municipality: str
-    license_expiry: str
-    license_type: str
     nif: str
     id_document_number: str
     phone: str
@@ -57,10 +53,6 @@ class VendorOut(BaseModel):
     subscription_valid_until: Optional[datetime] = None
     last_seen: Optional[str] = None
     payment_methods: Optional[str] = None
-    license_number: Optional[str] = None
-    license_municipality: Optional[str] = None
-    license_expiry: Optional[datetime] = None
-    license_type: Optional[str] = None
     nif: Optional[str] = None
     phone: Optional[str] = None
     beaches: Optional[str] = None
