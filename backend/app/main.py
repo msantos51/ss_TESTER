@@ -25,6 +25,7 @@ import smtplib
 from email.message import EmailMessage
 from math import radians, sin, cos, sqrt, atan2
 from supabase import create_client
+import httpx
 
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
@@ -122,6 +123,20 @@ app.add_middleware(
 @app.get("/api/status")
 def read_root():
     return {"status": "ok"}
+
+# Proxy para a API de marés do IPMA, que não envia cabeçalhos CORS e
+# por isso não pode ser chamada diretamente do browser.
+@app.get("/api/tides")
+async def get_tides():
+    async with httpx.AsyncClient(timeout=10) as client:
+        try:
+            resp = await client.get(
+                "https://api.ipma.pt/open-data/forecast/tides/prediction-daily.json"
+            )
+            resp.raise_for_status()
+        except httpx.HTTPError as exc:
+            raise HTTPException(status_code=502, detail=f"Tides upstream error: {exc}")
+    return JSONResponse(content=resp.json())
 
 if not supabase:
     app.mount("/profile_photos", StaticFiles(directory=PROFILE_PHOTO_DIR), name="profile_photos")

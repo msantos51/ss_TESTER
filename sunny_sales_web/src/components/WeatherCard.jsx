@@ -3,6 +3,7 @@ import {
   FiSun, FiCloud, FiCloudRain, FiCloudSnow, FiCloudLightning, FiWind,
   FiArrowUp, FiArrowDown,
 } from 'react-icons/fi';
+import { BASE_URL } from '../config';
 import './WeatherCard.css';
 
 const WMO = {
@@ -133,9 +134,7 @@ export default function WeatherCard() {
 
         // Tides — fetched independently so a failure never blocks weather
         try {
-          const tRes = await fetch(
-            'https://api.ipma.pt/open-data/forecast/tides/prediction-daily.json'
-          );
+          const tRes = await fetch(`${BASE_URL.replace(/\/$/, '')}/api/tides`);
           if (tRes.ok) {
             const tData = await tRes.json();
             setTides(parseTides(tData, lat, lon));
