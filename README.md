@@ -105,7 +105,7 @@ ss_TESTER/
 3. Defina as variáveis de ambiente usadas pelo backend:
    - `DATABASE_URL` — ligação à base de dados (PostgreSQL ou SQLite)
    - `SECRET_KEY` — chave para assinar tokens JWT
-   - `SMTP_USER` e `SMTP_PASSWORD` — envio de emails (opcional)
+   - `RESEND_API_KEY` e `RESEND_FROM` — envio de emails via Resend (opcional)
    - `STRIPE_API_KEY` — pagamentos (opcional)
    - `STRIPE_PRICE_ID_SEMANAL`, `STRIPE_PRICE_ID_QUINZENAL`, `STRIPE_PRICE_ID_MENSAL` — price IDs dos planos de subscrição (opcional, têm valores por omissão)
 4. Execute o servidor:
