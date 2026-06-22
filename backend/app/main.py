@@ -65,11 +65,17 @@ def _upload_file(upload_file: UploadFile, folder: str) -> str:
     if supabase:
         bucket = BUCKET_MAP.get(folder, folder)
         content = upload_file.file.read()
-        supabase.storage.from_(bucket).upload(
-            file_name,
-            content,
-            {"content-type": upload_file.content_type or "application/octet-stream"},
-        )
+        try:
+            supabase.storage.from_(bucket).upload(
+                file_name,
+                content,
+                {"content-type": upload_file.content_type or "application/octet-stream"},
+            )
+        except Exception as exc:
+            raise HTTPException(
+                status_code=502,
+                detail=f"Erro ao enviar ficheiro para armazenamento: {exc}",
+            )
         return supabase.storage.from_(bucket).get_public_url(file_name)
     file_path = os.path.join(folder, file_name)
     with open(file_path, "wb") as buffer:
@@ -101,11 +107,6 @@ def utcnow():
     """Return current UTC time as a naive datetime."""
     return datetime.now(timezone.utc).replace(tzinfo=None)
 
-# Endpoint de verificação de funcionamento da API
-@app.get("/api/status")
-def read_root():
-    return {"status": "ok"}
-
 # Habilitar CORS (permitir acesso do frontend)
 _cors_origins_env = os.getenv("ALLOWED_ORIGINS", "")
 origins = [o.strip() for o in _cors_origins_env.split(",") if o.strip()] or ["*"]
@@ -116,6 +117,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Endpoint de verificação de funcionamento da API
+@app.get("/api/status")
+def read_root():
+    return {"status": "ok"}
 
 if not supabase:
     app.mount("/profile_photos", StaticFiles(directory=PROFILE_PHOTO_DIR), name="profile_photos")
