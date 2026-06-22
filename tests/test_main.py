@@ -23,8 +23,8 @@ def client(tmp_path):
 
     sent_emails = []
 
-    def fake_send_email(to, subject, body):
-        sent_emails.append({"to": to, "subject": subject, "body": body})
+    def fake_send_email(to, subject, body, html=None):
+        sent_emails.append({"to": to, "subject": subject, "body": body, "html": html})
 
     main.send_email = fake_send_email
 
@@ -93,7 +93,7 @@ def activate_subscription(client, vendor_id):
 
 def confirm_latest_email(client):
     body = client.sent_emails[-1]["body"]
-    token = body.split("/confirm-email/")[1]
+    token = body.split("/confirm-email/")[1].split()[0].strip()
     return client.get(f"/confirm-email/{token}")
 
 
