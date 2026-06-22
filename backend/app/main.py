@@ -557,6 +557,45 @@ def _send_confirmation_email(name: str, email: str, confirmation_token: str) -> 
         return False
 
 
+def _send_password_reset_email(name: str, email: str, reset_token: str) -> bool:
+    reset_link = f"{BASE_APP_URL}/password-reset/{reset_token}"
+    try:
+        return send_email(
+            to=email,
+            subject="Sunny Sales - Redefinir Palavra-passe",
+            body=f"Olá {name},\n\nRecebemos um pedido para redefinir a palavra-passe da tua conta Sunny Sales.\n\nClica no link para definires uma nova palavra-passe (válido durante 2 horas):\n{reset_link}\n\nSe não pediste esta alteração, ignora este email.\n\nCumprimentos,\nEquipa Sunny Sales",
+            html=f"""<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
+    <tr><td align="center">
+      <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <tr><td style="background:linear-gradient(135deg,#FCB454,#F7931E);padding:30px;text-align:center;">
+          <h1 style="margin:0;color:#ffffff;font-size:24px;">&#9728;&#65039; Sunny Sales</h1>
+        </td></tr>
+        <tr><td style="padding:30px;">
+          <h2 style="color:#333;margin-top:0;">Olá {name}!</h2>
+          <p style="color:#555;font-size:16px;line-height:1.6;">Recebemos um pedido para redefinir a palavra-passe da tua conta <strong>Sunny Sales</strong>. Clica no botão abaixo para definires uma nova palavra-passe:</p>
+          <div style="text-align:center;margin:30px 0;">
+            <a href="{reset_link}" style="background:#FCB454;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Redefinir Palavra-passe</a>
+          </div>
+          <p style="color:#888;font-size:13px;">Este link é válido durante 2 horas. Se o botão não funcionar, copia e cola este link no teu navegador:</p>
+          <p style="color:#888;font-size:13px;word-break:break-all;">{reset_link}</p>
+          <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
+          <p style="color:#aaa;font-size:12px;text-align:center;">Se não pediste esta alteração, ignora este email.<br>Equipa Sunny Sales</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>""",
+        )
+    except Exception as exc:
+        print(f"[Email] Falha ao enviar email de recuperação para {email}: {exc}")
+        return False
+
+
 @app.post("/vendors/resend-confirmation")
 async def resend_confirmation_email(
     email: str = Body(..., embed=True),
@@ -954,12 +993,10 @@ def confirm_email(token: str, db: Session = Depends(get_db)):
 
 @app.post("/password-reset-request")
 async def password_reset_request(
-    request: Request,
     background_tasks: BackgroundTasks,
+    email: str = Body(..., embed=True),
     db: Session = Depends(get_db),
 ):
-    form = await request.form()
-    email = form.get("email", "")
     vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
     if vendor:
         token = uuid4().hex
@@ -967,11 +1004,9 @@ async def password_reset_request(
         vendor.password_reset_expires = utcnow() + timedelta(hours=2)
         db.commit()
         background_tasks.add_task(
-            send_email,
-            to=email,
-            subject="Redefinir Palavra-passe",
-            body=f"Clica no link para redefenires a tua palavra-passe: {BASE_APP_URL}/password-reset/{token}",
+            _send_password_reset_email, vendor.name, vendor.email, token
         )
+    # Resposta neutra para não revelar se o email existe
     return {"status": "ok"}
 
 
