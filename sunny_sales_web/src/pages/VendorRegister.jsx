@@ -25,6 +25,8 @@ export default function VendorRegister() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [emailSent, setEmailSent] = useState(true);
+  const [resending, setResending] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const handlePhotoChange = (e) => {
@@ -124,8 +126,14 @@ export default function VendorRegister() {
       formData.append('business_name', businessName);
       formData.append('terms_accepted', 'true');
 
-      await axios.post(`${BASE_URL}/vendors/`, formData, { timeout: 30000 });
-      setSuccess('Registo efetuado com sucesso! Verifique o seu email para confirmar a conta.');
+      const res = await axios.post(`${BASE_URL}/vendors/`, formData, { timeout: 30000 });
+      const sent = res.data?.email_sent !== false;
+      setEmailSent(sent);
+      setSuccess(
+        sent
+          ? 'Registo efetuado com sucesso! Verifique o seu email para confirmar a conta.'
+          : 'Registo efetuado com sucesso! Não foi possível enviar o email de confirmação.'
+      );
     } catch (err) {
       console.error('Erro:', err);
       console.error('Resposta do servidor:', err.response?.data);
@@ -261,11 +269,37 @@ export default function VendorRegister() {
     </>
   );
 
+  const handleResend = async () => {
+    setResending(true);
+    try {
+      await axios.post(`${BASE_URL}/vendors/resend-confirmation`, { email });
+      setEmailSent(true);
+      setSuccess('Registo efetuado com sucesso! Verifique o seu email para confirmar a conta.');
+    } catch (err) {
+      const detail = err.response?.data?.detail;
+      setError(detail || 'Não foi possível reenviar o email. Tente novamente.');
+    } finally {
+      setResending(false);
+    }
+  };
+
   if (success) {
     return (
       <div className="form-box vr-success">
         <h2 className="title auth-title">Registo de Vendedor</h2>
         <p className="vr-success-msg">{success}</p>
+        {!emailSent && (
+          <button
+            type="button"
+            onClick={handleResend}
+            className="submit vr-btn-next"
+            disabled={resending}
+            style={{ marginBottom: '16px' }}
+          >
+            {resending ? 'A reenviar...' : 'Reenviar email de confirmação'}
+          </button>
+        )}
+        {error && <p className="vr-error">{error}</p>}
         <a href="/vendor-login" className="vr-login-link">Ir para o login</a>
       </div>
     );

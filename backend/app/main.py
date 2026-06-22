@@ -4,7 +4,7 @@ from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form, Bod
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
@@ -162,11 +162,11 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 SMTP_FROM = os.getenv("SMTP_FROM", SMTP_USER)
 
 
-def send_email(to: str, subject: str, body: str, html: str | None = None) -> None:
-    """Send an email notification via SMTP. Patch this in tests or integrate another provider."""
+def send_email(to: str, subject: str, body: str, html: str | None = None) -> bool:
+    """Send an email via SMTP. Returns True if sent, False if SMTP not configured."""
     if not SMTP_USER or not SMTP_PASSWORD:
         print(f"[Email] SMTP não configurado. Para: {to}\nAssunto: {subject}")
-        return
+        return False
 
     msg = EmailMessage()
     msg["Subject"] = subject
@@ -180,6 +180,7 @@ def send_email(to: str, subject: str, body: str, html: str | None = None) -> Non
         server.starttls()
         server.login(SMTP_USER, SMTP_PASSWORD)
         server.send_message(msg)
+    return True
 
 # Configuração do Stripe
 stripe.api_key = os.getenv("STRIPE_API_KEY", "")
@@ -506,7 +507,65 @@ def _validate_nif(nif: str) -> bool:
     return int(nif[8]) == control
 
 
-@app.post("/vendors/", response_model=schemas.VendorOut)
+def _send_confirmation_email(name: str, email: str, confirmation_token: str) -> bool:
+    confirm_link = f"{BASE_APP_URL}/confirm-email/{confirmation_token}"
+    try:
+        return send_email(
+            to=email,
+            subject="Sunny Sales - Confirma o teu email",
+            body=f"Olá {name},\n\nObrigado por te registares na Sunny Sales!\n\nClica no link para confirmares a tua conta:\n{confirm_link}\n\nSe não criaste esta conta, ignora este email.\n\nCumprimentos,\nEquipa Sunny Sales",
+            html=f"""<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
+    <tr><td align="center">
+      <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <tr><td style="background:linear-gradient(135deg,#FCB454,#F7931E);padding:30px;text-align:center;">
+          <h1 style="margin:0;color:#ffffff;font-size:24px;">&#9728;&#65039; Sunny Sales</h1>
+        </td></tr>
+        <tr><td style="padding:30px;">
+          <h2 style="color:#333;margin-top:0;">Olá {name}!</h2>
+          <p style="color:#555;font-size:16px;line-height:1.6;">Obrigado por te registares na <strong>Sunny Sales</strong>. Para ativares a tua conta, confirma o teu email clicando no botão abaixo:</p>
+          <div style="text-align:center;margin:30px 0;">
+            <a href="{confirm_link}" style="background:#FCB454;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Confirmar Email</a>
+          </div>
+          <p style="color:#888;font-size:13px;">Se o botão não funcionar, copia e cola este link no teu navegador:</p>
+          <p style="color:#888;font-size:13px;word-break:break-all;">{confirm_link}</p>
+          <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
+          <p style="color:#aaa;font-size:12px;text-align:center;">Se não criaste esta conta, ignora este email.<br>Equipa Sunny Sales</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>""",
+        )
+    except Exception as exc:
+        print(f"[Email] Falha ao enviar email de confirmação para {email}: {exc}")
+        return False
+
+
+@app.post("/vendors/resend-confirmation")
+async def resend_confirmation_email(
+    email: str = Body(..., embed=True),
+    db: Session = Depends(get_db),
+):
+    vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Email não encontrado")
+    if vendor.email_confirmed:
+        return {"detail": "Email já confirmado"}
+    if not vendor.confirmation_token:
+        vendor.confirmation_token = uuid4().hex
+        db.commit()
+    sent = _send_confirmation_email(vendor.name, vendor.email, vendor.confirmation_token)
+    if not sent:
+        raise HTTPException(status_code=503, detail="Não foi possível enviar o email. Tente novamente mais tarde.")
+    return {"detail": "Email de confirmação reenviado com sucesso"}
+
+
+@app.post("/vendors/")
 async def create_vendor(
     name: str = Form(...),
     email: str = Form(...),
@@ -568,42 +627,12 @@ async def create_vendor(
     db.add(new_vendor)
     db.commit()
     db.refresh(new_vendor)
-    confirm_link = f"{BASE_APP_URL}/confirm-email/{confirmation_token}"
-    try:
-        send_email(
-            to=email,
-            subject="Sunny Sales - Confirma o teu email",
-            body=f"Olá {name},\n\nObrigado por te registares na Sunny Sales!\n\nClica no link para confirmares a tua conta:\n{confirm_link}\n\nSe não criaste esta conta, ignora este email.\n\nCumprimentos,\nEquipa Sunny Sales",
-            html=f"""<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f4f4f4;font-family:'Segoe UI',Roboto,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
-    <tr><td align="center">
-      <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-        <tr><td style="background:linear-gradient(135deg,#FCB454,#F7931E);padding:30px;text-align:center;">
-          <h1 style="margin:0;color:#ffffff;font-size:24px;">&#9728;&#65039; Sunny Sales</h1>
-        </td></tr>
-        <tr><td style="padding:30px;">
-          <h2 style="color:#333;margin-top:0;">Olá {name}!</h2>
-          <p style="color:#555;font-size:16px;line-height:1.6;">Obrigado por te registares na <strong>Sunny Sales</strong>. Para ativares a tua conta, confirma o teu email clicando no botão abaixo:</p>
-          <div style="text-align:center;margin:30px 0;">
-            <a href="{confirm_link}" style="background:#FCB454;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Confirmar Email</a>
-          </div>
-          <p style="color:#888;font-size:13px;">Se o botão não funcionar, copia e cola este link no teu navegador:</p>
-          <p style="color:#888;font-size:13px;word-break:break-all;">{confirm_link}</p>
-          <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
-          <p style="color:#aaa;font-size:12px;text-align:center;">Se não criaste esta conta, ignora este email.<br>Equipa Sunny Sales</p>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>""",
-        )
-    except Exception as exc:
-        print(f"[Email] Falha ao enviar email de confirmação para {email}: {exc}")
-    return new_vendor
+
+    email_sent = _send_confirmation_email(name, email, confirmation_token)
+
+    vendor_data = schemas.VendorOut.model_validate(new_vendor).model_dump(mode="json")
+    vendor_data["email_sent"] = email_sent
+    return JSONResponse(content=vendor_data, status_code=201)
 
 
 # --------------------------

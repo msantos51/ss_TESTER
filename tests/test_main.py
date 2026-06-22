@@ -94,10 +94,11 @@ def confirm_latest_email(client):
 
 def test_vendor_registration(client):
     resp = register_vendor(client)
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     payload = resp.json()
     assert payload["email"] == "vendor@example.com"
     assert payload["product"] == "Bolas de Berlim"
+    assert "email_sent" in payload
 
 
 def get_token(client, email="vendor@example.com", password="Secret123", force=False):
