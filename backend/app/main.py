@@ -596,11 +596,12 @@ async def create_vendor(
     db.commit()
     db.refresh(new_vendor)
     confirm_link = f"{BASE_APP_URL}/confirm-email/{confirmation_token}"
-    send_email(
-        to=email,
-        subject="Sunny Sales - Confirma o teu email",
-        body=f"Olá {name},\n\nObrigado por te registares na Sunny Sales!\n\nClica no link para confirmares a tua conta:\n{confirm_link}\n\nSe não criaste esta conta, ignora este email.\n\nCumprimentos,\nEquipa Sunny Sales",
-        html=f"""<!DOCTYPE html>
+    try:
+        send_email(
+            to=email,
+            subject="Sunny Sales - Confirma o teu email",
+            body=f"Olá {name},\n\nObrigado por te registares na Sunny Sales!\n\nClica no link para confirmares a tua conta:\n{confirm_link}\n\nSe não criaste esta conta, ignora este email.\n\nCumprimentos,\nEquipa Sunny Sales",
+            html=f"""<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#f4f4f4;font-family:'Segoe UI',Roboto,sans-serif;">
@@ -626,7 +627,9 @@ async def create_vendor(
   </table>
 </body>
 </html>""",
-    )
+        )
+    except Exception as exc:
+        print(f"[Email] Falha ao enviar email de confirmação para {email}: {exc}")
     return new_vendor
 
 
@@ -944,11 +947,14 @@ async def password_reset_request(request: Request, db: Session = Depends(get_db)
         vendor.password_reset_token = token
         vendor.password_reset_expires = utcnow() + timedelta(hours=2)
         db.commit()
-        send_email(
-            to=email,
-            subject="Redefinir Palavra-passe",
-            body=f"Clica no link para redefenires a tua palavra-passe: {BASE_APP_URL}/password-reset/{token}",
-        )
+        try:
+            send_email(
+                to=email,
+                subject="Redefinir Palavra-passe",
+                body=f"Clica no link para redefenires a tua palavra-passe: {BASE_APP_URL}/password-reset/{token}",
+            )
+        except Exception as exc:
+            print(f"[Email] Falha ao enviar email de reset para {email}: {exc}")
     return {"status": "ok"}
 
 
