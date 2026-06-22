@@ -16,9 +16,7 @@ export default function VendorRegister() {
   const [cropSrc, setCropSrc] = useState(null);
 
   const [nif, setNif] = useState('');
-  const [idDocumentNumber, setIdDocumentNumber] = useState('');
   const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
 
   const [businessName, setBusinessName] = useState('');
 
@@ -50,7 +48,7 @@ export default function VendorRegister() {
   const validateStep = (s) => {
     setError('');
     if (s === 1) {
-      if (!name || !email || !password || !nif || !idDocumentNumber || !phone || !address) {
+      if (!name || !email || !password || !nif || !phone) {
         setError('Preencha todos os campos de identificação.');
         return false;
       }
@@ -120,9 +118,7 @@ export default function VendorRegister() {
       formData.append('product', product);
       formData.append('profile_photo', new File([photo], 'profile.jpg', { type: 'image/jpeg' }));
       formData.append('nif', nif);
-      formData.append('id_document_number', idDocumentNumber);
       formData.append('phone', phone);
-      formData.append('address', address);
       formData.append('business_name', businessName);
       formData.append('terms_accepted', 'true');
 
@@ -187,20 +183,12 @@ export default function VendorRegister() {
         <input type="text" placeholder="123456789" maxLength={9} value={nif} onChange={(e) => setNif(e.target.value.replace(/\D/g, ''))} />
       </span>
       <span className="input-span">
-        <label className="label">N.º Documento de Identidade (CC/BI) *</label>
-        <input type="text" placeholder="N.º do documento" value={idDocumentNumber} onChange={(e) => setIdDocumentNumber(e.target.value)} />
-      </span>
-      <span className="input-span">
         <label className="label">Email *</label>
         <input type="email" placeholder="email@exemplo.pt" value={email} onChange={(e) => setEmail(e.target.value)} />
       </span>
       <span className="input-span">
         <label className="label">Telemóvel *</label>
         <input type="tel" placeholder="912345678" value={phone} onChange={(e) => setPhone(e.target.value)} />
-      </span>
-      <span className="input-span">
-        <label className="label">Morada *</label>
-        <input type="text" placeholder="Rua, número, código postal, localidade" value={address} onChange={(e) => setAddress(e.target.value)} />
       </span>
       <span className="input-span">
         <label className="label">Palavra-passe *</label>

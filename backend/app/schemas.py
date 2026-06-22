@@ -31,9 +31,9 @@ class VendorCreate(BaseModel):
     product: Literal["Bolas de Berlim", "Gelados", "Acessórios de Praia"]
     profile_photo: str
     nif: str
-    id_document_number: str
+    id_document_number: Optional[str] = None
     phone: str
-    address: str
+    address: Optional[str] = None
     beaches: str
     product_categories: str
     iban: Optional[str] = None
