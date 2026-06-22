@@ -25,6 +25,7 @@ export default function VendorRegister() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -102,26 +103,28 @@ export default function VendorRegister() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (submitting) return;
     setError('');
     setSuccess('');
 
     if (!validateStep(3)) return;
 
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('password', password);
-    formData.append('product', product);
-    formData.append('profile_photo', new File([photo], 'profile.jpg', { type: 'image/jpeg' }));
-    formData.append('nif', nif);
-    formData.append('id_document_number', idDocumentNumber);
-    formData.append('phone', phone);
-    formData.append('address', address);
-    formData.append('business_name', businessName);
-    formData.append('terms_accepted', 'true');
-
+    setSubmitting(true);
     try {
-      await axios.post(`${BASE_URL}/vendors/`, formData);
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('password', password);
+      formData.append('product', product);
+      formData.append('profile_photo', new File([photo], 'profile.jpg', { type: 'image/jpeg' }));
+      formData.append('nif', nif);
+      formData.append('id_document_number', idDocumentNumber);
+      formData.append('phone', phone);
+      formData.append('address', address);
+      formData.append('business_name', businessName);
+      formData.append('terms_accepted', 'true');
+
+      await axios.post(`${BASE_URL}/vendors/`, formData, { timeout: 30000 });
       setSuccess('Registo efetuado com sucesso! Verifique o seu email para confirmar a conta.');
     } catch (err) {
       console.error('Erro:', err);
@@ -133,9 +136,13 @@ export default function VendorRegister() {
         setError(detail);
       } else if (err.response) {
         setError(`Erro ${err.response.status} ao registar. Tente novamente.`);
+      } else if (err.code === 'ECONNABORTED') {
+        setError('O pedido demorou demasiado tempo. Tente novamente.');
       } else {
-        setError('Sem resposta do servidor. Verifique a sua ligação à internet.');
+        setError('Não foi possível concluir o registo. Verifique a sua ligação à internet e tente novamente.');
       }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -288,8 +295,8 @@ export default function VendorRegister() {
               Seguinte
             </button>
           ) : (
-            <button type="submit" className="submit vr-btn-next">
-              Registar
+            <button type="submit" className="submit vr-btn-next" disabled={submitting}>
+              {submitting ? 'A registar...' : 'Registar'}
             </button>
           )}
         </div>
