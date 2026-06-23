@@ -23,6 +23,14 @@ class VendorProfileUpdate(BaseModel):
     product: Optional[Literal["Bolas de Berlim", "Gelados", "Acessórios de Praia"]] = None
     profile_photo: Optional[str] = None
     pin_color: Optional[str] = None
+    nif: Optional[str] = None
+    id_document_number: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    beaches: Optional[str] = None
+    product_categories: Optional[str] = None
+    iban: Optional[str] = None
+    business_name: Optional[str] = None
 
 class VendorCreate(BaseModel):
     name: str
@@ -54,11 +62,16 @@ class VendorOut(BaseModel):
     last_seen: Optional[str] = None
     payment_methods: Optional[str] = None
     nif: Optional[str] = None
+    id_document_number: Optional[str] = None
     phone: Optional[str] = None
+    address: Optional[str] = None
     beaches: Optional[str] = None
     product_categories: Optional[str] = None
+    iban: Optional[str] = None
     business_name: Optional[str] = None
     terms_accepted: Optional[bool] = None
+    # Email novo a aguardar confirmação (alteração de email pendente)
+    pending_email: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 

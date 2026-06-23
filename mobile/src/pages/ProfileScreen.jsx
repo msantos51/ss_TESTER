@@ -8,6 +8,9 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
   const { token, user, vendorId } = auth;
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
+  const [nif, setNif] = useState(user?.nif || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [businessName, setBusinessName] = useState(user?.business_name || '');
   const [product, setProduct] = useState(user?.product || '');
   const [pinColor, setPinColor] = useState(user?.pin_color || '#7B61FF');
   const [paymentMethods, setPaymentMethods] = useState(
@@ -17,6 +20,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
   const fileInputRef = useRef(null);
 
   const handlePhotoChange = (e) => {
@@ -38,10 +42,14 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
     e.preventDefault();
     setSaving(true);
     setError('');
+    setInfo('');
     try {
       const data = new FormData();
       if (name !== user.name) data.append('name', name);
       if (email !== user.email) data.append('email', email);
+      if (nif !== (user.nif || '')) data.append('nif', nif);
+      if (phone !== (user.phone || '')) data.append('phone', phone);
+      if (businessName !== (user.business_name || '')) data.append('business_name', businessName);
       if (product !== user.product) data.append('product', product);
       if (pinColor !== (user.pin_color || '#7B61FF')) data.append('pin_color', pinColor);
       const newMethods = paymentMethods.join(',');
@@ -56,6 +64,12 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
       const body = await res.json();
       if (!res.ok) throw new Error(body.detail || 'Erro ao atualizar perfil.');
       onUserUpdate(body);
+      // O email só muda depois de confirmado no link enviado para o novo endereço
+      if (body.pending_email) {
+        setEmail(body.email || '');
+        setInfo(`Confirma o novo email (${body.pending_email}) na mensagem que enviámos para concluir a alteração.`);
+        return;
+      }
       onClose();
     } catch (err) {
       setError(err.message);
@@ -102,6 +116,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
           </div>
 
           {error && <div className="error-msg">{error}</div>}
+          {info && <div className="info-msg">{info}</div>}
 
           <div className="input-group">
             <label>Nome</label>
@@ -110,6 +125,25 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
           <div className="input-group">
             <label>Email</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <span className="input-hint">Alterar o email exige confirmação no novo endereço.</span>
+          </div>
+          <div className="input-group">
+            <label>NIF</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={9}
+              value={nif}
+              onChange={(e) => setNif(e.target.value.replace(/\D/g, ''))}
+            />
+          </div>
+          <div className="input-group">
+            <label>Telemóvel</label>
+            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          </div>
+          <div className="input-group">
+            <label>Nome da Atividade / Firma</label>
+            <input type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
           </div>
           <div className="input-group">
             <label>Produto</label>
