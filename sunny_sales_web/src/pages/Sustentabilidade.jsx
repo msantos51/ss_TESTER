@@ -48,7 +48,7 @@ export default function Sustentabilidade() {
           <MdRecycling /> Embalagens eco-friendly
         </div>
         <div className="info-badge">
-          <MdWaves /> Praias mais limpas
+          Praias mais limpas
         </div>
       </div>
 

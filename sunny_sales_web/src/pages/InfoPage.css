@@ -107,6 +107,15 @@
   flex-shrink: 0;
 }
 
+.info-badge.blue-text {
+  color: #0066ff;
+}
+
+.info-badge.blue-text svg {
+  color: #0066ff;
+  stroke: #0066ff;
+}
+
 .info-badge-value {
   font-size: 0.95rem;
   font-weight: 800;
@@ -324,6 +333,10 @@
   display: flex;
   align-items: center;
   text-align: justify;
+}
+
+.info-timeline-body.blue-text {
+  color: #0066ff;
 }
 
 /* ── CTA block ─────────────────────────────────────────── */

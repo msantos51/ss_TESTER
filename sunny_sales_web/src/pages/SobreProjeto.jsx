@@ -27,21 +27,21 @@ export default function SobreProjeto() {
         <ul className="info-timeline">
           <li>
             <div className="info-timeline-number">1</div>
-            <div className="info-timeline-body">
+            <div className="info-timeline-body blue-text">
               O vendedor abre a aplicação e ativa a localização, ficando imediatamente visível
               no mapa para todos os banhistas nas proximidades.
             </div>
           </li>
           <li>
             <div className="info-timeline-number">2</div>
-            <div className="info-timeline-body">
+            <div className="info-timeline-body blue-text">
               O banhista acede ao mapa, filtra por tipo de produto e vê os vendedores mais
               próximos em tempo real.
             </div>
           </li>
           <li>
             <div className="info-timeline-number">3</div>
-            <div className="info-timeline-body">
+            <div className="info-timeline-body blue-text">
               O vendedor passa e o banhista recebe o produto sem ter de se levantar, de forma
               prática e eficiente para ambos.
             </div>
