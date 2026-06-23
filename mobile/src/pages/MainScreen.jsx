@@ -6,6 +6,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { BASE_URL, WEB_URL } from '../config.js';
 import ProfileScreen from './ProfileScreen.jsx';
+import PlansScreen from './PlansScreen.jsx';
 import AnimatedMarker from '../components/AnimatedMarker.jsx';
 import useDeviceHeading from '../hooks/useDeviceHeading.js';
 
@@ -44,6 +45,7 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
   const [position, setPosition] = useState(null);
   const [mapError, setMapError] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [showPlans, setShowPlans] = useState(false);
   const listenerRef = useRef(null);
   const watchIdRef = useRef(null);
   const { heading, reportGpsHeading } = useDeviceHeading();
@@ -255,11 +257,15 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
         <ProfileScreen auth={auth} onClose={() => setShowProfile(false)} onUserUpdate={onUserUpdate} />
       )}
 
+      {showPlans && (
+        <PlansScreen auth={auth} onClose={() => setShowPlans(false)} />
+      )}
+
       {/* Bottom overlay controls */}
       <div className="main-bottom-controls">
         {!subscriptionActive && (
           <div className="alert alert-warning">
-            <strong>Subscrição inativa.</strong> Renova no site para partilhar localização.
+            <strong>Subscrição inativa.</strong> Escolhe um plano para começar a partilhar.
           </div>
         )}
 
@@ -300,6 +306,16 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
             </>
           )}
         </button>
+
+        {!subscriptionActive && (
+          <button className="btn btn-plans" onClick={() => setShowPlans(true)}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V7l-10-5z" />
+              <polyline points="10 12 14 12 12 16" />
+            </svg>
+            Ver planos de subscrição
+          </button>
+        )}
 
         <button className="btn btn-website" onClick={openWebsite}>
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">

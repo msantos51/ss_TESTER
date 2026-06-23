@@ -35,5 +35,11 @@ export default function App() {
 
   if (!auth) return <Login onLogin={handleLogin} />;
 
-  return <MainScreen auth={auth} onLogout={handleLogout} onUserUpdate={handleUserUpdate} />;
+  return (
+    <MainScreen
+      auth={auth}
+      onLogout={handleLogout}
+      onUserUpdate={handleUserUpdate}
+    />
+  );
 }
