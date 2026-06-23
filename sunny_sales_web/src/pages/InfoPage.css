@@ -116,6 +116,15 @@
   stroke: #0066ff;
 }
 
+.info-badge.info-badge-sky {
+  color: #4BA3C3;
+}
+
+.info-badge.info-badge-sky svg {
+  color: #4BA3C3;
+  stroke: #4BA3C3;
+}
+
 .info-badge-value {
   font-size: 0.95rem;
   font-weight: 800;
@@ -337,6 +346,10 @@
 
 .info-timeline-body.blue-text {
   color: #0066ff;
+}
+
+.info-timeline-body.info-timeline-body-muted {
+  color: #6b7280;
 }
 
 /* ── CTA block ─────────────────────────────────────────── */

@@ -17,9 +17,9 @@ export default function SobreProjeto() {
       </div>
 
       <div className="info-badges">
-        <div className="info-badge">Praias portuguesas</div>
-        <div className="info-badge">Localização em tempo real</div>
-        <div className="info-badge">Web &amp; Mobile</div>
+        <div className="info-badge info-badge-sky">Praias portuguesas</div>
+        <div className="info-badge info-badge-sky">Localização em tempo real</div>
+        <div className="info-badge info-badge-sky">Web &amp; Mobile</div>
       </div>
 
       <div className="info-section">
@@ -27,21 +27,21 @@ export default function SobreProjeto() {
         <ul className="info-timeline">
           <li>
             <div className="info-timeline-number">1</div>
-            <div className="info-timeline-body blue-text">
+            <div className="info-timeline-body info-timeline-body-muted">
               O vendedor abre a aplicação e ativa a localização, ficando imediatamente visível
               no mapa para todos os banhistas nas proximidades.
             </div>
           </li>
           <li>
             <div className="info-timeline-number">2</div>
-            <div className="info-timeline-body blue-text">
+            <div className="info-timeline-body info-timeline-body-muted">
               O banhista acede ao mapa, filtra por tipo de produto e vê os vendedores mais
               próximos em tempo real.
             </div>
           </li>
           <li>
             <div className="info-timeline-number">3</div>
-            <div className="info-timeline-body blue-text">
+            <div className="info-timeline-body info-timeline-body-muted">
               O vendedor passa e o banhista recebe o produto sem ter de se levantar, de forma
               prática e eficiente para ambos.
             </div>

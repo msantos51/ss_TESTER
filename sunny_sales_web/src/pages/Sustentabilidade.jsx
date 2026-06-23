@@ -67,7 +67,6 @@ export default function Sustentabilidade() {
       </div>
 
       <div className="sustainability-cta">
-        <div className="sustainability-cta-icon">🌊</div>
         <p className="sustainability-cta-text">
           O objetivo é promover <strong>praias mais limpas</strong>, vendedores mais responsáveis
           e um verão verdadeiramente sustentável para toda a costa portuguesa.
