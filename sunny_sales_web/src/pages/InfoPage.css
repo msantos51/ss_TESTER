@@ -281,7 +281,7 @@
 .info-timeline li {
   display: flex;
   gap: 16px;
-  align-items: flex-start;
+  align-items: center;
   position: relative;
 }
 
@@ -442,4 +442,103 @@
 .info-link {
   color: var(--primary);
   font-weight: 600;
+}
+
+/* ── Sustainability List ────────────────────────────────── */
+.sustainability-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sustainability-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.sustainability-icon {
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  background: rgba(45, 106, 79, 0.1);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.sustainability-text {
+  flex: 1;
+}
+
+/* ── Sustainability CTA ────────────────────────────────── */
+.sustainability-cta {
+  background: linear-gradient(135deg, #EE9B00 0%, #f5a623 100%);
+  border-radius: var(--radius-xl);
+  padding: 32px 28px;
+  text-align: left;
+  color: white;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-top: 1.5rem;
+}
+
+.sustainability-cta-icon {
+  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-lg);
+  flex-shrink: 0;
+}
+
+.sustainability-cta-text {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  margin: 0;
+  font-style: italic;
+}
+
+.sustainability-cta-text strong {
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .sustainability-cta {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .sustainability-cta-icon {
+    width: 100%;
+  }
+
+  .sustainability-item {
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .sustainability-icon {
+    min-width: 36px;
+    height: 36px;
+    font-size: 1.5rem;
+  }
 }
