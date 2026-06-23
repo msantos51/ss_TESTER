@@ -264,8 +264,14 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
       {/* Bottom overlay controls */}
       <div className="main-bottom-controls">
         {!subscriptionActive && (
-          <div className="alert alert-warning">
-            <strong>Subscrição inativa.</strong> Escolhe um plano para começar a partilhar.
+          <div className="alert alert-warning" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}>
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <div>
+              <strong>Subscrição inativa.</strong> Escolhe um plano para começar a partilhar.
+            </div>
           </div>
         )}
 
