@@ -37,7 +37,7 @@ export default function Contacto() {
     setErrors((err) => ({ ...err, [field]: undefined }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
@@ -45,10 +45,30 @@ export default function Contacto() {
       return;
     }
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome: form.nome,
+          email: form.email,
+          assunto: form.assunto,
+          mensagem: form.mensagem,
+          destinatario: 'sunnysales.geral@gmail.com'
+        })
+      });
+      if (response.ok) {
+        setLoading(false);
+        setEnviado(true);
+      } else {
+        setLoading(false);
+        const errorData = await response.json();
+        setErrors({ submit: errorData.detail || 'Erro ao enviar mensagem. Tenta novamente.' });
+      }
+    } catch (error) {
       setLoading(false);
-      setEnviado(true);
-    }, 1200);
+      setErrors({ submit: 'Erro de conexão. Tenta novamente.' });
+    }
   };
 
   const handleNovo = () => {
@@ -88,9 +108,9 @@ export default function Contacto() {
       </div>
 
       <div className="info-badges">
-        <div className="info-badge"><FiMail size={13} /> geral@sunnysales.pt</div>
-        <div className="info-badge">Resposta em 24–48 h</div>
-        <div className="info-badge">Segunda a Sexta</div>
+        <div className="info-badge blue-text"><FiMail size={13} /> sunnysales.geral@gmail.com</div>
+        <div className="info-badge blue-text">Resposta em 24–48 h</div>
+        <div className="info-badge blue-text">Segunda a Sexta</div>
       </div>
 
       <div className="contacto-form-wrap">

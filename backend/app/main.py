@@ -1381,6 +1381,44 @@ def get_my_vendor_profile(current_vendor: models.Vendor = Depends(get_current_ve
 
 
 # --------------------------
+# Contact endpoint
+# --------------------------
+@app.post("/api/contact")
+async def contact(
+    nome: str = Body(..., embed=True),
+    email: str = Body(..., embed=True),
+    assunto: str = Body(..., embed=True),
+    mensagem: str = Body(..., embed=True),
+    destinatario: str = Body(..., embed=True),
+    background_tasks: BackgroundTasks = BackgroundTasks(),
+):
+    if not nome or not email or not assunto or not mensagem:
+        raise HTTPException(status_code=400, detail="Todos os campos são obrigatórios.")
+
+    if len(mensagem) < 10:
+        raise HTTPException(status_code=400, detail="Mensagem muito curta.")
+
+    html_body = f"""
+    <h2>Nova mensagem de contacto do Sunny Sales</h2>
+    <p><strong>Nome:</strong> {nome}</p>
+    <p><strong>Email:</strong> {email}</p>
+    <p><strong>Assunto:</strong> {assunto}</p>
+    <p><strong>Mensagem:</strong></p>
+    <p>{mensagem.replace(chr(10), '<br>')}</p>
+    """
+
+    background_tasks.add_task(
+        send_email,
+        to=destinatario,
+        subject=f"[Sunny Sales] Contacto: {assunto}",
+        body=f"Nome: {nome}\nEmail: {email}\nAssunto: {assunto}\nMensagem: {mensagem}",
+        html=html_body
+    )
+
+    return {"status": "success", "message": "Mensagem enviada com sucesso."}
+
+
+# --------------------------
 # SPA: servir o frontend React (deve ficar APÓS todas as rotas de API para
 # não interceptar chamadas como GET /vendors/ ou GET /vendors/me)
 # --------------------------
