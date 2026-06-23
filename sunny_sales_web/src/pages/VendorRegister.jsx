@@ -236,10 +236,8 @@ export default function VendorRegister() {
         <h4>Termos e Condições</h4>
         <p>Ao registar-se como vendedor na plataforma Sunny Sales, declara e aceita que:</p>
         <ol>
-          <li>Possui licença de venda válida emitida pela câmara municipal competente.</li>
           <li>Todos os dados fornecidos são verdadeiros e atualizados.</li>
-          <li>É responsável por manter a licença válida e atualizada na plataforma.</li>
-          <li>A plataforma reserva-se o direito de suspender contas com licenças expiradas ou dados inválidos.</li>
+          <li>A plataforma reserva-se o direito de suspender contas com dados inválidos ou que violem estes termos.</li>
           <li>Os dados pessoais serão tratados de acordo com o RGPD e a legislação portuguesa.</li>
           <li>A plataforma não se responsabiliza por infrações cometidas pelo vendedor.</li>
           <li>Aceita receber comunicações relacionadas com a operação da plataforma.</li>
