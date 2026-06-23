@@ -66,7 +66,7 @@ export default function Contacto() {
         const errorData = await response.json().catch(() => ({}));
         setErrors({ submit: errorData.detail || 'Erro ao enviar mensagem. Tenta novamente.' });
       }
-    } catch (error) {
+    } catch {
       setLoading(false);
       setErrors({ submit: 'Erro de conexão. Tenta novamente.' });
     }
@@ -109,9 +109,9 @@ export default function Contacto() {
       </div>
 
       <div className="info-badges">
-        <div className="info-badge blue-text"><FiMail size={13} /> sunnysales.geral@gmail.com</div>
-        <div className="info-badge blue-text">Resposta em 24–48 h</div>
-        <div className="info-badge blue-text">Segunda a Sexta</div>
+        <div className="info-badge info-badge-sky"><FiMail size={13} /> sunnysales.geral@gmail.com</div>
+        <div className="info-badge info-badge-sky">Resposta em 24–48 h</div>
+        <div className="info-badge info-badge-sky">Segunda a Sexta</div>
       </div>
 
       <div className="contacto-form-wrap">
