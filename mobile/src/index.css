@@ -622,7 +622,14 @@ body {
   font-size: 20px;
   font-weight: 800;
   color: var(--text);
+  margin: 0 0 4px;
+}
+
+.profile-header-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
   margin: 0;
+  font-weight: 500;
 }
 
 .profile-form {
@@ -703,4 +710,10 @@ body {
   background: var(--primary-light);
   color: var(--primary-dark);
   box-shadow: 0 2px 8px rgba(75, 163, 195, 0.2);
+}
+
+.profile-section-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 0;
 }

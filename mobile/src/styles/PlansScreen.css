@@ -109,6 +109,38 @@
   z-index: 1;
 }
 
+/* ── Benefits ──────────────────────────────────── */
+.plans-benefits {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.benefit-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.benefit-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.benefit-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
 /* ── Pricing header ────────────────────────────── */
 .plans-pricing-header {
   text-align: center;

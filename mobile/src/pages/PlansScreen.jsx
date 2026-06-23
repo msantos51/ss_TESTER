@@ -153,10 +153,26 @@ export default function PlansScreen({ auth, onClose }) {
         <div className="plans-hero">
           <div className="plans-hero-blur plans-hero-blur-1" />
           <div className="plans-hero-blur plans-hero-blur-2" />
-          <h3 className="plans-hero-title">O teu negócio</h3>
+          <h3 className="plans-hero-title">Expande o teu negócio</h3>
           <p className="plans-hero-lead">
-            Junta-te à plataforma que coloca os vendedores de praia no mapa, literalmente.
+            Subscreve a um plano e fica visível no mapa para milhares de clientes.
           </p>
+        </div>
+
+        {/* Benefits section */}
+        <div className="plans-benefits">
+          <div className="benefit-item">
+            <div className="benefit-icon">📍</div>
+            <p className="benefit-text">Apareça no mapa público</p>
+          </div>
+          <div className="benefit-item">
+            <div className="benefit-icon">📊</div>
+            <p className="benefit-text">Estatísticas em tempo real</p>
+          </div>
+          <div className="benefit-item">
+            <div className="benefit-icon">⚡</div>
+            <p className="benefit-text">Suporte prioritário</p>
+          </div>
         </div>
 
         {/* Pricing header */}

@@ -70,7 +70,10 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
     <div className="profile-overlay">
       <div className="profile-sheet">
         <div className="profile-header">
-          <h2>Editar Perfil</h2>
+          <div>
+            <h2>Editar Perfil</h2>
+            <p className="profile-header-subtitle">Personalize sua experiência na plataforma</p>
+          </div>
           <button className="btn-icon" onClick={onClose} title="Fechar">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -120,6 +123,8 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
             <label>Cor do pin no mapa</label>
             <input type="color" value={pinColor} onChange={(e) => setPinColor(e.target.value)} className="profile-color-input" />
           </div>
+          <div className="profile-section-divider" />
+
           <div className="input-group">
             <label>Métodos de pagamento aceites</label>
             <div className="profile-payment-grid">
