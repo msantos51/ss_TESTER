@@ -6,7 +6,7 @@ import BackHomeButton from '../components/BackHomeButton';
 import {
   FiUser, FiLock, FiPackage, FiCamera, FiCheck,
   FiDollarSign, FiSmartphone, FiTerminal, FiCreditCard, FiWifi,
-  FiChevronDown, FiChevronUp, FiSave,
+  FiChevronDown, FiChevronUp, FiSave, FiBriefcase,
 } from 'react-icons/fi';
 import './ManageAccount.css';
 
@@ -22,6 +22,9 @@ export default function ManageAccount() {
   const [vendor, setVendor] = useState(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [nif, setNif] = useState('');
+  const [phone, setPhone] = useState('');
+  const [businessName, setBusinessName] = useState('');
   const [product, setProduct] = useState('');
   const [pinColor, setPinColor] = useState('#7B61FF');
   const [photo, setPhoto] = useState(null);
@@ -43,6 +46,9 @@ export default function ManageAccount() {
       setVendor(v);
       setName(v.name || '');
       setEmail(v.email || '');
+      setNif(v.nif || '');
+      setPhone(v.phone || '');
+      setBusinessName(v.business_name || '');
       setProduct(v.product || '');
       setPinColor(v.pin_color || '#7B61FF');
       if (v.payment_methods) {
@@ -84,7 +90,11 @@ export default function ManageAccount() {
     try {
       const data = new FormData();
       if (name !== vendor.name) data.append('name', name);
-      if (email !== vendor.email) data.append('email', email);
+      const emailChanged = email !== vendor.email;
+      if (emailChanged) data.append('email', email);
+      if (nif !== (vendor.nif || '')) data.append('nif', nif);
+      if (phone !== (vendor.phone || '')) data.append('phone', phone);
+      if (businessName !== (vendor.business_name || '')) data.append('business_name', businessName);
       if (password) {
         data.append('new_password', password);
         data.append('old_password', oldPassword);
@@ -104,7 +114,15 @@ export default function ManageAccount() {
       );
       localStorage.setItem('user', JSON.stringify(res.data));
       setVendor(res.data);
-      setSuccess('Dados atualizados com sucesso!');
+      // O email só é alterado depois de confirmado pelo link enviado por email
+      if (res.data.pending_email) {
+        setEmail(res.data.email || '');
+        setSuccess(
+          `Dados atualizados! Enviámos um email para ${res.data.pending_email} — confirma esse endereço para concluíres a alteração de email.`
+        );
+      } else {
+        setSuccess('Dados atualizados com sucesso!');
+      }
       setPassword('');
       setOldPassword('');
       setPhoto(null);
@@ -196,6 +214,55 @@ export default function ManageAccount() {
                 placeholder="email@exemplo.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+              />
+              {vendor.pending_email ? (
+                <span className="ma-field-hint">
+                  Alteração pendente: confirma <strong>{vendor.pending_email}</strong> no email que enviámos.
+                </span>
+              ) : (
+                <span className="ma-field-hint">
+                  Ao alterar o email vais receber um link de confirmação no novo endereço.
+                </span>
+              )}
+            </div>
+            <div className="ma-field">
+              <label className="ma-label">NIF</label>
+              <input
+                className="ma-input"
+                type="text"
+                inputMode="numeric"
+                maxLength={9}
+                placeholder="123456789"
+                value={nif}
+                onChange={(e) => setNif(e.target.value.replace(/\D/g, ''))}
+              />
+            </div>
+            <div className="ma-field">
+              <label className="ma-label">Telemóvel</label>
+              <input
+                className="ma-input"
+                type="tel"
+                placeholder="912345678"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Atividade / Firma */}
+          <div className="ma-card">
+            <div className="ma-card-header">
+              <FiBriefcase className="ma-card-icon" />
+              <span className="ma-card-title">Atividade</span>
+            </div>
+            <div className="ma-field">
+              <label className="ma-label">Nome da Atividade / Firma</label>
+              <input
+                className="ma-input"
+                type="text"
+                placeholder="Nome comercial (opcional)"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
               />
             </div>
           </div>

@@ -603,6 +603,46 @@ def _send_confirmation_email(name: str, email: str, confirmation_token: str) -> 
         return False
 
 
+def _send_email_change_confirmation(name: str, new_email: str, change_token: str) -> bool:
+    """Envia para o NOVO email um link para confirmar a alteração de email."""
+    confirm_link = f"{BASE_APP_URL}/confirm-email-change/{change_token}"
+    try:
+        return send_email(
+            to=new_email,
+            subject="Sunny Sales - Confirma o teu novo email",
+            body=f"Olá {name},\n\nPediste para alterar o email da tua conta Sunny Sales para este endereço.\n\nClica no link para confirmares a alteração:\n{confirm_link}\n\nSe não pediste esta alteração, ignora este email.\n\nCumprimentos,\nEquipa Sunny Sales",
+            html=f"""<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
+    <tr><td align="center">
+      <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <tr><td style="background:linear-gradient(135deg,#FCB454,#F7931E);padding:30px;text-align:center;">
+          <h1 style="margin:0;color:#ffffff;font-size:24px;">&#9728;&#65039; Sunny Sales</h1>
+        </td></tr>
+        <tr><td style="padding:30px;">
+          <h2 style="color:#333;margin-top:0;">Olá {name}!</h2>
+          <p style="color:#555;font-size:16px;line-height:1.6;">Pediste para alterar o email da tua conta <strong>Sunny Sales</strong> para este endereço. Para confirmares a alteração, clica no botão abaixo:</p>
+          <div style="text-align:center;margin:30px 0;">
+            <a href="{confirm_link}" style="background:#FCB454;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Confirmar Novo Email</a>
+          </div>
+          <p style="color:#888;font-size:13px;">Se o botão não funcionar, copia e cola este link no teu navegador:</p>
+          <p style="color:#888;font-size:13px;word-break:break-all;">{confirm_link}</p>
+          <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
+          <p style="color:#aaa;font-size:12px;text-align:center;">Se não pediste esta alteração, ignora este email.<br>Equipa Sunny Sales</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>""",
+        )
+    except Exception as exc:
+        print(f"[Email] Falha ao enviar email de alteração para {new_email}: {exc}")
+        return False
+
+
 def _send_password_reset_email(name: str, email: str, reset_token: str) -> bool:
     reset_link = f"{BASE_APP_URL}/password-reset/{reset_token}"
     try:
@@ -766,6 +806,7 @@ def list_vendors(
 @app.patch("/vendors/{vendor_id}/profile", response_model=schemas.VendorOut)
 async def update_vendor_profile(
     vendor_id: int,
+    background_tasks: BackgroundTasks,
     name: str = Form(None),
     email: str = Form(None),
     password: str = Form(None),
@@ -775,6 +816,14 @@ async def update_vendor_profile(
     profile_photo: UploadFile = File(None),
     pin_color: str = Form(None),
     payment_methods: str = Form(None),
+    nif: str = Form(None),
+    id_document_number: str = Form(None),
+    phone: str = Form(None),
+    address: str = Form(None),
+    beaches: str = Form(None),
+    product_categories: str = Form(None),
+    iban: str = Form(None),
+    business_name: str = Form(None),
     db: Session = Depends(get_db),
     current_vendor: models.Vendor = Depends(get_current_vendor),
 ):
@@ -786,11 +835,26 @@ async def update_vendor_profile(
 
     if name:
         vendor.name = name
+    # Alteração de email: não muda já o email; envia link de confirmação para o
+    # novo endereço e só ao confirmar é que o email passa a estar ativo.
     if email and email != vendor.email:
-        existing = db.query(models.Vendor).filter(models.Vendor.email == email).first()
-        if existing:
+        existing = (
+            db.query(models.Vendor)
+            .filter(models.Vendor.email == email, models.Vendor.id != vendor_id)
+            .first()
+        )
+        pending = (
+            db.query(models.Vendor)
+            .filter(models.Vendor.pending_email == email, models.Vendor.id != vendor_id)
+            .first()
+        )
+        if existing or pending:
             raise HTTPException(status_code=400, detail="Email already in use")
-        vendor.email = email
+        vendor.pending_email = email
+        vendor.email_change_token = uuid4().hex
+        background_tasks.add_task(
+            _send_email_change_confirmation, vendor.name, email, vendor.email_change_token
+        )
     # manter compatibilidade com parametro antigo 'password'
     if new_password or password:
         new_pass = new_password if new_password is not None else password
@@ -812,6 +876,31 @@ async def update_vendor_profile(
         vendor.pin_color = pin_color
     if payment_methods is not None:
         vendor.payment_methods = payment_methods
+    if nif is not None and nif != (vendor.nif or ""):
+        if not _validate_nif(nif):
+            raise HTTPException(status_code=400, detail="NIF inválido")
+        existing_nif = (
+            db.query(models.Vendor)
+            .filter(models.Vendor.nif == nif, models.Vendor.id != vendor_id)
+            .first()
+        )
+        if existing_nif:
+            raise HTTPException(status_code=400, detail="NIF já registado")
+        vendor.nif = nif
+    if id_document_number is not None:
+        vendor.id_document_number = id_document_number or None
+    if phone is not None:
+        vendor.phone = phone or None
+    if address is not None:
+        vendor.address = address or None
+    if beaches is not None:
+        vendor.beaches = beaches
+    if product_categories is not None:
+        vendor.product_categories = product_categories
+    if iban is not None:
+        vendor.iban = iban or None
+    if business_name is not None:
+        vendor.business_name = business_name or None
 
     db.commit()
     db.refresh(vendor)
@@ -1074,6 +1163,63 @@ def confirm_email(token: str, db: Session = Depends(get_db)):
         heading="Email confirmado com sucesso!",
         heading_color="#2e7d32",
         message=f"Olá <strong>{vendor.name}</strong>, a tua conta Sunny Sales está agora ativa. Já podes iniciar sessão.",
+        button_label="Fazer Login",
+    ))
+
+
+@app.get("/confirm-email-change/{token}", response_class=HTMLResponse)
+def confirm_email_change(token: str, db: Session = Depends(get_db)):
+    vendor = (
+        db.query(models.Vendor)
+        .filter(models.Vendor.email_change_token == token)
+        .first()
+    )
+    if not vendor or not vendor.pending_email:
+        return HTMLResponse(
+            status_code=404,
+            content=_status_page(
+                title="Link Inválido",
+                icon="&#10060;",
+                heading="Link inválido ou expirado",
+                heading_color="#c62828",
+                message="Este link de alteração de email já não é válido.",
+                button_label="Ir para a página inicial",
+            ),
+        )
+
+    # Garantir que o novo email continua livre antes de o aplicar
+    taken = (
+        db.query(models.Vendor)
+        .filter(models.Vendor.email == vendor.pending_email, models.Vendor.id != vendor.id)
+        .first()
+    )
+    if taken:
+        vendor.pending_email = None
+        vendor.email_change_token = None
+        db.commit()
+        return HTMLResponse(
+            status_code=400,
+            content=_status_page(
+                title="Email Indisponível",
+                icon="&#10060;",
+                heading="Email já em uso",
+                heading_color="#c62828",
+                message="Este email já está associado a outra conta. Tenta alterar para um email diferente.",
+                button_label="Ir para a página inicial",
+            ),
+        )
+
+    vendor.email = vendor.pending_email
+    vendor.pending_email = None
+    vendor.email_change_token = None
+    vendor.email_confirmed = True
+    db.commit()
+    return HTMLResponse(content=_status_page(
+        title="Email Alterado",
+        icon="&#9989;",
+        heading="Email alterado com sucesso!",
+        heading_color="#2e7d32",
+        message=f"Olá <strong>{vendor.name}</strong>, o teu email foi atualizado. Usa o novo email para iniciar sessão.",
         button_label="Fazer Login",
     ))
 

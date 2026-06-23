@@ -306,6 +306,108 @@ def test_protected_routes(client):
     assert resp.status_code == 200
 
 
+def test_update_registration_fields(client):
+    """O vendedor pode alterar os dados que introduziu no registo."""
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+
+    new_nif = make_nif()
+    resp = client.patch(
+        f"/vendors/{vendor_id}/profile",
+        data={
+            "phone": "961112233",
+            "business_name": "Praia & Sol Lda",
+            "nif": new_nif,
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["phone"] == "961112233"
+    assert body["business_name"] == "Praia & Sol Lda"
+    assert body["nif"] == new_nif
+
+
+def test_update_profile_rejects_invalid_nif(client):
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+
+    resp = client.patch(
+        f"/vendors/{vendor_id}/profile",
+        data={"nif": "123456788"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "NIF inválido"
+
+
+def test_email_change_requires_confirmation(client):
+    """Alterar o email não é imediato: exige confirmação por email."""
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+
+    resp = client.patch(
+        f"/vendors/{vendor_id}/profile",
+        data={"email": "novo@example.com"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    # o email ainda não mudou; fica pendente até confirmação
+    assert body["email"] == "vendor@example.com"
+    assert body["pending_email"] == "novo@example.com"
+
+    # foi enviado um email de confirmação para o novo endereço
+    last = client.sent_emails[-1]
+    assert last["to"] == "novo@example.com"
+    assert "/confirm-email-change/" in last["body"]
+
+    # login com o email antigo continua a funcionar
+    assert client.post(
+        "/token", json={"email": "vendor@example.com", "password": "Secret123", "force": True}
+    ).status_code == 200
+    # ainda não é possível autenticar com o novo email
+    assert client.post(
+        "/token", json={"email": "novo@example.com", "password": "Secret123", "force": True}
+    ).status_code != 200
+
+    # confirmar a alteração através do link
+    change_token = last["body"].split("/confirm-email-change/")[1].split()[0].strip()
+    confirm = client.get(f"/confirm-email-change/{change_token}")
+    assert confirm.status_code == 200
+
+    # agora o login passa a ser feito com o novo email
+    assert client.post(
+        "/token", json={"email": "novo@example.com", "password": "Secret123", "force": True}
+    ).status_code == 200
+    # e o email antigo deixa de ser válido
+    assert client.post(
+        "/token", json={"email": "vendor@example.com", "password": "Secret123", "force": True}
+    ).status_code != 200
+
+
+def test_email_change_rejects_duplicate(client):
+    register_vendor(client, email="a@example.com")
+    second = register_vendor(client, email="b@example.com")
+    vendor_id = second.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client, email="b@example.com")
+
+    resp = client.patch(
+        f"/vendors/{vendor_id}/profile",
+        data={"email": "a@example.com"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Email already in use"
+
+
 def test_location_update_fields(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]

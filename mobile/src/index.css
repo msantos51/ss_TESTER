@@ -515,6 +515,23 @@ body {
   text-align: center;
 }
 
+.info-msg {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.input-hint {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted, #6b7280);
+  margin-top: 4px;
+}
+
 /* ── Loading dots ─────────────────────────────── */
 .loading-dots {
   display: flex;

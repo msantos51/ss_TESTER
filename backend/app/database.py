@@ -54,6 +54,8 @@ def ensure_latest_schema():
             ("session_token", "ALTER TABLE vendors ADD COLUMN session_token TEXT"),
             ("email_confirmed", "ALTER TABLE vendors ADD COLUMN email_confirmed BOOLEAN DEFAULT false"),
             ("confirmation_token", "ALTER TABLE vendors ADD COLUMN confirmation_token TEXT"),
+            ("pending_email", "ALTER TABLE vendors ADD COLUMN pending_email TEXT"),
+            ("email_change_token", "ALTER TABLE vendors ADD COLUMN email_change_token TEXT"),
             ("password_reset_token", "ALTER TABLE vendors ADD COLUMN password_reset_token TEXT"),
             ("password_reset_expires", "ALTER TABLE vendors ADD COLUMN password_reset_expires TIMESTAMP"),
             ("payment_methods", "ALTER TABLE vendors ADD COLUMN payment_methods TEXT"),

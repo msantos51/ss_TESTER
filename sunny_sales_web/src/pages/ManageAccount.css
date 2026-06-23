@@ -192,6 +192,14 @@
   flex-shrink: 0;
 }
 
+.ma-field-hint {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
 .ma-card-body {
   display: flex;
   flex-direction: column;

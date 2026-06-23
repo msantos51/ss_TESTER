@@ -27,6 +27,9 @@ class Vendor(Base):
     subscription_valid_until = Column(DateTime, nullable=True)
     email_confirmed = Column(Boolean, default=False)
     confirmation_token = Column(String, nullable=True, index=True)
+    # Alteração de email: guarda o novo email até este ser confirmado por link
+    pending_email = Column(String, nullable=True)
+    email_change_token = Column(String, nullable=True, index=True)
     password_reset_token = Column(String, nullable=True, index=True)
     password_reset_expires = Column(DateTime, nullable=True)
     session_token = Column(String, nullable=True, index=True)
