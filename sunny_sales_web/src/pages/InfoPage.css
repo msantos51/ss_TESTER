@@ -91,12 +91,20 @@
   padding: 7px 16px;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   box-shadow: var(--shadow-sm);
   font-size: 0.82rem;
-  color: var(--text-secondary);
+  color: #2d6a4f;
   font-weight: 500;
   white-space: nowrap;
+}
+
+.info-badge svg {
+  color: #2d6a4f;
+  stroke: #2d6a4f;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .info-badge-value {
@@ -468,7 +476,6 @@
 }
 
 .sustainability-icon {
-  font-size: 1.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -477,6 +484,14 @@
   background: rgba(45, 106, 79, 0.1);
   border-radius: var(--radius-md);
   flex-shrink: 0;
+  color: #2d6a4f;
+}
+
+.sustainability-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: #2d6a4f;
+  color: #2d6a4f;
 }
 
 .sustainability-text {
