@@ -1431,3 +1431,4 @@ if WEB_DIST.is_dir():
         if file_path.is_file():
             return FileResponse(file_path)
         return FileResponse(WEB_DIST / "index.html")
+# Force redeploy at Tue Jun 23 10:55:15 UTC 2026
