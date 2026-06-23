@@ -92,16 +92,27 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
     };
   }, []);
 
-  const sendLocation = useCallback(async (lat, lng) => {
+  const readApiError = async (response, fallbackMessage) => {
+    // Tenta aproveitar a mensagem detalhada do backend para mostrar erros claros ao vendedor.
     try {
-      setPosition([lat, lng]);
-      await fetch(`${BASE_URL}/vendors/${vendorId}/location`, {
-        method: 'PUT',
-        headers: { ...authHeader, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lat, lng }),
-      });
-    } catch (err) {
-      console.error('Erro ao enviar localização:', err);
+      const payload = await response.json();
+      return payload.detail || fallbackMessage;
+    } catch {
+      return fallbackMessage;
+    }
+  };
+
+  const sendLocation = useCallback(async (lat, lng) => {
+    setPosition([lat, lng]);
+    const response = await fetch(`${BASE_URL}/vendors/${vendorId}/location`, {
+      method: 'PUT',
+      headers: { ...authHeader, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lat, lng }),
+    });
+
+    if (!response.ok) {
+      const message = await readApiError(response, 'Erro ao enviar localização');
+      throw new Error(message);
     }
   }, [vendorId, token]);
 
@@ -125,8 +136,25 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
         throw new Error(err.detail || 'Erro ao iniciar partilha');
       }
 
-      listenerRef.current = await LocationTracker.addListener('locationUpdate', ({ lat, lng }) => {
-        sendLocation(lat, lng);
+      const currentPosition = position || await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+      const currentLat = Array.isArray(currentPosition)
+        ? currentPosition[0]
+        : currentPosition.coords.latitude;
+      const currentLng = Array.isArray(currentPosition)
+        ? currentPosition[1]
+        : currentPosition.coords.longitude;
+
+      // Publica logo a primeira posição para o vendedor aparecer no mapa público
+      // sem depender de um novo evento do serviço nativo, que pode demorar se estiver parado.
+      await sendLocation(currentLat, currentLng);
+
+      listenerRef.current = await LocationTracker.addListener('locationUpdate', async ({ lat, lng }) => {
+        try {
+          await sendLocation(lat, lng);
+        } catch (err) {
+          console.error('Erro ao enviar localização:', err);
+          setError(err.message);
+        }
       });
       await LocationTracker.startTracking();
       setSharing(true);
