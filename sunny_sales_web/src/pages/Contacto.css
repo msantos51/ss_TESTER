@@ -196,3 +196,7 @@
     align-self: stretch;
   }
 }
+
+.contacto-submit-error {
+  text-align: center;
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FiMail, FiSend, FiCheckCircle, FiUser, FiMessageSquare } from 'react-icons/fi';
 import BackHomeButton from '../components/BackHomeButton';
+import { BASE_URL } from '../config';
 import './InfoPage.css';
 import './Contacto.css';
 
@@ -46,7 +47,8 @@ export default function Contacto() {
     }
     setLoading(true);
     try {
-      const response = await fetch('/api/contact', {
+      // Enviar o pedido para o backend configurado, tanto em produção como em desenvolvimento.
+      const response = await fetch(`${BASE_URL.replace(/\/$/, '')}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -61,7 +63,7 @@ export default function Contacto() {
         setEnviado(true);
       } else {
         setLoading(false);
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         setErrors({ submit: errorData.detail || 'Erro ao enviar mensagem. Tenta novamente.' });
       }
     } catch (error) {
@@ -184,6 +186,8 @@ export default function Contacto() {
             </div>
             {errors.mensagem && <span className="contacto-error">{errors.mensagem}</span>}
           </div>
+
+          {errors.submit && <div className="contacto-error contacto-submit-error">{errors.submit}</div>}
 
           <button
             type="submit"

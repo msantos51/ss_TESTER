@@ -25,6 +25,7 @@ def client(tmp_path):
 
     def fake_send_email(to, subject, body, html=None):
         sent_emails.append({"to": to, "subject": subject, "body": body, "html": html})
+        return True
 
     main.send_email = fake_send_email
 
@@ -91,6 +92,41 @@ def confirm_latest_email(client):
     token = body.split("/confirm-email/")[1].split()[0].strip()
     return client.get(f"/confirm-email/{token}")
 
+
+
+def test_contact_form_sends_email_to_sunny_sales(client):
+    """Garante que o formulário de contacto envia email para a caixa correta."""
+
+    resp = client.post(
+        "/api/contact",
+        json={
+            "nome": "Cliente Teste",
+            "email": "cliente@example.com",
+            "assunto": "Informação geral",
+            "mensagem": "Quero saber mais informações sobre a Sunny Sales.",
+        },
+    )
+
+    assert resp.status_code == 200
+    assert client.sent_emails[-1]["to"] == "sunnysales.geral@gmail.com"
+    assert "cliente@example.com" in client.sent_emails[-1]["body"]
+
+
+def test_contact_form_rejects_invalid_email(client):
+    """Valida que o backend rejeita emails de contacto inválidos."""
+
+    resp = client.post(
+        "/api/contact",
+        json={
+            "nome": "Cliente Teste",
+            "email": "email-invalido",
+            "assunto": "Informação geral",
+            "mensagem": "Esta mensagem tem caracteres suficientes.",
+        },
+    )
+
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Introduz um email válido."
 
 def test_vendor_registration(client):
     resp = register_vendor(client)
