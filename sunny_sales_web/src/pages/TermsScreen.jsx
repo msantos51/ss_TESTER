@@ -46,32 +46,40 @@ export default function TermsScreen() {
           <li>Cumprir a legislação aplicável nas suas atividades comerciais</li>
           <li>Garantir a qualidade e segurança dos produtos vendidos</li>
           <li>Não utilizar a aplicação para fins ilegais ou fraudulentos</li>
+          <li>Manter os dados de contacto atualizados e precisos</li>
         </ul>
       </div>
 
       <div className="terms-section">
-        <h3 className="terms-section-title">6. Suspensão e Cancelamento</h3>
+        <h3 className="terms-section-title">6. Registro Simplificado</h3>
+        <p className="terms-text">
+          O registo como vendedor não requer apresentação de documentação de licença. O vendedor é responsável por garantir que a sua atividade comercial está em conformidade com a legislação aplicável na sua jurisdição.
+        </p>
+      </div>
+
+      <div className="terms-section">
+        <h3 className="terms-section-title">7. Suspensão e Cancelamento</h3>
         <p className="terms-text">
           A administração da Sunny Sales reserva-se o direito de suspender ou cancelar a conta de qualquer vendedor que viole estes termos, utilize a aplicação de forma abusiva ou prejudique outros utilizadores.
         </p>
       </div>
 
       <div className="terms-section">
-        <h3 className="terms-section-title">7. Limitação de Responsabilidade</h3>
+        <h3 className="terms-section-title">8. Limitação de Responsabilidade</h3>
         <p className="terms-text">
           A Sunny Sales não se responsabiliza por quaisquer perdas, danos ou prejuízos resultantes de transações comerciais entre vendedores e clientes. A utilização da aplicação é feita sob responsabilidade do utilizador.
         </p>
       </div>
 
       <div className="terms-section">
-        <h3 className="terms-section-title">8. Alterações aos Termos</h3>
+        <h3 className="terms-section-title">9. Alterações aos Termos</h3>
         <p className="terms-text">
           Estes Termos e Condições podem ser atualizados periodicamente. Notificaremos os utilizadores através da aplicação em caso de alterações significativas.
         </p>
       </div>
 
       <div className="terms-section">
-        <h3 className="terms-section-title">9. Contacto</h3>
+        <h3 className="terms-section-title">10. Contacto</h3>
         <p className="terms-text">
           Para qualquer dúvida ou questão relacionada com estes termos, o utilizador pode contactar a equipa de suporte através do email:{' '}
           <a href="mailto:suporte@sunnysales.com" className="info-link">
