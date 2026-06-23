@@ -53,8 +53,7 @@ export default function Contacto() {
           nome: form.nome,
           email: form.email,
           assunto: form.assunto,
-          mensagem: form.mensagem,
-          destinatario: 'sunnysales.geral@gmail.com'
+          mensagem: form.mensagem
         })
       });
       if (response.ok) {

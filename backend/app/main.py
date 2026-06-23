@@ -599,7 +599,7 @@ def _send_password_reset_email(name: str, email: str, reset_token: str) -> bool:
 @app.post("/vendors/resend-confirmation")
 async def resend_confirmation_email(
     email: str = Body(..., embed=True),
-    background_tasks: BackgroundTasks = BackgroundTasks(),
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
@@ -632,7 +632,7 @@ async def create_vendor(
     iban: str = Form(""),
     business_name: str = Form(""),
     terms_accepted: bool = Form(...),
-    background_tasks: BackgroundTasks = BackgroundTasks(),
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     if not terms_accepted:
@@ -1386,8 +1386,7 @@ async def contact_form(
     email: str = Body(..., embed=True),
     assunto: str = Body(..., embed=True),
     mensagem: str = Body(..., embed=True),
-    destinatario: str = Body(..., embed=True),
-    background_tasks: BackgroundTasks = BackgroundTasks(),
+    background_tasks: BackgroundTasks,
 ):
     """Handle contact form submissions and send email notification."""
     if not nome or not email or not assunto or not mensagem:
@@ -1407,7 +1406,7 @@ async def contact_form(
 
     background_tasks.add_task(
         send_email,
-        to=destinatario,
+        to="sunnysales.geral@gmail.com",
         subject=f"[Sunny Sales] Contacto: {assunto}",
         body=f"Nome: {nome}\nEmail: {email}\nAssunto: {assunto}\n\nMensagem:\n{mensagem}",
         html=html_body,
