@@ -55,6 +55,9 @@ export default function VendorDashboard() {
   const [profileTab, setProfileTab] = useState('perfil');
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
+  const [editNif, setEditNif] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editBusinessName, setEditBusinessName] = useState('');
   const [editProduct, setEditProduct] = useState('');
   const [editPhoto, setEditPhoto] = useState(null);
   const [editPhotoPreview, setEditPhotoPreview] = useState(null);
@@ -63,6 +66,7 @@ export default function VendorDashboard() {
   const [editPaymentMethods, setEditPaymentMethods] = useState([]);
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState('');
+  const [editSuccess, setEditSuccess] = useState('');
   // Security tab state
   const [secOldPassword, setSecOldPassword] = useState('');
   const [secNewPassword, setSecNewPassword] = useState('');
@@ -186,6 +190,9 @@ export default function VendorDashboard() {
     setProfileTab('perfil');
     setEditName(vendor.name || '');
     setEditEmail(vendor.email || '');
+    setEditNif(vendor.nif || '');
+    setEditPhone(vendor.phone || '');
+    setEditBusinessName(vendor.business_name || '');
     setEditProduct(vendor.product || '');
     setEditPhoto(null);
     setEditPhotoPreview(null);
@@ -193,6 +200,7 @@ export default function VendorDashboard() {
     setEditPinColor(vendor.pin_color || '#7B61FF');
     setEditPaymentMethods(vendor.payment_methods ? vendor.payment_methods.split(',').filter(Boolean) : []);
     setEditError('');
+    setEditSuccess('');
     setSecOldPassword('');
     setSecNewPassword('');
     setSecError('');
@@ -240,11 +248,15 @@ export default function VendorDashboard() {
     if (!vendor) return;
     setEditSaving(true);
     setEditError('');
+    setEditSuccess('');
     try {
       const token = localStorage.getItem('token');
       const data = new FormData();
       if (editName !== vendor.name) data.append('name', editName);
       if (editEmail !== vendor.email) data.append('email', editEmail);
+      if (editNif !== (vendor.nif || '')) data.append('nif', editNif);
+      if (editPhone !== (vendor.phone || '')) data.append('phone', editPhone);
+      if (editBusinessName !== (vendor.business_name || '')) data.append('business_name', editBusinessName);
       if (editProduct !== vendor.product) data.append('product', editProduct);
       if (editPinColor !== (vendor.pin_color || '#7B61FF')) data.append('pin_color', editPinColor);
       const newPaymentMethods = editPaymentMethods.join(',');
@@ -262,9 +274,17 @@ export default function VendorDashboard() {
       localStorage.setItem('user', JSON.stringify(updated));
       setVendor(updated);
       setPinColor(updated.pin_color || '#7B61FF');
-      closeProfileModal();
-    } catch {
-      setEditError('Erro ao guardar alterações');
+      // O email só é alterado depois de confirmado pelo link enviado por email
+      if (updated.pending_email) {
+        setEditEmail(updated.email || '');
+        setEditSuccess(
+          `Dados guardados! Enviámos um email para ${updated.pending_email} — confirma esse endereço para concluíres a alteração de email.`
+        );
+      } else {
+        closeProfileModal();
+      }
+    } catch (err) {
+      setEditError(err.response?.data?.detail || 'Erro ao guardar alterações');
     } finally {
       setEditSaving(false);
     }
@@ -539,6 +559,38 @@ export default function VendorDashboard() {
                   />
                 </div>
                 <div className="vd-modal-field">
+                  <label className="vd-modal-label">NIF</label>
+                  <input
+                    className="vd-modal-input"
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={9}
+                    placeholder="123456789"
+                    value={editNif}
+                    onChange={e => setEditNif(e.target.value.replace(/\D/g, ''))}
+                  />
+                </div>
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Telemóvel</label>
+                  <input
+                    className="vd-modal-input"
+                    type="tel"
+                    placeholder="912345678"
+                    value={editPhone}
+                    onChange={e => setEditPhone(e.target.value)}
+                  />
+                </div>
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Nome da Atividade / Firma</label>
+                  <input
+                    className="vd-modal-input"
+                    type="text"
+                    placeholder="Nome comercial (opcional)"
+                    value={editBusinessName}
+                    onChange={e => setEditBusinessName(e.target.value)}
+                  />
+                </div>
+                <div className="vd-modal-field">
                   <label className="vd-modal-label">Produto</label>
                   <select
                     className="vd-modal-input"
@@ -581,6 +633,11 @@ export default function VendorDashboard() {
                 </div>
 
                 {editError && <p className="vd-modal-error">{editError}</p>}
+                {editSuccess && (
+                  <p className="vd-modal-success">
+                    <FiCheck size={14} /> {editSuccess}
+                  </p>
+                )}
 
                 <div className="vd-modal-actions">
                   <button type="button" className="vd-modal-cancel" onClick={closeProfileModal}>
