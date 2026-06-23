@@ -598,8 +598,8 @@ def _send_password_reset_email(name: str, email: str, reset_token: str) -> bool:
 
 @app.post("/vendors/resend-confirmation")
 async def resend_confirmation_email(
-    email: str = Body(..., embed=True),
     background_tasks: BackgroundTasks,
+    email: str = Body(..., embed=True),
     db: Session = Depends(get_db),
 ):
     vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
