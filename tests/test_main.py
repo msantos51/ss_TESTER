@@ -3,6 +3,7 @@ import os
 import importlib
 import itertools
 import shutil
+from datetime import datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
@@ -449,5 +450,75 @@ def test_paid_weeks_listing(client):
     assert len(weeks) == 1
     assert weeks[0]["receipt_url"] == "http://r"
 
+def test_stripe_webhook_applies_plan_duration(client):
+    """Valida que cada plano pago fica ativo durante a duração contratada."""
 
+    from backend.app import main
+
+    expected_days_by_plan = {
+        "semanal": 7,
+        "quinzenal": 15,
+        "mensal": 30,
+    }
+
+    for plan, expected_days in expected_days_by_plan.items():
+        resp = register_vendor(client, email=f"{plan}@example.com")
+        vendor_id = resp.json()["id"]
+        confirm_latest_email(client)
+        token = get_token(client, email=f"{plan}@example.com")
+
+        event = {
+            "type": "checkout.session.completed",
+            "data": {
+                "object": {
+                    "metadata": {"vendor_id": vendor_id, "plan": plan},
+                    "payment_status": "paid",
+                }
+            },
+        }
+        before_payment = main.utcnow()
+        resp = client.post("/stripe/webhook", json=event)
+        after_payment = main.utcnow()
+        assert resp.status_code == 200
+
+        resp = client.get("/vendors/me", headers={"Authorization": f"Bearer {token}"})
+        assert resp.status_code == 200
+        vendor = resp.json()
+        valid_until = datetime.fromisoformat(vendor["subscription_valid_until"])
+        minimum_valid_until = before_payment + timedelta(days=expected_days)
+        maximum_valid_until = after_payment + timedelta(days=expected_days)
+
+        assert vendor["subscription_active"] is True
+        assert minimum_valid_until <= valid_until <= maximum_valid_until
+
+def test_subscription_expires_when_validity_passes(client):
+    """Valida que uma subscrição vencida é desativada antes de devolver o perfil."""
+
+    from backend.app import database, main, models
+
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = activate_subscription(client, vendor_id)
+
+    db = database.SessionLocal()
+    try:
+        vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
+        vendor.subscription_active = True
+        vendor.subscription_valid_until = main.utcnow() - timedelta(seconds=1)
+        db.commit()
+    finally:
+        db.close()
+
+    resp = client.get("/vendors/me", headers={"Authorization": f"Bearer {token}"})
+    assert resp.status_code == 200
+    vendor = resp.json()
+    assert vendor["subscription_active"] is False
+
+    resp = client.post(
+        f"/vendors/{vendor_id}/routes/start",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 403
+    assert resp.json()["detail"] == "Subscription inactive"
 
