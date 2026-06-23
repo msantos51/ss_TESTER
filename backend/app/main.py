@@ -209,6 +209,13 @@ STRIPE_PLAN_PRICE_IDS = {
     "mensal": os.getenv("STRIPE_PRICE_ID_MENSAL", "price_1TjhCMIUkNjcmfnZECNOhR4y"),
 }
 
+# Duração real de cada plano vendido no front-end e no Stripe.
+SUBSCRIPTION_PLAN_DURATIONS_DAYS = {
+    "semanal": 7,
+    "quinzenal": 15,
+    "mensal": 30,
+}
+
 
 def validate_password(password: str):
     if len(password) < 8 or password.lower() == password or not any(c.isdigit() for c in password):
@@ -364,16 +371,52 @@ def get_admin(request: Request):
 # --------------------------
 # Subscrição
 # --------------------------
-def verify_active_subscription(vendor: models.Vendor, db: Session):
-    """Ensure subscription is active and not expired."""
+def refresh_subscription_status(vendor: models.Vendor, db: Session) -> models.Vendor:
+    """Atualiza o estado da subscrição caso a data de validade já tenha passado."""
     if (
         vendor.subscription_active
         and vendor.subscription_valid_until
-        and vendor.subscription_valid_until < utcnow()
+        and vendor.subscription_valid_until <= utcnow()
     ):
         vendor.subscription_active = False
         db.commit()
         db.refresh(vendor)
+    return vendor
+
+
+def apply_subscription_payment(vendor: models.Vendor, plan: str, db: Session) -> models.PaidWeek:
+    """Aplica um pagamento e calcula a validade com base no plano comprado."""
+    duration_days = SUBSCRIPTION_PLAN_DURATIONS_DAYS.get(plan)
+    if duration_days is None:
+        raise HTTPException(status_code=400, detail="Invalid plan")
+
+    now = utcnow()
+    # Se a subscrição ainda estiver ativa, o novo período é acumulado no fim da validade atual.
+    starts_at = (
+        vendor.subscription_valid_until
+        if (
+            vendor.subscription_active
+            and vendor.subscription_valid_until
+            and vendor.subscription_valid_until > now
+        )
+        else now
+    )
+    ends_at = starts_at + timedelta(days=duration_days)
+
+    vendor.subscription_active = True
+    vendor.subscription_valid_until = ends_at
+    paid = models.PaidWeek(
+        vendor_id=vendor.id,
+        start_date=starts_at,
+        end_date=ends_at,
+    )
+    db.add(paid)
+    return paid
+
+
+def verify_active_subscription(vendor: models.Vendor, db: Session):
+    """Confirma que a subscrição está ativa e ainda dentro da validade."""
+    refresh_subscription_status(vendor, db)
     if not vendor.subscription_active:
         raise HTTPException(status_code=403, detail="Subscription inactive")
 
@@ -1216,6 +1259,7 @@ def create_checkout_session(
             success_url=SUCCESS_URL,
             cancel_url=CANCEL_URL,
             metadata={"vendor_id": vendor_id, "plan": plan},
+            client_reference_id=str(vendor_id),
         )
         return {"checkout_url": session.url}
     except Exception as exc:
@@ -1312,11 +1356,12 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         session = event["data"]["object"]
         if session.get("payment_status") != "paid":
             return {"status": "ignored"}
-        vendor_id = int(session.get("client_reference_id") or session.get("metadata", {}).get("vendor_id") or 0)
+        metadata = session.get("metadata", {}) or {}
+        vendor_id = int(session.get("client_reference_id") or metadata.get("vendor_id") or 0)
+        plan = metadata.get("plan", "semanal")
         vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
         if vendor:
-            vendor.subscription_active = True
-            vendor.subscription_valid_until = utcnow() + timedelta(days=7)
+            paid = apply_subscription_payment(vendor, plan, db)
             receipt_url = None
             invoice_id = session.get("invoice")
             if invoice_id:
@@ -1325,13 +1370,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
                     receipt_url = invoice.get("hosted_invoice_url") or invoice.get("invoice_pdf")
                 except Exception:
                     receipt_url = None
-            paid = models.PaidWeek(
-                vendor_id=vendor_id,
-                start_date=utcnow(),
-                end_date=utcnow() + timedelta(days=7),
-                receipt_url=receipt_url,
-            )
-            db.add(paid)
+            paid.receipt_url = receipt_url
             db.commit()
     return {"status": "success"}
 
@@ -1350,14 +1389,7 @@ def activate_subscription_manual(
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found")
 
-    vendor.subscription_active = True
-    vendor.subscription_valid_until = utcnow() + timedelta(days=7)
-    paid = models.PaidWeek(
-        vendor_id=vendor_id,
-        start_date=utcnow(),
-        end_date=utcnow() + timedelta(days=7),
-    )
-    db.add(paid)
+    apply_subscription_payment(vendor, "semanal", db)
     db.commit()
     return {"status": "activated"}
 
@@ -1379,8 +1411,11 @@ def admin_deactivate_vendor(vendor_id: int, db: Session = Depends(get_db), admin
     return {"status": "deactivated"}
 
 @app.get("/vendors/me", response_model=schemas.VendorOut)
-def get_my_vendor_profile(current_vendor: models.Vendor = Depends(get_current_vendor)):
-    return current_vendor
+def get_my_vendor_profile(
+    current_vendor: models.Vendor = Depends(get_current_vendor),
+    db: Session = Depends(get_db),
+):
+    return refresh_subscription_status(current_vendor, db)
 
 
 @app.post("/api/contact")
