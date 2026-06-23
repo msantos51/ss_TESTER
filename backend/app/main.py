@@ -1380,11 +1380,9 @@ def get_my_vendor_profile(current_vendor: models.Vendor = Depends(get_current_ve
     return current_vendor
 
 
-# --------------------------
-# Contact endpoint
-# --------------------------
+# Contact endpoint - handle form submissions
 @app.post("/api/contact")
-async def contact(
+async def contact_form(
     nome: str = Body(..., embed=True),
     email: str = Body(..., embed=True),
     assunto: str = Body(..., embed=True),
@@ -1392,6 +1390,7 @@ async def contact(
     destinatario: str = Body(..., embed=True),
     background_tasks: BackgroundTasks = BackgroundTasks(),
 ):
+    """Send contact form email"""
     if not nome or not email or not assunto or not mensagem:
         raise HTTPException(status_code=400, detail="Todos os campos são obrigatórios.")
 
