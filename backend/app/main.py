@@ -21,6 +21,8 @@ import json
 import base64
 import hmac
 import hashlib
+import re
+from html import escape
 from math import radians, sin, cos, sqrt, atan2
 from supabase import create_client
 import httpx
@@ -170,6 +172,7 @@ BASE_APP_URL = os.getenv("BASE_APP_URL", "https://ss-tester.onrender.com")
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 RESEND_FROM = os.getenv("RESEND_FROM", "Sunny Sales <onboarding@resend.dev>")
+CONTACT_EMAIL_TO = os.getenv("CONTACT_EMAIL_TO", "sunnysales.geral@gmail.com")
 
 
 def send_email(to: str, subject: str, body: str, html: str | None = None) -> bool:
@@ -618,6 +621,7 @@ async def resend_confirmation_email(
 
 @app.post("/vendors/")
 async def create_vendor(
+    background_tasks: BackgroundTasks,
     name: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
@@ -632,7 +636,6 @@ async def create_vendor(
     iban: str = Form(""),
     business_name: str = Form(""),
     terms_accepted: bool = Form(...),
-    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     if not terms_accepted:
@@ -1386,33 +1389,64 @@ async def contact_form(
     email: str = Body(..., embed=True),
     assunto: str = Body(..., embed=True),
     mensagem: str = Body(..., embed=True),
-    background_tasks: BackgroundTasks,
 ):
-    """Handle contact form submissions and send email notification."""
-    if not nome or not email or not assunto or not mensagem:
+    """Recebe o formulário de contacto e confirma o envio real do email."""
+    # Normalizar os campos recebidos para evitar espaços acidentais no início ou no fim.
+    contact_name = nome.strip()
+    contact_email = email.strip()
+    contact_subject = assunto.strip()
+    contact_message = mensagem.strip()
+
+    # Validar todos os campos antes de tentar enviar o email.
+    if not contact_name or not contact_email or not contact_subject or not contact_message:
         raise HTTPException(status_code=400, detail="Todos os campos são obrigatórios.")
 
-    if len(mensagem) < 10:
+    # Validar o formato do email para evitar mensagens sem remetente de resposta válido.
+    if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", contact_email):
+        raise HTTPException(status_code=400, detail="Introduz um email válido.")
+
+    if len(contact_message) < 10:
         raise HTTPException(status_code=400, detail="Mensagem deve ter no mínimo 10 caracteres.")
+
+    # Escapar o conteúdo do utilizador antes de montar o HTML do email.
+    safe_name = escape(contact_name)
+    safe_email = escape(contact_email)
+    safe_subject = escape(contact_subject)
+    safe_message = escape(contact_message).replace("\n", "<br>")
 
     html_body = f"""<html><body>
     <h2>Nova mensagem de contacto do Sunny Sales</h2>
-    <p><strong>Nome:</strong> {nome}</p>
-    <p><strong>Email:</strong> {email}</p>
-    <p><strong>Assunto:</strong> {assunto}</p>
+    <p><strong>Nome:</strong> {safe_name}</p>
+    <p><strong>Email:</strong> {safe_email}</p>
+    <p><strong>Assunto:</strong> {safe_subject}</p>
     <p><strong>Mensagem:</strong></p>
-    <p>{mensagem.replace(chr(10), '<br>')}</p>
+    <p>{safe_message}</p>
     </body></html>"""
 
-    background_tasks.add_task(
-        send_email,
-        to="sunnysales.geral@gmail.com",
-        subject=f"[Sunny Sales] Contacto: {assunto}",
-        body=f"Nome: {nome}\nEmail: {email}\nAssunto: {assunto}\n\nMensagem:\n{mensagem}",
-        html=html_body,
-    )
+    try:
+        email_sent = send_email(
+            to=CONTACT_EMAIL_TO,
+            subject=f"[Sunny Sales] Contacto: {contact_subject}",
+            body=(
+                f"Nome: {contact_name}\n"
+                f"Email: {contact_email}\n"
+                f"Assunto: {contact_subject}\n\n"
+                f"Mensagem:\n{contact_message}"
+            ),
+            html=html_body,
+        )
+    except httpx.HTTPError as exc:
+        # Devolver erro claro quando o fornecedor de email rejeita ou falha o envio.
+        raise HTTPException(status_code=502, detail=f"Erro ao enviar email: {exc}")
+
+    if not email_sent:
+        raise HTTPException(
+            status_code=503,
+            detail="Serviço de email não configurado. Define RESEND_API_KEY para ativar o envio.",
+        )
 
     return {"status": "success", "message": "Mensagem enviada com sucesso. Responderemos em breve!"}
+
 
 
 # --------------------------
