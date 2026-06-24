@@ -5,7 +5,6 @@ import 'leaflet-rotate';
 import axios from 'axios';
 import { BASE_URL, mediaUrl } from '../config';
 import LocateButton from '../components/LocateButton';
-import VendorLocateButton from '../components/VendorLocateButton';
 import LocateHint from '../components/LocateHint';
 import WelcomeCard from '../components/WelcomeCard';
 import WeatherCard from '../components/WeatherCard';
@@ -292,7 +291,10 @@ export default function ModernMapLayout() {
   }, [isVendorLogged]);
 
   useEffect(() => {
-    const wsUrl = BASE_URL.replace(/^http/, 'ws') + '/ws/locations';
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+
+    const wsUrl = BASE_URL.replace(/^http/, 'ws') + `/ws/locations?token=${encodeURIComponent(token)}`;
     const ws = new WebSocket(wsUrl);
 
     ws.onmessage = (event) => {
@@ -578,9 +580,10 @@ export default function ModernMapLayout() {
                   isAutoFollowing={isAutoFollowing}
                   setIsAutoFollowing={setIsAutoFollowing}
                 />
-                <VendorLocateButton
-                  vendor={loggedVendor}
-                  onLocate={() => setIsAutoFollowing(true)}
+                <LocateButton
+                  type="vendor"
+                  data={loggedVendor}
+                  onClick={() => setIsAutoFollowing(true)}
                 />
               </>
             )}

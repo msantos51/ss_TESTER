@@ -1,41 +1,47 @@
-// Botão que localiza o utilizador e centraliza o mapa
 import React, { useState } from 'react';
 import { useMap } from 'react-leaflet';
 
-// Componente que apresenta um botão para obter a localização do cliente
-export default function LocateButton({ onLocationFound, onClick }) {
+export default function LocateButton({ type = 'user', data = null, onLocationFound, onClick, disabled = false }) {
   const map = useMap();
   const [locating, setLocating] = useState(false);
 
-  // Função que solicita a localização e centraliza o mapa
   const handleLocate = () => {
     if (onClick) onClick();
-    setLocating(true);
 
-    const onFound = (e) => {
-      setLocating(false);
-      const { lat, lng } = e.latlng;
-
-      if (onLocationFound) {
-        onLocationFound({ lat, lng });
+    if (type === 'vendor') {
+      if (data && data.current_lat && data.current_lng) {
+        map.setView([data.current_lat, data.current_lng], 18, { animate: false });
       }
+    } else {
+      setLocating(true);
+      const onFound = (e) => {
+        setLocating(false);
+        const { lat, lng } = e.latlng;
+        if (onLocationFound) onLocationFound({ lat, lng });
+        map.setView([lat, lng], 18, { animate: false });
+      };
 
-      map.setView([lat, lng], 18, { animate: false });
-    };
+      const onError = () => {
+        setLocating(false);
+        alert('Não foi possível obter a sua localização.');
+      };
 
-    const onError = () => {
-      setLocating(false);
-      alert('Não foi possível obter a sua localização.');
-    };
-
-    map.once('locationfound', onFound);
-    map.once('locationerror', onError);
-    map.locate({ enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+      map.once('locationfound', onFound);
+      map.once('locationerror', onError);
+      map.locate({ enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+    }
   };
 
-  // Renderização do botão de localização
+  const ariaLabel = type === 'vendor' ? 'Localizar vendedor' : 'Localizar-me';
+  const isDisabled = disabled || (type === 'vendor' && !data);
+
   return (
-    <button className="locate-btn" onClick={handleLocate} aria-label="Localizar-me">
+    <button
+      className={`locate-btn ${type === 'vendor' ? 'vendor-locate-btn' : ''}`}
+      onClick={handleLocate}
+      aria-label={ariaLabel}
+      disabled={isDisabled}
+    >
       {locating ? (
         <span className="loader" />
       ) : (
