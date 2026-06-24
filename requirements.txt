@@ -10,3 +10,4 @@ python-multipart
 stripe
 supabase
 pytest
+slowapi>=0.1.9
