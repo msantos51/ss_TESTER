@@ -184,15 +184,19 @@ app.add_middleware(
 )
 
 # Middleware de host confiável
+_allowed_hosts = [
+    "localhost",
+    "localhost:8000",
+    "127.0.0.1",
+    "ss-tester.onrender.com",
+]
+_env_hosts = os.getenv("ALLOWED_HOSTS", "")
+if _env_hosts:
+    _allowed_hosts.extend([h.strip() for h in _env_hosts.split(",") if h.strip()])
+
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=[
-        "localhost",
-        "localhost:8000",
-        "127.0.0.1",
-        "ss-tester.onrender.com",
-        os.getenv("ALLOWED_HOSTS", "ss-tester.onrender.com").split(","),
-    ]
+    allowed_hosts=_allowed_hosts
 )
 
 # Middleware de Security Headers
