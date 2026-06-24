@@ -4,19 +4,10 @@ import { BASE_URL, mediaUrl } from '../config';
 import ImageCropper from '../components/ImageCropper';
 import BackHomeButton from '../components/BackHomeButton';
 import {
-  FiUser, FiLock, FiPackage, FiCamera, FiCheck,
-  FiDollarSign, FiSmartphone, FiTerminal, FiCreditCard, FiWifi,
-  FiChevronDown, FiChevronUp, FiSave, FiBriefcase,
+  FiUser, FiLock, FiCamera, FiCheck,
+  FiChevronDown, FiChevronUp, FiSave, FiPalette,
 } from 'react-icons/fi';
 import './ManageAccount.css';
-
-const PAYMENT_METHODS = [
-  { id: 'Numerário', label: 'Numerário', icon: <FiDollarSign /> },
-  { id: 'MB Way', label: 'MB Way', icon: <FiSmartphone /> },
-  { id: 'Multibanco', label: 'Multibanco', icon: <FiTerminal /> },
-  { id: 'Cartão', label: 'Cartão', icon: <FiCreditCard /> },
-  { id: 'NFC', label: 'NFC', icon: <FiWifi /> },
-];
 
 export default function ManageAccount() {
   const [vendor, setVendor] = useState(null);
@@ -24,15 +15,12 @@ export default function ManageAccount() {
   const [email, setEmail] = useState('');
   const [nif, setNif] = useState('');
   const [phone, setPhone] = useState('');
-  const [businessName, setBusinessName] = useState('');
-  const [product, setProduct] = useState('');
   const [pinColor, setPinColor] = useState('#7B61FF');
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [cropSrc, setCropSrc] = useState(null);
   const [oldPassword, setOldPassword] = useState('');
   const [password, setPassword] = useState('');
-  const [paymentMethods, setPaymentMethods] = useState([]);
   const [showSecurity, setShowSecurity] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -48,12 +36,7 @@ export default function ManageAccount() {
       setEmail(v.email || '');
       setNif(v.nif || '');
       setPhone(v.phone || '');
-      setBusinessName(v.business_name || '');
-      setProduct(v.product || '');
       setPinColor(v.pin_color || '#7B61FF');
-      if (v.payment_methods) {
-        setPaymentMethods(v.payment_methods.split(',').filter(Boolean));
-      }
     }
   }, []);
 
@@ -75,12 +58,6 @@ export default function ManageAccount() {
     setPhotoPreview(URL.createObjectURL(blob));
   };
 
-  const togglePayment = (id) => {
-    setPaymentMethods(prev =>
-      prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]
-    );
-  };
-
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!vendor) return;
@@ -94,17 +71,12 @@ export default function ManageAccount() {
       if (emailChanged) data.append('email', email);
       if (nif !== (vendor.nif || '')) data.append('nif', nif);
       if (phone !== (vendor.phone || '')) data.append('phone', phone);
-      if (businessName !== (vendor.business_name || '')) data.append('business_name', businessName);
       if (password) {
         data.append('new_password', password);
         data.append('old_password', oldPassword);
       }
-      if (product !== vendor.product) data.append('product', product);
       if (pinColor !== (vendor.pin_color || '#7B61FF')) data.append('pin_color', pinColor);
       if (photo) data.append('profile_photo', new File([photo], 'profile.jpg', { type: 'image/jpeg' }));
-
-      const newMethods = paymentMethods.join(',');
-      if (newMethods !== (vendor.payment_methods || '')) data.append('payment_methods', newMethods);
 
       const token = localStorage.getItem('token');
       const res = await axios.patch(
@@ -114,7 +86,6 @@ export default function ManageAccount() {
       );
       localStorage.setItem('user', JSON.stringify(res.data));
       setVendor(res.data);
-      // O email só é alterado depois de confirmado pelo link enviado por email
       if (res.data.pending_email) {
         setEmail(res.data.email || '');
         setSuccess(
@@ -154,41 +125,58 @@ export default function ManageAccount() {
 
         <form onSubmit={handleUpdate} className="ma-form">
 
-          {/* Avatar */}
-          <div className="ma-photo-section">
-            <button
-              type="button"
-              className="ma-avatar-btn"
-              onClick={() => fileInputRef.current?.click()}
-              aria-label="Alterar foto de perfil"
-            >
-              {avatarSrc ? (
-                <img src={avatarSrc} alt="Foto de perfil" className="ma-avatar" />
-              ) : (
-                <div className="ma-avatar ma-avatar-placeholder">
-                  {vendor.name?.charAt(0)?.toUpperCase() || '?'}
-                </div>
-              )}
-              <div className="ma-avatar-overlay">
-                <FiCamera className="ma-avatar-cam" />
-              </div>
-            </button>
-            <span className="ma-photo-hint">Toca para alterar a foto</span>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handlePhotoChange}
-              style={{ display: 'none' }}
-            />
-          </div>
-
           {error && <div className="ma-alert ma-alert-error">{error}</div>}
           {success && (
             <div className="ma-alert ma-alert-success">
               <FiCheck /> {success}
             </div>
           )}
+
+          {/* Aparência */}
+          <div className="ma-card">
+            <div className="ma-card-header">
+              <FiPalette className="ma-card-icon" />
+              <span className="ma-card-title">Aparência</span>
+            </div>
+            <div className="ma-photo-section">
+              <button
+                type="button"
+                className="ma-avatar-btn"
+                onClick={() => fileInputRef.current?.click()}
+                aria-label="Alterar foto de perfil"
+              >
+                {avatarSrc ? (
+                  <img src={avatarSrc} alt="Foto de perfil" className="ma-avatar" />
+                ) : (
+                  <div className="ma-avatar ma-avatar-placeholder">
+                    {vendor.name?.charAt(0)?.toUpperCase() || '?'}
+                  </div>
+                )}
+                <div className="ma-avatar-overlay">
+                  <FiCamera className="ma-avatar-cam" />
+                </div>
+              </button>
+              <span className="ma-photo-hint">Clica para alterar a foto</span>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                style={{ display: 'none' }}
+              />
+            </div>
+            <div className="ma-field">
+              <label className="ma-label">Cor do pin no mapa</label>
+              <div className="ma-color-row">
+                <input
+                  type="color"
+                  value={pinColor}
+                  onChange={(e) => setPinColor(e.target.value)}
+                  className="ma-color-input"
+                />
+              </div>
+            </div>
+          </div>
 
           {/* Dados Pessoais */}
           <div className="ma-card">
@@ -249,24 +237,6 @@ export default function ManageAccount() {
             </div>
           </div>
 
-          {/* Atividade / Firma */}
-          <div className="ma-card">
-            <div className="ma-card-header">
-              <FiBriefcase className="ma-card-icon" />
-              <span className="ma-card-title">Atividade</span>
-            </div>
-            <div className="ma-field">
-              <label className="ma-label">Nome da Atividade / Firma</label>
-              <input
-                className="ma-input"
-                type="text"
-                placeholder="Nome comercial (opcional)"
-                value={businessName}
-                onChange={(e) => setBusinessName(e.target.value)}
-              />
-            </div>
-          </div>
-
           {/* Segurança */}
           <div className="ma-card">
             <button
@@ -307,68 +277,6 @@ export default function ManageAccount() {
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Produto & Aparência */}
-          <div className="ma-card">
-            <div className="ma-card-header">
-              <FiPackage className="ma-card-icon" />
-              <span className="ma-card-title">Produto & Aparência</span>
-            </div>
-            <div className="ma-field">
-              <label className="ma-label">Tipo de produto</label>
-              <div className="ma-product-grid">
-                {['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'].map(p => (
-                  <button
-                    key={p}
-                    type="button"
-                    className={`ma-product-chip${product === p ? ' selected' : ''}`}
-                    onClick={() => setProduct(p)}
-                  >
-                    {product === p && <FiCheck className="ma-chip-check" />}
-                    {p}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="ma-field">
-              <label className="ma-label">Cor do pin no mapa</label>
-              <div className="ma-color-row">
-                <input
-                  type="color"
-                  value={pinColor}
-                  onChange={(e) => setPinColor(e.target.value)}
-                  className="ma-color-input"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Métodos de Pagamento */}
-          <div className="ma-card">
-            <div className="ma-card-header">
-              <FiCreditCard className="ma-card-icon" />
-              <span className="ma-card-title">Métodos de Pagamento</span>
-            </div>
-            <p className="ma-card-desc">Indica quais os métodos que aceitas dos clientes.</p>
-            <div className="ma-payment-grid">
-              {PAYMENT_METHODS.map(({ id, label, icon }) => {
-                const active = paymentMethods.includes(id);
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    className={`ma-payment-chip${active ? ' active' : ''}`}
-                    onClick={() => togglePayment(id)}
-                    aria-pressed={active}
-                  >
-                    <span className="ma-payment-icon">{icon}</span>
-                    <span className="ma-payment-label">{label}</span>
-                    {active && <FiCheck className="ma-payment-check" />}
-                  </button>
-                );
-              })}
-            </div>
           </div>
 
           <button type="submit" className="ma-save-btn" disabled={saving}>
