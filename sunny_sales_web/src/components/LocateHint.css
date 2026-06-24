@@ -50,7 +50,6 @@
 }
 .locate-hint__close:hover {
   color: var(--text);
-  background: var(--surface-alt);
-  transform: none;
-  box-shadow: none;
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
