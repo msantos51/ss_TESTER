@@ -1,0 +1,128 @@
+.pcp-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pcp-preview-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pcp-preview-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.pcp-preview-pin {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 120px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.pcp-pin-marker {
+  position: relative;
+  width: 40px;
+  height: 50px;
+}
+
+.pcp-pin-marker::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  border: 10px solid var(--pin-color, #7B61FF);
+  border-radius: 50% 50% 0;
+  background: #fff;
+  transform: rotate(45deg);
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.25));
+}
+
+.pcp-pin-marker::before {
+  content: '';
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 14px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.pcp-colors-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pcp-colors-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.pcp-colors-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.pcp-color-btn {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  border: 2.5px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  min-height: auto;
+  box-shadow: var(--shadow-xs);
+}
+
+.pcp-color-btn:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-sm);
+}
+
+.pcp-color-btn.active {
+  border-color: var(--text);
+  box-shadow: var(--shadow-md);
+  transform: scale(1.08);
+}
+
+@media (max-width: 480px) {
+  .pcp-colors-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .pcp-preview-pin {
+    height: 100px;
+  }
+
+  .pcp-pin-marker {
+    width: 35px;
+    height: 45px;
+  }
+
+  .pcp-pin-marker::after {
+    width: 35px;
+    height: 35px;
+    border-width: 9px;
+  }
+}

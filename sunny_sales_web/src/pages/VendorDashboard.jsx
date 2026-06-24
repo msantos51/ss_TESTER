@@ -10,6 +10,7 @@ import {
   FiSend, FiCheckSquare,
 } from 'react-icons/fi';
 import ImageCropper from '../components/ImageCropper';
+import PinColorPicker from '../components/PinColorPicker';
 import './VendorDashboard.css';
 
 // Distância mínima (m) entre leituras de GPS para serem aceites como
@@ -581,16 +582,7 @@ export default function VendorDashboard() {
 
                 <div className="vd-modal-field">
                   <label className="vd-modal-label">Cor do Pin</label>
-                  <div className="vd-modal-pin-row">
-                    <label className="vd-modal-pin-swatch" style={{ backgroundColor: editPinColor }}>
-                      <input
-                        type="color"
-                        value={editPinColor}
-                        onChange={e => setEditPinColor(e.target.value)}
-                        className="vd-modal-pin-input"
-                      />
-                    </label>
-                  </div>
+                  <PinColorPicker value={editPinColor} onChange={setEditPinColor} />
                 </div>
 
                 <div className="vd-modal-field">

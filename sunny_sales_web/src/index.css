@@ -129,7 +129,8 @@ body {
   font-weight: 600;
   padding: 6px 16px;
   border-radius: var(--radius-full);
-  transition: color var(--transition), background var(--transition);
+  border: 1.5px solid transparent;
+  transition: border-color var(--transition), color var(--transition);
   white-space: nowrap;
   display: flex;
   align-items: center;
@@ -137,11 +138,11 @@ body {
 }
 .nav-link:hover {
   color: #ffffff;
-  background: rgba(0, 0, 0, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 .nav-link.active {
-  color: var(--primary);
-  background: rgba(255, 255, 255, 0.32);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .nav-link-icon {
@@ -168,13 +169,11 @@ body {
   height: 38px;
   border-radius: var(--radius-full);
   border: 1.5px solid rgba(255, 255, 255, 0.3);
-  transition: color var(--transition), border-color var(--transition), background var(--transition), box-shadow var(--transition);
+  transition: border-color var(--transition), color var(--transition);
 }
 .profile-icon:hover {
-  color: var(--primary);
-  border-color: var(--primary);
-  background: rgba(10, 147, 150, 0.15);
-  box-shadow: 0 0 0 3px rgba(10, 147, 150, 0.15);
+  color: rgba(255, 255, 255, 0.72);
+  border-color: rgba(0, 0, 0, 0.4);
 }
 
 .menu-toggle {

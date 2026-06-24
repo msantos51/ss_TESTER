@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL, mediaUrl } from '../config';
 import ImageCropper from '../components/ImageCropper';
+import PinColorPicker from '../components/PinColorPicker';
 import BackHomeButton from '../components/BackHomeButton';
 import {
   FiUser, FiLock, FiCamera, FiCheck,
@@ -167,14 +168,7 @@ export default function ManageAccount() {
             </div>
             <div className="ma-field">
               <label className="ma-label">Cor do pin no mapa</label>
-              <div className="ma-color-row">
-                <input
-                  type="color"
-                  value={pinColor}
-                  onChange={(e) => setPinColor(e.target.value)}
-                  className="ma-color-input"
-                />
-              </div>
+              <PinColorPicker value={pinColor} onChange={setPinColor} />
             </div>
           </div>
 
