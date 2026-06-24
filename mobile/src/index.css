@@ -739,3 +739,135 @@ body {
   background: var(--border);
   margin: 12px 0;
 }
+
+/* ── Profile section cards ──────────────────────────── */
+.profile-section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+
+.profile-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-section-icon {
+  color: var(--primary);
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.profile-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.profile-section-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ── Profile input group ────────────────────────────── */
+.profile-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.profile-input {
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 48px;
+}
+
+.profile-input::placeholder {
+  color: var(--text-muted);
+}
+
+.profile-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(10, 147, 150, 0.12);
+  background: var(--surface);
+}
+
+.profile-input-hint {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* ── Profile color input ────────────────────────────── */
+.profile-color-input {
+  width: 60px;
+  height: 44px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  cursor: pointer;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+/* ── Profile payment chips ──────────────────────────── */
+.profile-payment-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  min-height: auto;
+  box-shadow: none;
+}
+
+.profile-payment-chip:active {
+  transform: scale(0.95);
+}
+
+.profile-payment-chip.active {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(75, 163, 195, 0.2);
+}
+
+.profile-chip-check {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  opacity: 0.9;
+}

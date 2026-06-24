@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { FiUser, FiBriefcase, FiPackage, FiCreditCard, FiCheck } from 'react-icons/fi';
 import { BASE_URL, mediaUrl } from '../config.js';
 
 const PAYMENT_METHODS = ['Numerário', 'MB Way', 'Multibanco', 'Cartão', 'NFC'];
@@ -118,49 +119,77 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
           {error && <div className="error-msg">{error}</div>}
           {info && <div className="info-msg">{info}</div>}
 
-          <div className="input-group">
-            <label>Nome</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+          {/* Dados Pessoais */}
+          <div className="profile-section-card">
+            <div className="profile-section-header">
+              <FiUser className="profile-section-icon" />
+              <span className="profile-section-title">Dados Pessoais</span>
+            </div>
+            <div className="profile-input-group">
+              <label className="profile-label">Nome</label>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="profile-input" />
+            </div>
+            <div className="profile-input-group">
+              <label className="profile-label">Email</label>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="profile-input" />
+              <span className="profile-input-hint">Alterar o email exige confirmação no novo endereço.</span>
+            </div>
+            <div className="profile-input-group">
+              <label className="profile-label">NIF</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={9}
+                value={nif}
+                onChange={(e) => setNif(e.target.value.replace(/\D/g, ''))}
+                className="profile-input"
+              />
+            </div>
+            <div className="profile-input-group">
+              <label className="profile-label">Telemóvel</label>
+              <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="profile-input" />
+            </div>
           </div>
-          <div className="input-group">
-            <label>Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <span className="input-hint">Alterar o email exige confirmação no novo endereço.</span>
-          </div>
-          <div className="input-group">
-            <label>NIF</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              maxLength={9}
-              value={nif}
-              onChange={(e) => setNif(e.target.value.replace(/\D/g, ''))}
-            />
-          </div>
-          <div className="input-group">
-            <label>Telemóvel</label>
-            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
-          </div>
-          <div className="input-group">
-            <label>Nome da Atividade / Firma</label>
-            <input type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
-          </div>
-          <div className="input-group">
-            <label>Produto</label>
-            <select value={product} onChange={(e) => setProduct(e.target.value)}>
-              {PRODUCTS.map((p) => (
-                <option key={p} value={p}>{p}</option>
-              ))}
-            </select>
-          </div>
-          <div className="input-group">
-            <label>Cor do pin no mapa</label>
-            <input type="color" value={pinColor} onChange={(e) => setPinColor(e.target.value)} className="profile-color-input" />
-          </div>
-          <div className="profile-section-divider" />
 
-          <div className="input-group">
-            <label>Métodos de pagamento aceites</label>
+          {/* Atividade */}
+          <div className="profile-section-card">
+            <div className="profile-section-header">
+              <FiBriefcase className="profile-section-icon" />
+              <span className="profile-section-title">Atividade</span>
+            </div>
+            <div className="profile-input-group">
+              <label className="profile-label">Nome da Atividade / Firma</label>
+              <input type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)} className="profile-input" />
+            </div>
+          </div>
+
+          {/* Produto & Aparência */}
+          <div className="profile-section-card">
+            <div className="profile-section-header">
+              <FiPackage className="profile-section-icon" />
+              <span className="profile-section-title">Produto & Aparência</span>
+            </div>
+            <div className="profile-input-group">
+              <label className="profile-label">Tipo de produto</label>
+              <select value={product} onChange={(e) => setProduct(e.target.value)} className="profile-input">
+                {PRODUCTS.map((p) => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+            </div>
+            <div className="profile-input-group">
+              <label className="profile-label">Cor do pin no mapa</label>
+              <input type="color" value={pinColor} onChange={(e) => setPinColor(e.target.value)} className="profile-color-input" />
+            </div>
+          </div>
+
+          {/* Métodos de Pagamento */}
+          <div className="profile-section-card">
+            <div className="profile-section-header">
+              <FiCreditCard className="profile-section-icon" />
+              <span className="profile-section-title">Métodos de Pagamento</span>
+            </div>
+            <p className="profile-section-desc">Indica quais os métodos que aceitas dos clientes.</p>
             <div className="profile-payment-grid">
               {PAYMENT_METHODS.map((m) => {
                 const active = paymentMethods.includes(m);
@@ -172,6 +201,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
                     onClick={() => togglePayment(m)}
                   >
                     {m}
+                    {active && <FiCheck className="profile-chip-check" />}
                   </button>
                 );
               })}
