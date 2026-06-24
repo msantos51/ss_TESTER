@@ -1,9 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { FiUser, FiBriefcase, FiPackage, FiCreditCard, FiCheck } from 'react-icons/fi';
+import { FiUser, FiLock, FiPalette, FiCheck } from 'react-icons/fi';
 import { BASE_URL, mediaUrl } from '../config.js';
-
-const PAYMENT_METHODS = ['Numerário', 'MB Way', 'Multibanco', 'Cartão', 'NFC'];
-const PRODUCTS = ['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'];
 
 export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
   const { token, user, vendorId } = auth;
@@ -11,14 +8,11 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
   const [email, setEmail] = useState(user?.email || '');
   const [nif, setNif] = useState(user?.nif || '');
   const [phone, setPhone] = useState(user?.phone || '');
-  const [businessName, setBusinessName] = useState(user?.business_name || '');
-  const [product, setProduct] = useState(user?.product || '');
   const [pinColor, setPinColor] = useState(user?.pin_color || '#7B61FF');
-  const [paymentMethods, setPaymentMethods] = useState(
-    user?.payment_methods ? user.payment_methods.split(',').filter(Boolean) : []
-  );
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
@@ -33,12 +27,6 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
     }
   };
 
-  const togglePayment = (id) => {
-    setPaymentMethods((prev) =>
-      prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]
-    );
-  };
-
   const save = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -50,11 +38,11 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
       if (email !== user.email) data.append('email', email);
       if (nif !== (user.nif || '')) data.append('nif', nif);
       if (phone !== (user.phone || '')) data.append('phone', phone);
-      if (businessName !== (user.business_name || '')) data.append('business_name', businessName);
-      if (product !== user.product) data.append('product', product);
       if (pinColor !== (user.pin_color || '#7B61FF')) data.append('pin_color', pinColor);
-      const newMethods = paymentMethods.join(',');
-      if (newMethods !== (user.payment_methods || '')) data.append('payment_methods', newMethods);
+      if (newPassword) {
+        data.append('new_password', newPassword);
+        data.append('old_password', oldPassword);
+      }
       if (photo) data.append('profile_photo', photo);
 
       const res = await fetch(`${BASE_URL}/vendors/${vendorId}/profile`, {
@@ -65,12 +53,13 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
       const body = await res.json();
       if (!res.ok) throw new Error(body.detail || 'Erro ao atualizar perfil.');
       onUserUpdate(body);
-      // O email só muda depois de confirmado no link enviado para o novo endereço
       if (body.pending_email) {
         setEmail(body.email || '');
         setInfo(`Confirma o novo email (${body.pending_email}) na mensagem que enviámos para concluir a alteração.`);
         return;
       }
+      setOldPassword('');
+      setNewPassword('');
       onClose();
     } catch (err) {
       setError(err.message);
@@ -98,26 +87,37 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
         </div>
 
         <form onSubmit={save} className="profile-form">
-          <div className="profile-photo-section">
-            <button
-              type="button"
-              className="profile-avatar-btn"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              {avatarSrc ? (
-                <img src={avatarSrc} alt="Foto de perfil" className="profile-avatar" style={{ borderColor: pinColor }} />
-              ) : (
-                <div className="profile-avatar profile-avatar-placeholder" style={{ borderColor: pinColor, background: `${pinColor}33` }}>
-                  {(name || '?').charAt(0).toUpperCase()}
-                </div>
-              )}
-            </button>
-            <span className="profile-photo-hint">Toca para alterar a foto</span>
-            <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
-          </div>
-
           {error && <div className="error-msg">{error}</div>}
           {info && <div className="info-msg">{info}</div>}
+
+          {/* Aparência */}
+          <div className="profile-section-card">
+            <div className="profile-section-header">
+              <FiPalette className="profile-section-icon" />
+              <span className="profile-section-title">Aparência</span>
+            </div>
+            <div className="profile-photo-section">
+              <button
+                type="button"
+                className="profile-avatar-btn"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {avatarSrc ? (
+                  <img src={avatarSrc} alt="Foto de perfil" className="profile-avatar" style={{ borderColor: pinColor }} />
+                ) : (
+                  <div className="profile-avatar profile-avatar-placeholder" style={{ borderColor: pinColor, background: `${pinColor}33` }}>
+                    {(name || '?').charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </button>
+              <span className="profile-photo-hint">Toca para alterar a foto</span>
+              <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
+            </div>
+            <div className="profile-input-group">
+              <label className="profile-label">Cor do pin no mapa</label>
+              <input type="color" value={pinColor} onChange={(e) => setPinColor(e.target.value)} className="profile-color-input" />
+            </div>
+          </div>
 
           {/* Dados Pessoais */}
           <div className="profile-section-card">
@@ -151,60 +151,33 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
             </div>
           </div>
 
-          {/* Atividade */}
+          {/* Segurança */}
           <div className="profile-section-card">
             <div className="profile-section-header">
-              <FiBriefcase className="profile-section-icon" />
-              <span className="profile-section-title">Atividade</span>
+              <FiLock className="profile-section-icon" />
+              <span className="profile-section-title">Segurança</span>
             </div>
             <div className="profile-input-group">
-              <label className="profile-label">Nome da Atividade / Firma</label>
-              <input type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)} className="profile-input" />
-            </div>
-          </div>
-
-          {/* Produto & Aparência */}
-          <div className="profile-section-card">
-            <div className="profile-section-header">
-              <FiPackage className="profile-section-icon" />
-              <span className="profile-section-title">Produto & Aparência</span>
-            </div>
-            <div className="profile-input-group">
-              <label className="profile-label">Tipo de produto</label>
-              <select value={product} onChange={(e) => setProduct(e.target.value)} className="profile-input">
-                {PRODUCTS.map((p) => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
-              </select>
+              <label className="profile-label">Palavra-passe atual</label>
+              <input
+                type="password"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                placeholder="Deixa em branco se não queres alterar"
+                className="profile-input"
+                autoComplete="current-password"
+              />
             </div>
             <div className="profile-input-group">
-              <label className="profile-label">Cor do pin no mapa</label>
-              <input type="color" value={pinColor} onChange={(e) => setPinColor(e.target.value)} className="profile-color-input" />
-            </div>
-          </div>
-
-          {/* Métodos de Pagamento */}
-          <div className="profile-section-card">
-            <div className="profile-section-header">
-              <FiCreditCard className="profile-section-icon" />
-              <span className="profile-section-title">Métodos de Pagamento</span>
-            </div>
-            <p className="profile-section-desc">Indica quais os métodos que aceitas dos clientes.</p>
-            <div className="profile-payment-grid">
-              {PAYMENT_METHODS.map((m) => {
-                const active = paymentMethods.includes(m);
-                return (
-                  <button
-                    type="button"
-                    key={m}
-                    className={`profile-payment-chip${active ? ' active' : ''}`}
-                    onClick={() => togglePayment(m)}
-                  >
-                    {m}
-                    {active && <FiCheck className="profile-chip-check" />}
-                  </button>
-                );
-              })}
+              <label className="profile-label">Nova palavra-passe</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Mínimo 8 caracteres, maiúscula e número"
+                className="profile-input"
+                autoComplete="new-password"
+              />
             </div>
           </div>
 
