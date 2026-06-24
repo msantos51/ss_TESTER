@@ -262,6 +262,9 @@ export default function VendorDashboard() {
         const file = new File([editPhoto], 'profile.jpg', { type: 'image/jpeg' });
         data.append('profile_photo', file);
       }
+      if (editProduct !== vendor.product) data.append('product', editProduct);
+      const newPaymentMethods = editPaymentMethods.join(',');
+      if (newPaymentMethods !== (vendor.payment_methods || '')) data.append('payment_methods', newPaymentMethods);
       const res = await axios.patch(
         `${BASE_URL}/vendors/${vendor.id}/profile`,
         data,
@@ -297,10 +300,6 @@ export default function VendorDashboard() {
       if (editEmail !== vendor.email) data.append('email', editEmail);
       if (editNif !== (vendor.nif || '')) data.append('nif', editNif);
       if (editPhone !== (vendor.phone || '')) data.append('phone', editPhone);
-      if (editBusinessName !== (vendor.business_name || '')) data.append('business_name', editBusinessName);
-      if (editProduct !== vendor.product) data.append('product', editProduct);
-      const newPaymentMethods = editPaymentMethods.join(',');
-      if (newPaymentMethods !== (vendor.payment_methods || '')) data.append('payment_methods', newPaymentMethods);
       const res = await axios.patch(
         `${BASE_URL}/vendors/${vendor.id}/profile`,
         data,
@@ -594,6 +593,36 @@ export default function VendorDashboard() {
                   </div>
                 </div>
 
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Produto</label>
+                  <select
+                    className="vd-modal-input"
+                    value={editProduct}
+                    onChange={e => setEditProduct(e.target.value)}
+                  >
+                    <option value="Bolas de Berlim">Bolas de Berlim</option>
+                    <option value="Gelados">Gelados</option>
+                    <option value="Acessórios de Praia">Acessórios de Praia</option>
+                  </select>
+                </div>
+
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Métodos de pagamento aceites</label>
+                  <div className="vd-modal-payments-grid">
+                    {Object.keys(PAYMENT_ICONS).map((method) => (
+                      <button
+                        type="button"
+                        key={method}
+                        className={`vd-modal-payment-chip${editPaymentMethods.includes(method) ? ' active' : ''}`}
+                        onClick={() => togglePaymentMethod(method)}
+                      >
+                        <span className="vd-modal-payment-chip-icon">{PAYMENT_ICONS[method]}</span>
+                        {method}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {editError && <p className="vd-modal-error">{editError}</p>}
                 {editSuccess && (
                   <p className="vd-modal-success">
@@ -655,44 +684,6 @@ export default function VendorDashboard() {
                     value={editPhone}
                     onChange={e => setEditPhone(e.target.value)}
                   />
-                </div>
-                <div className="vd-modal-field">
-                  <label className="vd-modal-label">Nome da Atividade / Firma</label>
-                  <input
-                    className="vd-modal-input"
-                    type="text"
-                    placeholder="Nome comercial (opcional)"
-                    value={editBusinessName}
-                    onChange={e => setEditBusinessName(e.target.value)}
-                  />
-                </div>
-                <div className="vd-modal-field">
-                  <label className="vd-modal-label">Produto</label>
-                  <select
-                    className="vd-modal-input"
-                    value={editProduct}
-                    onChange={e => setEditProduct(e.target.value)}
-                  >
-                    <option value="Bolas de Berlim">Bolas de Berlim</option>
-                    <option value="Gelados">Gelados</option>
-                    <option value="Acessórios de Praia">Acessórios de Praia</option>
-                  </select>
-                </div>
-                <div className="vd-modal-field">
-                  <label className="vd-modal-label">Métodos de pagamento aceites</label>
-                  <div className="vd-modal-payments-grid">
-                    {Object.keys(PAYMENT_ICONS).map((method) => (
-                      <button
-                        type="button"
-                        key={method}
-                        className={`vd-modal-payment-chip${editPaymentMethods.includes(method) ? ' active' : ''}`}
-                        onClick={() => togglePaymentMethod(method)}
-                      >
-                        <span className="vd-modal-payment-chip-icon">{PAYMENT_ICONS[method]}</span>
-                        {method}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {personalError && <p className="vd-modal-error">{personalError}</p>}

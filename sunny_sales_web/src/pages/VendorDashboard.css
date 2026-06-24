@@ -752,9 +752,9 @@
 }
 
 .vd-modal-payment-chip.active {
-  background: var(--primary-light);
+  background: var(--primary);
   border-color: var(--primary);
-  color: var(--primary-dark);
+  color: #fff;
 }
 
 .vd-modal-payment-chip:hover {
@@ -863,8 +863,8 @@
 }
 
 .vd-modal-tab.active {
-  background: var(--surface);
-  color: var(--primary-dark);
+  background: var(--primary);
+  color: #fff;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.10);
 }
 
