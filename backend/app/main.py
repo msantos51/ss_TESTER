@@ -1559,13 +1559,40 @@ def create_checkout_session(
 # WebSocket para localização em tempo real
 # --------------------------
 @app.websocket("/ws/locations")
-async def websocket_locations(websocket: WebSocket):
-    await manager.connect(websocket)
+async def websocket_locations(websocket: WebSocket, token: str = None, db: Session = Depends(get_db)):
     try:
-        while True:
-            await websocket.receive_text()
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        if not token:
+            await websocket.close(code=4001, reason="Token required")
+            return
+
+        payload = decode_token(token)
+        vendor_id = payload.get("sub")
+        vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
+
+        if not vendor:
+            await websocket.close(code=4001, reason="Vendor not found")
+            return
+
+        session = (
+            db.query(models.VendorSession)
+            .filter(models.VendorSession.vendor_id == vendor.id, models.VendorSession.token == token)
+            .first()
+        )
+        if not session:
+            await websocket.close(code=4001, reason="Session invalidated")
+            return
+
+        await manager.connect(websocket)
+        try:
+            while True:
+                await websocket.receive_text()
+        except WebSocketDisconnect:
+            manager.disconnect(websocket)
+    except Exception as e:
+        try:
+            await websocket.close(code=4000, reason=str(e)[:120])
+        except:
+            pass
 
 @app.post("/vendors/{vendor_id}/stories", response_model=schemas.StoryOut)
 async def create_story(
