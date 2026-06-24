@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { FiUser, FiLock, FiPalette, FiCheck } from 'react-icons/fi';
+import { FiUser, FiLock, FiDroplet, FiCheck } from 'react-icons/fi';
 import { BASE_URL, mediaUrl } from '../config.js';
 
 export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
@@ -93,7 +93,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
           {/* Aparência */}
           <div className="profile-section-card">
             <div className="profile-section-header">
-              <FiPalette className="profile-section-icon" />
+              <FiDroplet className="profile-section-icon" />
               <span className="profile-section-title">Aparência</span>
             </div>
             <div className="profile-photo-section">
