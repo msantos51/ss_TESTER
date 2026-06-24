@@ -1,8 +1,9 @@
 # main.py - aplicação FastAPI com rotas principais e PATCH otimizado
 
-from fastapi import BackgroundTasks, FastAPI, Depends, HTTPException, UploadFile, File, Form, Body, WebSocket, WebSocketDisconnect, Request
+from fastapi import BackgroundTasks, FastAPI, Depends, HTTPException, UploadFile, File, Form, Body, WebSocket, WebSocketDisconnect, Request, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from sqlalchemy import or_
@@ -26,11 +27,19 @@ from html import escape
 from math import radians, sin, cos, sqrt, atan2
 from supabase import create_client
 import httpx
+import logging
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
 ALLOWED_STORY_TYPES = ALLOWED_IMAGE_TYPES | {"video/mp4", "video/webm"}
 ALLOWED_STORY_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS | {".mp4", ".webm"}
+
+# Limites de tamanho
+MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10 MB
+MAX_VIDEO_SIZE = 100 * 1024 * 1024  # 100 MB
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
@@ -51,36 +60,66 @@ BUCKET_MAP = {
 }
 
 
-def validate_upload(file: UploadFile, allowed_types: set, allowed_exts: set, label: str = "ficheiro"):
-    ext = os.path.splitext(file.filename or "")[1].lower()
+def validate_upload(file: UploadFile, allowed_types: set, allowed_exts: set, label: str = "ficheiro", max_size: int = MAX_IMAGE_SIZE):
+    if not file.filename:
+        raise HTTPException(status_code=400, detail=f"Nome de {label} requerido")
+
+    filename = Path(file.filename).name
+    if filename != file.filename:
+        raise HTTPException(status_code=400, detail="Path traversal não permitido")
+
+    ext = os.path.splitext(filename)[1].lower()
     if ext not in allowed_exts or (file.content_type and file.content_type not in allowed_types):
         raise HTTPException(
             status_code=400,
             detail=f"Tipo de {label} inválido. Permitidos: {', '.join(sorted(allowed_exts))}",
         )
 
+    if file.size and file.size > max_size:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Ficheiro demasiado grande. Máximo: {max_size // 1024 // 1024}MB",
+        )
+
 
 def _upload_file(upload_file: UploadFile, folder: str) -> str:
     ext = os.path.splitext(upload_file.filename or "")[1].lower()
     file_name = f"{uuid4().hex}{ext}"
+
     if supabase:
         bucket = BUCKET_MAP.get(folder, folder)
-        content = upload_file.file.read()
         try:
+            content = upload_file.file.read(MAX_IMAGE_SIZE + 1)
+            if len(content) > MAX_IMAGE_SIZE:
+                raise HTTPException(status_code=413, detail="Ficheiro demasiado grande")
             supabase.storage.from_(bucket).upload(
                 file_name,
                 content,
                 {"content-type": upload_file.content_type or "application/octet-stream"},
             )
+        except HTTPException:
+            raise
         except Exception as exc:
+            security_logger.error(f"Error uploading to Supabase: {exc}")
             raise HTTPException(
                 status_code=502,
-                detail=f"Erro ao enviar ficheiro para armazenamento: {exc}",
+                detail="Erro ao enviar ficheiro para armazenamento",
             )
         return supabase.storage.from_(bucket).get_public_url(file_name)
-    file_path = os.path.join(folder, file_name)
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(upload_file.file, buffer)
+
+    safe_folder = Path(folder).resolve()
+    file_path = safe_folder / file_name
+
+    if not file_path.resolve().is_relative_to(safe_folder.resolve()):
+        raise HTTPException(status_code=403, detail="Invalid file path")
+
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(upload_file.file, buffer, length=8192)
+    except Exception as exc:
+        security_logger.error(f"Error uploading file: {exc}")
+        raise HTTPException(status_code=500, detail="Erro ao enviar ficheiro")
+
     return f"{folder}/{file_name}"
 
 
@@ -100,24 +139,74 @@ def _delete_file(path_or_url: str) -> None:
     except OSError:
         pass
 
+# Setup de logging de segurança
+logging.basicConfig(level=logging.INFO)
+security_logger = logging.getLogger("security")
+
+# Rate limiting
+limiter = Limiter(key_func=get_remote_address)
+
 # Inicializar app
 app = FastAPI()
+app.state.limiter = limiter
+
+# Adicionar exception handler para rate limit
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request, exc):
+    return JSONResponse(
+        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+        content={"detail": "Demasiadas requisições. Tenta novamente mais tarde."}
+    )
 
 
 def utcnow():
     """Return current UTC time as a naive datetime."""
     return datetime.now(timezone.utc).replace(tzinfo=None)
 
-# Habilitar CORS (permitir acesso do frontend)
+# CORS configurado com origins específicas (SEGURO)
 _cors_origins_env = os.getenv("ALLOWED_ORIGINS", "")
-origins = [o.strip() for o in _cors_origins_env.split(",") if o.strip()] or ["*"]
+if _cors_origins_env:
+    origins = [o.strip() for o in _cors_origins_env.split(",") if o.strip()]
+else:
+    origins = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "https://ss-tester.onrender.com",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
+    max_age=3600,
 )
+
+# Middleware de host confiável
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=[
+        "localhost",
+        "localhost:8000",
+        "127.0.0.1",
+        "ss-tester.onrender.com",
+        os.getenv("ALLOWED_HOSTS", "ss-tester.onrender.com").split(","),
+    ]
+)
+
+# Middleware de Security Headers
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' fonts.gstatic.com; connect-src 'self' https:"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    return response
 
 # Endpoint de verificação de funcionamento da API
 @app.get("/api/status")
@@ -363,8 +452,17 @@ def get_current_vendor_optional(request: Request, db: Session = Depends(get_db))
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
 
 def get_admin(request: Request):
+    if not ADMIN_TOKEN:
+        security_logger.error("ADMIN_TOKEN não está configurada em produção!")
+        raise HTTPException(status_code=500, detail="Admin token not configured")
+
     token = request.headers.get("X-Admin-Token")
-    if not ADMIN_TOKEN or token != ADMIN_TOKEN:
+    if not token:
+        security_logger.warning(f"Admin request without token from {request.client.host}")
+        raise HTTPException(status_code=401, detail="Admin token required")
+
+    if not hmac.compare_digest(token, ADMIN_TOKEN):
+        security_logger.warning(f"Invalid admin token attempt from {request.client.host}")
         raise HTTPException(status_code=401, detail="Admin unauthorized")
     return True
 
@@ -424,11 +522,13 @@ def verify_active_subscription(vendor: models.Vendor, db: Session):
 # Login do vendedor
 # --------------------------
 @app.post("/login", response_model=schemas.VendorOut)
-def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def login(request: Request, credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     """Autentica um vendedor a partir do email ou username."""
 
     identifier = credentials.email or credentials.username
     if not identifier or not credentials.password:
+        security_logger.warning(f"Login attempt with missing credentials from {request.client.host}")
         raise HTTPException(status_code=400, detail="Email and password required")
 
     vendor = (
@@ -442,15 +542,18 @@ def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
         .first()
     )
     if not vendor or not pwd_context.verify(credentials.password, vendor.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
+        security_logger.warning(f"Failed login attempt for {identifier} from {request.client.host}")
+        raise HTTPException(status_code=401, detail="Incorrect email or password")
     if not vendor.email_confirmed:
-        raise HTTPException(status_code=400, detail="Email not confirmed")
+        raise HTTPException(status_code=403, detail="Email not confirmed")
+    security_logger.info(f"Successful login for vendor {vendor.id}")
     return vendor
 
 # --------------------------
 # Endpoint para obter JWT
 # --------------------------
 @app.post("/token")
+@limiter.limit("10/minute")
 async def generate_token(
 
     request: Request,
@@ -476,13 +579,15 @@ async def generate_token(
     force = credentials.force
 
     if not email or not password:
+        security_logger.warning(f"Token request with missing credentials from {request.client.host}")
         raise HTTPException(status_code=400, detail="Email and password required")
 
     vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
     if not vendor or not pwd_context.verify(password, vendor.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
+        security_logger.warning(f"Failed token request for {email} from {request.client.host}")
+        raise HTTPException(status_code=401, detail="Incorrect email or password")
     if not vendor.email_confirmed:
-        raise HTTPException(status_code=400, detail="Email not confirmed")
+        raise HTTPException(status_code=403, detail="Email not confirmed")
 
     existing_sessions = (
         db.query(models.VendorSession)
@@ -703,7 +808,9 @@ async def resend_confirmation_email(
 
 
 @app.post("/vendors/")
+@limiter.limit("3/minute")
 async def create_vendor(
+    request: Request,
     background_tasks: BackgroundTasks,
     name: str = Form(...),
     email: str = Form(...),
@@ -729,10 +836,12 @@ async def create_vendor(
 
     db_vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
     if db_vendor:
+        security_logger.warning(f"Registration attempt with existing email: {email} from {request.client.host}")
         raise HTTPException(status_code=400, detail="Email already registered")
 
     db_nif = db.query(models.Vendor).filter(models.Vendor.nif == nif).first()
     if db_nif:
+        security_logger.warning(f"Registration attempt with existing NIF from {request.client.host}")
         raise HTTPException(status_code=400, detail="NIF já registado")
 
     validate_password(password)
@@ -804,8 +913,10 @@ def list_vendors(
 # Atualizar perfil do vendedor (agora com PATCH)
 # --------------------------
 @app.patch("/vendors/{vendor_id}/profile", response_model=schemas.VendorOut)
+@limiter.limit("30/minute")
 async def update_vendor_profile(
     vendor_id: int,
+    request: Request,
     background_tasks: BackgroundTasks,
     name: str = Form(None),
     email: str = Form(None),
@@ -834,7 +945,9 @@ async def update_vendor_profile(
         raise HTTPException(status_code=403, detail="Not authorized")
 
     if name:
-        vendor.name = name
+        if len(name) > 200:
+            raise HTTPException(status_code=400, detail="Name too long")
+        vendor.name = name.strip()
     # Alteração de email: não muda já o email; envia link de confirmação para o
     # novo endereço e só ao confirmar é que o email passa a estar ativo.
     if email and email != vendor.email:
@@ -873,6 +986,8 @@ async def update_vendor_profile(
         if old_photo_path:
             _delete_file(old_photo_path)
     if pin_color:
+        if not re.match(r"^#[0-9A-Fa-f]{6}$", pin_color):
+            raise HTTPException(status_code=400, detail="Invalid color format. Use hex: #RRGGBB")
         vendor.pin_color = pin_color
     if payment_methods is not None:
         vendor.payment_methods = payment_methods
@@ -898,7 +1013,12 @@ async def update_vendor_profile(
     if product_categories is not None:
         vendor.product_categories = product_categories
     if iban is not None:
-        vendor.iban = iban or None
+        if iban:
+            if len(iban) > 34 or not re.match(r"^[A-Z]{2}[A-Z0-9]+$", iban):
+                raise HTTPException(status_code=400, detail="Invalid IBAN format")
+            vendor.iban = iban
+        else:
+            vendor.iban = None
     if business_name is not None:
         vendor.business_name = business_name or None
 
@@ -1225,11 +1345,16 @@ def confirm_email_change(token: str, db: Session = Depends(get_db)):
 
 
 @app.post("/password-reset-request")
+@limiter.limit("3/minute")
 async def password_reset_request(
+    request: Request,
     background_tasks: BackgroundTasks,
     email: str = Body(..., embed=True),
     db: Session = Depends(get_db),
 ):
+    if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", email):
+        raise HTTPException(status_code=400, detail="Email inválido")
+
     vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
     if vendor:
         token = uuid4().hex
@@ -1239,14 +1364,22 @@ async def password_reset_request(
         background_tasks.add_task(
             _send_password_reset_email, vendor.name, vendor.email, token
         )
+        security_logger.info(f"Password reset requested for {email}")
+    else:
+        security_logger.info(f"Password reset requested for non-existent email: {email}")
     # Resposta neutra para não revelar se o email existe
     return {"status": "ok"}
 
 
 @app.post("/password-reset/{token}")
+@limiter.limit("5/minute")
 async def reset_password(token: str, request: Request, db: Session = Depends(get_db)):
-    form = await request.form()
-    new_password = form.get("new_password", "")
+    try:
+        form = await request.form()
+        new_password = form.get("new_password", "")
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid form data")
+
     vendor = (
         db.query(models.Vendor)
         .filter(
@@ -1256,12 +1389,19 @@ async def reset_password(token: str, request: Request, db: Session = Depends(get
         .first()
     )
     if not vendor:
+        security_logger.warning(f"Invalid password reset token attempt from {request.client.host}")
         raise HTTPException(status_code=400, detail="Invalid or expired token")
-    validate_password(new_password)
+
+    try:
+        validate_password(new_password)
+    except HTTPException as e:
+        raise e
+
     vendor.hashed_password = pwd_context.hash(new_password)
     vendor.password_reset_token = None
     vendor.password_reset_expires = None
     db.commit()
+    security_logger.info(f"Password reset successful for vendor {vendor.id}")
     return {"status": "Password reset successfully"}
 
 
@@ -1432,7 +1572,11 @@ async def create_story(
 ):
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
-    validate_upload(file, ALLOWED_STORY_TYPES, ALLOWED_STORY_EXTENSIONS, "story")
+
+    verify_active_subscription(current_vendor, db)
+
+    max_size = MAX_VIDEO_SIZE if file.content_type and "video" in file.content_type else MAX_IMAGE_SIZE
+    validate_upload(file, ALLOWED_STORY_TYPES, ALLOWED_STORY_EXTENSIONS, "story", max_size)
     media_url = _upload_file(file, STORY_DIR)
     created = utcnow()
     story = models.Story(
@@ -1485,39 +1629,66 @@ def list_stories(vendor_id: int, db: Session = Depends(get_db)):
 # Webhook do Stripe
 # --------------------------
 @app.post("/stripe/webhook")
+@limiter.limit("100/minute")
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     if not STRIPE_WEBHOOK_SECRET:
         # Sem segredo configurado não é possível verificar a autenticidade do
         # pedido; rejeitar em vez de confiar em JSON não assinado.
+        security_logger.error("STRIPE_WEBHOOK_SECRET not configured")
         raise HTTPException(status_code=500, detail="Webhook not configured")
 
     payload = await request.body()
     sig = request.headers.get("stripe-signature")
+
+    if not sig:
+        security_logger.warning(f"Webhook without signature from {request.client.host}")
+        raise HTTPException(status_code=400, detail="Missing stripe-signature header")
+
     try:
         event = stripe.Webhook.construct_event(payload, sig, STRIPE_WEBHOOK_SECRET)
-    except Exception:
+    except Exception as exc:
+        security_logger.warning(f"Invalid webhook signature from {request.client.host}: {exc}")
         raise HTTPException(status_code=400, detail="Invalid webhook")
 
     if event.get("type") == "checkout.session.completed":
         session = event["data"]["object"]
         if session.get("payment_status") != "paid":
             return {"status": "ignored"}
+
         metadata = session.get("metadata", {}) or {}
-        vendor_id = int(session.get("client_reference_id") or metadata.get("vendor_id") or 0)
+        try:
+            vendor_id = int(session.get("client_reference_id") or metadata.get("vendor_id") or 0)
+        except (ValueError, TypeError):
+            security_logger.warning(f"Invalid vendor_id in webhook from {request.client.host}")
+            return {"status": "ignored"}
+
         plan = metadata.get("plan", "semanal")
+        if plan not in SUBSCRIPTION_PLAN_DURATIONS_DAYS:
+            security_logger.warning(f"Invalid plan in webhook: {plan}")
+            return {"status": "ignored"}
+
         vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
         if vendor:
-            paid = apply_subscription_payment(vendor, plan, db)
-            receipt_url = None
-            invoice_id = session.get("invoice")
-            if invoice_id:
-                try:
-                    invoice = stripe.Invoice.retrieve(invoice_id)
-                    receipt_url = invoice.get("hosted_invoice_url") or invoice.get("invoice_pdf")
-                except Exception:
-                    receipt_url = None
-            paid.receipt_url = receipt_url
-            db.commit()
+            try:
+                paid = apply_subscription_payment(vendor, plan, db)
+                receipt_url = None
+                invoice_id = session.get("invoice")
+                if invoice_id:
+                    try:
+                        invoice = stripe.Invoice.retrieve(invoice_id)
+                        receipt_url = invoice.get("hosted_invoice_url") or invoice.get("invoice_pdf")
+                    except Exception as exc:
+                        security_logger.warning(f"Error retrieving invoice: {exc}")
+                        receipt_url = None
+                paid.receipt_url = receipt_url
+                db.commit()
+                security_logger.info(f"Subscription activated for vendor {vendor_id}")
+            except Exception as exc:
+                security_logger.error(f"Error processing webhook for vendor {vendor_id}: {exc}")
+                db.rollback()
+        else:
+            security_logger.warning(f"Vendor not found in webhook: {vendor_id}")
+
     return {"status": "success"}
 
 
@@ -1565,7 +1736,9 @@ def get_my_vendor_profile(
 
 
 @app.post("/api/contact")
+@limiter.limit("10/minute")
 async def contact_form(
+    request: Request,
     nome: str = Body(..., embed=True),
     email: str = Body(..., embed=True),
     assunto: str = Body(..., embed=True),
@@ -1573,10 +1746,10 @@ async def contact_form(
 ):
     """Recebe o formulário de contacto e confirma o envio real do email."""
     # Normalizar os campos recebidos para evitar espaços acidentais no início ou no fim.
-    contact_name = nome.strip()
-    contact_email = email.strip()
-    contact_subject = assunto.strip()
-    contact_message = mensagem.strip()
+    contact_name = nome.strip()[:200]
+    contact_email = email.strip()[:255]
+    contact_subject = assunto.strip()[:500]
+    contact_message = mensagem.strip()[:10000]
 
     # Validar todos os campos antes de tentar enviar o email.
     if not contact_name or not contact_email or not contact_subject or not contact_message:
