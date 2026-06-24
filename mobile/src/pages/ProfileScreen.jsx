@@ -1,6 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { FiUser, FiLock, FiDroplet, FiCheck } from 'react-icons/fi';
+import { FiUser, FiLock, FiCamera, FiCheck, FiChevronDown, FiChevronUp, FiDroplet } from 'react-icons/fi';
 import { BASE_URL, mediaUrl } from '../config.js';
+import ImageCropper from '../components/ImageCropper';
+import PinColorPicker from '../components/PinColorPicker';
 
 export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
   const { token, user, vendorId } = auth;
@@ -11,8 +13,10 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
   const [pinColor, setPinColor] = useState(user?.pin_color || '#7B61FF');
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
+  const [cropSrc, setCropSrc] = useState(null);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [showSecurity, setShowSecurity] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
@@ -20,11 +24,20 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (photoPreview) URL.revokeObjectURL(photoPreview);
-      setPhoto(file);
-      setPhotoPreview(URL.createObjectURL(file));
-    }
+    if (file) setCropSrc(URL.createObjectURL(file));
+  };
+
+  const handleCropCancel = () => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  };
+
+  const handleCropComplete = (blob) => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+    setPhoto(blob);
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhotoPreview(URL.createObjectURL(blob));
   };
 
   const save = async (e) => {
@@ -35,15 +48,16 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
     try {
       const data = new FormData();
       if (name !== user.name) data.append('name', name);
-      if (email !== user.email) data.append('email', email);
+      const emailChanged = email !== user.email;
+      if (emailChanged) data.append('email', email);
       if (nif !== (user.nif || '')) data.append('nif', nif);
       if (phone !== (user.phone || '')) data.append('phone', phone);
-      if (pinColor !== (user.pin_color || '#7B61FF')) data.append('pin_color', pinColor);
       if (newPassword) {
         data.append('new_password', newPassword);
         data.append('old_password', oldPassword);
       }
-      if (photo) data.append('profile_photo', photo);
+      if (pinColor !== (user.pin_color || '#7B61FF')) data.append('pin_color', pinColor);
+      if (photo) data.append('profile_photo', new File([photo], 'profile.jpg', { type: 'image/jpeg' }));
 
       const res = await fetch(`${BASE_URL}/vendors/${vendorId}/profile`, {
         method: 'PATCH',
@@ -58,8 +72,10 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
         setInfo(`Confirma o novo email (${body.pending_email}) na mensagem que enviámos para concluir a alteração.`);
         return;
       }
-      setOldPassword('');
       setNewPassword('');
+      setOldPassword('');
+      setPhoto(null);
+      if (photoPreview) { URL.revokeObjectURL(photoPreview); setPhotoPreview(null); }
       onClose();
     } catch (err) {
       setError(err.message);
@@ -68,7 +84,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
     }
   };
 
-  const avatarSrc = photoPreview || mediaUrl(user?.profile_photo);
+  const avatarSrc = photoPreview || (user?.profile_photo ? mediaUrl(user.profile_photo) : null);
 
   return (
     <div className="profile-overlay">
@@ -101,21 +117,30 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
                 type="button"
                 className="profile-avatar-btn"
                 onClick={() => fileInputRef.current?.click()}
+                aria-label="Alterar foto de perfil"
               >
                 {avatarSrc ? (
-                  <img src={avatarSrc} alt="Foto de perfil" className="profile-avatar" style={{ borderColor: pinColor }} />
+                  <img src={avatarSrc} alt="Foto de perfil" className="profile-avatar" />
                 ) : (
-                  <div className="profile-avatar profile-avatar-placeholder" style={{ borderColor: pinColor, background: `${pinColor}33` }}>
-                    {(name || '?').charAt(0).toUpperCase()}
+                  <div className="profile-avatar profile-avatar-placeholder">
+                    {user.name?.charAt(0)?.toUpperCase() || '?'}
                   </div>
                 )}
+                <div className="profile-avatar-overlay">
+                  <FiCamera className="profile-avatar-cam" />
+                </div>
               </button>
-              <span className="profile-photo-hint">Toca para alterar a foto</span>
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
+              <span className="profile-photo-hint">Clica para alterar a foto</span>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                style={{ display: 'none' }}
+              />
             </div>
             <div className="profile-input-group">
-              <label className="profile-label">Cor do pin no mapa</label>
-              <input type="color" value={pinColor} onChange={(e) => setPinColor(e.target.value)} className="profile-color-input" />
+              <PinColorPicker value={pinColor} onChange={setPinColor} />
             </div>
           </div>
 
@@ -126,59 +151,100 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
               <span className="profile-section-title">Dados Pessoais</span>
             </div>
             <div className="profile-input-group">
-              <label className="profile-label">Nome</label>
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="profile-input" />
+              <label className="profile-label">Nome completo</label>
+              <input
+                className="profile-input"
+                type="text"
+                placeholder="O teu nome"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
             </div>
             <div className="profile-input-group">
               <label className="profile-label">Email</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="profile-input" />
-              <span className="profile-input-hint">Alterar o email exige confirmação no novo endereço.</span>
+              <input
+                className="profile-input"
+                type="email"
+                placeholder="email@exemplo.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              {user.pending_email ? (
+                <span className="profile-input-hint">
+                  Alteração pendente: confirma <strong>{user.pending_email}</strong> no email que enviámos.
+                </span>
+              ) : (
+                <span className="profile-input-hint">
+                  Ao alterar o email vais receber um link de confirmação no novo endereço.
+                </span>
+              )}
             </div>
             <div className="profile-input-group">
               <label className="profile-label">NIF</label>
               <input
+                className="profile-input"
                 type="text"
                 inputMode="numeric"
                 maxLength={9}
+                placeholder="123456789"
                 value={nif}
                 onChange={(e) => setNif(e.target.value.replace(/\D/g, ''))}
-                className="profile-input"
               />
             </div>
             <div className="profile-input-group">
               <label className="profile-label">Telemóvel</label>
-              <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="profile-input" />
+              <input
+                className="profile-input"
+                type="tel"
+                placeholder="912345678"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
             </div>
           </div>
 
           {/* Segurança */}
           <div className="profile-section-card">
-            <div className="profile-section-header">
-              <FiLock className="profile-section-icon" />
-              <span className="profile-section-title">Segurança</span>
-            </div>
-            <div className="profile-input-group">
-              <label className="profile-label">Palavra-passe atual</label>
-              <input
-                type="password"
-                value={oldPassword}
-                onChange={(e) => setOldPassword(e.target.value)}
-                placeholder="Deixa em branco se não queres alterar"
-                className="profile-input"
-                autoComplete="current-password"
-              />
-            </div>
-            <div className="profile-input-group">
-              <label className="profile-label">Nova palavra-passe</label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Mínimo 8 caracteres, maiúscula e número"
-                className="profile-input"
-                autoComplete="new-password"
-              />
-            </div>
+            <button
+              type="button"
+              className="profile-section-header profile-section-toggle"
+              onClick={() => setShowSecurity(v => !v)}
+              aria-expanded={showSecurity}
+            >
+              <span className="profile-section-header-left">
+                <FiLock className="profile-section-icon" />
+                <span className="profile-section-title">Segurança</span>
+              </span>
+              {showSecurity ? <FiChevronUp className="profile-toggle-icon" /> : <FiChevronDown className="profile-toggle-icon" />}
+            </button>
+            {showSecurity && (
+              <div className="profile-section-body">
+                <div className="profile-input-group">
+                  <label className="profile-label">Palavra-passe atual</label>
+                  <input
+                    className="profile-input"
+                    type="password"
+                    placeholder="Palavra-passe atual"
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                    autoComplete="current-password"
+                  />
+                </div>
+                <div className="profile-input-group">
+                  <label className="profile-label">Nova palavra-passe</label>
+                  <input
+                    className="profile-input"
+                    type="password"
+                    placeholder="Mínimo 8 caracteres, maiúscula e número"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    autoComplete="new-password"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <button type="submit" className="btn btn-primary" disabled={saving}>
@@ -186,6 +252,14 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
           </button>
         </form>
       </div>
+
+      {cropSrc && (
+        <ImageCropper
+          src={cropSrc}
+          onCancel={handleCropCancel}
+          onComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 }

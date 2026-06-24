@@ -13,11 +13,13 @@
   --navy: #0f2744;
   --bg: #f0f2f5;
   --surface: #ffffff;
+  --surface-alt: #f9fafb;
   --white: #ffffff;
   --text: #1c1c1e;
   --text-secondary: #6b7280;
   --text-muted: #6b7280;
   --border: #f0ebe3;
+  --border-strong: #e5e7eb;
   --radius: 16px;
   --radius-sm: 10px;
   --radius-md: 12px;
@@ -870,4 +872,64 @@ body {
   font-size: 0.85rem;
   flex-shrink: 0;
   opacity: 0.9;
+}
+
+.profile-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.profile-avatar-btn:active .profile-avatar-overlay {
+  opacity: 1;
+}
+
+.profile-avatar-cam {
+  color: white;
+  font-size: 1.25rem;
+}
+
+.profile-section-toggle {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+.profile-section-toggle:active {
+  opacity: 0.8;
+}
+
+.profile-section-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-toggle-icon {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.profile-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
 }
