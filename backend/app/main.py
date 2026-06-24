@@ -171,7 +171,7 @@ else:
     origins = [
         "http://localhost:3000",
         "http://localhost:5173",
-        "https://ss-tester.onrender.com",
+        "https://laudable-learning-production-a293.up.railway.app",
     ]
 
 app.add_middleware(
@@ -188,7 +188,7 @@ _allowed_hosts = [
     "localhost",
     "localhost:8000",
     "127.0.0.1",
-    "ss-tester.onrender.com",
+    "sstester-production.up.railway.app",
 ]
 _env_hosts = os.getenv("ALLOWED_HOSTS", "")
 if _env_hosts:
@@ -261,7 +261,7 @@ _init_db()
 # Contexto para hash de password
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-BASE_APP_URL = os.getenv("BASE_APP_URL", "https://ss-tester.onrender.com")
+BASE_APP_URL = os.getenv("BASE_APP_URL", "https://laudable-learning-production-a293.up.railway.app")
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 RESEND_FROM = os.getenv("RESEND_FROM", "Sunny Sales <onboarding@resend.dev>")
