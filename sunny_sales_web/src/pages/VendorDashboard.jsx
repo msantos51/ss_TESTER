@@ -52,7 +52,7 @@ export default function VendorDashboard() {
 
   // Profile modal state
   const [profileOpen, setProfileOpen] = useState(false);
-  const [profileTab, setProfileTab] = useState('perfil');
+  const [profileTab, setProfileTab] = useState('aparencia');
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editNif, setEditNif] = useState('');
@@ -67,6 +67,9 @@ export default function VendorDashboard() {
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState('');
   const [editSuccess, setEditSuccess] = useState('');
+  const [personalSaving, setPersonalSaving] = useState(false);
+  const [personalError, setPersonalError] = useState('');
+  const [personalSuccess, setPersonalSuccess] = useState('');
   // Security tab state
   const [secOldPassword, setSecOldPassword] = useState('');
   const [secNewPassword, setSecNewPassword] = useState('');
@@ -187,7 +190,7 @@ export default function VendorDashboard() {
 
   const openProfileModal = () => {
     if (!vendor) return;
-    setProfileTab('perfil');
+    setProfileTab('aparencia');
     setEditName(vendor.name || '');
     setEditEmail(vendor.email || '');
     setEditNif(vendor.nif || '');
@@ -201,6 +204,8 @@ export default function VendorDashboard() {
     setEditPaymentMethods(vendor.payment_methods ? vendor.payment_methods.split(',').filter(Boolean) : []);
     setEditError('');
     setEditSuccess('');
+    setPersonalError('');
+    setPersonalSuccess('');
     setSecOldPassword('');
     setSecNewPassword('');
     setSecError('');
@@ -243,7 +248,7 @@ export default function VendorDashboard() {
     setEditPhotoPreview(URL.createObjectURL(blob));
   };
 
-  const saveProfile = async (e) => {
+  const saveAppearance = async (e) => {
     e.preventDefault();
     if (!vendor) return;
     setEditSaving(true);
@@ -252,15 +257,7 @@ export default function VendorDashboard() {
     try {
       const token = localStorage.getItem('token');
       const data = new FormData();
-      if (editName !== vendor.name) data.append('name', editName);
-      if (editEmail !== vendor.email) data.append('email', editEmail);
-      if (editNif !== (vendor.nif || '')) data.append('nif', editNif);
-      if (editPhone !== (vendor.phone || '')) data.append('phone', editPhone);
-      if (editBusinessName !== (vendor.business_name || '')) data.append('business_name', editBusinessName);
-      if (editProduct !== vendor.product) data.append('product', editProduct);
       if (editPinColor !== (vendor.pin_color || '#7B61FF')) data.append('pin_color', editPinColor);
-      const newPaymentMethods = editPaymentMethods.join(',');
-      if (newPaymentMethods !== (vendor.payment_methods || '')) data.append('payment_methods', newPaymentMethods);
       if (editPhoto) {
         const file = new File([editPhoto], 'profile.jpg', { type: 'image/jpeg' });
         data.append('profile_photo', file);
@@ -274,19 +271,57 @@ export default function VendorDashboard() {
       localStorage.setItem('user', JSON.stringify(updated));
       setVendor(updated);
       setPinColor(updated.pin_color || '#7B61FF');
-      // O email só é alterado depois de confirmado pelo link enviado por email
-      if (updated.pending_email) {
-        setEditEmail(updated.email || '');
-        setEditSuccess(
-          `Dados guardados! Enviámos um email para ${updated.pending_email} — confirma esse endereço para concluíres a alteração de email.`
-        );
-      } else {
-        closeProfileModal();
-      }
+      setEditSuccess('Aparência atualizada com sucesso!');
+      setTimeout(() => {
+        setEditPhoto(null);
+        if (editPhotoPreview) URL.revokeObjectURL(editPhotoPreview);
+        setEditPhotoPreview(null);
+      }, 1000);
     } catch (err) {
       setEditError(err.response?.data?.detail || 'Erro ao guardar alterações');
     } finally {
       setEditSaving(false);
+    }
+  };
+
+  const savePersonalData = async (e) => {
+    e.preventDefault();
+    if (!vendor) return;
+    setPersonalSaving(true);
+    setPersonalError('');
+    setPersonalSuccess('');
+    try {
+      const token = localStorage.getItem('token');
+      const data = new FormData();
+      if (editName !== vendor.name) data.append('name', editName);
+      if (editEmail !== vendor.email) data.append('email', editEmail);
+      if (editNif !== (vendor.nif || '')) data.append('nif', editNif);
+      if (editPhone !== (vendor.phone || '')) data.append('phone', editPhone);
+      if (editBusinessName !== (vendor.business_name || '')) data.append('business_name', editBusinessName);
+      if (editProduct !== vendor.product) data.append('product', editProduct);
+      const newPaymentMethods = editPaymentMethods.join(',');
+      if (newPaymentMethods !== (vendor.payment_methods || '')) data.append('payment_methods', newPaymentMethods);
+      const res = await axios.patch(
+        `${BASE_URL}/vendors/${vendor.id}/profile`,
+        data,
+        { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` } }
+      );
+      const updated = res.data;
+      localStorage.setItem('user', JSON.stringify(updated));
+      setVendor(updated);
+      // O email só é alterado depois de confirmado pelo link enviado por email
+      if (updated.pending_email) {
+        setEditEmail(updated.email || '');
+        setPersonalSuccess(
+          `Dados guardados! Enviámos um email para ${updated.pending_email} — confirma esse endereço para concluíres a alteração de email.`
+        );
+      } else {
+        setPersonalSuccess('Dados pessoais guardados com sucesso!');
+      }
+    } catch (err) {
+      setPersonalError(err.response?.data?.detail || 'Erro ao guardar dados pessoais');
+    } finally {
+      setPersonalSaving(false);
     }
   };
 
@@ -499,10 +534,17 @@ export default function VendorDashboard() {
             <div className="vd-modal-tabs">
               <button
                 type="button"
-                className={`vd-modal-tab${profileTab === 'perfil' ? ' active' : ''}`}
-                onClick={() => setProfileTab('perfil')}
+                className={`vd-modal-tab${profileTab === 'aparencia' ? ' active' : ''}`}
+                onClick={() => setProfileTab('aparencia')}
               >
-                <FiUser size={14} /> Perfil
+                <FiUser size={14} /> Aparência
+              </button>
+              <button
+                type="button"
+                className={`vd-modal-tab${profileTab === 'dados-pessoais' ? ' active' : ''}`}
+                onClick={() => setProfileTab('dados-pessoais')}
+              >
+                <FiFileText size={14} /> Dados Pessoais
               </button>
               <button
                 type="button"
@@ -513,8 +555,8 @@ export default function VendorDashboard() {
               </button>
             </div>
 
-            {profileTab === 'perfil' && (
-              <form className="vd-modal-form" onSubmit={saveProfile}>
+            {profileTab === 'aparencia' && (
+              <form className="vd-modal-form" onSubmit={saveAppearance}>
                 {/* Avatar + photo upload */}
                 <div className="vd-modal-photo-section">
                   {modalAvatarSrc ? (
@@ -538,6 +580,40 @@ export default function VendorDashboard() {
                   </label>
                 </div>
 
+                <div className="vd-modal-field">
+                  <label className="vd-modal-label">Cor do Pin</label>
+                  <div className="vd-modal-pin-row">
+                    <label className="vd-modal-pin-swatch" style={{ backgroundColor: editPinColor }}>
+                      <input
+                        type="color"
+                        value={editPinColor}
+                        onChange={e => setEditPinColor(e.target.value)}
+                        className="vd-modal-pin-input"
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {editError && <p className="vd-modal-error">{editError}</p>}
+                {editSuccess && (
+                  <p className="vd-modal-success">
+                    <FiCheck size={14} /> {editSuccess}
+                  </p>
+                )}
+
+                <div className="vd-modal-actions">
+                  <button type="button" className="vd-modal-cancel" onClick={closeProfileModal}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className="vd-modal-save" disabled={editSaving}>
+                    {editSaving ? 'A guardar…' : 'Guardar'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {profileTab === 'dados-pessoais' && (
+              <form className="vd-modal-form" onSubmit={savePersonalData}>
                 <div className="vd-modal-field">
                   <label className="vd-modal-label">Nome</label>
                   <input
@@ -603,19 +679,6 @@ export default function VendorDashboard() {
                   </select>
                 </div>
                 <div className="vd-modal-field">
-                  <label className="vd-modal-label">Cor do Pin</label>
-                  <div className="vd-modal-pin-row">
-                    <label className="vd-modal-pin-swatch" style={{ backgroundColor: editPinColor }}>
-                      <input
-                        type="color"
-                        value={editPinColor}
-                        onChange={e => setEditPinColor(e.target.value)}
-                        className="vd-modal-pin-input"
-                      />
-                    </label>
-                  </div>
-                </div>
-                <div className="vd-modal-field">
                   <label className="vd-modal-label">Métodos de pagamento aceites</label>
                   <div className="vd-modal-payments-grid">
                     {Object.keys(PAYMENT_ICONS).map((method) => (
@@ -632,10 +695,10 @@ export default function VendorDashboard() {
                   </div>
                 </div>
 
-                {editError && <p className="vd-modal-error">{editError}</p>}
-                {editSuccess && (
+                {personalError && <p className="vd-modal-error">{personalError}</p>}
+                {personalSuccess && (
                   <p className="vd-modal-success">
-                    <FiCheck size={14} /> {editSuccess}
+                    <FiCheck size={14} /> {personalSuccess}
                   </p>
                 )}
 
@@ -643,8 +706,8 @@ export default function VendorDashboard() {
                   <button type="button" className="vd-modal-cancel" onClick={closeProfileModal}>
                     Cancelar
                   </button>
-                  <button type="submit" className="vd-modal-save" disabled={editSaving}>
-                    {editSaving ? 'A guardar…' : 'Guardar'}
+                  <button type="submit" className="vd-modal-save" disabled={personalSaving}>
+                    {personalSaving ? 'A guardar…' : 'Guardar'}
                   </button>
                 </div>
               </form>
