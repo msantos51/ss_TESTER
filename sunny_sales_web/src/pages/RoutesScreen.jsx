@@ -24,8 +24,9 @@ export default function RoutesScreen() {
       .finally(() => setLoading(false));
   }, []);
 
-  const totalKm = routes.reduce((s, r) => s + r.distance_m, 0) / 1000;
-  const totalMin = routes.reduce((s, r) => {
+  const validRoutes = routes.filter(r => (r.distance_m / 1000).toFixed(2) !== '0.00');
+  const totalKm = validRoutes.reduce((s, r) => s + r.distance_m, 0) / 1000;
+  const totalMin = validRoutes.reduce((s, r) => {
     if (!r.end_time) return s;
     return s + Math.round((new Date(r.end_time) - new Date(r.start_time)) / 60000);
   }, 0);
@@ -43,10 +44,10 @@ export default function RoutesScreen() {
           </div>
         </div>
 
-        {routes.length > 0 && (
+        {validRoutes.length > 0 && (
           <div className="rs-summary">
             <div className="rs-stat">
-              <span className="rs-stat-value">{routes.length}</span>
+              <span className="rs-stat-value">{validRoutes.length}</span>
               <span className="rs-stat-label">Trajetos</span>
             </div>
             <div className="rs-stat-divider" />
@@ -68,16 +69,16 @@ export default function RoutesScreen() {
           </div>
         )}
 
-        {!loading && routes.length === 0 && (
+        {!loading && validRoutes.length === 0 && (
           <div className="rs-empty">
             <FiMap className="rs-empty-icon" />
             <p>Sem trajetos registados.</p>
           </div>
         )}
 
-        {!loading && routes.length > 0 && (
+        {!loading && validRoutes.length > 0 && (
           <ul className="rs-list">
-            {routes.map((route) => {
+            {validRoutes.map((route) => {
               const start = new Date(route.start_time);
               const end = route.end_time ? new Date(route.end_time) : null;
               const durationMin = end ? Math.round((end - start) / 60000) : 0;
