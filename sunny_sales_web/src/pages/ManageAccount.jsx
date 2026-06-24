@@ -5,7 +5,7 @@ import ImageCropper from '../components/ImageCropper';
 import BackHomeButton from '../components/BackHomeButton';
 import {
   FiUser, FiLock, FiCamera, FiCheck,
-  FiChevronDown, FiChevronUp, FiSave, FiPalette,
+  FiChevronDown, FiChevronUp, FiSave, FiDroplet,
 } from 'react-icons/fi';
 import './ManageAccount.css';
 
@@ -135,7 +135,7 @@ export default function ManageAccount() {
           {/* Aparência */}
           <div className="ma-card">
             <div className="ma-card-header">
-              <FiPalette className="ma-card-icon" />
+              <FiDroplet className="ma-card-icon" />
               <span className="ma-card-title">Aparência</span>
             </div>
             <div className="ma-photo-section">
