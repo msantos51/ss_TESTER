@@ -371,6 +371,16 @@ export default function VendorDashboard() {
     <div className="vd-wrapper">
       <div className="vd-container">
 
+        {/* Hero Section */}
+        {vendor && (
+          <div className="vd-hero">
+            <h1 className="vd-hero-title">Bem-vindo de volta!</h1>
+            <p className="vd-hero-subtitle">
+              Gerencie sua presença no mapa e mantenha seus clientes sempre informados sobre sua localização.
+            </p>
+          </div>
+        )}
+
         {/* Greeting */}
         {vendor && (
           <div className="vd-greeting">

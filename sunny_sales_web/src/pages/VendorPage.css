@@ -1,0 +1,287 @@
+/* ── Vendor Pages Base Design System ──────────────── */
+/* Padrão unificado para todas as páginas de vendedor */
+
+.vendor-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+  color: var(--text);
+  font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+/* ── Hero Section ──────────────────────────────────– */
+
+.vendor-hero {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: var(--radius-xl);
+  padding: 36px 28px 32px;
+  margin-bottom: 1.75rem;
+  color: white;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.vendor-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 220px;
+  height: 220px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.vendor-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: -40px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.vendor-hero-icon {
+  font-size: 2.8rem;
+  display: block;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.vendor-hero-title {
+  font-size: clamp(1.55rem, 5vw, 2.3rem);
+  font-weight: 800;
+  margin: 0 0 10px;
+  color: white;
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+.vendor-hero-lead {
+  font-size: 0.975rem;
+  opacity: 0.9;
+  max-width: 530px;
+  margin: 0 auto;
+  line-height: 1.65;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Cards Grid ────────────────────────────────────– */
+
+.vendor-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 2rem;
+}
+
+.vendor-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid transparent;
+  border-radius: var(--radius-xl);
+  padding: 24px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition), border-top-color var(--transition);
+}
+
+.vendor-card:hover {
+  box-shadow: var(--shadow-warm);
+  transform: translateY(-3px);
+  border-top-color: var(--primary);
+}
+
+.vendor-card-icon {
+  font-size: 1.5rem;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: var(--primary-light);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.vendor-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 10px;
+}
+
+.vendor-card-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Section Titles ────────────────────────────────– */
+
+.vendor-section {
+  margin-bottom: 2rem;
+}
+
+.vendor-section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vendor-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Buttons ───────────────────────────────────────– */
+
+.vendor-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 12px 26px;
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  box-shadow: 0 4px 16px rgba(75, 163, 195, 0.4);
+  min-height: auto;
+}
+
+.vendor-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(75, 163, 195, 0.5);
+}
+
+.vendor-btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border-strong);
+  box-shadow: none;
+}
+
+.vendor-btn-secondary:hover {
+  color: var(--primary);
+  border-color: var(--primary-light-solid);
+  background: var(--primary-light);
+}
+
+/* ── Form Fields ───────────────────────────────────– */
+
+.vendor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.vendor-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.vendor-input,
+.vendor-select,
+.vendor-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: inherit;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  box-sizing: border-box;
+}
+
+.vendor-input:focus,
+.vendor-select:focus,
+.vendor-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(10, 147, 150, 0.12);
+}
+
+/* ── Status Badges ─────────────────────────────────– */
+
+.vendor-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px 3px 6px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.vendor-badge.active {
+  background: rgba(76, 175, 80, 0.12);
+  color: #2e7d32;
+}
+
+.vendor-badge.inactive {
+  background: rgba(239, 68, 68, 0.10);
+  color: #c62828;
+}
+
+.vendor-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.vendor-badge.active .vendor-badge-dot {
+  background: #4caf50;
+}
+
+.vendor-badge.inactive .vendor-badge-dot {
+  background: #ef5350;
+}
+
+/* ── Responsive ────────────────────────────────────– */
+
+@media (max-width: 480px) {
+  .vendor-page {
+    padding: 0 0.75rem 2rem;
+  }
+
+  .vendor-hero {
+    padding: 28px 20px 24px;
+  }
+
+  .vendor-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .vendor-hero-icon {
+    font-size: 2.2rem;
+  }
+}

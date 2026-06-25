@@ -8,12 +8,71 @@
 /* ── Main content ────────────────────────────────────── */
 
 .vd-container {
-  max-width: 520px;
+  max-width: 860px;
   margin: 0 auto;
-  padding: 0 1rem 2.5rem;
+  padding: 0 1rem 3rem;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 24px;
+  color: var(--text);
+  font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+/* ── Hero Section (matching info-hero) ────────────────── */
+
+.vd-hero {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: var(--radius-xl);
+  padding: 36px 28px 32px;
+  color: white;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.35s ease;
+}
+
+.vd-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 220px;
+  height: 220px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.vd-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: -40px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.vd-hero-title {
+  font-size: clamp(1.55rem, 5vw, 2.3rem);
+  font-weight: 800;
+  margin: 0 0 10px;
+  color: white;
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+.vd-hero-subtitle {
+  font-size: 0.975rem;
+  opacity: 0.9;
+  max-width: 530px;
+  margin: 0 auto;
+  line-height: 1.65;
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Greeting ────────────────────────────────────────── */
@@ -42,18 +101,26 @@
   line-height: 1.15;
 }
 
-/* ── Profile card ────────────────────────────────────── */
+/* ── Profile card (matching info-card) ───────────────── */
 
 .vd-profile-card {
   background: var(--surface);
   border: 1px solid var(--border);
+  border-top: 3px solid transparent;
   border-radius: var(--radius-xl);
-  padding: 20px;
+  padding: 24px 20px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 0;
   animation: fadeIn 0.35s ease;
+  transition: box-shadow var(--transition), transform var(--transition), border-top-color var(--transition);
+}
+
+.vd-profile-card:hover {
+  box-shadow: var(--shadow-warm);
+  transform: translateY(-3px);
+  border-top-color: var(--primary);
 }
 
 .vd-profile-top {
@@ -407,6 +474,58 @@
 .vd-location-card.active .vd-location-status {
   color: #2e7d32;
   font-weight: 600;
+}
+
+/* ── Cards grid (matching info-cards) ──────────────────── */
+
+.vd-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 2rem;
+}
+
+.vd-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid transparent;
+  border-radius: var(--radius-xl);
+  padding: 24px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition), border-top-color var(--transition);
+}
+
+.vd-card:hover {
+  box-shadow: var(--shadow-warm);
+  transform: translateY(-3px);
+  border-top-color: var(--primary);
+}
+
+.vd-card-icon {
+  font-size: 1.5rem;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: var(--primary-light);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.vd-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 10px;
+}
+
+.vd-card-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
 }
 
 /* ── Quick actions grid ──────────────────────────────── */
@@ -909,6 +1028,18 @@
 /* ── Responsive ──────────────────────────────────────── */
 
 @media (max-width: 480px) {
+  .vd-container {
+    padding: 0 0.75rem 2rem;
+  }
+
+  .vd-hero {
+    padding: 28px 20px 24px;
+  }
+
+  .vd-cards {
+    grid-template-columns: 1fr;
+  }
+
   .vd-avatar {
     width: 62px;
     height: 62px;
