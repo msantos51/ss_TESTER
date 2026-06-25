@@ -336,6 +336,12 @@ def haversine(lat1, lon1, lat2, lon2):
 # valores mais baixos deixavam passar oscilações dentro do raio de erro do GPS.
 MIN_GPS_DISTANCE_M = 15.0
 
+# Distância máxima (metros) aceite entre leituras consecutivas. Acima deste
+# valor, é considerado erro de GPS (satélite perdido, salto para outro
+# fornecedor de localização, etc.) e a leitura é descartada. Para um vendedor
+# numa praia, valores > 2 km em 1 segundo são fisicamente impossíveis.
+MAX_GPS_DISTANCE_M = 2000.0
+
 # Gerenciador de WebSockets
 class ConnectionManager:
     def __init__(self):
@@ -1062,14 +1068,15 @@ async def update_vendor_location(
     points = json.loads(active_route.points or "[]")
     last_point = points[-1] if points else None
 
-    # Ignora leituras de GPS demasiado próximas da última posição gravada:
-    # ruído de GPS (poucos metros) não deve ser contabilizado como movimento
-    # nem propagado ao mapa, para não dar a impressão de o vendedor estar
-    # sempre a deslocar-se enquanto está parado.
+    # Ignora leituras de GPS demasiado próximas ou demasiado afastadas:
+    # - Próximas (< 15m): ruído de GPS não deve ser contabilizado como movimento
+    # - Afastadas (> 2km): saltos impossíveis de GPS (erro de satélite, etc.)
     if last_point is not None:
         moved = haversine(last_point["lat"], last_point["lng"], lat, lng)
         if moved < MIN_GPS_DISTANCE_M:
             return {"message": "Localização ignorada (ruído de GPS)"}
+        if moved > MAX_GPS_DISTANCE_M:
+            return {"message": "Localização ignorada (salto de GPS anómalo)"}
 
     vendor.current_lat = lat
     vendor.current_lng = lng
