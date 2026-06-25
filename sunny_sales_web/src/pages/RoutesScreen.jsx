@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import BackHomeButton from '../components/BackHomeButton';
-import { FiMap, FiNavigation, FiClock, FiCalendar, FiChevronRight } from 'react-icons/fi';
-import './RoutesScreen.css';
+import { FiMap, FiNavigation, FiClock, FiCalendar } from 'react-icons/fi';
+import './VendorPage.css';
 
 export default function RoutesScreen() {
   const [routes, setRoutes] = useState([]);
@@ -32,52 +32,72 @@ export default function RoutesScreen() {
   }, 0);
 
   return (
-    <div className="rs-wrapper">
+    <div className="vendor-page">
       <BackHomeButton />
-      <div className="rs-container">
 
-        <div className="rs-header">
-          <div className="rs-header-icon"><FiMap /></div>
-          <div>
-            <h1 className="rs-title">Histórico de Trajetos</h1>
-            <p className="rs-subtitle">Os teus percursos registados</p>
+      <div className="vendor-hero">
+        <FiMap className="vendor-hero-icon" />
+        <h1 className="vendor-hero-title">Histórico de Trajetos</h1>
+        <p className="vendor-hero-lead">
+          Acompanhe seus percursos e estatísticas de movimento.
+        </p>
+      </div>
+
+      {validRoutes.length > 0 && (
+        <div className="vendor-cards" style={{ marginBottom: '2rem' }}>
+          <div className="vendor-card">
+            <div className="vendor-card-icon">
+              <FiNavigation />
+            </div>
+            <div className="vendor-card-title">{validRoutes.length}</div>
+            <div className="vendor-card-text">Trajetos</div>
+          </div>
+          <div className="vendor-card">
+            <div className="vendor-card-icon">
+              <FiMap />
+            </div>
+            <div className="vendor-card-title">{totalKm.toFixed(1)} km</div>
+            <div className="vendor-card-text">Distância total</div>
+          </div>
+          <div className="vendor-card">
+            <div className="vendor-card-icon">
+              <FiClock />
+            </div>
+            <div className="vendor-card-title">{totalMin} min</div>
+            <div className="vendor-card-text">Tempo total</div>
           </div>
         </div>
+      )}
 
-        {validRoutes.length > 0 && (
-          <div className="rs-summary">
-            <div className="rs-stat">
-              <span className="rs-stat-value">{validRoutes.length}</span>
-              <span className="rs-stat-label">Trajetos</span>
-            </div>
-            <div className="rs-stat-divider" />
-            <div className="rs-stat">
-              <span className="rs-stat-value">{totalKm.toFixed(1)}<span className="rs-stat-unit"> km</span></span>
-              <span className="rs-stat-label">Distância total</span>
-            </div>
-            <div className="rs-stat-divider" />
-            <div className="rs-stat">
-              <span className="rs-stat-value">{totalMin}<span className="rs-stat-unit"> min</span></span>
-              <span className="rs-stat-label">Tempo total</span>
-            </div>
-          </div>
-        )}
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '3px solid var(--border)',
+            borderTop: '3px solid var(--primary)',
+            borderRadius: '50%',
+            animation: 'spin 0.8s linear infinite',
+            margin: '0 auto'
+          }} />
+        </div>
+      )}
 
-        {loading && (
-          <div className="rs-loading">
-            <div className="rs-spinner" />
-          </div>
-        )}
+      {!loading && validRoutes.length === 0 && (
+        <div style={{
+          textAlign: 'center',
+          padding: '60px 20px',
+          color: 'var(--text-muted)'
+        }}>
+          <FiMap size={48} style={{ opacity: 0.5, marginBottom: '12px' }} />
+          <p style={{ fontSize: '1rem' }}>Sem trajetos registados.</p>
+        </div>
+      )}
 
-        {!loading && validRoutes.length === 0 && (
-          <div className="rs-empty">
-            <FiMap className="rs-empty-icon" />
-            <p>Sem trajetos registados.</p>
-          </div>
-        )}
-
-        {!loading && validRoutes.length > 0 && (
-          <ul className="rs-list">
+      {!loading && validRoutes.length > 0 && (
+        <div className="vendor-section">
+          <h2 className="vendor-section-title">Meus Trajetos</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {validRoutes.map((route) => {
               const start = new Date(route.start_time);
               const end = route.end_time ? new Date(route.end_time) : null;
@@ -87,29 +107,55 @@ export default function RoutesScreen() {
               const timeStr = start.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
 
               return (
-                <li
+                <div
                   key={route.id}
-                  className="rs-item"
+                  className="vendor-card"
                   onClick={() => navigate('/route-detail', { state: { route } })}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '16px 20px',
+                    cursor: 'pointer'
+                  }}
                 >
-                  <div className="rs-item-icon-wrap">
-                    <FiNavigation className="rs-item-icon" />
+                  <div style={{
+                    width: '44px',
+                    height: '44px',
+                    background: 'var(--primary-light)',
+                    borderRadius: 'var(--radius-md)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--primary-dark)',
+                    flexShrink: 0
+                  }}>
+                    <FiNavigation size={20} />
                   </div>
-                  <div className="rs-item-body">
-                    <span className="rs-item-date">{dateStr}</span>
-                    <div className="rs-item-meta">
-                      <span className="rs-item-meta-tag"><FiClock />{durationMin} min</span>
-                      <span className="rs-item-meta-tag"><FiNavigation />{km} km</span>
-                      <span className="rs-item-meta-tag"><FiCalendar />{timeStr}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--text)' }}>
+                      {dateStr}
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px', display: 'flex', gap: '12px' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <FiClock size={14} /> {durationMin} min
+                      </span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <FiMap size={14} /> {km} km
+                      </span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <FiCalendar size={14} /> {timeStr}
+                      </span>
                     </div>
                   </div>
-                  <FiChevronRight className="rs-item-chevron" />
-                </li>
+                </div>
               );
             })}
-          </ul>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

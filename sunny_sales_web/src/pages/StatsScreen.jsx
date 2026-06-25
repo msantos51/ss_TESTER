@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import BackHomeButton from '../components/BackHomeButton';
 import { FiBarChart2, FiNavigation, FiCalendar, FiTrendingUp } from 'react-icons/fi';
-import './StatsScreen.css';
+import './VendorPage.css';
 
 const PERIODS = [
   { id: 7, label: '7 dias' },
@@ -62,71 +62,110 @@ export default function StatsScreen() {
   const maxKm = chartData.length ? Math.max(...chartData.map(d => d.distance)).toFixed(1) : '0';
 
   return (
-    <div className="ss-wrapper">
+    <div className="vendor-page">
       <BackHomeButton />
-      <div className="ss-container">
 
-        <div className="ss-header">
-          <div className="ss-header-icon"><FiBarChart2 /></div>
-          <div>
-            <h1 className="ss-title">Estatísticas</h1>
-            <p className="ss-subtitle">Distâncias percorridas por dia</p>
+      <div className="vendor-hero">
+        <FiBarChart2 className="vendor-hero-icon" />
+        <h1 className="vendor-hero-title">Estatísticas</h1>
+        <p className="vendor-hero-lead">
+          Acompanhe suas distâncias percorridas e estatísticas de movimento.
+        </p>
+      </div>
+
+      {allData.length > 0 && (
+        <div className="vendor-cards" style={{ marginBottom: '2rem' }}>
+          <div className="vendor-card">
+            <div className="vendor-card-icon">
+              <FiNavigation />
+            </div>
+            <div className="vendor-card-title">{totalKm} km</div>
+            <div className="vendor-card-text">Total</div>
+          </div>
+          <div className="vendor-card">
+            <div className="vendor-card-icon">
+              <FiTrendingUp />
+            </div>
+            <div className="vendor-card-title">{avgKm} km</div>
+            <div className="vendor-card-text">Média/dia</div>
+          </div>
+          <div className="vendor-card">
+            <div className="vendor-card-icon">
+              <FiCalendar />
+            </div>
+            <div className="vendor-card-title">{chartData.length}</div>
+            <div className="vendor-card-text">Dias</div>
           </div>
         </div>
+      )}
 
-        {allData.length > 0 && (
-          <div className="ss-summary">
-            <div className="ss-stat">
-              <div className="ss-stat-icon"><FiNavigation /></div>
-              <span className="ss-stat-value">{totalKm}<span className="ss-stat-unit"> km</span></span>
-              <span className="ss-stat-label">Total</span>
-            </div>
-            <div className="ss-stat-divider" />
-            <div className="ss-stat">
-              <div className="ss-stat-icon"><FiTrendingUp /></div>
-              <span className="ss-stat-value">{avgKm}<span className="ss-stat-unit"> km</span></span>
-              <span className="ss-stat-label">Média/dia</span>
-            </div>
-            <div className="ss-stat-divider" />
-            <div className="ss-stat">
-              <div className="ss-stat-icon"><FiCalendar /></div>
-              <span className="ss-stat-value">{chartData.length}</span>
-              <span className="ss-stat-label">Dias</span>
-            </div>
-          </div>
-        )}
+      {allData.length > 0 && (
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          marginBottom: '2rem',
+          padding: '12px',
+          background: 'var(--surface-alt)',
+          borderRadius: 'var(--radius-lg)',
+          borderWidth: '1px',
+          borderColor: 'var(--border)',
+          borderStyle: 'solid'
+        }}>
+          {PERIODS.map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setPeriod(id)}
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                borderRadius: 'var(--radius-full)',
+                border: 'none',
+                fontSize: '0.85rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all var(--transition)',
+                background: period === id ? 'var(--primary)' : 'transparent',
+                color: period === id ? 'white' : 'var(--text-muted)',
+                minHeight: 'auto'
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
-        {allData.length > 0 && (
-          <div className="ss-period-bar">
-            {PERIODS.map(({ id, label }) => (
-              <button
-                key={id}
-                type="button"
-                className={`ss-period-btn${period === id ? ' active' : ''}`}
-                onClick={() => setPeriod(id)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '3px solid var(--border)',
+            borderTop: '3px solid var(--primary)',
+            borderRadius: '50%',
+            animation: 'spin 0.8s linear infinite',
+            margin: '0 auto'
+          }} />
+        </div>
+      )}
 
-        {loading && (
-          <div className="ss-loading">
-            <div className="ss-spinner" />
-          </div>
-        )}
+      {!loading && allData.length === 0 && (
+        <div style={{
+          textAlign: 'center',
+          padding: '60px 20px',
+          color: 'var(--text-muted)'
+        }}>
+          <FiBarChart2 size={48} style={{ opacity: 0.5, marginBottom: '12px' }} />
+          <p style={{ fontSize: '1rem' }}>Nenhum trajeto disponível.</p>
+        </div>
+      )}
 
-        {!loading && allData.length === 0 && (
-          <div className="ss-empty">
-            <FiBarChart2 className="ss-empty-icon" />
-            <p>Nenhum trajeto disponível.</p>
-          </div>
-        )}
-
-        {!loading && chartData.length > 0 && (
-          <div className="ss-card">
-            <div className="ss-chart">
+      {!loading && chartData.length > 0 && (
+        <div className="vendor-section">
+          <h2 className="vendor-section-title">Gráfico de Distâncias</h2>
+          <div className="vendor-card" style={{ padding: '24px 20px' }}>
+            <div style={{ height: '300px', marginBottom: '12px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} margin={{ top: 16, right: 8, left: -8, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -153,12 +192,15 @@ export default function StatsScreen() {
               </ResponsiveContainer>
             </div>
             {maxKm !== '0' && (
-              <p className="ss-chart-note">Máximo num dia: <strong>{maxKm} km</strong></p>
+              <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)', textAlign: 'center' }}>
+                Máximo num dia: <strong style={{ color: 'var(--text)' }}>{maxKm} km</strong>
+              </p>
             )}
           </div>
-        )}
+        </div>
+      )}
 
-      </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

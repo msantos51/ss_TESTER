@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import BackHomeButton from '../components/BackHomeButton';
-import { FiCalendar, FiFileText, FiCheckCircle, FiCreditCard } from 'react-icons/fi';
-import './PaidWeeksScreen.css';
+import { FiCalendar, FiFileText, FiCheckCircle, FiCreditCard, FiExternalLink } from 'react-icons/fi';
+import './VendorPage.css';
 
 export default function PaidWeeksScreen() {
   const [weeks, setWeeks] = useState([]);
@@ -26,52 +26,73 @@ export default function PaidWeeksScreen() {
   const activeWeeks = weeks.filter(w => new Date(w.end_date) >= now);
 
   return (
-    <div className="pw-wrapper">
+    <div className="vendor-page">
       <BackHomeButton />
-      <div className="pw-container">
 
-        <div className="pw-header">
-          <div className="pw-header-icon"><FiCreditCard /></div>
-          <div>
-            <h1 className="pw-title">Subscrição</h1>
-            <p className="pw-subtitle">Histórico de semanas pagas</p>
+      <div className="vendor-hero">
+        <FiCreditCard className="vendor-hero-icon" />
+        <h1 className="vendor-hero-title">Subscrição</h1>
+        <p className="vendor-hero-lead">
+          Acompanhe seu histórico de semanas pagas e acesse seus recibos.
+        </p>
+      </div>
+
+      {weeks.length > 0 && (
+        <div className="vendor-cards" style={{ marginBottom: '2rem' }}>
+          <div className="vendor-card">
+            <div className="vendor-card-icon">
+              <FiCheckCircle />
+            </div>
+            <div className="vendor-card-title">{weeks.length}</div>
+            <div className="vendor-card-text">Semanas pagas</div>
+          </div>
+          <div className="vendor-card">
+            <div className="vendor-card-icon">
+              <FiCalendar />
+            </div>
+            <div className="vendor-card-title">{activeWeeks.length}</div>
+            <div className="vendor-card-text">Ativas agora</div>
+          </div>
+          <div className="vendor-card">
+            <div className="vendor-card-icon">
+              <FiFileText />
+            </div>
+            <div className="vendor-card-title">{weeks.filter(w => w.receipt_url).length}</div>
+            <div className="vendor-card-text">Com recibo</div>
           </div>
         </div>
+      )}
 
-        {weeks.length > 0 && (
-          <div className="pw-summary">
-            <div className="pw-stat">
-              <span className="pw-stat-value">{weeks.length}</span>
-              <span className="pw-stat-label">Semanas pagas</span>
-            </div>
-            <div className="pw-stat-divider" />
-            <div className="pw-stat">
-              <span className="pw-stat-value">{activeWeeks.length}</span>
-              <span className="pw-stat-label">Ativas agora</span>
-            </div>
-            <div className="pw-stat-divider" />
-            <div className="pw-stat">
-              <span className="pw-stat-value">{weeks.filter(w => w.receipt_url).length}</span>
-              <span className="pw-stat-label">Com recibo</span>
-            </div>
-          </div>
-        )}
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '3px solid var(--border)',
+            borderTop: '3px solid var(--primary)',
+            borderRadius: '50%',
+            animation: 'spin 0.8s linear infinite',
+            margin: '0 auto'
+          }} />
+          <p style={{ marginTop: '12px', color: 'var(--text-muted)' }}>Carregando...</p>
+        </div>
+      )}
 
-        {loading && (
-          <div className="pw-loading">
-            <div className="pw-spinner" />
-          </div>
-        )}
+      {!loading && weeks.length === 0 && (
+        <div style={{
+          textAlign: 'center',
+          padding: '60px 20px',
+          color: 'var(--text-muted)'
+        }}>
+          <FiCreditCard size={48} style={{ opacity: 0.5, marginBottom: '12px' }} />
+          <p style={{ fontSize: '1rem' }}>Sem semanas pagas registadas.</p>
+        </div>
+      )}
 
-        {!loading && weeks.length === 0 && (
-          <div className="pw-empty">
-            <FiCreditCard className="pw-empty-icon" />
-            <p>Sem semanas pagas registadas.</p>
-          </div>
-        )}
-
-        {!loading && weeks.length > 0 && (
-          <ul className="pw-list">
+      {!loading && weeks.length > 0 && (
+        <div className="vendor-section">
+          <h2 className="vendor-section-title">Histórico de Pagamentos</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {weeks.map((item) => {
               const startDate = new Date(item.start_date);
               const endDate = new Date(item.end_date);
@@ -80,39 +101,74 @@ export default function PaidWeeksScreen() {
               const endStr = endDate.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric' });
 
               return (
-                <li key={item.id} className="pw-item">
-                  <div className="pw-item-icon-wrap">
-                    <FiCalendar className="pw-item-icon" />
-                  </div>
-                  <div className="pw-item-body">
-                    <div className="pw-item-top">
-                      <span className="pw-item-dates">{startStr} a {endStr}</span>
-                      {isActive && (
-                        <span className="pw-badge-active">
-                          <FiCheckCircle />Ativa
-                        </span>
-                      )}
+                <div key={item.id} className="vendor-card" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '16px 20px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                    <div style={{
+                      width: '44px',
+                      height: '44px',
+                      background: 'var(--primary-light)',
+                      borderRadius: 'var(--radius-md)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'var(--primary-dark)',
+                      flexShrink: 0
+                    }}>
+                      <FiCalendar size={20} />
                     </div>
-                    <span className="pw-item-sub">Semana de subscrição</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--text)' }}>
+                        {startStr} a {endStr}
+                      </div>
+                      <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        Semana de subscrição
+                      </div>
+                    </div>
                   </div>
-                  {item.receipt_url && (
-                    <a
-                      href={item.receipt_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="pw-receipt-btn"
-                      title="Ver recibo"
-                    >
-                      <FiFileText />
-                    </a>
-                  )}
-                </li>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {isActive && (
+                      <span className="vendor-badge active" style={{ marginRight: '8px' }}>
+                        <span className="vendor-badge-dot" />
+                        Ativa
+                      </span>
+                    )}
+                    {item.receipt_url && (
+                      <a
+                        href={item.receipt_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: 'var(--radius-full)',
+                          background: 'var(--primary-light)',
+                          color: 'var(--primary-dark)',
+                          transition: 'all var(--transition)',
+                          cursor: 'pointer'
+                        }}
+                        onMouseEnter={(e) => { e.target.style.background = 'var(--primary)'; e.target.style.color = 'white'; }}
+                        onMouseLeave={(e) => { e.target.style.background = 'var(--primary-light)'; e.target.style.color = 'var(--primary-dark)'; }}
+                      >
+                        <FiExternalLink size={16} />
+                      </a>
+                    )}
+                  </div>
+                </div>
               );
             })}
-          </ul>
-        )}
+          </div>
+        </div>
+      )}
 
-      </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
