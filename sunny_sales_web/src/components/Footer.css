@@ -14,10 +14,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 1rem;
-  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  padding: 14px 1rem;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   gap: 1rem;
-  min-height: calc(var(--footer-h, 32px) + env(safe-area-inset-bottom, 0px));
+  min-height: calc(var(--footer-h, 48px) + env(safe-area-inset-bottom, 0px));
 }
 
 .footer-message {
@@ -29,7 +29,7 @@
   color: rgba(255, 255, 255, 0.85);
   font-family: 'Inter', 'Roboto', sans-serif;
   font-weight: 600;
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   text-align: center;
   letter-spacing: 0.02em;
   animation: footerFade 0.5s ease;
@@ -43,7 +43,7 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
 }
 
 .footer-link {
@@ -78,17 +78,17 @@
   .footer-content {
     flex-direction: column;
     gap: 6px;
-    padding: 6px 0.75rem;
+    padding: 12px 0.75rem;
     min-height: auto;
   }
 
   .footer-message {
-    font-size: 0.62rem;
+    font-size: 0.72rem;
   }
 
   .footer-links {
     gap: 4px;
-    font-size: 0.6rem;
+    font-size: 0.68rem;
   }
 
   .footer-link-divider {
@@ -100,15 +100,15 @@
   .footer-content {
     flex-direction: column;
     gap: 4px;
-    padding: 4px 0.5rem;
+    padding: 10px 0.5rem;
   }
 
   .footer-message {
-    font-size: 0.55rem;
+    font-size: 0.65rem;
   }
 
   .footer-links {
     gap: 3px;
-    font-size: 0.55rem;
+    font-size: 0.63rem;
   }
 }
