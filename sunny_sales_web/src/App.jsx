@@ -27,6 +27,7 @@ import Dashboard from './pages/Dashboard';
 import ModernMapLayout from './pages/ModernMapLayout';
 import SobreProjeto from './pages/SobreProjeto';
 import Sustentabilidade from './pages/Sustentabilidade';
+import HowItWorks from './pages/HowItWorks';
 
 import Sessions from './pages/Sessions';
 import ForgotPassword from './pages/ForgotPassword';
@@ -135,6 +136,13 @@ function AppLayout() {
           <span className="nav-divider">|</span>
           <NavLink
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+            to="/como-funciona"
+          >
+            Para Vendedores
+          </NavLink>
+          <span className="nav-divider">|</span>
+          <NavLink
+            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/faqs"
           >
             FAQs
@@ -209,6 +217,7 @@ function AppLayout() {
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="/legal-notice" element={<LegalNotice />} />
           <Route path="/cookies-policy" element={<CookiesPolicy />} />
+          <Route path="/como-funciona" element={<HowItWorks />} />
         </Routes>
       </div>
       <Footer />
