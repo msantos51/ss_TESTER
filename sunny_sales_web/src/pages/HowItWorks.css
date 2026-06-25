@@ -9,11 +9,11 @@
 .how-it-works-header {
   text-align: center;
   padding: 3rem 0;
-  background: linear-gradient(135deg, #4BA3C3 0%, #2E7A9E 100%);
+  background: linear-gradient(135deg, #ef5050 0%, #9e2d2d 100%);
   border-radius: 16px;
   color: white;
   margin-bottom: 3rem;
-  box-shadow: 0 4px 15px rgba(75, 163, 195, 0.2);
+  box-shadow: 0 4px 15px rgba(239, 80, 80, 0.2);
 }
 
 .how-it-works-header h1 {
@@ -33,8 +33,8 @@
 
 /* Introduction Section */
 .how-it-works-intro {
-  background: rgba(75, 163, 195, 0.08);
-  border: 1px solid rgba(75, 163, 195, 0.15);
+  background: rgba(239, 80, 80, 0.08);
+  border: 1px solid rgba(239, 80, 80, 0.15);
   border-radius: 12px;
   padding: 3rem;
   margin-bottom: 3rem;
@@ -43,7 +43,7 @@
 .intro-content h2 {
   font-size: 2rem;
   margin-bottom: 1.5rem;
-  color: #2E7A9E;
+  color: #9e2d2d;
 }
 
 .intro-content p {
@@ -62,7 +62,7 @@
   font-size: 2.5rem;
   text-align: center;
   margin-bottom: 3rem;
-  color: #2E7A9E;
+  color: #9e2d2d;
 }
 
 .steps-grid {
@@ -82,8 +82,8 @@
 }
 
 .step-card:hover {
-  border-color: #4BA3C3;
-  box-shadow: 0 8px 25px rgba(75, 163, 195, 0.15);
+  border-color: #ef5050;
+  box-shadow: 0 8px 25px rgba(239, 80, 80, 0.15);
   transform: translateY(-4px);
 }
 
@@ -93,7 +93,7 @@
   justify-content: center;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #4BA3C3 0%, #2E7A9E 100%);
+  background: linear-gradient(135deg, #ef5050 0%, #9e2d2d 100%);
   color: white;
   border-radius: 50%;
   font-size: 2rem;
@@ -104,7 +104,7 @@
 .step-card h3 {
   font-size: 1.4rem;
   margin-bottom: 1rem;
-  color: #2E7A9E;
+  color: #9e2d2d;
 }
 
 .step-card p {
@@ -123,7 +123,7 @@
   font-size: 2.5rem;
   text-align: center;
   margin-bottom: 3rem;
-  color: #2E7A9E;
+  color: #9e2d2d;
 }
 
 .features-grid {
@@ -133,8 +133,8 @@
 }
 
 .feature-item {
-  background: linear-gradient(135deg, rgba(75, 163, 195, 0.08) 0%, rgba(46, 122, 158, 0.05) 100%);
-  border: 1px solid rgba(75, 163, 195, 0.15);
+  background: linear-gradient(135deg, rgba(239, 80, 80, 0.08) 0%, rgba(158, 45, 45, 0.05) 100%);
+  border: 1px solid rgba(239, 80, 80, 0.15);
   border-radius: 12px;
   padding: 2.5rem 2rem;
   text-align: center;
@@ -142,8 +142,8 @@
 }
 
 .feature-item:hover {
-  border-color: #4BA3C3;
-  box-shadow: 0 6px 20px rgba(75, 163, 195, 0.12);
+  border-color: #ef5050;
+  box-shadow: 0 6px 20px rgba(239, 80, 80, 0.12);
   transform: translateY(-3px);
 }
 
@@ -154,7 +154,7 @@
 
 .feature-item h3 {
   font-size: 1.3rem;
-  color: #2E7A9E;
+  color: #9e2d2d;
   margin-bottom: 1rem;
 }
 
@@ -175,7 +175,7 @@
   font-size: 2.5rem;
   text-align: center;
   margin-bottom: 1rem;
-  color: #2E7A9E;
+  color: #9e2d2d;
 }
 
 .mockups-subtitle {
@@ -193,7 +193,7 @@
 
 .mockup-placeholder {
   background: linear-gradient(135deg, #f5f7fa 0%, #e9ecf1 100%);
-  border: 3px dashed rgba(75, 163, 195, 0.3);
+  border: 3px dashed rgba(239, 80, 80, 0.3);
   border-radius: 12px;
   padding: 3rem;
   min-height: 400px;
@@ -204,7 +204,7 @@
 }
 
 .mockup-placeholder:hover {
-  border-color: rgba(75, 163, 195, 0.6);
+  border-color: rgba(239, 80, 80, 0.6);
   background: linear-gradient(135deg, #f9fbfd 0%, #f0f3f8 100%);
 }
 
@@ -214,7 +214,7 @@
 
 .mockup-content h3 {
   font-size: 1.5rem;
-  color: #2E7A9E;
+  color: #9e2d2d;
   margin-bottom: 1rem;
 }
 
@@ -238,7 +238,7 @@
   font-size: 2.5rem;
   text-align: center;
   margin-bottom: 3rem;
-  color: #2E7A9E;
+  color: #9e2d2d;
 }
 
 .benefits-list {
@@ -258,8 +258,8 @@
 }
 
 .benefit-item:hover {
-  border-color: #4BA3C3;
-  box-shadow: 0 6px 20px rgba(75, 163, 195, 0.1);
+  border-color: #ef5050;
+  box-shadow: 0 6px 20px rgba(239, 80, 80, 0.1);
 }
 
 .benefit-check {
@@ -269,7 +269,7 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #4BA3C3 0%, #2E7A9E 100%);
+  background: linear-gradient(135deg, #ef5050 0%, #9e2d2d 100%);
   color: white;
   border-radius: 50%;
   font-size: 1.5rem;
@@ -278,7 +278,7 @@
 
 .benefit-text h3 {
   font-size: 1.2rem;
-  color: #2E7A9E;
+  color: #9e2d2d;
   margin: 0 0 0.5rem 0;
 }
 
@@ -291,7 +291,7 @@
 
 /* CTA Section */
 .how-it-works-cta {
-  background: linear-gradient(135deg, #4BA3C3 0%, #2E7A9E 100%);
+  background: linear-gradient(135deg, #ef5050 0%, #9e2d2d 100%);
   border-radius: 16px;
   padding: 4rem 2rem;
   text-align: center;
@@ -313,7 +313,7 @@
 .cta-button {
   display: inline-block;
   background: white;
-  color: #2E7A9E;
+  color: #9e2d2d;
   padding: 1rem 2.5rem;
   border-radius: 8px;
   text-decoration: none;
