@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { FiBell, FiRadio } from 'react-icons/fi';
 import BackHomeButton from '../components/BackHomeButton';
-import './VendorLogin.css';
+import './VendorPage.css';
 
 const isNotificationsEnabled = () =>
   localStorage.getItem('notifications_enabled') === 'true';
@@ -37,32 +38,63 @@ export default function AccountSettings() {
   };
 
   return (
-    <div className="form-box">
+    <div className="vendor-page">
       <BackHomeButton />
-      <h2 className="title">Definições da Conta</h2>
 
-      <div className="form">
-        <div className="settings-row">
-          <span>Notificações Ativas</span>
-          <input
-            type="checkbox"
-            className="theme-checkbox"
-            checked={enabled}
-            onChange={toggleNotifications}
-          />
+      <div className="vendor-hero">
+        <FiBell className="vendor-hero-icon" />
+        <h1 className="vendor-hero-title">Definições da Conta</h1>
+        <p className="vendor-hero-lead">
+          Personalize suas preferências de notificações e alertas.
+        </p>
+      </div>
+
+      <div className="vendor-section">
+        <h2 className="vendor-section-title"><FiBell size={18} /> Notificações</h2>
+        <div className="vendor-card">
+          <div className="vendor-card-title">Ativar Notificações</div>
+          <p className="vendor-card-text">
+            Receba alertas quando clientes se aproximarem de sua localização.
+          </p>
+          <div style={{ marginTop: '12px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={enabled}
+                onChange={toggleNotifications}
+                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+              />
+              <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>
+                {enabled ? 'Ativado' : 'Desativado'}
+              </span>
+            </label>
+          </div>
         </div>
+      </div>
 
-        <span className="input-span">
-          <label className="label">Raio de Alertas (metros):</label>
-          <select
-            value={radius}
-            onChange={(e) => changeRadius(e.target.value)}
-          >
-            <option value="20">20</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-        </span>
+      <div className="vendor-section">
+        <h2 className="vendor-section-title"><FiRadio size={18} /> Raio de Alertas</h2>
+        <div className="vendor-card">
+          <div className="vendor-card-title">Distância de Notificação</div>
+          <p className="vendor-card-text">
+            Escolha a distância mínima para receber notificações.
+          </p>
+          <div className="vendor-field" style={{ marginTop: '12px' }}>
+            <label className="vendor-label">Raio em Metros</label>
+            <select
+              className="vendor-select"
+              value={radius}
+              onChange={(e) => changeRadius(e.target.value)}
+            >
+              <option value="20">20 metros</option>
+              <option value="50">50 metros</option>
+              <option value="100">100 metros</option>
+            </select>
+            <small style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '4px' }}>
+              Raio atual: {radius}m
+            </small>
+          </div>
+        </div>
       </div>
     </div>
   );
