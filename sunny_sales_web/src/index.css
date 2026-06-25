@@ -1,11 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto:wght@400;700&display=swap');
 
 :root {
-  --primary: #4BA3C3;
-  --primary-hover: #097b7e;
-  --primary-dark: #2E7A9A;
-  --primary-light: rgba(10, 147, 150, 0.12);
-  --primary-light-solid: #e0f5f5;
+  --primary: #ef5050;
+  --primary-hover: #d93d3d;
+  --primary-dark: #9e2d2d;
+  --primary-light: rgba(239, 80, 80, 0.12);
+  --primary-light-solid: #ffe0e0;
 
   --secondary: #EE9B00;
   --secondary-hover: #d48900;
@@ -31,8 +31,8 @@
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
-  --shadow-warm: 0 4px 24px rgba(10, 147, 150, 0.22);
-  --shadow-warm-lg: 0 8px 40px rgba(10, 147, 150, 0.28);
+  --shadow-warm: 0 4px 24px rgba(239, 80, 80, 0.22);
+  --shadow-warm-lg: 0 8px 40px rgba(239, 80, 80, 0.28);
 
   --radius-xs: 6px;
   --radius-sm: 10px;
