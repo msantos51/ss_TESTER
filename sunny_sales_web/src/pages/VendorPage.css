@@ -225,7 +225,7 @@
 .vendor-textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(239, 80, 80, 0.12);
+  box-shadow: 0 0 0 3px rgba(10, 147, 150, 0.12);
 }
 
 /* ── Status Badges ─────────────────────────────────– */
