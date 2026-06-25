@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 const messages = [
@@ -97,9 +98,20 @@ export default function Footer() {
 
   return (
     <footer className="footer-wrapper">
-      <div className="footer-message">
-        <FiRefreshCw size={11} className="footer-icon" />
-        {messages[index]}
+      <div className="footer-content">
+        <div className="footer-message">
+          <FiRefreshCw size={11} className="footer-icon" />
+          {messages[index]}
+        </div>
+        <div className="footer-links">
+          <Link to="/privacy-policy" className="footer-link">Privacidade</Link>
+          <span className="footer-link-divider">•</span>
+          <Link to="/terms-and-conditions" className="footer-link">Termos</Link>
+          <span className="footer-link-divider">•</span>
+          <Link to="/legal-notice" className="footer-link">Aviso Legal</Link>
+          <span className="footer-link-divider">•</span>
+          <Link to="/cookies-policy" className="footer-link">Cookies</Link>
+        </div>
       </div>
     </footer>
   );

@@ -4,21 +4,28 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  height: calc(var(--footer-h, 32px) + env(safe-area-inset-bottom, 0px));
   overflow: hidden;
   background: var(--primary, #4BA3C3);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 1rem;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  gap: 1rem;
+  min-height: calc(var(--footer-h, 32px) + env(safe-area-inset-bottom, 0px));
 }
 
 .footer-message {
-  position: absolute;
-  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 0 1rem;
+  flex: 1;
   color: rgba(255, 255, 255, 0.85);
   font-family: 'Inter', 'Roboto', sans-serif;
   font-weight: 600;
@@ -26,6 +33,34 @@
   text-align: center;
   letter-spacing: 0.02em;
   animation: footerFade 0.5s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 0.65rem;
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity var(--transition);
+  white-space: nowrap;
+}
+
+.footer-link:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+.footer-link-divider {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .footer-icon {
@@ -39,8 +74,41 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 6px;
+    padding: 6px 0.75rem;
+    min-height: auto;
+  }
+
   .footer-message {
     font-size: 0.62rem;
+  }
+
+  .footer-links {
+    gap: 4px;
+    font-size: 0.6rem;
+  }
+
+  .footer-link-divider {
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 4px;
+    padding: 4px 0.5rem;
+  }
+
+  .footer-message {
+    font-size: 0.55rem;
+  }
+
+  .footer-links {
+    gap: 3px;
+    font-size: 0.55rem;
   }
 }

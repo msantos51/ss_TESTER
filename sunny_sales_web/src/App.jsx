@@ -7,6 +7,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { FiUser, FiMenu, FiX, FiSun } from 'react-icons/fi';
+import { FaInstagram } from 'react-icons/fa';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { BASE_URL } from './config';
@@ -32,6 +33,10 @@ import ForgotPassword from './pages/ForgotPassword';
 import Contacto from './pages/Contacto';
 import PlanosVendedores from './pages/PlanosVendedores';
 import FAQ from './pages/FAQ';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
+import LegalNotice from './pages/LegalNotice';
+import CookiesPolicy from './pages/CookiesPolicy';
 import Footer from './components/Footer';
 import './index.css';
 
@@ -144,6 +149,15 @@ function AppLayout() {
         </div>
 
         <div className="nav-icons">
+          <a
+            href="https://www.instagram.com/sunny.sales_official/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="profile-icon"
+            aria-label="Instagram"
+          >
+            <FaInstagram size={18} />
+          </a>
           <Link to={profileLink} className="profile-icon" aria-label="Perfil">
             <FiUser size={18} />
           </Link>
@@ -191,6 +205,10 @@ function AppLayout() {
           <Route path="/planos" element={<PlanosVendedores />} />
           <Route path="/faqs" element={<FAQ />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="/legal-notice" element={<LegalNotice />} />
+          <Route path="/cookies-policy" element={<CookiesPolicy />} />
         </Routes>
       </div>
       <Footer />
