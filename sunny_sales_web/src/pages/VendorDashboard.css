@@ -320,7 +320,7 @@
   padding: 3px 9px 3px 6px;
   font-size: 0.72rem;
   font-weight: 700;
-  border: 1px solid rgba(10, 147, 150, 0.18);
+  border: 1px solid rgba(239, 80, 80, 0.18);
 }
 
 .vd-payment-badge-icon {
@@ -579,7 +579,7 @@
 }
 
 .vd-quick-card:hover .vd-quick-icon {
-  background: rgba(10, 147, 150, 0.22);
+  background: rgba(239, 80, 80, 0.22);
 }
 
 .vd-quick-label {
@@ -770,7 +770,7 @@
 
 .vd-modal-photo-btn:hover {
   background: var(--primary-light);
-  border-color: rgba(10, 147, 150, 0.3);
+  border-color: rgba(239, 80, 80, 0.3);
   color: var(--primary-dark);
 }
 
@@ -805,7 +805,7 @@
 .vd-modal-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(10, 147, 150, 0.12);
+  box-shadow: 0 0 0 3px rgba(239, 80, 80, 0.12);
 }
 
 .vd-modal-pin-row {
