@@ -449,11 +449,13 @@ export default function ModernMapLayout() {
     : [];
 
   let loggedVendor = null;
+  let loggedVendorData = null;
   if (isVendorLogged) {
     try {
       const stored = localStorage.getItem('user');
       if (stored) {
-        const { id } = JSON.parse(stored);
+        loggedVendorData = JSON.parse(stored);
+        const { id } = loggedVendorData;
         const vendorId = Number(id);
         loggedVendor =
           activeVendors.find((v) => Number(v.id) === vendorId) || null;
@@ -573,19 +575,20 @@ export default function ModernMapLayout() {
               </>
             )}
 
-            {isVendorLogged && loggedVendor && (
-              <>
-                <VendorAutoFollow
-                  vendor={loggedVendor}
-                  isAutoFollowing={isAutoFollowing}
-                  setIsAutoFollowing={setIsAutoFollowing}
-                />
-                <LocateButton
-                  type="vendor"
-                  data={loggedVendor}
-                  onClick={() => setIsAutoFollowing(true)}
-                />
-              </>
+            {loggedVendor && (
+              <VendorAutoFollow
+                vendor={loggedVendor}
+                isAutoFollowing={isAutoFollowing}
+                setIsAutoFollowing={setIsAutoFollowing}
+              />
+            )}
+
+            {isVendorLogged && loggedVendorData && (
+              <LocateButton
+                type="vendor"
+                data={loggedVendor}
+                onClick={() => setIsAutoFollowing(true)}
+              />
             )}
           </MapContainer>
 
