@@ -6,7 +6,7 @@ import {
   NavLink,
   useLocation,
 } from 'react-router-dom';
-import { FiUser, FiMenu, FiX, FiSun } from 'react-icons/fi';
+import { FiUser, FiMenu, FiX } from 'react-icons/fi';
 import { FaInstagram } from 'react-icons/fa';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -108,7 +108,7 @@ function AppLayout() {
     <div className="wrapper">
       <nav className="navbar">
         <Link className="nav-logo" to="/">
-          <span className="nav-logo-icon"><FiSun size={22} /></span>
+          <img src="/logo-header.png" alt="Sunny Sales" className="nav-logo-img" />
           Sunny Sales
         </Link>
 
