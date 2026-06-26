@@ -195,11 +195,19 @@ body {
 .filter-sheet {
   width: 100%;
   max-width: 480px;
+  max-height: 85vh;
   margin: 0 auto;
   background: var(--surface);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   animation: sheetSlideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.filter-sheet-body {
+  overflow-y: auto;
+  flex: 1;
 }
 
 @keyframes sheetSlideUp {
@@ -221,6 +229,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px 8px;
+  flex-shrink: 0;
 }
 
 .filter-sheet-label {
@@ -249,32 +258,6 @@ body {
 
 .filter-back-btn:hover {
   background: var(--surface-alt);
-  color: var(--primary);
-  transform: none;
-  box-shadow: none;
-}
-
-.filter-close-btn {
-  width: 28px;
-  height: 28px;
-  min-height: auto;
-  min-width: auto;
-  padding: 0;
-  background: var(--surface-alt);
-  border: none;
-  border-radius: var(--radius-full);
-  font-size: 1.15rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background var(--transition), color var(--transition);
-  line-height: 1;
-}
-
-.filter-close-btn:hover {
-  background: var(--primary-light);
   color: var(--primary);
   transform: none;
   box-shadow: none;
@@ -425,6 +408,7 @@ body {
   gap: 12px;
   padding: 14px 20px max(16px, env(safe-area-inset-bottom, 16px));
   border-top: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .filter-reset-all-btn {

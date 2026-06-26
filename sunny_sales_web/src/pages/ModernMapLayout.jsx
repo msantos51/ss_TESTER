@@ -650,62 +650,57 @@ export default function ModernMapLayout() {
                     <span>Voltar</span>
                   </button>
                   <span className="filter-sheet-label">Filtrar por:</span>
-                  <button
-                    className="filter-close-btn"
-                    onClick={() => setFilterOpen(false)}
-                    aria-label="Fechar"
-                  >
-                    ×
-                  </button>
                 </div>
 
-                {/* Products section */}
-                <div className="filter-section">
-                  <div className="filter-section-row">
-                    <span className="filter-section-title">Vendedores</span>
+                <div className="filter-sheet-body">
+                  {/* Products section */}
+                  <div className="filter-section">
+                    <div className="filter-section-row">
+                      <span className="filter-section-title">Vendedores</span>
+                    </div>
+                    {PRODUCTS.map((p) => {
+                      const active = pendingProducts.includes(p);
+                      return (
+                        <button
+                          key={p}
+                          className={`filter-option${active ? ' active' : ''}`}
+                          onClick={() => togglePendingProduct(p)}
+                        >
+                          <span>{p}</span>
+                          {active && <FiCheck size={14} className="filter-check" />}
+                        </button>
+                      );
+                    })}
                   </div>
-                  {PRODUCTS.map((p) => {
-                    const active = pendingProducts.includes(p);
-                    return (
-                      <button
-                        key={p}
-                        className={`filter-option${active ? ' active' : ''}`}
-                        onClick={() => togglePendingProduct(p)}
-                      >
-                        <span>{p}</span>
-                        {active && <FiCheck size={14} className="filter-check" />}
-                      </button>
-                    );
-                  })}
-                </div>
 
-                <div className="filter-divider" />
+                  <div className="filter-divider" />
 
-                {/* Distance section */}
-                <div className="filter-section">
-                  <div className="filter-section-row">
-                    <span className="filter-section-title">
-                      <FiMapPin size={14} style={{ marginRight: 6 }} />
-                      Distância
-                    </span>
+                  {/* Distance section */}
+                  <div className="filter-section">
+                    <div className="filter-section-row">
+                      <span className="filter-section-title">
+                        <FiMapPin size={14} style={{ marginRight: 6 }} />
+                        Distância
+                      </span>
+                    </div>
+                    <div className="filter-distance-row">
+                      {DISTANCE_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.label}
+                          className={`filter-distance-opt${pendingDistance === opt.value ? ' active' : ''}`}
+                          onClick={() => setPendingDistance(opt.value)}
+                        >
+                          {pendingDistance === opt.value && <FiCheck size={12} />}
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                    {pendingDistance !== null && !clientPos && (
+                      <p className="filter-distance-hint">
+                        Ative a localização para filtrar por distância
+                      </p>
+                    )}
                   </div>
-                  <div className="filter-distance-row">
-                    {DISTANCE_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.label}
-                        className={`filter-distance-opt${pendingDistance === opt.value ? ' active' : ''}`}
-                        onClick={() => setPendingDistance(opt.value)}
-                      >
-                        {pendingDistance === opt.value && <FiCheck size={12} />}
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                  {pendingDistance !== null && !clientPos && (
-                    <p className="filter-distance-hint">
-                      Ative a localização para filtrar por distância
-                    </p>
-                  )}
                 </div>
 
                 {/* Footer */}
