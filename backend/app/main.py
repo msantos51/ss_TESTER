@@ -41,6 +41,8 @@ ALLOWED_STORY_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS | {".mp4", ".webm"}
 MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10 MB
 MAX_VIDEO_SIZE = 100 * 1024 * 1024  # 100 MB
 
+MAX_PRODUCTS_PER_VENDOR = 6
+
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) if SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY else None
@@ -1694,6 +1696,13 @@ async def create_product(
 ):
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
+
+    existing_count = db.query(models.Product).filter(models.Product.vendor_id == vendor_id).count()
+    if existing_count >= MAX_PRODUCTS_PER_VENDOR:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Limite de {MAX_PRODUCTS_PER_VENDOR} produtos por vendedor atingido",
+        )
 
     photo_path = None
     if photo:
