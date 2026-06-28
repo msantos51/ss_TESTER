@@ -3,7 +3,7 @@ import axios from 'axios';
 import { BASE_URL, mediaUrl } from '../config';
 import BackHomeButton from '../components/BackHomeButton';
 import ImageCropper from '../components/ImageCropper';
-import { FiShoppingBag, FiPlus, FiTrash2, FiTag } from 'react-icons/fi';
+import { FiShoppingBag, FiPlus, FiTrash2, FiTag, FiEdit2, FiX, FiCheck } from 'react-icons/fi';
 import './ProductsScreen.css';
 
 const MAX_PRODUCTS = 10;
@@ -20,6 +20,15 @@ export default function ProductsScreen() {
   const [cropSrc, setCropSrc] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  const [editingId, setEditingId] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editPrice, setEditPrice] = useState('');
+  const [editPhoto, setEditPhoto] = useState(null);
+  const [editPhotoPreview, setEditPhotoPreview] = useState(null);
+  const [editCropSrc, setEditCropSrc] = useState(null);
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState('');
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -86,6 +95,69 @@ export default function ProductsScreen() {
       setError(err.response?.data?.detail || 'Erro ao adicionar produto');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const startEdit = (product) => {
+    setEditingId(product.id);
+    setEditName(product.name);
+    setEditPrice(String(product.price));
+    setEditPhoto(null);
+    setEditPhotoPreview(product.photo ? mediaUrl(product.photo) : null);
+    setEditError('');
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditName('');
+    setEditPrice('');
+    setEditPhoto(null);
+    setEditPhotoPreview(null);
+    setEditError('');
+  };
+
+  const handleEditPhotoChange = (e) => {
+    if (e.target.files?.[0]) {
+      setEditCropSrc(URL.createObjectURL(e.target.files[0]));
+    }
+  };
+
+  const handleEditCropCancel = () => {
+    if (editCropSrc) URL.revokeObjectURL(editCropSrc);
+    setEditCropSrc(null);
+  };
+
+  const handleEditCropComplete = (blob) => {
+    if (editCropSrc) URL.revokeObjectURL(editCropSrc);
+    setEditCropSrc(null);
+    setEditPhoto(blob);
+    setEditPhotoPreview(URL.createObjectURL(blob));
+  };
+
+  const handleEditSubmit = async (e, productId) => {
+    e.preventDefault();
+    if (!vendor) return;
+    setEditSaving(true);
+    setEditError('');
+    try {
+      const token = localStorage.getItem('token');
+      const data = new FormData();
+      data.append('name', editName);
+      data.append('price', editPrice);
+      if (editPhoto) {
+        data.append('photo', new File([editPhoto], 'product.jpg', { type: 'image/jpeg' }));
+      }
+      const res = await axios.put(
+        `${BASE_URL}/vendors/${vendor.id}/products/${productId}`,
+        data,
+        { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` } }
+      );
+      setProducts(prev => prev.map(p => (p.id === productId ? res.data : p)));
+      cancelEdit();
+    } catch (err) {
+      setEditError(err.response?.data?.detail || 'Erro ao guardar alterações');
+    } finally {
+      setEditSaving(false);
     }
   };
 
@@ -191,27 +263,90 @@ export default function ProductsScreen() {
         {!loading && products.length > 0 && (
           <ul className="ps-list">
             {products.map((p) => (
-              <li key={p.id} className="ps-item">
-                {p.photo ? (
-                  <img src={mediaUrl(p.photo)} alt={p.name} className="ps-item-photo" />
-                ) : (
-                  <div className="ps-item-photo ps-item-photo-placeholder">
-                    <FiShoppingBag />
+              editingId === p.id ? (
+                <li key={p.id} className="ps-item ps-item-editing">
+                  <form className="ps-edit-form" onSubmit={(e) => handleEditSubmit(e, p.id)}>
+                    <div className="ps-form-photo-section">
+                      {editPhotoPreview ? (
+                        <img src={editPhotoPreview} alt="Pré-visualização" className="ps-form-photo" />
+                      ) : (
+                        <div className="ps-form-photo ps-form-photo-placeholder">
+                          <FiShoppingBag />
+                        </div>
+                      )}
+                      <label className="ps-photo-btn">
+                        Mudar foto
+                        <input type="file" accept="image/*" hidden onChange={handleEditPhotoChange} />
+                      </label>
+                    </div>
+
+                    <div className="ps-form-field">
+                      <label className="ps-form-label">Nome do produto</label>
+                      <input
+                        className="ps-form-input"
+                        type="text"
+                        value={editName}
+                        onChange={e => setEditName(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="ps-form-field">
+                      <label className="ps-form-label">Preço (€)</label>
+                      <input
+                        className="ps-form-input"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={editPrice}
+                        onChange={e => setEditPrice(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    {editError && <p className="ps-form-error">{editError}</p>}
+
+                    <div className="ps-edit-actions">
+                      <button type="button" className="ps-edit-cancel" onClick={cancelEdit} disabled={editSaving}>
+                        <FiX /> Cancelar
+                      </button>
+                      <button type="submit" className="ps-edit-save" disabled={editSaving}>
+                        <FiCheck /> {editSaving ? 'A guardar…' : 'Guardar'}
+                      </button>
+                    </div>
+                  </form>
+                </li>
+              ) : (
+                <li key={p.id} className="ps-item">
+                  {p.photo ? (
+                    <img src={mediaUrl(p.photo)} alt={p.name} className="ps-item-photo" />
+                  ) : (
+                    <div className="ps-item-photo ps-item-photo-placeholder">
+                      <FiShoppingBag />
+                    </div>
+                  )}
+                  <div className="ps-item-body">
+                    <span className="ps-item-name">{p.name}</span>
+                    <span className="ps-item-price"><FiTag /> {p.price.toFixed(2)} €</span>
                   </div>
-                )}
-                <div className="ps-item-body">
-                  <span className="ps-item-name">{p.name}</span>
-                  <span className="ps-item-price"><FiTag /> {p.price.toFixed(2)} €</span>
-                </div>
-                <button
-                  type="button"
-                  className="ps-item-delete"
-                  onClick={() => handleDelete(p.id)}
-                  aria-label="Remover produto"
-                >
-                  <FiTrash2 />
-                </button>
-              </li>
+                  <button
+                    type="button"
+                    className="ps-item-edit"
+                    onClick={() => startEdit(p)}
+                    aria-label="Editar produto"
+                  >
+                    <FiEdit2 />
+                  </button>
+                  <button
+                    type="button"
+                    className="ps-item-delete"
+                    onClick={() => handleDelete(p.id)}
+                    aria-label="Remover produto"
+                  >
+                    <FiTrash2 />
+                  </button>
+                </li>
+              )
             ))}
           </ul>
         )}
@@ -221,6 +356,14 @@ export default function ProductsScreen() {
             src={cropSrc}
             onCancel={handleCropCancel}
             onComplete={handleCropComplete}
+          />
+        )}
+
+        {editCropSrc && (
+          <ImageCropper
+            src={editCropSrc}
+            onCancel={handleEditCropCancel}
+            onComplete={handleEditCropComplete}
           />
         )}
       </div>

@@ -266,6 +266,7 @@
   color: var(--text-secondary);
 }
 
+.ps-item-edit,
 .ps-item-delete {
   background: none;
   border: none;
@@ -276,6 +277,60 @@
   padding: 6px;
 }
 
+.ps-item-edit:hover {
+  color: var(--primary);
+}
+
 .ps-item-delete:hover {
   color: var(--danger);
+}
+
+/* ── Inline edit form ────────────────────────────────── */
+
+.ps-item-editing {
+  display: block;
+}
+
+.ps-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.ps-edit-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.ps-edit-cancel,
+.ps-edit-save {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.ps-edit-cancel {
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border-strong);
+  color: var(--text-secondary);
+}
+
+.ps-edit-save {
+  background: var(--primary);
+  border: none;
+  color: white;
+}
+
+.ps-edit-cancel:disabled,
+.ps-edit-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
