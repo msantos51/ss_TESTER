@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL, mediaUrl } from '../config';
 import BackHomeButton from '../components/BackHomeButton';
+import { FiShoppingBag, FiTag } from 'react-icons/fi';
 import './VendorDetailScreen.css';
 
 export default function VendorDetailScreen() {
@@ -10,6 +11,7 @@ export default function VendorDetailScreen() {
   const [vendor, setVendor] = useState(null);
   const [stories, setStories] = useState([]);
   const [storyIndex, setStoryIndex] = useState(null);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -39,6 +41,19 @@ export default function VendorDetailScreen() {
       }
     };
     loadStories();
+  }, [vendor]);
+
+  useEffect(() => {
+    if (!vendor) return;
+    const loadProducts = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/vendors/${vendor.id}/products`);
+        setProducts(res.data);
+      } catch (e) {
+        console.error('Erro ao carregar produtos:', e);
+      }
+    };
+    loadProducts();
   }, [vendor]);
 
 
@@ -116,6 +131,31 @@ export default function VendorDetailScreen() {
           ))}
         </div>
       )}
+
+      <div className="vds-products">
+        <h3 className="vds-products-title"><FiShoppingBag /> Produtos disponíveis</h3>
+        {products.length === 0 ? (
+          <p className="vds-products-empty">Este vendedor ainda não tem produtos publicados.</p>
+        ) : (
+          <ul className="vds-products-list">
+            {products.map((p) => (
+              <li key={p.id} className="vds-product-item">
+                {p.photo ? (
+                  <img src={mediaUrl(p.photo)} alt={p.name} className="vds-product-photo" />
+                ) : (
+                  <div className="vds-product-photo vds-product-photo-placeholder">
+                    <FiShoppingBag />
+                  </div>
+                )}
+                <div className="vds-product-body">
+                  <span className="vds-product-name">{p.name}</span>
+                  <span className="vds-product-price"><FiTag /> {p.price.toFixed(2)} €</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

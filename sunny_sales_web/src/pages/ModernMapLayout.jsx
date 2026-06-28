@@ -11,6 +11,7 @@ import WeatherCard from '../components/WeatherCard';
 import {
   FiMapPin, FiFilter, FiCheck, FiArrowLeft,
   FiDollarSign, FiSmartphone, FiTerminal, FiCreditCard, FiWifi, FiTag,
+  FiShoppingBag,
 } from 'react-icons/fi';
 import './ModernMapLayout.css';
 
@@ -200,6 +201,7 @@ export default function ModernMapLayout() {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [maxDistance, setMaxDistance] = useState(null);
   const [selected, setSelected] = useState(null);
+  const [vendorProducts, setVendorProducts] = useState([]);
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [pendingProducts, setPendingProducts] = useState([]);
@@ -495,6 +497,13 @@ export default function ModernMapLayout() {
     }
   };
 
+  useEffect(() => {
+    if (!selected) { setVendorProducts([]); return; }
+    axios.get(`${BASE_URL}/vendors/${selected.id}/products`)
+      .then(res => setVendorProducts(res.data))
+      .catch(e => console.error('Erro ao carregar produtos do vendedor:', e));
+  }, [selected]);
+
 
   return (
     <div className="modern-layout">
@@ -756,6 +765,29 @@ export default function ModernMapLayout() {
                       </span>
                     ) : null;
                   })}
+                </div>
+              )}
+              {vendorProducts.length > 0 && (
+                <div className="card-products">
+                  <div className="card-products-title">
+                    <FiShoppingBag size={13} />
+                    <span>Produtos disponíveis</span>
+                  </div>
+                  <div className="card-products-list">
+                    {vendorProducts.map((p) => (
+                      <div key={p.id} className="card-product-item">
+                        {p.photo ? (
+                          <img src={mediaUrl(p.photo)} alt={p.name} className="card-product-photo" />
+                        ) : (
+                          <div className="card-product-photo card-product-photo--placeholder">
+                            <FiShoppingBag size={14} />
+                          </div>
+                        )}
+                        <span className="card-product-name">{p.name}</span>
+                        <span className="card-product-price">{p.price.toFixed(2)} €</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
