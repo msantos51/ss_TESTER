@@ -6,6 +6,8 @@ import ImageCropper from '../components/ImageCropper';
 import { FiShoppingBag, FiPlus, FiTrash2, FiTag } from 'react-icons/fi';
 import './ProductsScreen.css';
 
+const MAX_PRODUCTS = 10;
+
 export default function ProductsScreen() {
   const [vendor, setVendor] = useState(null);
   const [products, setProducts] = useState([]);
@@ -113,6 +115,17 @@ export default function ProductsScreen() {
           </div>
         </div>
 
+        <p className="ps-limit-info">
+          Podes adicionar até <strong>{MAX_PRODUCTS} produtos</strong> ({products.length}/{MAX_PRODUCTS})
+        </p>
+
+        {products.length >= MAX_PRODUCTS && (
+          <p className="ps-limit-warning">
+            Atingiste o limite de {MAX_PRODUCTS} produtos. Remove um produto para adicionar outro.
+          </p>
+        )}
+
+        {products.length < MAX_PRODUCTS && (
         <form className="ps-form" onSubmit={handleSubmit}>
           <div className="ps-form-photo-section">
             {photoPreview ? (
@@ -160,6 +173,7 @@ export default function ProductsScreen() {
             <FiPlus /> {saving ? 'A adicionar…' : 'Adicionar produto'}
           </button>
         </form>
+        )}
 
         {loading && (
           <div className="ps-loading">
