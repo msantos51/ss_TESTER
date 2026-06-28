@@ -927,7 +927,7 @@ def list_vendors(
 # --------------------------
 # Detalhe público de um vendedor
 # --------------------------
-@app.get("/vendors/{vendor_id}", response_model=schemas.VendorPublicOut)
+@app.get("/vendors/{vendor_id:int}", response_model=schemas.VendorPublicOut)
 def get_vendor(vendor_id: int, db: Session = Depends(get_db)):
     vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
     if not vendor:
