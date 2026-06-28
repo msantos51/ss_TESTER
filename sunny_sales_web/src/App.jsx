@@ -63,6 +63,7 @@ function AppLayout() {
       setIsLoggedIn(false);
       return;
     }
+    setIsLoggedIn(true);
     axios
       .get(`${BASE_URL}/vendors/me`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -71,12 +72,18 @@ function AppLayout() {
         localStorage.setItem('user', JSON.stringify(res.data));
         setIsLoggedIn(true);
       })
-      .catch(() => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setIsLoggedIn(false);
+      .catch((err) => {
+        // Só termina a sessão se o servidor recusar explicitamente o token
+        // (401/403). Erros de rede, timeouts ou indisponibilidade temporária
+        // do backend (ex.: "cold start") não devem deslogar o vendedor.
+        const status = err.response?.status;
+        if (status === 401 || status === 403) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setIsLoggedIn(false);
+        }
       });
-  }, [location]);
+  }, []);
 
   // Close mobile menu on route change
   useEffect(() => {
