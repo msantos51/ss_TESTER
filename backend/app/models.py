@@ -120,6 +120,21 @@ class PaidWeek(Base):
     vendor = relationship("Vendor")
 
 
+class Product(Base):
+    """Produtos colocados à venda por cada vendedor."""
+
+    __tablename__ = "products"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vendor_id = Column(Integer, ForeignKey("vendors.id"))
+    name = Column(String)
+    price = Column(Float)
+    photo = Column(String, nullable=True)
+    created_at = Column(DateTime, default=utcnow)
+
+    vendor = relationship("Vendor")
+
+
 class Story(Base):
     """Stories efêmeras publicadas pelos vendedores."""
 

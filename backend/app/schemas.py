@@ -119,6 +119,16 @@ class PaidWeekOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ProductOut(BaseModel):
+    id: int
+    name: str
+    price: float
+    photo: Optional[str] = None
+
+    # Configuração para permitir criação a partir de objetos ORM
+    model_config = ConfigDict(from_attributes=True)
+
+
 class StoryOut(BaseModel):
     id: int
     media_url: str

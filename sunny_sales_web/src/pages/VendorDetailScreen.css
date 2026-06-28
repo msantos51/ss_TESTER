@@ -67,3 +67,82 @@
   cursor: pointer;
   border: 2.5px solid var(--primary-light-solid);
 }
+
+/* ── Products ────────────────────────────────────────── */
+
+.vds-products {
+  margin-top: 1.75rem;
+}
+
+.vds-products-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 12px;
+}
+
+.vds-products-empty {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.vds-products-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vds-product-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-xs);
+}
+
+.vds-product-photo {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.vds-product-photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+.vds-product-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vds-product-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.vds-product-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}

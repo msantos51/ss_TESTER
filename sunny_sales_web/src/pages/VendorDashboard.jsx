@@ -7,7 +7,7 @@ import {
   FiCreditCard, FiMail, FiMapPin, FiLogOut,
   FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
   FiNavigation, FiUser, FiLock, FiCheck,
-  FiSend, FiCheckSquare,
+  FiSend, FiCheckSquare, FiShoppingBag,
 } from 'react-icons/fi';
 import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
@@ -499,6 +499,11 @@ export default function VendorDashboard() {
             <span className="vd-quick-icon"><FiSend /></span>
             <span className="vd-quick-label">Trajetos</span>
             <span className="vd-quick-desc">Consultar histórico de rotas</span>
+          </button>
+          <button className="vd-quick-card" onClick={() => navigate('/products')}>
+            <span className="vd-quick-icon"><FiShoppingBag /></span>
+            <span className="vd-quick-label">Produtos</span>
+            <span className="vd-quick-desc">Adicionar e gerir produtos</span>
           </button>
           <button className="vd-quick-card" onClick={paySubscription}>
             <span className="vd-quick-icon"><FiCheckSquare /></span>

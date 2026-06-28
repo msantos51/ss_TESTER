@@ -19,6 +19,7 @@ import PaidWeeksScreen from './pages/PaidWeeksScreen.jsx';
 import VendorRegister from './pages/VendorRegister';
 import RouteDetail from './pages/RouteDetail';
 import RoutesScreen from './pages/RoutesScreen';
+import ProductsScreen from './pages/ProductsScreen';
 import StatsScreen from './pages/StatsScreen';
 import TermsScreen from './pages/TermsScreen';
 import VendorDetailScreen from './pages/VendorDetailScreen';
@@ -204,6 +205,7 @@ function AppLayout() {
           <Route path="/map" element={<ModernMapLayout />} />
           <Route path="/route-detail" element={<RouteDetail />} />
           <Route path="/routes" element={<RoutesScreen />} />
+          <Route path="/products" element={<ProductsScreen />} />
           <Route path="/stats" element={<StatsScreen />} />
           <Route path="/sessions" element={<Sessions />} />
           <Route path="/terms" element={<TermsScreen />} />

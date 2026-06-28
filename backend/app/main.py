@@ -47,16 +47,20 @@ supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) if SUPABASE_UR
 
 PROFILE_PHOTO_BUCKET = "profile-photos"
 STORY_BUCKET = "stories"
+PRODUCT_PHOTO_BUCKET = "product-photos"
 
 PROFILE_PHOTO_DIR = "profile_photos"
 STORY_DIR = "stories"
+PRODUCT_PHOTO_DIR = "product_photos"
 if not supabase:
     os.makedirs(PROFILE_PHOTO_DIR, exist_ok=True)
     os.makedirs(STORY_DIR, exist_ok=True)
+    os.makedirs(PRODUCT_PHOTO_DIR, exist_ok=True)
 
 BUCKET_MAP = {
     PROFILE_PHOTO_DIR: PROFILE_PHOTO_BUCKET,
     STORY_DIR: STORY_BUCKET,
+    PRODUCT_PHOTO_DIR: PRODUCT_PHOTO_BUCKET,
 }
 
 
@@ -234,6 +238,7 @@ async def get_tides():
 if not supabase:
     app.mount("/profile_photos", StaticFiles(directory=PROFILE_PHOTO_DIR), name="profile_photos")
     app.mount("/stories", StaticFiles(directory=STORY_DIR), name="stories")
+    app.mount("/product_photos", StaticFiles(directory=PRODUCT_PHOTO_DIR), name="product_photos")
 
 # Servir a aplicação web compilada, se existir
 WEB_DIST = Path(__file__).resolve().parents[2] / "sunny_sales_web" / "dist"
@@ -917,6 +922,17 @@ def list_vendors(
             v.current_lng = None
 
     return vendors
+
+
+# --------------------------
+# Detalhe público de um vendedor
+# --------------------------
+@app.get("/vendors/{vendor_id}", response_model=schemas.VendorPublicOut)
+def get_vendor(vendor_id: int, db: Session = Depends(get_db)):
+    vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendedor não encontrado")
+    return vendor
 
 
 # --------------------------
@@ -1662,6 +1678,74 @@ def list_stories(vendor_id: int, db: Session = Depends(get_db)):
         }
         for s in stories
     ]
+
+
+# --------------------------
+# Produtos do vendedor
+# --------------------------
+@app.post("/vendors/{vendor_id}/products", response_model=schemas.ProductOut)
+async def create_product(
+    vendor_id: int,
+    name: str = Form(...),
+    price: float = Form(...),
+    photo: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    current_vendor: models.Vendor = Depends(get_current_vendor),
+):
+    if current_vendor.id != vendor_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    photo_path = None
+    if photo:
+        validate_upload(photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto do produto")
+        photo_path = _upload_file(photo, PRODUCT_PHOTO_DIR)
+
+    product = models.Product(
+        vendor_id=vendor_id,
+        name=name,
+        price=price,
+        photo=photo_path,
+    )
+    db.add(product)
+    db.commit()
+    db.refresh(product)
+    return product
+
+
+@app.get("/vendors/{vendor_id}/products", response_model=list[schemas.ProductOut])
+def list_products(vendor_id: int, db: Session = Depends(get_db)):
+    return (
+        db.query(models.Product)
+        .filter(models.Product.vendor_id == vendor_id)
+        .order_by(models.Product.created_at.desc())
+        .all()
+    )
+
+
+@app.delete("/vendors/{vendor_id}/products/{product_id}")
+def delete_product(
+    vendor_id: int,
+    product_id: int,
+    db: Session = Depends(get_db),
+    current_vendor: models.Vendor = Depends(get_current_vendor),
+):
+    if current_vendor.id != vendor_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    product = (
+        db.query(models.Product)
+        .filter(models.Product.id == product_id, models.Product.vendor_id == vendor_id)
+        .first()
+    )
+    if not product:
+        raise HTTPException(status_code=404, detail="Produto não encontrado")
+
+    if product.photo:
+        _delete_file(product.photo)
+    db.delete(product)
+    db.commit()
+    return {"ok": True}
+
 
 # --------------------------
 # Webhook do Stripe
