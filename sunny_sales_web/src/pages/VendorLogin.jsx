@@ -1,9 +1,10 @@
 // (em português) Página Web para login de vendedores
 import './VendorLogin.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../config';
+import { SESSION_ENDED_MESSAGE_KEY } from '../sessionAuth';
 import LoadingDots from '../components/LoadingDots';
 
 // Componente de login dedicado aos vendedores
@@ -13,6 +14,16 @@ export default function VendorLogin() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Mostra, uma única vez, o aviso deixado pelo interceptor de sessão
+  // (ex: sessão terminada por login noutro dispositivo ou token expirado).
+  useEffect(() => {
+    const sessionMessage = sessionStorage.getItem(SESSION_ENDED_MESSAGE_KEY);
+    if (sessionMessage) {
+      setError(sessionMessage);
+      sessionStorage.removeItem(SESSION_ENDED_MESSAGE_KEY);
+    }
+  }, []);
 
   // (em português) Decodifica o token JWT para extrair o ID do vendedor
   const getVendorIdFromToken = (token) => {
