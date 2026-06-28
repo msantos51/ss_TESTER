@@ -1731,6 +1731,41 @@ def list_products(vendor_id: int, db: Session = Depends(get_db)):
     )
 
 
+@app.put("/vendors/{vendor_id}/products/{product_id}", response_model=schemas.ProductOut)
+async def update_product(
+    vendor_id: int,
+    product_id: int,
+    name: str = Form(...),
+    price: float = Form(...),
+    photo: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    current_vendor: models.Vendor = Depends(get_current_vendor),
+):
+    if current_vendor.id != vendor_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    product = (
+        db.query(models.Product)
+        .filter(models.Product.id == product_id, models.Product.vendor_id == vendor_id)
+        .first()
+    )
+    if not product:
+        raise HTTPException(status_code=404, detail="Produto não encontrado")
+
+    if photo:
+        validate_upload(photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto do produto")
+        new_photo_path = _upload_file(photo, PRODUCT_PHOTO_DIR)
+        if product.photo:
+            _delete_file(product.photo)
+        product.photo = new_photo_path
+
+    product.name = name
+    product.price = price
+    db.commit()
+    db.refresh(product)
+    return product
+
+
 @app.delete("/vendors/{vendor_id}/products/{product_id}")
 def delete_product(
     vendor_id: int,

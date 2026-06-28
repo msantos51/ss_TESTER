@@ -780,7 +780,7 @@ export default function ModernMapLayout() {
                           <img src={mediaUrl(p.photo)} alt={p.name} className="card-product-photo" />
                         ) : (
                           <div className="card-product-photo card-product-photo--placeholder">
-                            <FiShoppingBag size={14} />
+                            <FiShoppingBag size={20} />
                           </div>
                         )}
                         <span className="card-product-name">{p.name}</span>

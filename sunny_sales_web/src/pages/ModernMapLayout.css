@@ -592,21 +592,21 @@ body {
 .card-products-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-height: 150px;
+  gap: 8px;
+  max-height: 220px;
   overflow-y: auto;
 }
 
 .card-product-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .card-product-photo {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
   object-fit: cover;
   flex-shrink: 0;
 }
