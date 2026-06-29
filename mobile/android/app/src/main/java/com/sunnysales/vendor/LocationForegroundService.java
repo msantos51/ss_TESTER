@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -37,6 +38,8 @@ public class LocationForegroundService extends Service {
     private LocationCallback locationCallback;
     private PowerManager.WakeLock wakeLock;
     private Location lastAcceptedLocation;
+    private Handler handler;
+    private static final long WAKELOCK_RENEW_INTERVAL = 55 * 60 * 1000L;
 
     public interface LocationListener {
         void onLocationUpdate(double lat, double lng);
@@ -53,6 +56,7 @@ public class LocationForegroundService extends Service {
         super.onCreate();
         createNotificationChannel();
         fusedClient = LocationServices.getFusedLocationProviderClient(this);
+        handler = new Handler(Looper.getMainLooper());
     }
 
     @Override
@@ -71,6 +75,7 @@ public class LocationForegroundService extends Service {
         }
 
         acquireWakeLock();
+        scheduleWakeLockRenewal();
         startLocationUpdates();
         return START_STICKY;
     }
@@ -84,13 +89,26 @@ public class LocationForegroundService extends Service {
                 PowerManager.PARTIAL_WAKE_LOCK,
                 "SunnySales:LocationWakeLock"
         );
-        wakeLock.acquire(10 * 60 * 60 * 1000L);
+        wakeLock.acquire(1 * 60 * 60 * 1000L);
+    }
+
+    private void scheduleWakeLockRenewal() {
+        handler.postDelayed(this::renewWakeLock, WAKELOCK_RENEW_INTERVAL);
+    }
+
+    private void renewWakeLock() {
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+        }
+        acquireWakeLock();
+        scheduleWakeLockRenewal();
     }
 
     private void startLocationUpdates() {
-        LocationRequest request = new LocationRequest.Builder(1000)
+        LocationRequest request = new LocationRequest.Builder(5000)
                 .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-                .setMinUpdateIntervalMillis(1000)
+                .setMinUpdateIntervalMillis(2000)
+                .setMaxUpdateDelayMillis(30000)
                 .setMinUpdateDistanceMeters(MIN_UPDATE_DISTANCE_METERS)
                 .build();
 
@@ -159,6 +177,9 @@ public class LocationForegroundService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
         if (fusedClient != null && locationCallback != null) {
             fusedClient.removeLocationUpdates(locationCallback);
         }

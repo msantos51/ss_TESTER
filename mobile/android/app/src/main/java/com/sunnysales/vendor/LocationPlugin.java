@@ -9,11 +9,34 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-@CapacitorPlugin(name = "LocationTracker")
+@CapacitorPlugin(name = "LocationTracker", permissions = {
+        android.Manifest.permission.ACCESS_FINE_LOCATION,
+        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+        android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+})
 public class LocationPlugin extends Plugin {
 
     @PluginMethod
     public void startTracking(PluginCall call) {
+        requestPermissions(call);
+    }
+
+    @Override
+    protected void handleRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.handleRequestPermissionsResult(requestCode, permissions, grantResults);
+        PluginCall savedCall = getSavedCall();
+        if (savedCall == null) {
+            return;
+        }
+
+        if (getPermissionState("ACCESS_FINE_LOCATION") == PermissionState.GRANTED) {
+            startLocationTracking(savedCall);
+        } else {
+            savedCall.reject("Permissão de localização negada");
+        }
+    }
+
+    private void startLocationTracking(PluginCall call) {
         LocationForegroundService.setLocationListener((lat, lng) -> {
             JSObject data = new JSObject();
             data.put("lat", lat);
