@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import {
   FiUser, FiMapPin, FiDollarSign, FiSmartphone, FiTerminal,
   FiCreditCard, FiWifi, FiSend, FiCheckSquare, FiCalendar,
-  FiFileText, FiMail, FiLogOut, FiMap
+  FiFileText, FiMail, FiLogOut, FiMap, FiShoppingBag, FiExternalLink
 } from 'react-icons/fi';
-import { BASE_URL, mediaUrl } from '../config.js';
+import { BASE_URL, WEB_URL, mediaUrl } from '../config.js';
 import ProfileScreen from './ProfileScreen.jsx';
 import PlansScreen from './PlansScreen.jsx';
 import MapTab from './MapTab.jsx';
@@ -45,6 +45,10 @@ export default function DashboardScreen({ auth, onLogout, onUserUpdate }) {
       });
     } catch {}
     onLogout();
+  };
+
+  const openWebsite = (path) => {
+    window.open(`${WEB_URL}/#${path}`, '_system');
   };
 
   if (activeTab === 'map') {
@@ -170,10 +174,35 @@ export default function DashboardScreen({ auth, onLogout, onUserUpdate }) {
           <span className="dashboard-quick-label">Perfil</span>
           <span className="dashboard-quick-desc">Ver e editar informações</span>
         </button>
+        <button className="dashboard-quick-card" onClick={() => openWebsite('/routes')}>
+          <span className="dashboard-quick-icon"><FiSend /></span>
+          <span className="dashboard-quick-label">Trajetos</span>
+          <span className="dashboard-quick-desc">Consultar histórico de rotas</span>
+        </button>
+        <button className="dashboard-quick-card" onClick={() => openWebsite('/products')}>
+          <span className="dashboard-quick-icon"><FiShoppingBag /></span>
+          <span className="dashboard-quick-label">Produtos</span>
+          <span className="dashboard-quick-desc">Adicionar e gerir produtos</span>
+        </button>
         <button className="dashboard-quick-card" onClick={() => setShowPlans(true)}>
           <span className="dashboard-quick-icon"><FiCheckSquare /></span>
-          <span className="dashboard-quick-label">Subscrição</span>
-          <span className="dashboard-quick-desc">Ativar ou renovar plano</span>
+          <span className="dashboard-quick-label">Ativar Subscrição</span>
+          <span className="dashboard-quick-desc">Ativar ou renovar o plano</span>
+        </button>
+        <button className="dashboard-quick-card" onClick={() => openWebsite('/paid-weeks')}>
+          <span className="dashboard-quick-icon"><FiCalendar /></span>
+          <span className="dashboard-quick-label">Subscrições</span>
+          <span className="dashboard-quick-desc">Gerir planos e semanas pagas</span>
+        </button>
+        <button className="dashboard-quick-card" onClick={() => openWebsite('/invoices')}>
+          <span className="dashboard-quick-icon"><FiFileText /></span>
+          <span className="dashboard-quick-label">Faturas</span>
+          <span className="dashboard-quick-desc">Consultar faturas e recibos</span>
+        </button>
+        <button className="dashboard-quick-card" onClick={() => openWebsite('/contacto')}>
+          <span className="dashboard-quick-icon"><FiMail /></span>
+          <span className="dashboard-quick-label">Contactar Suporte</span>
+          <span className="dashboard-quick-desc">Enviar mensagem à equipa</span>
         </button>
       </div>
 
