@@ -161,6 +161,35 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
             <div className="profile-input-group">
               <PinColorPicker value={pinColor} onChange={setPinColor} />
             </div>
+            <div className="profile-input-group">
+              <label className="profile-label">Produto</label>
+              <select
+                className="profile-input"
+                value={product}
+                onChange={(e) => setProduct(e.target.value)}
+              >
+                <option value="">Seleciona um produto</option>
+                <option value="Bolas de Berlim">Bolas de Berlim</option>
+                <option value="Gelados">Gelados</option>
+                <option value="Acessórios de Praia">Acessórios de Praia</option>
+              </select>
+            </div>
+            <div className="profile-input-group">
+              <label className="profile-label">Métodos de pagamento aceites</label>
+              <div className="profile-payment-grid">
+                {Object.keys(PAYMENT_ICONS).map((method) => (
+                  <button
+                    type="button"
+                    key={method}
+                    className={`profile-payment-chip${paymentMethods.includes(method) ? ' active' : ''}`}
+                    onClick={() => togglePaymentMethod(method)}
+                  >
+                    <span className="profile-payment-chip-icon">{PAYMENT_ICONS[method]}</span>
+                    {method}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Dados Pessoais */}
@@ -221,43 +250,6 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
-            </div>
-          </div>
-
-          {/* Produto e Pagamentos */}
-          <div className="profile-section-card">
-            <div className="profile-section-header">
-              <FiShoppingBag className="profile-section-icon" />
-              <span className="profile-section-title">Produto e Pagamentos</span>
-            </div>
-            <div className="profile-input-group">
-              <label className="profile-label">Produto</label>
-              <select
-                className="profile-input"
-                value={product}
-                onChange={(e) => setProduct(e.target.value)}
-              >
-                <option value="">Seleciona um produto</option>
-                <option value="Bolas de Berlim">Bolas de Berlim</option>
-                <option value="Gelados">Gelados</option>
-                <option value="Acessórios de Praia">Acessórios de Praia</option>
-              </select>
-            </div>
-            <div className="profile-input-group">
-              <label className="profile-label">Métodos de pagamento aceites</label>
-              <div className="profile-payment-grid">
-                {Object.keys(PAYMENT_ICONS).map((method) => (
-                  <button
-                    type="button"
-                    key={method}
-                    className={`profile-payment-chip${paymentMethods.includes(method) ? ' active' : ''}`}
-                    onClick={() => togglePaymentMethod(method)}
-                  >
-                    <span className="profile-payment-chip-icon">{PAYMENT_ICONS[method]}</span>
-                    {method}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
 
