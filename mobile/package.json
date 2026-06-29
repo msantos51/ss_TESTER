@@ -24,7 +24,10 @@
   "devDependencies": {
     "@capacitor/cli": "^7.0.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "typescript": "^6.0.3",
-    "vite": "^6.0.0"
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0"
+  },
+  "engines": {
+    "node": "18 || 20 || 21 || >=22"
   }
 }
