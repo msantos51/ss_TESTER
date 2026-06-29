@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import { registerPlugin } from '@capacitor/core';
+import { App as CapacitorApp } from '@capacitor/app';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { BASE_URL, WEB_URL } from '../config.js';
@@ -209,6 +210,42 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
       if (listenerRef.current) listenerRef.current.remove();
     };
   }, []);
+
+  useEffect(() => {
+    let resumeListener: any;
+    let pauseListener: any;
+
+    const setupAppStateListeners = async () => {
+      resumeListener = CapacitorApp.addListener('resume', async () => {
+        if (sharing && !listenerRef.current) {
+          try {
+            listenerRef.current = await LocationTracker.addListener('locationUpdate', async ({ lat, lng }) => {
+              try {
+                await sendLocation(lat, lng);
+              } catch (err) {
+                console.error('Erro ao enviar localização:', err);
+                setError(err.message);
+              }
+            });
+            await LocationTracker.startTracking();
+          } catch (err) {
+            console.error('Erro ao retomar tracking:', err);
+          }
+        }
+      });
+
+      pauseListener = CapacitorApp.addListener('pause', () => {
+        console.log('App minimizada - tracking continua em background');
+      });
+    };
+
+    setupAppStateListeners();
+
+    return () => {
+      resumeListener?.remove();
+      pauseListener?.remove();
+    };
+  }, [sharing]);
 
   const vendorName = user?.name || 'Vendedor';
 

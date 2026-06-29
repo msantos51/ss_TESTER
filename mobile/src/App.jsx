@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Geolocation } from '@capacitor/geolocation';
 import Login from './pages/Login.jsx';
 import MapTab from './pages/MapTab.jsx';
 import DashboardScreen from './pages/DashboardScreen.jsx';
@@ -13,14 +14,27 @@ export default function App() {
     const vendorId = localStorage.getItem('vendorId');
     if (token && user && vendorId) {
       setAuth({ token, user: JSON.parse(user), vendorId });
+      requestLocationPermissions();
     }
   }, []);
+
+  const requestLocationPermissions = async () => {
+    try {
+      const result = await Geolocation.requestPermissions();
+      if (result.location === 'granted') {
+        localStorage.setItem('locationPermissionGranted', 'true');
+      }
+    } catch (error) {
+      console.error('Erro ao solicitar permissões de localização:', error);
+    }
+  };
 
   const handleLogin = ({ token, user, vendorId }) => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('vendorId', vendorId.toString());
     setAuth({ token, user, vendorId });
+    requestLocationPermissions();
   };
 
   const handleLogout = () => {
