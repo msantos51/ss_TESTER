@@ -35,7 +35,7 @@ function FollowPosition({ position }) {
   return null;
 }
 
-export default function MapTab({ auth, onChangeTab, onLogout, onUserUpdate }) {
+export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate }) {
   const { token, user, vendorId } = auth;
   const [sharing, setSharing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -227,7 +227,7 @@ export default function MapTab({ auth, onChangeTab, onLogout, onUserUpdate }) {
 
       {/* Top bar */}
       <div className="main-top-bar">
-        <button className="vendor-info vendor-info-btn" onClick={() => onChangeTab('dashboard')} title="Voltar ao dashboard">
+        <button className="vendor-info vendor-info-btn" onClick={() => onChangePage('dashboard')} title="Ir para dashboard">
           <div className="vendor-avatar" style={{ borderColor: user?.pin_color }}>
             {vendorName.charAt(0).toUpperCase()}
           </div>
