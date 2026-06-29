@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Login from './pages/Login.jsx';
-import MainScreen from './pages/MainScreen.jsx';
+import DashboardScreen from './pages/DashboardScreen.jsx';
 
 export default function App() {
   const [auth, setAuth] = useState(null);
@@ -36,7 +36,7 @@ export default function App() {
   if (!auth) return <Login onLogin={handleLogin} />;
 
   return (
-    <MainScreen
+    <DashboardScreen
       auth={auth}
       onLogout={handleLogout}
       onUserUpdate={handleUserUpdate}
