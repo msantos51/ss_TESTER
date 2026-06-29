@@ -38,6 +38,16 @@ const PAYMENT_ICONS = {
 let watchId = null;
 let lastSentLocation = null;
 
+async function checkLocationPermission() {
+  if (!navigator.permissions?.query) return null;
+  try {
+    const result = await navigator.permissions.query({ name: 'geolocation' });
+    return result.state;
+  } catch {
+    return null;
+  }
+}
+
 function getGreeting() {
   const h = new Date().getHours();
   if (h < 12) return 'Bom dia';
@@ -49,6 +59,7 @@ export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [pinColor, setPinColor] = useState('#7B61FF');
+  const [locationPermission, setLocationPermission] = useState(null);
   const navigate = useNavigate();
 
   // Profile modal state
@@ -85,6 +96,20 @@ export default function VendorDashboard() {
     navigate('/vendor-login');
   };
 
+  const requestLocationPermission = () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        setLocationPermission('granted');
+        localStorage.setItem('locationPermissionAsked', 'true');
+      },
+      () => {
+        setLocationPermission('denied');
+        localStorage.setItem('locationPermissionAsked', 'true');
+      }
+    );
+  };
+
   const startSharing = useCallback(async () => {
     if (!vendor) return;
     const expires = vendor.subscription_valid_until
@@ -94,6 +119,17 @@ export default function VendorDashboard() {
       alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
       return;
     }
+
+    if (locationPermission === 'denied') {
+      alert('Permissão de localização negada. Ativa nas definições do browser.');
+      return;
+    }
+
+    if (locationPermission === 'prompt') {
+      requestLocationPermission();
+      return;
+    }
+
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
@@ -104,8 +140,6 @@ export default function VendorDashboard() {
       watchId = navigator.geolocation.watchPosition(
         async (pos) => {
           const { latitude: lat, longitude: lng, accuracy } = pos.coords;
-          // Descarta leituras pouco precisas ou demasiado próximas da última
-          // posição enviada (ruído de GPS), para o pin não "tremer" parado.
           if (accuracy != null && accuracy > 20) return;
           if (
             lastSentLocation &&
@@ -136,7 +170,7 @@ export default function VendorDashboard() {
         console.error('Erro ao ativar localização:', err);
       }
     }
-  }, [vendor]);
+  }, [vendor, locationPermission]);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -147,10 +181,30 @@ export default function VendorDashboard() {
     }
     const share = localStorage.getItem('sharingLocation') === 'true';
     setSharing(share);
+
+    const checkPermission = async () => {
+      const permStatus = await checkLocationPermission();
+      setLocationPermission(permStatus);
+      if (permStatus === 'prompt') {
+        requestLocationPermission();
+      }
+    };
+    checkPermission();
   }, []);
 
   useEffect(() => {
     if (sharing && vendor && watchId === null) startSharing();
+  }, [sharing, vendor, startSharing]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && sharing && watchId === null && vendor) {
+        startSharing();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [sharing, vendor, startSharing]);
 
   const stopSharing = async () => {
@@ -453,6 +507,16 @@ export default function VendorDashboard() {
           </div>
         )}
 
+        {/* Permission denied notice */}
+        {locationPermission === 'denied' && (
+          <div className="vd-cta-card" style={{ backgroundColor: '#fff3cd', borderColor: '#ffc107' }}>
+            <div className="vd-cta-text">
+              <span className="vd-cta-title">Permissão de Localização Negada</span>
+              <span className="vd-cta-desc">Ativa nas definições do browser para partilhar localização</span>
+            </div>
+          </div>
+        )}
+
         {/* Subscription CTA if inactive */}
         {vendor && !subscriptionActive && (
           <div className="vd-cta-card">
@@ -486,6 +550,13 @@ export default function VendorDashboard() {
             />
             <span className="slider" />
           </label>
+        </div>
+
+        {/* Web app limitation notice */}
+        <div className="vd-info-card" style={{ backgroundColor: '#f0f4ff', borderLeft: '4px solid #4BA3C3' }}>
+          <span style={{ fontSize: '13px', color: '#555', lineHeight: '1.5' }}>
+            💡 <strong>Dica:</strong> A app web partilha localização enquanto a aba estiver ativa. Para melhor experiência e partilha contínua em background, usa a <strong>app mobile</strong>.
+          </span>
         </div>
 
         {/* Quick actions grid */}
