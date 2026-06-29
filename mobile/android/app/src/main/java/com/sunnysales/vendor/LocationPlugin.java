@@ -4,15 +4,17 @@ import android.content.Intent;
 import android.os.Build;
 
 import com.getcapacitor.JSObject;
+import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.annotation.Permission;
 
 @CapacitorPlugin(name = "LocationTracker", permissions = {
-        android.Manifest.permission.ACCESS_FINE_LOCATION,
-        android.Manifest.permission.ACCESS_COARSE_LOCATION,
-        android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        @Permission(alias = "ACCESS_FINE_LOCATION", strings = { android.Manifest.permission.ACCESS_FINE_LOCATION }),
+        @Permission(alias = "ACCESS_COARSE_LOCATION", strings = { android.Manifest.permission.ACCESS_COARSE_LOCATION }),
+        @Permission(alias = "ACCESS_BACKGROUND_LOCATION", strings = { android.Manifest.permission.ACCESS_BACKGROUND_LOCATION })
 })
 public class LocationPlugin extends Plugin {
 
