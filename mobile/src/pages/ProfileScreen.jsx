@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { FiUser, FiLock, FiCamera, FiCheck, FiChevronDown, FiChevronUp, FiDroplet } from 'react-icons/fi';
+import { FiUser, FiLock, FiCamera, FiCheck, FiChevronDown, FiChevronUp, FiDroplet, FiShoppingBag, FiCreditCard } from 'react-icons/fi';
 import { BASE_URL, mediaUrl } from '../config.js';
 import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
@@ -10,6 +10,8 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
   const [email, setEmail] = useState(user?.email || '');
   const [nif, setNif] = useState(user?.nif || '');
   const [phone, setPhone] = useState(user?.phone || '');
+  const [product, setProduct] = useState(user?.product || '');
+  const [paymentMethods, setPaymentMethods] = useState(user?.payment_methods ? user.payment_methods.split(',').filter(Boolean) : []);
   const [pinColor, setPinColor] = useState(user?.pin_color || '#7B61FF');
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
@@ -21,6 +23,20 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const fileInputRef = useRef(null);
+
+  const PAYMENT_ICONS = {
+    'Numerário': <FiCreditCard />,
+    'MB Way': <FiCreditCard />,
+    'Multibanco': <FiCreditCard />,
+    'Cartão': <FiCreditCard />,
+    'NFC': <FiCreditCard />,
+  };
+
+  const togglePaymentMethod = (method) => {
+    setPaymentMethods((prev) =>
+      prev.includes(method) ? prev.filter((m) => m !== method) : [...prev, method]
+    );
+  };
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -52,6 +68,9 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
       if (emailChanged) data.append('email', email);
       if (nif !== (user.nif || '')) data.append('nif', nif);
       if (phone !== (user.phone || '')) data.append('phone', phone);
+      if (product !== (user.product || '')) data.append('product', product);
+      const newPaymentMethods = paymentMethods.join(',');
+      if (newPaymentMethods !== (user.payment_methods || '')) data.append('payment_methods', newPaymentMethods);
       if (newPassword) {
         data.append('new_password', newPassword);
         data.append('old_password', oldPassword);
@@ -202,6 +221,43 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
+            </div>
+          </div>
+
+          {/* Produto e Pagamentos */}
+          <div className="profile-section-card">
+            <div className="profile-section-header">
+              <FiShoppingBag className="profile-section-icon" />
+              <span className="profile-section-title">Produto e Pagamentos</span>
+            </div>
+            <div className="profile-input-group">
+              <label className="profile-label">Produto</label>
+              <select
+                className="profile-input"
+                value={product}
+                onChange={(e) => setProduct(e.target.value)}
+              >
+                <option value="">Seleciona um produto</option>
+                <option value="Bolas de Berlim">Bolas de Berlim</option>
+                <option value="Gelados">Gelados</option>
+                <option value="Acessórios de Praia">Acessórios de Praia</option>
+              </select>
+            </div>
+            <div className="profile-input-group">
+              <label className="profile-label">Métodos de pagamento aceites</label>
+              <div className="profile-payment-grid">
+                {Object.keys(PAYMENT_ICONS).map((method) => (
+                  <button
+                    type="button"
+                    key={method}
+                    className={`profile-payment-chip${paymentMethods.includes(method) ? ' active' : ''}`}
+                    onClick={() => togglePaymentMethod(method)}
+                  >
+                    <span className="profile-payment-chip-icon">{PAYMENT_ICONS[method]}</span>
+                    {method}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
