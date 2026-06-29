@@ -93,6 +93,17 @@
   transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
   min-height: auto;
   box-shadow: var(--shadow-xs);
+  position: relative;
+}
+
+.pcp-color-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0);
+  pointer-events: none;
+  transition: background var(--transition);
 }
 
 .pcp-color-btn:hover {
@@ -100,10 +111,18 @@
   box-shadow: var(--shadow-sm);
 }
 
+.pcp-color-btn:hover::after {
+  background: rgba(255, 255, 255, 0.15);
+}
+
 .pcp-color-btn.active {
   border-color: var(--text);
   box-shadow: var(--shadow-md);
   transform: scale(1.08);
+}
+
+.pcp-color-btn.active::after {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 @media (max-width: 480px) {

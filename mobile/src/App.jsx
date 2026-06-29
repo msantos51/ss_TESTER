@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Login from './pages/Login.jsx';
+import MapTab from './pages/MapTab.jsx';
 import DashboardScreen from './pages/DashboardScreen.jsx';
 
 export default function App() {
   const [auth, setAuth] = useState(null);
+  const [activePage, setActivePage] = useState('map');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -35,9 +37,17 @@ export default function App() {
 
   if (!auth) return <Login onLogin={handleLogin} />;
 
-  return (
+  return activePage === 'map' ? (
+    <MapTab
+      auth={auth}
+      onChangePage={setActivePage}
+      onLogout={handleLogout}
+      onUserUpdate={handleUserUpdate}
+    />
+  ) : (
     <DashboardScreen
       auth={auth}
+      onChangePage={setActivePage}
       onLogout={handleLogout}
       onUserUpdate={handleUserUpdate}
     />

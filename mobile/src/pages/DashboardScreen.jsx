@@ -7,7 +7,9 @@ import {
 import { BASE_URL, WEB_URL, mediaUrl } from '../config.js';
 import ProfileScreen from './ProfileScreen.jsx';
 import PlansScreen from './PlansScreen.jsx';
-import MapTab from './MapTab.jsx';
+import RoutesScreen from './RoutesScreen.jsx';
+import ProductsScreen from './ProductsScreen.jsx';
+import InvoicesScreen from './InvoicesScreen.jsx';
 
 const PAYMENT_ICONS = {
   'Numerário': <FiDollarSign />,
@@ -24,11 +26,14 @@ function getGreeting() {
   return 'Boa noite';
 }
 
-export default function DashboardScreen({ auth, onLogout, onUserUpdate }) {
+export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUpdate }) {
   const { user } = auth;
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showProfile, setShowProfile] = useState(false);
   const [showPlans, setShowPlans] = useState(false);
+  const [showRoutes, setShowRoutes] = useState(false);
+  const [showProducts, setShowProducts] = useState(false);
+  const [showInvoices, setShowInvoices] = useState(false);
 
   const subscriptionActive = user?.subscription_active;
   const subscriptionDate = user?.subscription_valid_until
@@ -50,17 +55,6 @@ export default function DashboardScreen({ auth, onLogout, onUserUpdate }) {
   const openWebsite = (path) => {
     window.open(`${WEB_URL}/#${path}`, '_system');
   };
-
-  if (activeTab === 'map') {
-    return (
-      <MapTab
-        auth={auth}
-        onChangeTab={setActiveTab}
-        onLogout={onLogout}
-        onUserUpdate={onUserUpdate}
-      />
-    );
-  }
 
   return (
     <div className="dashboard-screen">
@@ -164,22 +158,17 @@ export default function DashboardScreen({ auth, onLogout, onUserUpdate }) {
 
       {/* Quick actions grid */}
       <div className="dashboard-quick-grid">
-        <button className="dashboard-quick-card" onClick={() => setActiveTab('map')}>
-          <span className="dashboard-quick-icon"><FiMap /></span>
-          <span className="dashboard-quick-label">Mapa</span>
-          <span className="dashboard-quick-desc">Ver localização no mapa</span>
-        </button>
         <button className="dashboard-quick-card" onClick={() => setShowProfile(true)}>
           <span className="dashboard-quick-icon"><FiUser /></span>
           <span className="dashboard-quick-label">Perfil</span>
           <span className="dashboard-quick-desc">Ver e editar informações</span>
         </button>
-        <button className="dashboard-quick-card" onClick={() => openWebsite('/routes')}>
+        <button className="dashboard-quick-card" onClick={() => setShowRoutes(true)}>
           <span className="dashboard-quick-icon"><FiSend /></span>
           <span className="dashboard-quick-label">Trajetos</span>
           <span className="dashboard-quick-desc">Consultar histórico de rotas</span>
         </button>
-        <button className="dashboard-quick-card" onClick={() => openWebsite('/products')}>
+        <button className="dashboard-quick-card" onClick={() => setShowProducts(true)}>
           <span className="dashboard-quick-icon"><FiShoppingBag /></span>
           <span className="dashboard-quick-label">Produtos</span>
           <span className="dashboard-quick-desc">Adicionar e gerir produtos</span>
@@ -194,7 +183,7 @@ export default function DashboardScreen({ auth, onLogout, onUserUpdate }) {
           <span className="dashboard-quick-label">Subscrições</span>
           <span className="dashboard-quick-desc">Gerir planos e semanas pagas</span>
         </button>
-        <button className="dashboard-quick-card" onClick={() => openWebsite('/invoices')}>
+        <button className="dashboard-quick-card" onClick={() => setShowInvoices(true)}>
           <span className="dashboard-quick-icon"><FiFileText /></span>
           <span className="dashboard-quick-label">Faturas</span>
           <span className="dashboard-quick-desc">Consultar faturas e recibos</span>
@@ -217,6 +206,18 @@ export default function DashboardScreen({ auth, onLogout, onUserUpdate }) {
 
       {showPlans && (
         <PlansScreen auth={auth} onClose={() => setShowPlans(false)} />
+      )}
+
+      {showRoutes && (
+        <RoutesScreen auth={auth} onClose={() => setShowRoutes(false)} />
+      )}
+
+      {showProducts && (
+        <ProductsScreen auth={auth} onClose={() => setShowProducts(false)} />
+      )}
+
+      {showInvoices && (
+        <InvoicesScreen auth={auth} onClose={() => setShowInvoices(false)} />
       )}
     </div>
   );
