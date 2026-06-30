@@ -116,7 +116,7 @@ function AppLayout() {
     <div className="wrapper">
       <nav className="navbar">
         <Link className="nav-logo" to="/">
-          <img src="/logo.png" alt="Sunny Sales" className="nav-logo-img" />
+          <img src="/logosite.png" alt="Sunny Sales" className="nav-logo-img" />
           Sunny Sales
         </Link>
 
