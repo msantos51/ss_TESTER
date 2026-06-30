@@ -576,7 +576,7 @@ export default function VendorDashboard() {
             <span className="vd-quick-label">Produtos</span>
             <span className="vd-quick-desc">Adicionar e gerir produtos</span>
           </button>
-          <button className="vd-quick-card" onClick={() => paySubscription()}>
+          <button className="vd-quick-card" onClick={() => navigate('/planos')}>
             <span className="vd-quick-icon"><FiCheckSquare /></span>
             <span className="vd-quick-label">Ativar Subscrição</span>
             <span className="vd-quick-desc">Ativar ou renovar o plano</span>
