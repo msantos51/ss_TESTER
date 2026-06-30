@@ -196,7 +196,7 @@ def test_session_management(client):
 def test_login_requires_confirmation(client):
     register_vendor(client, email="new@example.com")
     resp = client.post("/login", json={"email": "new@example.com", "password": "Secret123"})
-    assert resp.status_code == 400
+    assert resp.status_code == 403
     assert "Email not confirmed" in resp.json()["detail"]
 
     confirm_latest_email(client)
@@ -443,7 +443,7 @@ def test_websocket_location_broadcast(client):
         f"/vendors/{vendor_id}/routes/start",
         headers={"Authorization": f"Bearer {token}"},
     )
-    with client.websocket_connect("/ws/locations") as websocket:
+    with client.websocket_connect(f"/ws/locations?token={token}") as websocket:
         resp = client.put(
             f"/vendors/{vendor_id}/location",
             json={"lat": 5.5, "lng": -7.1},
@@ -539,7 +539,9 @@ def test_paid_weeks_listing(client):
             }
         },
     }
-    resp = client.post("/stripe/webhook", json=event)
+    resp = client.post(
+        "/stripe/webhook", json=event, headers={"stripe-signature": "test-sig"}
+    )
     assert resp.status_code == 200
 
     token = get_token(client)
@@ -579,7 +581,9 @@ def test_stripe_webhook_applies_plan_duration(client):
             },
         }
         before_payment = main.utcnow()
-        resp = client.post("/stripe/webhook", json=event)
+        resp = client.post(
+            "/stripe/webhook", json=event, headers={"stripe-signature": "test-sig"}
+        )
         after_payment = main.utcnow()
         assert resp.status_code == 200
 

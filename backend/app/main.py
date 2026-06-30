@@ -377,12 +377,17 @@ manager = ConnectionManager()
 SECRET_KEY = os.getenv("SECRET_KEY", "")
 if not SECRET_KEY:
     import warnings
+    import secrets as _secrets
     warnings.warn(
-        "SECRET_KEY não está definida. Usar um valor aleatório em produção.",
+        "SECRET_KEY não está definida — a gerar uma chave aleatória temporária. "
+        "Define SECRET_KEY em produção para manter as sessões válidas entre reinícios.",
         RuntimeWarning,
         stacklevel=1,
     )
-    SECRET_KEY = "dev-insecure-secret-change-in-production"
+    # Nunca usar um valor fixo/conhecido como fallback: permitiria forjar tokens
+    # JWT. Gerar uma chave aleatória por arranque é seguro (no máximo invalida
+    # sessões existentes ao reiniciar quando SECRET_KEY não está configurada).
+    SECRET_KEY = _secrets.token_hex(32)
 bearer_scheme = HTTPBearer(auto_error=False)
 
 def _b64(data: dict | bytes) -> str:
@@ -1578,7 +1583,9 @@ def create_checkout_session(
         )
         return {"checkout_url": session.url}
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+        # Não expor a mensagem de erro interna do Stripe ao cliente.
+        security_logger.error(f"Stripe checkout error for vendor {vendor_id}: {exc}")
+        raise HTTPException(status_code=502, detail="Erro ao criar sessão de pagamento")
 
 # --------------------------
 # WebSocket para localização em tempo real
@@ -1980,9 +1987,14 @@ if WEB_DIST.is_dir():
 
     @app.get("/{path_name:path}", response_class=HTMLResponse, include_in_schema=False)
     async def serve_spa(path_name: str):
-        file_path = WEB_DIST / path_name
-        if file_path.is_file():
-            return FileResponse(file_path)
-        return FileResponse(WEB_DIST / "index.html")
+        # Resolver o caminho pedido e garantir que continua dentro da pasta de
+        # build. Sem esta verificação, um pedido com `..` (ex.: enviado por um
+        # cliente HTTP que não normaliza o caminho) poderia escapar de WEB_DIST
+        # e servir ficheiros arbitrários do servidor (path traversal).
+        web_dist_root = WEB_DIST.resolve()
+        candidate = (web_dist_root / path_name).resolve()
+        if candidate.is_file() and candidate.is_relative_to(web_dist_root):
+            return FileResponse(candidate)
+        return FileResponse(web_dist_root / "index.html")
 # Force redeploy at Tue Jun 23 10:55:15 UTC 2026
 # Endpoint status: Contact form working - POST /api/contact
