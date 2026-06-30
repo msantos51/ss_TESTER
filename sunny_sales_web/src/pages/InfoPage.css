@@ -4,11 +4,12 @@
   padding: 0 1rem 3rem;
   color: var(--text);
   font-family: 'Inter', 'Roboto', sans-serif;
+  animation: fadeIn 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Hero ──────────────────────────────────────────────── */
 .info-hero {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, #6BBDE0 100%);
   border-radius: var(--radius-xl);
   padding: 36px 28px 32px;
   margin-bottom: 1.75rem;
@@ -16,6 +17,7 @@
   text-align: center;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .info-hero::before {
@@ -162,11 +164,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
-  background: var(--primary-light);
-  border-radius: var(--radius-md);
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--primary-light-solid) 0%, rgba(75, 163, 195, 0.18) 100%);
+  border: 1px solid rgba(75, 163, 195, 0.18);
+  border-radius: var(--radius-lg);
   flex-shrink: 0;
+  transition: transform var(--transition);
+}
+
+.info-card:hover .info-card-icon {
+  transform: scale(1.06) rotate(-3deg);
 }
 
 .info-card-title {
