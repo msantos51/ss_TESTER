@@ -8,14 +8,15 @@
 /* ── Main content ────────────────────────────────────── */
 
 .vd-container {
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 0 1rem 3rem;
+  margin-left: 240px;
+  margin-top: 0;
+  padding: 0 2rem 3rem;
   display: flex;
   flex-direction: column;
   gap: 24px;
   color: var(--text);
   font-family: 'Inter', 'Roboto', sans-serif;
+  min-height: 100vh;
 }
 
 /* ── Hero Section (matching info-hero) ────────────────── */
@@ -528,11 +529,263 @@
   margin: 0;
 }
 
+/* ── Statistics grid ─────────────────────────────────── */
+
+.vd-stats-section {
+  margin-top: 8px;
+}
+
+.vd-stats-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.vd-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.vd-stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.vd-stat-card:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.vd-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--primary-dark);
+  flex-shrink: 0;
+}
+
+.vd-stat-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+
+.vd-stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+/* ── Recent Activity ─────────────────────────────────── */
+
+.vd-activity-section {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+}
+
+.vd-activity-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.vd-activity-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vd-activity-view-all {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity var(--transition);
+}
+
+.vd-activity-view-all:hover {
+  opacity: 0.8;
+}
+
+.vd-activity-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vd-activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface-alt);
+  transition: background var(--transition);
+}
+
+.vd-activity-item:hover {
+  background: var(--surface-warm);
+}
+
+.vd-activity-item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-dark);
+  flex-shrink: 0;
+  font-size: 0.95rem;
+}
+
+.vd-activity-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.vd-activity-item-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.vd-activity-item-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ── Tips Card ───────────────────────────────────────── */
+
+.vd-tips-card {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: var(--radius-xl);
+  padding: 24px 20px;
+  color: white;
+  box-shadow: var(--shadow-warm);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.vd-tips-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.vd-tips-card::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: -30px;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.vd-tips-title {
+  font-size: 1rem;
+  font-weight: 800;
+  position: relative;
+  z-index: 1;
+}
+
+.vd-tips-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.vd-tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.vd-tip-item-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.vd-tips-footer {
+  margin-top: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.vd-tips-learn-more {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity var(--transition);
+}
+
+.vd-tips-learn-more:hover {
+  opacity: 0.9;
+}
+
 /* ── Quick actions grid ──────────────────────────────── */
 
 .vd-quick-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 
@@ -1027,8 +1280,16 @@
 
 /* ── Responsive ──────────────────────────────────────── */
 
+@media (max-width: 768px) {
+  .vd-container {
+    margin-left: 200px;
+    padding: 0 1.5rem 3rem;
+  }
+}
+
 @media (max-width: 480px) {
   .vd-container {
+    margin-left: 70px;
     padding: 0 0.75rem 2rem;
   }
 
@@ -1061,5 +1322,27 @@
 
   .vd-quick-desc {
     font-size: 0.65rem;
+  }
+
+  .vd-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .vd-activity-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .vd-quick-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .vd-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .vd-activity-section {
+    grid-template-columns: 1fr;
   }
 }
