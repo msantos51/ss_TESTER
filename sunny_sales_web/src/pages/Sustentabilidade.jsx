@@ -1,6 +1,8 @@
 import React from 'react';
-import { MdDelete, MdRecycling, MdWaves, MdCleaningServices, MdWbSunny, MdLocalDrink, MdPeople } from 'react-icons/md';
+import { MdDelete, MdRecycling, MdWaves, MdCleaningServices, MdWbSunny, MdLocalDrink, MdPeople, MdEco } from 'react-icons/md';
+import { FiHeart } from 'react-icons/fi';
 import BackHomeButton from '../components/BackHomeButton';
+import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
 
 export default function Sustentabilidade() {
@@ -32,28 +34,35 @@ export default function Sustentabilidade() {
       <BackHomeButton />
 
       <div className="info-hero green">
-        <h1 className="info-hero-title">Sustentabilidade</h1>
+        <h1 className="info-hero-title">
+          Sustenta<span>bilidade</span>
+        </h1>
         <p className="info-hero-lead">
           Acreditamos que o futuro do comércio de praia deve ser mais{' '}
           <strong>eficiente, consciente e ecológico</strong>. Cada decisão conta para
           um litoral mais saudável e praias mais limpas.
         </p>
-      </div>
 
-      <div className="info-badges">
-        <div className="info-badge">
-          <MdDelete /> Emissões reduzidas
-        </div>
-        <div className="info-badge">
-          <MdRecycling /> Embalagens eco-friendly
-        </div>
-        <div className="info-badge">
-          Praias mais limpas
+        <div className="info-badges">
+          <div className="info-badge">
+            <MdDelete /> Emissões reduzidas
+          </div>
+          <div className="info-badge">
+            <MdRecycling /> Embalagens eco-friendly
+          </div>
+          <div className="info-badge">
+            <MdWaves /> Praias mais limpas
+          </div>
         </div>
       </div>
 
       <div className="info-section">
-        <h3 className="info-section-title">Consciencialização dos Banhistas</h3>
+        <div className="info-section-head">
+          <span className="info-section-icon">
+            <MdEco />
+          </span>
+          <h2 className="info-section-title">Consciencialização dos Banhistas</h2>
+        </div>
         <ul className="sustainability-list">
           {items.map((item, index) => (
             <li key={index} className="sustainability-item">
@@ -66,12 +75,11 @@ export default function Sustentabilidade() {
         </ul>
       </div>
 
-      <div className="sustainability-cta">
-        <p className="sustainability-cta-text">
-          O objetivo é promover <strong>praias mais limpas</strong>, vendedores mais responsáveis
-          e um verão verdadeiramente sustentável para toda a costa portuguesa.
-        </p>
-      </div>
+      <InfoBanner icon={FiHeart}>
+        O objetivo é promover <strong>praias mais limpas</strong>, vendedores mais
+        responsáveis e um verão verdadeiramente{' '}
+        <strong>sustentável</strong> para toda a costa portuguesa.
+      </InfoBanner>
     </div>
   );
 }

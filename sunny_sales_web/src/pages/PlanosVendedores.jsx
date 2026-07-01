@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FiCheck, FiZap, FiStar, FiTrendingUp } from 'react-icons/fi';
+import { FiCheck, FiZap, FiStar, FiTrendingUp, FiHelpCircle } from 'react-icons/fi';
 import BackHomeButton from '../components/BackHomeButton';
+import InfoBanner from '../components/InfoBanner';
 import { BASE_URL } from '../config';
+import './InfoPage.css';
 import './PlanosVendedores.css';
 
 const PLANS = [
@@ -109,13 +111,19 @@ export default function PlanosVendedores() {
 
       {/* ── Hero ── */}
       <div className="pv-hero">
-        <div className="pv-hero-blur pv-hero-blur-1" />
-        <div className="pv-hero-blur pv-hero-blur-2" />
-        <h1 className="pv-hero-title">O teu negócio</h1>
+        <h1 className="pv-hero-title">
+          O teu <span>negócio</span> no mapa
+        </h1>
         <p className="pv-hero-lead">
           Junta-te à plataforma que coloca os vendedores de praia no mapa,
-          literalmente. Mais visibilidade, mais clientes, mais vendas.
+          literalmente. <strong>Mais visibilidade, mais clientes, mais vendas.</strong>
         </p>
+
+        <div className="info-badges">
+          <div className="info-badge"><FiZap size={14} /> Ativação imediata</div>
+          <div className="info-badge"><FiTrendingUp size={14} /> Sem taxas escondidas</div>
+          <div className="info-badge"><FiStar size={14} /> Cancela quando quiseres</div>
+        </div>
       </div>
 
       {/* ── Pricing header ── */}
@@ -187,7 +195,12 @@ export default function PlanosVendedores() {
 
       {/* ── FAQ ── */}
       <div className="pv-faq-section">
-        <h2 className="pv-faq-title">Perguntas frequentes</h2>
+        <div className="info-section-head">
+          <span className="info-section-icon">
+            <FiHelpCircle />
+          </span>
+          <h2 className="info-section-title">Perguntas frequentes</h2>
+        </div>
         <div className="pv-faq-list">
           {FAQS.map((faq) => (
             <details key={faq.q} className="pv-faq-item">
@@ -198,7 +211,23 @@ export default function PlanosVendedores() {
         </div>
       </div>
 
-
+      {/* ── Closing banner ── */}
+      <InfoBanner
+        icon={FiZap}
+        title="Pronto para começar?"
+        action={
+          <button
+            type="button"
+            className="info-banner-btn"
+            onClick={(e) => handlePlanClick(e, 'mensal')}
+          >
+            Ativar Subscrição
+          </button>
+        }
+      >
+        Escolhe um plano, ativa a tua localização e fica{' '}
+        <strong>visível no mapa</strong> para os banhistas mais próximos.
+      </InfoBanner>
     </div>
   );
 }
