@@ -2,8 +2,10 @@ export default function CookiesPolicy() {
   return (
     <div className="legal-page">
       <div className="legal-container">
-        <h1>Política de Cookies</h1>
-        <p className="last-updated">Última atualização: 25 de junho de 2026</p>
+        <div className="legal-header">
+          <h1>Política de <span>Cookies</span></h1>
+          <p className="last-updated">Última atualização: 25 de junho de 2026</p>
+        </div>
 
         <section>
           <h2>1. O que são Cookies?</h2>

@@ -1,5 +1,7 @@
 import React from 'react';
+import { FiCompass, FiGrid, FiZap } from 'react-icons/fi';
 import BackHomeButton from '../components/BackHomeButton';
+import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
 
 export default function HowItWorks() {
@@ -8,21 +10,28 @@ export default function HowItWorks() {
       <BackHomeButton />
 
       <div className="info-hero">
-        <h1 className="info-hero-title">Como Funciona</h1>
+        <h1 className="info-hero-title">
+          Como <span>Funciona</span>
+        </h1>
         <p className="info-hero-lead">
           A <strong>Sunny Sales</strong> conecta vendedores ambulantes com clientes nas praias
           através de uma plataforma inteligente que maximiza ganhos e oferece praticidade.
         </p>
-      </div>
 
-      <div className="info-badges">
-        <div className="info-badge info-badge-sky">Registo Simples</div>
-        <div className="info-badge info-badge-sky">Gestão de Rotas</div>
-        <div className="info-badge info-badge-sky">Relatórios em Tempo Real</div>
+        <div className="info-badges">
+          <div className="info-badge info-badge-sky">Registo Simples</div>
+          <div className="info-badge info-badge-sky">Gestão de Rotas</div>
+          <div className="info-badge info-badge-sky">Relatórios em Tempo Real</div>
+        </div>
       </div>
 
       <div className="info-section">
-        <h3 className="info-section-title">Passo a Passo</h3>
+        <div className="info-section-head">
+          <span className="info-section-icon">
+            <FiCompass />
+          </span>
+          <h2 className="info-section-title">Passo a Passo</h2>
+        </div>
         <ul className="info-timeline">
           <li>
             <div className="info-timeline-number">1</div>
@@ -56,7 +65,12 @@ export default function HowItWorks() {
       </div>
 
       <div className="info-section">
-        <h3 className="info-section-title">Principais Funcionalidades</h3>
+        <div className="info-section-head">
+          <span className="info-section-icon">
+            <FiGrid />
+          </span>
+          <h2 className="info-section-title">Principais Funcionalidades</h2>
+        </div>
         <div className="info-cards">
           <div className="info-card">
             <div className="info-card-icon">📍</div>
@@ -108,22 +122,18 @@ export default function HowItWorks() {
         </div>
       </div>
 
-      <div className="info-cta">
-        <h3 className="info-cta-title">Comece Agora</h3>
-        <p className="info-cta-text">
-          Junte-se aos nossos vendedores e transforme o seu negócio na praia com a plataforma
-          mais inovadora do mercado.
-        </p>
-        <a href="#/vendor-register" className="info-cta-btn">
-          Registar como Vendedor
-        </a>
-      </div>
-
-      <p className="info-footer-text">
-        Maximize seus ganhos com gestão inteligente de rotas, análise em tempo real e uma
-        comunidade de vendedores profissionais. A Sunny Sales oferece a solução completa para
-        o seu negócio nas praias.
-      </p>
+      <InfoBanner
+        icon={FiZap}
+        title="Comece Agora"
+        action={
+          <a href="#/vendor-register" className="info-banner-btn">
+            Registar como Vendedor
+          </a>
+        }
+      >
+        Junte-se aos nossos vendedores e transforme o seu negócio na praia com a
+        plataforma mais inovadora do mercado.
+      </InfoBanner>
     </div>
   );
 }

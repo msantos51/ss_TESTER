@@ -101,17 +101,19 @@ export default function Contacto() {
       <BackHomeButton />
 
       <div className="info-hero">
-        <h1 className="info-hero-title">Contacto</h1>
+        <h1 className="info-hero-title">
+          Fala <span>Connosco</span>
+        </h1>
         <p className="info-hero-lead">
           Tens alguma questão, sugestão ou queres saber mais sobre o Sunny Sales?
           Preenche o formulário abaixo e entraremos em contacto contigo.
         </p>
-      </div>
 
-      <div className="info-badges">
-        <div className="info-badge info-badge-sky"><FiMail size={13} /> sunnysales.geral@gmail.com</div>
-        <div className="info-badge info-badge-sky">Resposta em 24–48 h</div>
-        <div className="info-badge info-badge-sky">Segunda a Sexta</div>
+        <div className="info-badges">
+          <div className="info-badge info-badge-sky"><FiMail size={13} /> sunnysales.geral@gmail.com</div>
+          <div className="info-badge info-badge-sky">Resposta em 24–48 h</div>
+          <div className="info-badge info-badge-sky">Segunda a Sexta</div>
+        </div>
       </div>
 
       <div className="contacto-form-wrap">

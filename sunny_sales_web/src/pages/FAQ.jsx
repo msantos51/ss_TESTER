@@ -70,7 +70,9 @@ export default function FAQ() {
       <BackHomeButton />
 
       <div className="info-hero">
-        <h1 className="info-hero-title">Perguntas Frequentes</h1>
+        <h1 className="info-hero-title">
+          Perguntas <span>Frequentes</span>
+        </h1>
         <p className="info-hero-lead">
           Encontra respostas às perguntas mais comuns sobre o Sunny Sales, separadas para
           banhistas e para vendedores.

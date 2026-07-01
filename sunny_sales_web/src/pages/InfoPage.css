@@ -1,5 +1,5 @@
 .info-page {
-  max-width: 860px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: 0 1rem 3rem;
   color: var(--text);
@@ -9,43 +9,20 @@
 
 /* ── Hero ──────────────────────────────────────────────── */
 .info-hero {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, #6BBDE0 100%);
+  background: linear-gradient(135deg, #f4f7fa 0%, #e9f1f6 100%);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 36px 28px 32px;
-  margin-bottom: 1.75rem;
-  color: white;
-  text-align: center;
+  padding: 44px 40px;
+  margin-bottom: 2.5rem;
+  color: var(--text);
+  text-align: left;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-}
-
-.info-hero::before {
-  content: '';
-  position: absolute;
-  top: -60px;
-  right: -60px;
-  width: 220px;
-  height: 220px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.info-hero::after {
-  content: '';
-  position: absolute;
-  bottom: -80px;
-  left: -40px;
-  width: 200px;
-  height: 200px;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 50%;
-  pointer-events: none;
+  box-shadow: var(--shadow-md);
 }
 
 .info-hero.green {
-  background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+  background: linear-gradient(135deg, #eef6f1 0%, #e3f0e8 100%);
 }
 
 .info-hero-icon {
@@ -57,55 +34,70 @@
 }
 
 .info-hero-title {
-  font-size: clamp(1.55rem, 5vw, 2.3rem);
+  font-size: clamp(2rem, 4.5vw, 3.1rem);
   font-weight: 800;
-  margin: 0 0 10px;
-  color: white;
-  letter-spacing: -0.5px;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  margin: 0 0 18px;
+  color: var(--navy);
   position: relative;
   z-index: 1;
 }
 
+.info-hero-title span {
+  color: var(--secondary);
+}
+
 .info-hero-lead {
-  font-size: 0.975rem;
-  opacity: 0.9;
-  max-width: 530px;
-  margin: 0 auto;
-  line-height: 1.65;
+  font-size: 1rem;
+  color: #46586c;
+  max-width: 620px;
+  margin: 0;
+  line-height: 1.7;
   position: relative;
   z-index: 1;
-  text-align: justify;
+}
+
+.info-hero-lead strong {
+  color: var(--navy);
+  font-weight: 700;
 }
 
 /* ── Badges row ────────────────────────────────────────── */
 .info-badges {
   display: flex;
-  gap: 10px;
-  justify-content: center;
+  gap: 12px;
+  justify-content: flex-start;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
+  margin-bottom: 2.75rem;
+  margin-top: 26px;
+}
+
+/* Badges that live inside the hero sit right under the lead text */
+.info-hero .info-badges {
+  margin-bottom: 0;
 }
 
 .info-badge {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
-  padding: 7px 16px;
+  padding: 9px 18px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   box-shadow: var(--shadow-sm);
-  font-size: 0.82rem;
-  color: #2d6a4f;
-  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--navy);
+  font-weight: 600;
   white-space: nowrap;
 }
 
 .info-badge svg {
-  color: #2d6a4f;
-  stroke: #2d6a4f;
-  width: 18px;
-  height: 18px;
+  color: var(--primary);
+  stroke: var(--primary);
+  width: 17px;
+  height: 17px;
   flex-shrink: 0;
 }
 
@@ -230,24 +222,60 @@
 
 /* ── Section blocks ────────────────────────────────────── */
 .info-section {
-  margin-bottom: 2rem;
+  margin-bottom: 2.75rem;
+}
+
+/* Header with icon chip + underlined title (matches SobreProjeto) */
+.info-section-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 26px;
+}
+
+.info-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-warm);
+}
+
+.info-section-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: #fff;
 }
 
 .info-section-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  position: relative;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--navy);
+  margin: 0;
+  padding-bottom: 10px;
+  display: block;
 }
 
 .info-section-title::after {
   content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 64px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--secondary);
+}
+
+/* When the title stands alone (no icon-chip header) keep spacing tidy */
+.info-section > .info-section-title {
+  margin-bottom: 26px;
 }
 
 .info-text {
@@ -360,6 +388,100 @@
   color: #6b7280;
 }
 
+/* ── Orange closing banner (matches SobreProjeto) ──────── */
+.info-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  background: linear-gradient(120deg, #ee9b00 0%, #f5b731 100%);
+  border-radius: var(--radius-xl);
+  padding: 30px 34px;
+  color: #fff;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(238, 155, 0, 0.35);
+  margin-top: 1.5rem;
+}
+
+.info-banner-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--secondary);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  z-index: 1;
+}
+
+.info-banner-icon svg {
+  width: 26px;
+  height: 26px;
+  fill: var(--secondary);
+  stroke: var(--secondary);
+}
+
+.info-banner-body {
+  z-index: 1;
+  flex: 1;
+}
+
+.info-banner-title {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.info-banner-text {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  font-weight: 500;
+  z-index: 1;
+}
+
+.info-banner-text strong {
+  font-weight: 800;
+}
+
+.info-banner-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  background: #fff;
+  color: var(--secondary);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 11px 24px;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.info-banner-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.info-banner-decor {
+  position: absolute;
+  right: 18px;
+  bottom: 0;
+  width: 190px;
+  height: 96px;
+  color: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+
 /* ── CTA block ─────────────────────────────────────────── */
 .info-cta {
   background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
@@ -446,6 +568,12 @@
 }
 
 /* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 780px) {
+  .info-hero {
+    padding: 34px 26px;
+  }
+}
+
 @media (max-width: 480px) {
   .info-page {
     padding: 0 0.75rem 2rem;
@@ -456,7 +584,7 @@
   }
 
   .info-hero {
-    padding: 28px 20px 24px;
+    padding: 28px 20px;
   }
 
   .info-hero-icon {
@@ -476,8 +604,18 @@
   }
 
   .info-badge {
-    font-size: 0.78rem;
-    padding: 6px 12px;
+    font-size: 0.8rem;
+    padding: 7px 14px;
+  }
+
+  .info-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 26px 22px;
+  }
+
+  .info-banner-decor {
+    display: none;
   }
 }
 
