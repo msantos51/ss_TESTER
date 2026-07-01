@@ -651,6 +651,11 @@ export default function ModernMapLayout() {
             </div>
           )}
 
+          {/* Weather card positioned over map */}
+          <div className="weather-overlay">
+            <WeatherCard />
+          </div>
+
         </main>
       </div>
 
@@ -717,7 +722,6 @@ export default function ModernMapLayout() {
         </div>
       </div>}
 
-      <WeatherCard />
       {showWelcome && <WelcomeCard onClose={dismissWelcome} />}
     </div>
   );
