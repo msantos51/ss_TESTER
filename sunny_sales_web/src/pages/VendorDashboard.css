@@ -24,9 +24,9 @@
 .vd-hero {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   border-radius: var(--radius-xl);
-  padding: 36px 28px 32px;
+  padding: 32px 28px 28px;
   color: white;
-  text-align: center;
+  text-align: left;
   position: relative;
   overflow: hidden;
   animation: fadeIn 0.35s ease;
@@ -56,10 +56,26 @@
   pointer-events: none;
 }
 
+.vd-hero-date {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.vd-hero-date::first-letter {
+  text-transform: uppercase;
+}
+
 .vd-hero-title {
-  font-size: clamp(1.55rem, 5vw, 2.3rem);
+  font-size: clamp(1.55rem, 5vw, 2.1rem);
   font-weight: 800;
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   color: white;
   letter-spacing: -0.5px;
   position: relative;
@@ -67,39 +83,102 @@
 }
 
 .vd-hero-subtitle {
-  font-size: 0.975rem;
+  font-size: 0.95rem;
   opacity: 0.9;
   max-width: 530px;
-  margin: 0 auto;
-  line-height: 1.65;
+  margin: 0;
+  line-height: 1.6;
   position: relative;
   z-index: 1;
 }
 
-/* ── Greeting ────────────────────────────────────────── */
-
-.vd-greeting {
+.vd-hero-chips {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 4px 2px 0;
-  animation: fadeIn 0.3s ease;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  position: relative;
+  z-index: 1;
 }
 
-.vd-greeting-time {
+.vd-hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 14px 5px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: white;
+}
+
+.vd-hero-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #ffb3ab;
+}
+
+.vd-hero-chip.on .vd-hero-chip-dot {
+  background: #8ef0a0;
+  box-shadow: 0 0 6px rgba(142, 240, 160, 0.8);
+}
+
+/* ── Notice banner (substitui os alert()) ─────────────── */
+
+.vd-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 16px;
+  border-radius: var(--radius-lg);
   font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  letter-spacing: 0.01em;
+  font-weight: 500;
+  line-height: 1.5;
+  animation: fadeIn 0.25s ease;
 }
 
-.vd-greeting-name {
-  font-size: clamp(1.5rem, 6vw, 2rem);
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: var(--text);
-  margin: 0;
-  line-height: 1.15;
+.vd-notice-warning {
+  background: #fff8e6;
+  border: 1px solid #f2d98c;
+  color: #8a6100;
+}
+
+.vd-notice-error {
+  background: rgba(239, 68, 68, 0.07);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #c62828;
+}
+
+.vd-notice-icon {
+  flex-shrink: 0;
+  font-size: 1.05rem;
+  margin-top: 1px;
+}
+
+.vd-notice-text {
+  flex: 1;
+}
+
+.vd-notice-close {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 2px;
+  margin: -2px -4px 0 0;
+  display: flex;
+  align-items: center;
+  min-height: auto;
+  opacity: 0.6;
+  transition: opacity var(--transition);
+}
+
+.vd-notice-close:hover {
+  opacity: 1;
 }
 
 /* ── Profile card (matching info-card) ───────────────── */
@@ -349,6 +428,12 @@
   animation: fadeIn 0.35s ease;
 }
 
+.vd-cta-card.warning {
+  background: #fff8e6;
+  border-color: #f2d98c;
+  box-shadow: var(--shadow-sm);
+}
+
 .vd-cta-text {
   display: flex;
   flex-direction: column;
@@ -477,71 +562,34 @@
   font-weight: 600;
 }
 
-/* ── Cards grid (matching info-cards) ──────────────────── */
+/* ── Info card (dica app móvel) ──────────────────────── */
 
-.vd-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-  margin-bottom: 2rem;
-}
-
-.vd-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-top: 3px solid transparent;
-  border-radius: var(--radius-xl);
-  padding: 24px 20px;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--transition), transform var(--transition), border-top-color var(--transition);
-}
-
-.vd-card:hover {
-  box-shadow: var(--shadow-warm);
-  transform: translateY(-3px);
-  border-top-color: var(--primary);
-}
-
-.vd-card-icon {
-  font-size: 1.5rem;
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-  background: var(--primary-light);
-  border-radius: var(--radius-md);
-  flex-shrink: 0;
-}
-
-.vd-card-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 10px;
-}
-
-.vd-card-text {
-  font-size: 0.875rem;
+.vd-info-card {
+  background: #f0f4ff;
+  border: 1px solid #dbe4f8;
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 13px 16px;
+  font-size: 0.83rem;
   color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 0;
+  line-height: 1.55;
+}
+
+/* ── Section titles ──────────────────────────────────── */
+
+.vd-section-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 14px;
 }
 
 /* ── Statistics grid ─────────────────────────────────── */
 
 .vd-stats-section {
   margin-top: 8px;
-}
-
-.vd-stats-title {
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  margin-bottom: 14px;
 }
 
 .vd-stats-grid {
@@ -595,13 +643,16 @@
   letter-spacing: 0.01em;
 }
 
-/* ── Recent Activity ─────────────────────────────────── */
+/* ── Bottom section (perfil + atividade) ─────────────── */
 
-.vd-activity-section {
+.vd-bottom-section {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1.15fr 1fr;
   gap: 16px;
+  align-items: start;
 }
+
+/* ── Recent Activity ─────────────────────────────────── */
 
 .vd-activity-card {
   background: var(--surface);
@@ -647,11 +698,20 @@
   padding: 12px;
   border-radius: var(--radius-md);
   background: var(--surface-alt);
+  text-decoration: none;
+  color: inherit;
   transition: background var(--transition);
 }
 
 .vd-activity-item:hover {
   background: var(--surface-warm);
+}
+
+.vd-activity-empty {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  padding: 12px 4px;
 }
 
 .vd-activity-item-icon {
@@ -785,7 +845,7 @@
 
 .vd-quick-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
 
@@ -851,35 +911,31 @@
   padding: 0 4px;
 }
 
-/* ── Logout button ───────────────────────────────────── */
+/* ── Edit profile button ─────────────────────────────── */
 
-.vd-logout-btn {
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--radius-full);
-  padding: 10px 28px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color var(--transition), border-color var(--transition), background var(--transition), box-shadow var(--transition);
-  box-shadow: none;
+.vd-edit-btn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  align-self: center;
+  gap: 6px;
+  align-self: flex-start;
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
   min-height: auto;
-  margin-top: 4px;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
 }
 
-.vd-logout-btn:hover {
-  color: #c62828;
-  border-color: #ef5350;
-  background: rgba(239, 68, 68, 0.06);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-xs);
+.vd-edit-btn:hover {
+  background: var(--primary-light);
+  border-color: rgba(10, 147, 150, 0.3);
+  color: var(--primary-dark);
 }
-
 
 /* ── Location toggle switch ──────────────────────────── */
 
@@ -1294,11 +1350,7 @@
   }
 
   .vd-hero {
-    padding: 28px 20px 24px;
-  }
-
-  .vd-cards {
-    grid-template-columns: 1fr;
+    padding: 26px 20px 22px;
   }
 
   .vd-avatar {
@@ -1328,7 +1380,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .vd-activity-section {
+  .vd-bottom-section {
     grid-template-columns: 1fr;
   }
 }
@@ -1342,7 +1394,13 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .vd-activity-section {
+  .vd-bottom-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1080px) {
+  .vd-bottom-section {
     grid-template-columns: 1fr;
   }
 }

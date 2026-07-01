@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { BASE_URL, mediaUrl } from '../config';
 import axios from 'axios';
 import {
@@ -7,8 +7,9 @@ import {
   FiCreditCard, FiMail, FiMapPin,
   FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
   FiUser, FiLock, FiCheck,
-  FiShoppingBag,
-  FiEye, FiMousePointer, FiPhone, FiClock,
+  FiShoppingBag, FiNavigation, FiBarChart2,
+  FiEdit2, FiAlertCircle, FiX,
+  FiClock, FiTrendingUp,
 } from 'react-icons/fi';
 import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
@@ -57,11 +58,38 @@ function getGreeting() {
   return 'Boa noite';
 }
 
+function formatDistance(meters) {
+  if (meters >= 1000) return `${(meters / 1000).toFixed(1)} km`;
+  return `${Math.round(meters)} m`;
+}
+
+function formatDuration(ms) {
+  const totalMin = Math.floor(ms / 60000);
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m} min`;
+}
+
+function relativeTime(dateStr) {
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const min = Math.floor(diffMs / 60000);
+  if (min < 1) return 'agora mesmo';
+  if (min < 60) return `há ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return h === 1 ? 'há 1 hora' : `há ${h} horas`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return d === 1 ? 'há 1 dia' : `há ${d} dias`;
+  return new Date(dateStr).toLocaleDateString('pt-PT');
+}
+
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [pinColor, setPinColor] = useState('#7B61FF');
   const [locationPermission, setLocationPermission] = useState(null);
+  const [routes, setRoutes] = useState(null); // null = a carregar
+  const [notice, setNotice] = useState(null);
   const navigate = useNavigate();
 
   // Profile modal state
@@ -71,7 +99,6 @@ export default function VendorDashboard() {
   const [editEmail, setEditEmail] = useState('');
   const [editNif, setEditNif] = useState('');
   const [editPhone, setEditPhone] = useState('');
-  const [editBusinessName, setEditBusinessName] = useState('');
   const [editProduct, setEditProduct] = useState('');
   const [editPhoto, setEditPhoto] = useState(null);
   const [editPhotoPreview, setEditPhotoPreview] = useState(null);
@@ -118,12 +145,18 @@ export default function VendorDashboard() {
       ? new Date(vendor.subscription_valid_until)
       : null;
     if (!vendor.subscription_active || (expires && expires < new Date())) {
-      alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
+      setNotice({
+        type: 'warning',
+        text: 'Precisas de uma subscrição ativa para partilhar a tua localização.',
+      });
       return;
     }
 
     if (locationPermission === 'denied') {
-      alert('Permissão de localização negada. Ativa nas definições do browser.');
+      setNotice({
+        type: 'warning',
+        text: 'Permissão de localização negada. Ativa-a nas definições do browser.',
+      });
       return;
     }
 
@@ -165,11 +198,19 @@ export default function VendorDashboard() {
       );
       localStorage.setItem('sharingLocation', 'true');
       setSharing(true);
+      setNotice(null);
     } catch (err) {
       if (err.response && err.response.status === 403) {
-        alert('Não consegue partilhar a localização porque não tem a subscrição ativa');
+        setNotice({
+          type: 'warning',
+          text: 'Precisas de uma subscrição ativa para partilhar a tua localização.',
+        });
       } else {
         console.error('Erro ao ativar localização:', err);
+        setNotice({
+          type: 'error',
+          text: 'Não foi possível ativar a partilha de localização. Tenta novamente.',
+        });
       }
     }
   }, [vendor, locationPermission]);
@@ -193,6 +234,21 @@ export default function VendorDashboard() {
     };
     checkPermission();
   }, []);
+
+  // Carrega os trajetos para calcular o resumo do dia e a atividade recente
+  useEffect(() => {
+    if (!vendor?.id) return;
+    const token = localStorage.getItem('token');
+    axios
+      .get(`${BASE_URL}/vendors/${vendor.id}/routes`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+      .then((res) => setRoutes(res.data))
+      .catch((err) => {
+        console.error('Erro ao carregar trajetos:', err);
+        setRoutes([]);
+      });
+  }, [vendor?.id]);
 
   useEffect(() => {
     if (sharing && vendor && watchId === null) startSharing();
@@ -228,20 +284,38 @@ export default function VendorDashboard() {
     setSharing(false);
   };
 
-  const paySubscription = async (plan = 'mensal') => {
-    if (!vendor) return;
-    const token = localStorage.getItem('token');
-    try {
-      const { data } = await axios.post(
-        `${BASE_URL}/vendors/${vendor.id}/create-checkout-session`,
-        null,
-        { params: { plan }, headers: { Authorization: `Bearer ${token}` } }
-      );
-      window.open(data.checkout_url, '_blank');
-    } catch (err) {
-      console.error('Erro ao criar sessão de pagamento:', err);
-    }
-  };
+  // ── Resumo de hoje e atividade recente ────────────────
+
+  const stats = useMemo(() => {
+    if (!routes) return null;
+    const now = new Date();
+    const todayKey = now.toDateString();
+    const weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    let distToday = 0;
+    let msToday = 0;
+    let sessionsToday = 0;
+    let distWeek = 0;
+    routes.forEach((r) => {
+      const start = new Date(r.start_time);
+      const end = r.end_time ? new Date(r.end_time) : now;
+      if (start.toDateString() === todayKey) {
+        distToday += r.distance_m || 0;
+        msToday += Math.max(0, end - start);
+        sessionsToday += 1;
+      }
+      if (start.getTime() >= weekAgo) {
+        distWeek += r.distance_m || 0;
+      }
+    });
+    return { distToday, msToday, sessionsToday, distWeek };
+  }, [routes]);
+
+  const recentRoutes = useMemo(() => {
+    if (!routes) return [];
+    return [...routes]
+      .sort((a, b) => new Date(b.start_time) - new Date(a.start_time))
+      .slice(0, 4);
+  }, [routes]);
 
   // ── Profile modal ─────────────────────────────────────
 
@@ -252,7 +326,6 @@ export default function VendorDashboard() {
     setEditEmail(vendor.email || '');
     setEditNif(vendor.nif || '');
     setEditPhone(vendor.phone || '');
-    setEditBusinessName(vendor.business_name || '');
     setEditProduct(vendor.product || '');
     setEditPhoto(null);
     setEditPhotoPreview(null);
@@ -423,109 +496,79 @@ export default function VendorDashboard() {
   const modalAvatarSrc = editPhotoPreview
     || (vendor?.profile_photo ? mediaUrl(vendor.profile_photo) : null);
 
+  const todayLabel = new Date().toLocaleDateString('pt-PT', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+
+  const quickActions = [
+    { path: '/routes', icon: <FiNavigation />, label: 'Trajetos', desc: 'Histórico de sessões' },
+    { path: '/stats', icon: <FiBarChart2 />, label: 'Estatísticas', desc: 'Km percorridos por dia' },
+    { path: '/products', icon: <FiShoppingBag />, label: 'Produtos', desc: 'Gerir o teu catálogo' },
+    { path: '/paid-weeks', icon: <FiCreditCard />, label: 'Subscrição', desc: 'Pagamentos e recibos' },
+  ];
+
   return (
     <div className="vd-wrapper">
       <VendorSidebar onLogout={logout} />
       <div className="vd-container">
 
-        {/* Hero Section */}
+        {/* Cabeçalho */}
         {vendor && (
           <div className="vd-hero">
-            <h1 className="vd-hero-title">Bem-vindo de volta!</h1>
+            <span className="vd-hero-date">{todayLabel}</span>
+            <h1 className="vd-hero-title">
+              {getGreeting()}, {vendor.name.split(' ')[0]}
+            </h1>
             <p className="vd-hero-subtitle">
-              Gerencie sua presença no mapa e mantenha seus clientes sempre informados sobre sua localização.
+              Gere a tua presença no mapa e acompanha a tua atividade do dia.
             </p>
-          </div>
-        )}
-
-        {/* Greeting */}
-        {vendor && (
-          <div className="vd-greeting">
-            <span className="vd-greeting-time">{getGreeting()},</span>
-            <h2 className="vd-greeting-name">{vendor.name.split(' ')[0]}</h2>
-          </div>
-        )}
-
-        {/* Profile card */}
-        {vendor && (
-          <div className="vd-profile-card">
-            <div className="vd-profile-top">
-              {vendor.profile_photo ? (
-                <img
-                  src={mediaUrl(vendor.profile_photo)}
-                  alt="Foto de perfil"
-                  className="vd-avatar"
-                  style={{ borderColor: pinColor }}
-                />
-              ) : (
-                <div
-                  className="vd-avatar vd-avatar-placeholder"
-                  style={{ borderColor: pinColor, background: `${pinColor}22`, color: pinColor }}
-                >
-                  {vendor.name?.charAt(0)?.toUpperCase() || '?'}
-                </div>
-              )}
-              <div className="vd-profile-meta">
-                <span className="vd-profile-name">{vendor.name}</span>
-                <span className="vd-profile-product">{vendor.product}</span>
-                <span className={`vd-sub-badge${subscriptionActive ? ' active' : ' inactive'}`}>
-                  <span className="vd-sub-dot" />
-                  {subscriptionActive
-                    ? <>Ativa{subscriptionDate && <span className="vd-sub-date"> · {subscriptionDate}</span>}</>
-                    : 'Inativa'}
-                </span>
-              </div>
-            </div>
-
-            <div className="vd-profile-divider" />
-
-            <div className="vd-profile-details">
-              <div className="vd-detail-row">
-                <span className="vd-detail-row-icon"><FiMail /></span>
-                <span className="vd-detail-row-label">EMAIL</span>
-                <span className="vd-detail-row-value">{vendor.email}</span>
-              </div>
-              <div className="vd-detail-row">
-                <span className="vd-detail-row-icon">
-                  <span className="vd-pin-dot" style={{ backgroundColor: pinColor }} />
-                </span>
-                <span className="vd-detail-row-label">COR DO PIN</span>
-                <span className="vd-detail-row-value" />
-              </div>
-              {vendor.payment_methods && (
-                <div className="vd-detail-row vd-detail-row-payments">
-                  <span className="vd-detail-row-icon"><FiCreditCard /></span>
-                  <span className="vd-detail-row-label">PAGAMENTOS</span>
-                  <div className="vd-payments-row">
-                    {vendor.payment_methods.split(',').filter(Boolean).map(m => (
-                      <span key={m} className="vd-payment-badge" title={m}>
-                        <span className="vd-payment-badge-icon">{PAYMENT_ICONS[m] || <FiCreditCard />}</span>
-                        <span className="vd-payment-badge-label">{m}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+            <div className="vd-hero-chips">
+              <span className={`vd-hero-chip${subscriptionActive ? ' on' : ' off'}`}>
+                <span className="vd-hero-chip-dot" />
+                {subscriptionActive ? 'Subscrição ativa' : 'Subscrição inativa'}
+              </span>
+              <span className={`vd-hero-chip${sharing ? ' on' : ' off'}`}>
+                <span className="vd-hero-chip-dot" />
+                {sharing ? 'Visível no mapa' : 'Localização desligada'}
+              </span>
             </div>
           </div>
         )}
 
-        {/* Permission denied notice */}
+        {/* Aviso contextual (substitui os alert()) */}
+        {notice && (
+          <div className={`vd-notice vd-notice-${notice.type}`} role="alert">
+            <FiAlertCircle className="vd-notice-icon" />
+            <span className="vd-notice-text">{notice.text}</span>
+            <button
+              type="button"
+              className="vd-notice-close"
+              aria-label="Fechar aviso"
+              onClick={() => setNotice(null)}
+            >
+              <FiX />
+            </button>
+          </div>
+        )}
+
+        {/* Permissão de localização negada */}
         {locationPermission === 'denied' && (
-          <div className="vd-cta-card" style={{ backgroundColor: '#fff3cd', borderColor: '#ffc107' }}>
+          <div className="vd-cta-card warning">
             <div className="vd-cta-text">
-              <span className="vd-cta-title">Permissão de Localização Negada</span>
-              <span className="vd-cta-desc">Ativa nas definições do browser para partilhar localização</span>
+              <span className="vd-cta-title">Permissão de localização negada</span>
+              <span className="vd-cta-desc">Ativa-a nas definições do browser para poderes partilhar a tua localização</span>
             </div>
           </div>
         )}
 
-        {/* Subscription CTA if inactive */}
+        {/* CTA de subscrição inativa */}
         {vendor && !subscriptionActive && (
           <div className="vd-cta-card">
             <div className="vd-cta-text">
-              <span className="vd-cta-title">Subscrição Inativa</span>
-              <span className="vd-cta-desc">Ative para aparecer no mapa</span>
+              <span className="vd-cta-title">Subscrição inativa</span>
+              <span className="vd-cta-desc">Ativa a subscrição para apareceres no mapa e receberes clientes</span>
             </div>
             <button className="vd-cta-btn" onClick={() => navigate('/planos')}>
               Ativar
@@ -533,16 +576,20 @@ export default function VendorDashboard() {
           </div>
         )}
 
-        {/* Location sharing */}
+        {/* Partilha de localização */}
         <div className={`vd-location-card${sharing ? ' active' : ''}`}>
           <div className="vd-location-icon-wrap">
             <FiMapPin className="vd-location-icon" />
             {sharing && <span className="vd-location-pulse" />}
           </div>
           <div className="vd-location-text">
-            <span className="vd-location-title">Partilha de Localização</span>
+            <span className="vd-location-title">Partilha de localização</span>
             <span className="vd-location-status">
-              {sharing ? 'Ativo e visível no mapa' : 'Desligado'}
+              {sharing
+                ? 'Ativa — estás visível no mapa'
+                : subscriptionActive
+                  ? 'Desligada — não apareces no mapa'
+                  : 'Requer subscrição ativa'}
             </span>
           </div>
           <label className="vendor-switch" aria-label="Ativar/desativar localização">
@@ -555,113 +602,200 @@ export default function VendorDashboard() {
           </label>
         </div>
 
-        {/* Web app limitation notice */}
-        <div className="vd-info-card" style={{ backgroundColor: '#f0f4ff', borderLeft: '4px solid #4BA3C3' }}>
-          <span style={{ fontSize: '13px', color: '#555', lineHeight: '1.5' }}>
-            💡 <strong>Dica:</strong> A app web partilha localização enquanto a aba estiver ativa. Para melhor experiência e partilha contínua em background, usa a <strong>app mobile</strong>.
-          </span>
+        <div className="vd-info-card">
+          💡 <strong>Dica:</strong> a app web partilha a localização enquanto o separador estiver
+          ativo. Para partilha contínua em segundo plano, usa a <strong>app móvel</strong>.
         </div>
 
-        {/* Statistics section */}
+        {/* Resumo de hoje (dados reais dos trajetos) */}
         {vendor && (
           <div className="vd-stats-section">
-            <h3 className="vd-stats-title">Estatísticas de Hoje</h3>
+            <h3 className="vd-section-title">Resumo de hoje</h3>
             <div className="vd-stats-grid">
               <div className="vd-stat-card">
-                <div className="vd-stat-icon">
-                  <FiEye />
+                <div className="vd-stat-icon"><FiNavigation /></div>
+                <div className="vd-stat-value">
+                  {stats ? formatDistance(stats.distToday) : '—'}
                 </div>
-                <div className="vd-stat-value">128</div>
-                <div className="vd-stat-label">Visualizações no mapa</div>
+                <div className="vd-stat-label">Distância percorrida</div>
               </div>
               <div className="vd-stat-card">
-                <div className="vd-stat-icon">
-                  <FiMousePointer />
+                <div className="vd-stat-icon"><FiClock /></div>
+                <div className="vd-stat-value">
+                  {stats ? formatDuration(stats.msToday) : '—'}
                 </div>
-                <div className="vd-stat-value">32</div>
-                <div className="vd-stat-label">Cliques no perfil</div>
-              </div>
-              <div className="vd-stat-card">
-                <div className="vd-stat-icon">
-                  <FiPhone />
-                </div>
-                <div className="vd-stat-value">14</div>
-                <div className="vd-stat-label">Pedidos / Contactos</div>
-              </div>
-              <div className="vd-stat-card">
-                <div className="vd-stat-icon">
-                  <FiClock />
-                </div>
-                <div className="vd-stat-value">5h 24m</div>
                 <div className="vd-stat-label">Tempo online</div>
+              </div>
+              <div className="vd-stat-card">
+                <div className="vd-stat-icon"><FiMapPin /></div>
+                <div className="vd-stat-value">
+                  {stats ? stats.sessionsToday : '—'}
+                </div>
+                <div className="vd-stat-label">Sessões de partilha</div>
+              </div>
+              <div className="vd-stat-card">
+                <div className="vd-stat-icon"><FiTrendingUp /></div>
+                <div className="vd-stat-value">
+                  {stats ? formatDistance(stats.distWeek) : '—'}
+                </div>
+                <div className="vd-stat-label">Últimos 7 dias</div>
               </div>
             </div>
           </div>
         )}
 
+        {/* Ações rápidas */}
+        <div className="vd-quick-section">
+          <h3 className="vd-section-title">Ações rápidas</h3>
+          <div className="vd-quick-grid">
+            {quickActions.map((action) => (
+              <button
+                key={action.path}
+                type="button"
+                className="vd-quick-card"
+                onClick={() => navigate(action.path)}
+              >
+                <span className="vd-quick-icon">{action.icon}</span>
+                <span className="vd-quick-label">{action.label}</span>
+                <span className="vd-quick-desc">{action.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
-        {/* Recent Activity and Tips section */}
-        <div className="vd-activity-section">
+        {/* Perfil + atividade recente */}
+        <div className="vd-bottom-section">
+          {vendor && (
+            <div className="vd-profile-card">
+              <div className="vd-profile-top">
+                {vendor.profile_photo ? (
+                  <img
+                    src={mediaUrl(vendor.profile_photo)}
+                    alt="Foto de perfil"
+                    className="vd-avatar"
+                    style={{ borderColor: pinColor }}
+                  />
+                ) : (
+                  <div
+                    className="vd-avatar vd-avatar-placeholder"
+                    style={{ borderColor: pinColor, background: `${pinColor}22`, color: pinColor }}
+                  >
+                    {vendor.name?.charAt(0)?.toUpperCase() || '?'}
+                  </div>
+                )}
+                <div className="vd-profile-meta">
+                  <span className="vd-profile-name">{vendor.name}</span>
+                  <span className="vd-profile-product">{vendor.product}</span>
+                  <span className={`vd-sub-badge${subscriptionActive ? ' active' : ' inactive'}`}>
+                    <span className="vd-sub-dot" />
+                    {subscriptionActive
+                      ? <>Ativa{subscriptionDate && <span className="vd-sub-date"> · até {subscriptionDate}</span>}</>
+                      : 'Inativa'}
+                  </span>
+                </div>
+                <button type="button" className="vd-edit-btn" onClick={openProfileModal}>
+                  <FiEdit2 size={13} /> Editar
+                </button>
+              </div>
+
+              <div className="vd-profile-divider" />
+
+              <div className="vd-profile-details">
+                <div className="vd-detail-row">
+                  <span className="vd-detail-row-icon"><FiMail /></span>
+                  <span className="vd-detail-row-label">Email</span>
+                  <span className="vd-detail-row-value">{vendor.email}</span>
+                </div>
+                <div className="vd-detail-row">
+                  <span className="vd-detail-row-icon">
+                    <span className="vd-pin-dot" style={{ backgroundColor: pinColor }} />
+                  </span>
+                  <span className="vd-detail-row-label">Cor do pin</span>
+                  <span className="vd-detail-row-value" />
+                </div>
+                {vendor.payment_methods && (
+                  <div className="vd-detail-row vd-detail-row-payments">
+                    <span className="vd-detail-row-icon"><FiCreditCard /></span>
+                    <span className="vd-detail-row-label">Pagamentos</span>
+                    <div className="vd-payments-row">
+                      {vendor.payment_methods.split(',').filter(Boolean).map(m => (
+                        <span key={m} className="vd-payment-badge" title={m}>
+                          <span className="vd-payment-badge-icon">{PAYMENT_ICONS[m] || <FiCreditCard />}</span>
+                          <span className="vd-payment-badge-label">{m}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="vd-activity-card">
             <div className="vd-activity-card-title">
-              <span>Atividade Recente</span>
-              <a href="#" className="vd-activity-view-all">Ver tudo</a>
+              <span>Atividade recente</span>
+              {recentRoutes.length > 0 && (
+                <Link to="/routes" className="vd-activity-view-all">Ver tudo</Link>
+              )}
             </div>
-            <div className="vd-activity-items">
-              <div className="vd-activity-item">
-                <div className="vd-activity-item-icon"><FiMapPin size={14} /></div>
-                <div className="vd-activity-item-content">
-                  <div className="vd-activity-item-title">Sua localização foi atualizada</div>
-                  <div className="vd-activity-item-time">há 2 min</div>
-                </div>
+            {routes === null && (
+              <div className="vd-activity-empty">A carregar atividade…</div>
+            )}
+            {routes !== null && recentRoutes.length === 0 && (
+              <div className="vd-activity-empty">
+                Ainda não tens trajetos registados. Ativa a partilha de localização para
+                começares a registar a tua atividade.
               </div>
-              <div className="vd-activity-item">
-                <div className="vd-activity-item-icon"><FiUser size={14} /></div>
-                <div className="vd-activity-item-content">
-                  <div className="vd-activity-item-title">Perfil atualizado</div>
-                  <div className="vd-activity-item-time">há 1 hora</div>
-                </div>
+            )}
+            {recentRoutes.length > 0 && (
+              <div className="vd-activity-items">
+                {recentRoutes.map((r) => {
+                  const ongoing = !r.end_time;
+                  const duration = ongoing
+                    ? Date.now() - new Date(r.start_time).getTime()
+                    : new Date(r.end_time) - new Date(r.start_time);
+                  return (
+                    <Link to="/routes" key={r.id ?? r.start_time} className="vd-activity-item">
+                      <div className="vd-activity-item-icon"><FiNavigation size={14} /></div>
+                      <div className="vd-activity-item-content">
+                        <div className="vd-activity-item-title">
+                          {ongoing
+                            ? 'Sessão em curso'
+                            : `Sessão de ${formatDuration(duration)} · ${formatDistance(r.distance_m || 0)}`}
+                        </div>
+                        <div className="vd-activity-item-time">{relativeTime(r.start_time)}</div>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
-              <div className="vd-activity-item">
-                <div className="vd-activity-item-icon"><FiShoppingBag size={14} /></div>
-                <div className="vd-activity-item-content">
-                  <div className="vd-activity-item-title">Produto adicionado: Gelado de Chocolate</div>
-                  <div className="vd-activity-item-time">há 3 horas</div>
-                </div>
-              </div>
-              <div className="vd-activity-item">
-                <div className="vd-activity-item-icon"><FiCreditCard size={14} /></div>
-                <div className="vd-activity-item-content">
-                  <div className="vd-activity-item-title">Subscrição renovada com sucesso</div>
-                  <div className="vd-activity-item-time">há 1 dia</div>
-                </div>
-              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Dicas */}
+        <div className="vd-tips-card">
+          <div className="vd-tips-title">💡 Dicas para vendedores</div>
+          <div className="vd-tips-items">
+            <div className="vd-tip-item">
+              <div className="vd-tip-item-icon">✓</div>
+              <div>Mantém a partilha de localização ativa para apareceres no mapa</div>
+            </div>
+            <div className="vd-tip-item">
+              <div className="vd-tip-item-icon">✓</div>
+              <div>Atualiza os teus produtos e métodos de pagamento regularmente</div>
+            </div>
+            <div className="vd-tip-item">
+              <div className="vd-tip-item-icon">✓</div>
+              <div>Uma foto de perfil ajuda os banhistas a reconhecer-te</div>
+            </div>
+            <div className="vd-tip-item">
+              <div className="vd-tip-item-icon">✓</div>
+              <div>O maior movimento na praia é entre as 15h e as 19h</div>
             </div>
           </div>
-
-          <div className="vd-tips-card">
-            <div className="vd-tips-title">💡 Dicas para Vendedores</div>
-            <div className="vd-tips-items">
-              <div className="vd-tip-item">
-                <div className="vd-tip-item-icon">✓</div>
-                <div>Mantenha sua localização ativa para aparecer no mapa</div>
-              </div>
-              <div className="vd-tip-item">
-                <div className="vd-tip-item-icon">✓</div>
-                <div>Atualize seus produtos regularmente</div>
-              </div>
-              <div className="vd-tip-item">
-                <div className="vd-tip-item-icon">✓</div>
-                <div>Ofereça vários métodos de pagamento</div>
-              </div>
-              <div className="vd-tip-item">
-                <div className="vd-tip-item-icon">✓</div>
-                <div>Horários de maior movimento: 15h-19h</div>
-              </div>
-            </div>
-            <div className="vd-tips-footer">
-              <a href="#" className="vd-tips-learn-more">Saber mais dicas →</a>
-            </div>
+          <div className="vd-tips-footer">
+            <Link to="/faqs" className="vd-tips-learn-more">Ver perguntas frequentes →</Link>
           </div>
         </div>
 
