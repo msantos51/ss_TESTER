@@ -9,9 +9,8 @@ import LocateHint from '../components/LocateHint';
 import WelcomeCard from '../components/WelcomeCard';
 import WeatherCard from '../components/WeatherCard';
 import {
-  FiMapPin, FiFilter, FiCheck, FiArrowLeft,
-  FiDollarSign, FiSmartphone, FiTerminal, FiCreditCard, FiWifi, FiTag,
-  FiShoppingBag,
+  FiMapPin,
+  FiDollarSign, FiSmartphone, FiTerminal, FiCreditCard, FiWifi,
 } from 'react-icons/fi';
 import './ModernMapLayout.css';
 
@@ -203,7 +202,6 @@ export default function ModernMapLayout() {
   const [selected, setSelected] = useState(null);
   const [vendorProducts, setVendorProducts] = useState([]);
 
-  const [filterOpen, setFilterOpen] = useState(false);
   const [pendingProducts, setPendingProducts] = useState([]);
   const [pendingDistance, setPendingDistance] = useState(null);
 
@@ -231,33 +229,15 @@ export default function ModernMapLayout() {
     setShowWelcome(false);
   };
 
-  // Active filter count: selected products + distance set
-  const activeFilterCount =
-    selectedProducts.length + (maxDistance !== null ? 1 : 0);
-  const pendingFilterCount =
-    pendingProducts.length + (pendingDistance !== null ? 1 : 0);
-
-  const openFilters = () => {
-    setPendingProducts([...selectedProducts]);
-    setPendingDistance(maxDistance);
-    setFilterOpen(true);
-  };
-
-  const applyFilters = () => {
-    setSelectedProducts([...pendingProducts]);
-    setMaxDistance(pendingDistance);
-    setFilterOpen(false);
-  };
-
-  const resetPending = () => {
-    setPendingProducts([]);
-    setPendingDistance(null);
-  };
-
-  const togglePendingProduct = (p) => {
-    setPendingProducts((prev) =>
+  const toggleProduct = (p) => {
+    setSelectedProducts((prev) =>
       prev.includes(p) ? prev.filter((v) => v !== p) : [...prev, p]
     );
+  };
+
+  const resetFilters = () => {
+    setSelectedProducts([]);
+    setMaxDistance(null);
   };
 
   useEffect(() => {
@@ -507,6 +487,57 @@ export default function ModernMapLayout() {
 
   return (
     <div className="modern-layout">
+      {!isVendorLogged && <div className="sidebar-left">
+        <div className="sidebar-filters">
+          <div className="filter-header">
+            <h3 className="filter-title">Filtros</h3>
+            <button className="filter-clear-btn" onClick={resetFilters}>
+              Limpar
+            </button>
+          </div>
+
+          <div className="filter-section">
+            <h4 className="filter-category-title">Tipo de Produto</h4>
+            {PRODUCTS.map((p) => {
+              const active = selectedProducts.includes(p);
+              return (
+                <label key={p} className="filter-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={active}
+                    onChange={() => toggleProduct(p)}
+                  />
+                  <span className="checkbox-label">{p}</span>
+                </label>
+              );
+            })}
+          </div>
+
+          <div className="filter-divider" />
+
+          <div className="filter-section">
+            <h4 className="filter-category-title">
+              <FiMapPin size={14} style={{ marginRight: 6 }} />
+              Distância
+            </h4>
+            {DISTANCE_OPTIONS.map((opt) => (
+              <label key={opt.label} className="filter-radio">
+                <input
+                  type="radio"
+                  name="distance"
+                  checked={maxDistance === opt.value}
+                  onChange={() => setMaxDistance(opt.value)}
+                />
+                <span className="radio-label">{opt.label}</span>
+              </label>
+            ))}
+            {maxDistance !== null && !clientPos && (
+              <p className="filter-hint">Ative a localização para filtrar</p>
+            )}
+          </div>
+        </div>
+      </div>}
+
       <div className="map-wrapper">
         <main className="map-area">
           <MapContainer
@@ -620,180 +651,72 @@ export default function ModernMapLayout() {
             </div>
           )}
 
-          {/* Nearby vendors badge */}
-          {!isVendorLogged && nearbyVendorsCount !== null && (
-            <div className="nearby-vendors-badge">
-              <FiMapPin size={13} />
-              {nearbyVendorsCount === 0
-                ? 'Nenhum vendedor na sua área'
-                : nearbyVendorsCount === 1
-                  ? '1 vendedor na sua área'
-                  : `${nearbyVendorsCount} vendedores na sua área`}
-            </div>
-          )}
+        </main>
+      </div>
 
-          {/* Floating filter button */}
-          {!isVendorLogged && (
-            <button
-              className={`filter-fab${activeFilterCount > 0 ? ' has-filters' : ''}`}
-              onClick={openFilters}
-              aria-label="Abrir filtros"
-            >
-              <FiFilter size={16} />
-              <span>Filtrar{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}</span>
-            </button>
-          )}
+      {!isVendorLogged && <div className="sidebar-right">
+        <div className="vendors-panel">
+          <div className="vendors-header">
+            <h3 className="vendors-title">Vendedores perto de ti</h3>
+            {nearbyVendorsCount !== null && (
+              <span className="vendors-count">{nearbyVendorsCount} à perto</span>
+            )}
+          </div>
 
-          {/* Filter bottom sheet */}
-          {filterOpen && !isVendorLogged && (
-            <div className="filter-overlay" onClick={() => setFilterOpen(false)}>
-              <div className="filter-sheet" onClick={(e) => e.stopPropagation()}>
-                <div className="filter-sheet-handle" />
-                <div className="filter-sheet-header">
-                  <button
-                    className="filter-back-btn"
-                    onClick={() => setFilterOpen(false)}
-                    aria-label="Voltar"
-                  >
-                    <FiArrowLeft size={16} />
-                    <span>Voltar</span>
-                  </button>
-                  <span className="filter-sheet-label">Filtrar por:</span>
-                </div>
-
-                <div className="filter-sheet-body">
-                  {/* Products section */}
-                  <div className="filter-section">
-                    <div className="filter-section-row">
-                      <span className="filter-section-title">Vendedores</span>
-                    </div>
-                    {PRODUCTS.map((p) => {
-                      const active = pendingProducts.includes(p);
-                      return (
-                        <button
-                          key={p}
-                          className={`filter-option${active ? ' active' : ''}`}
-                          onClick={() => togglePendingProduct(p)}
-                        >
-                          <span>{p}</span>
-                          {active && <FiCheck size={14} className="filter-check" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <div className="filter-divider" />
-
-                  {/* Distance section */}
-                  <div className="filter-section">
-                    <div className="filter-section-row">
-                      <span className="filter-section-title">
-                        <FiMapPin size={14} style={{ marginRight: 6 }} />
-                        Distância
-                      </span>
-                    </div>
-                    <div className="filter-distance-row">
-                      {DISTANCE_OPTIONS.map((opt) => (
-                        <button
-                          key={opt.label}
-                          className={`filter-distance-opt${pendingDistance === opt.value ? ' active' : ''}`}
-                          onClick={() => setPendingDistance(opt.value)}
-                        >
-                          {pendingDistance === opt.value && <FiCheck size={12} />}
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                    {pendingDistance !== null && !clientPos && (
-                      <p className="filter-distance-hint">
-                        Ative a localização para filtrar por distância
+          <div className="vendors-list">
+            {filteredVendors.length === 0 ? (
+              <div className="vendors-empty">
+                <FiMapPin size={24} />
+                <p>Nenhum vendedor encontrado</p>
+              </div>
+            ) : (
+              filteredVendors.map((v) => (
+                <div
+                  key={v.id}
+                  className={`vendor-item ${selected?.id === v.id ? 'active' : ''}`}
+                  onClick={() => focusVendor(v)}
+                >
+                  {v.profile_photo ? (
+                    <img
+                      src={mediaUrl(v.profile_photo)}
+                      alt={v.name}
+                      className="vendor-item-photo"
+                    />
+                  ) : (
+                    <div
+                      className="vendor-item-photo vendor-item-photo--placeholder"
+                      style={{ background: v.pin_color || '#ccc' }}
+                    />
+                  )}
+                  <div className="vendor-item-info">
+                    <h4 className="vendor-item-name">{v.name}</h4>
+                    {v.product && (
+                      <p className="vendor-item-product">{v.product}</p>
+                    )}
+                    {clientPos && (
+                      <p className="vendor-item-distance">
+                        {(haversineDistance(clientPos.lat, clientPos.lng, v.current_lat, v.current_lng) / 1000).toFixed(1)} km
                       </p>
                     )}
                   </div>
+                  {v.payment_methods && (
+                    <div className="vendor-item-payments">
+                      {v.payment_methods.split(',').slice(0, 2).map((m) => {
+                        const method = m.trim();
+                        const Icon = PAYMENT_ICONS[method];
+                        return Icon ? (
+                          <Icon key={method} size={16} />
+                        ) : null;
+                      })}
+                    </div>
+                  )}
                 </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>}
 
-                {/* Footer */}
-                <div className="filter-sheet-footer">
-                  <button className="filter-reset-all-btn" onClick={resetPending}>
-                    Repor Tudo
-                  </button>
-                  <button className="filter-apply-btn" onClick={applyFilters}>
-                    Aplicar Filtros{pendingFilterCount > 0 ? ` (${pendingFilterCount})` : ''}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {selected && (
-            <div className="vendor-card">
-              <button
-                className="close-btn"
-                onClick={() => setSelected(null)}
-                aria-label="Fechar"
-              >
-                ×
-              </button>
-              {selected.profile_photo ? (
-                <img
-                  src={mediaUrl(selected.profile_photo)}
-                  alt={selected.name}
-                  className="card-photo"
-                />
-              ) : (
-                <div
-                  className="card-photo card-photo--placeholder"
-                  style={{ background: selected.pin_color || '#ccc' }}
-                />
-              )}
-              <h4 className="card-name">{selected.name}</h4>
-              {selected.product && (
-                <div className="card-product">
-                  <FiTag size={12} />
-                  <span>{selected.product}</span>
-                </div>
-              )}
-              {selected.payment_methods && (
-                <div className="card-payments">
-                  {selected.payment_methods.split(',').map((m) => {
-                    const method = m.trim();
-                    const Icon = PAYMENT_ICONS[method];
-                    return Icon ? (
-                      <span key={method} className="card-payment-chip">
-                        <Icon size={13} />
-                        <span className="card-payment-label">{method}</span>
-                      </span>
-                    ) : null;
-                  })}
-                </div>
-              )}
-              {vendorProducts.length > 0 && (
-                <div className="card-products">
-                  <div className="card-products-title">
-                    <FiShoppingBag size={13} />
-                    <span>Produtos disponíveis</span>
-                  </div>
-                  <div className="card-products-list">
-                    {vendorProducts.map((p) => (
-                      <div key={p.id} className="card-product-item">
-                        {p.photo ? (
-                          <img src={mediaUrl(p.photo)} alt={p.name} className="card-product-photo" />
-                        ) : (
-                          <div className="card-product-photo card-product-photo--placeholder">
-                            <FiShoppingBag size={20} />
-                          </div>
-                        )}
-                        <span className="card-product-name">{p.name}</span>
-                        <span className="card-product-price">{p.price.toFixed(2)} €</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </main>
-      </div>
       <WeatherCard />
       {showWelcome && <WelcomeCard onClose={dismissWelcome} />}
     </div>

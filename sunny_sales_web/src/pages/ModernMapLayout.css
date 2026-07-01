@@ -11,24 +11,44 @@ body {
 
 .modern-layout {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  flex-direction: row;
+  align-items: stretch;
   height: calc(100svh - var(--navbar-h) - var(--footer-h) - 32px);
   min-height: 0;
   padding-bottom: 0;
   overflow: hidden;
+  gap: 0;
+}
+
+.sidebar-left,
+.sidebar-right {
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-left {
+  width: 240px;
+  border-right: 1px solid var(--border);
+}
+
+.sidebar-right {
+  width: 280px;
+  border-left: 1px solid var(--border);
 }
 
 .map-wrapper {
   display: flex;
-  width: 100%;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: none;
   flex: 1;
+  min-width: 0;
   min-height: 0;
+  overflow: hidden;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
 }
 
 /* ── Map area ─────────────────────────────────────────── */
@@ -59,6 +79,240 @@ body {
 
 .leaflet-control-attribution {
   font-size: 0.6rem !important;
+}
+
+/* ── Sidebar filters ──────────────────────────────────── */
+
+.sidebar-filters {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.filter-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.filter-clear-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  min-height: auto;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color var(--transition);
+}
+
+.filter-clear-btn:hover {
+  color: var(--primary-hover);
+}
+
+.filter-category-title {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-checkbox,
+.filter-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+  user-select: none;
+}
+
+.filter-checkbox:hover,
+.filter-radio:hover {
+  background: var(--surface-alt);
+}
+
+.filter-checkbox input,
+.filter-radio input {
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.checkbox-label,
+.radio-label {
+  font-size: 0.9rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.filter-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 0;
+}
+
+.filter-section {
+  margin-bottom: 16px;
+}
+
+.filter-section:last-child {
+  margin-bottom: 0;
+}
+
+.filter-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 8px 0 0;
+  line-height: 1.4;
+}
+
+/* ── Vendors panel ────────────────────────────────────── */
+
+.vendors-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  height: 100%;
+}
+
+.vendors-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.vendors-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.vendors-count {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vendors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.vendors-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 16px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.vendors-empty p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.vendor-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.vendor-item:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+
+.vendor-item.active {
+  background: var(--primary-light-solid);
+  border-color: var(--primary);
+}
+
+.vendor-item-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid var(--border);
+}
+
+.vendor-item-photo--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vendor-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.vendor-item-name {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vendor-item-product {
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vendor-item-distance {
+  margin: 2px 0 0;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.vendor-item-payments {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  color: var(--text-secondary);
 }
 
 /* ── Nearby vendors badge ─────────────────────────────── */
@@ -892,65 +1146,43 @@ body {
 
 /* ── Responsive ───────────────────────────────────────── */
 
+@media (max-width: 1024px) {
+  .sidebar-left {
+    width: 200px;
+  }
+
+  .sidebar-right {
+    width: 240px;
+  }
+}
+
 @media (max-width: 768px) {
-  .map-wrapper {
+  .modern-layout {
     flex-direction: column;
-    border-radius: var(--radius-md);
+  }
+
+  .sidebar-left,
+  .sidebar-right {
+    display: none;
+  }
+
+  .map-wrapper {
+    flex: 1;
+    width: 100%;
   }
 
   .map-area {
     width: 100%;
     height: 100%;
-    min-height: 0;
-  }
-
-  .vendor-card {
-    top: auto;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 28px);
-    max-width: 320px;
-    border-radius: var(--radius-lg);
-  }
-
-  @keyframes fadeSlide {
-    from { opacity: 0; transform: translateX(-50%) translateY(18px); }
-    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-  }
-
-  .filter-sheet {
-    max-width: 100%;
   }
 }
 
 @media (max-width: 480px) {
-  .vendor-card {
-    width: calc(100% - 20px);
-    max-width: none;
-    bottom: 12px;
-  }
-}
-
-/* Move locate + compass buttons above vendor card when both are visible */
-@media (max-width: 768px) {
-  .map-area:has(.vendor-card) .locate-btn,
-  .map-area:has(.vendor-card) .vendor-locate-btn {
-    bottom: 168px;
+  .sidebar-left {
+    width: 160px;
   }
 
-  .map-area:has(.vendor-card) .compass-btn {
-    bottom: 222px;
-  }
-}
-
-@media (max-width: 480px) {
-  .map-area:has(.vendor-card) .locate-btn,
-  .map-area:has(.vendor-card) .vendor-locate-btn {
-    bottom: 156px;
-  }
-
-  .map-area:has(.vendor-card) .compass-btn {
-    bottom: 210px;
+  .sidebar-right {
+    width: 160px;
   }
 }
