@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Geolocation } from '@capacitor/geolocation';
+import HomePage from './pages/HomePage.jsx';
 import Login from './pages/Login.jsx';
 import MapTab from './pages/MapTab.jsx';
 import DashboardScreen from './pages/DashboardScreen.jsx';
 
 export default function App() {
   const [auth, setAuth] = useState(null);
-  const [activePage, setActivePage] = useState('map');
+  const [activePage, setActivePage] = useState('home');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -14,6 +15,7 @@ export default function App() {
     const vendorId = localStorage.getItem('vendorId');
     if (token && user && vendorId) {
       setAuth({ token, user: JSON.parse(user), vendorId });
+      setActivePage('map');
       requestLocationPermissions();
     }
   }, []);
@@ -34,6 +36,7 @@ export default function App() {
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('vendorId', vendorId.toString());
     setAuth({ token, user, vendorId });
+    setActivePage('map');
     requestLocationPermissions();
   };
 
@@ -42,6 +45,7 @@ export default function App() {
     localStorage.removeItem('user');
     localStorage.removeItem('vendorId');
     setAuth(null);
+    setActivePage('home');
   };
 
   const handleUserUpdate = (updatedUser) => {
@@ -49,7 +53,13 @@ export default function App() {
     setAuth((prev) => ({ ...prev, user: updatedUser }));
   };
 
-  if (!auth) return <Login onLogin={handleLogin} />;
+  if (!auth) {
+    return activePage === 'login' ? (
+      <Login onLogin={handleLogin} />
+    ) : (
+      <HomePage />
+    );
+  }
 
   return activePage === 'map' ? (
     <MapTab
