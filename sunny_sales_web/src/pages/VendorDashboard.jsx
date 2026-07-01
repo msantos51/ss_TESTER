@@ -8,9 +8,11 @@ import {
   FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
   FiNavigation, FiUser, FiLock, FiCheck,
   FiSend, FiCheckSquare, FiShoppingBag,
+  FiEye, FiMousePointer, FiPhone, FiClock,
 } from 'react-icons/fi';
 import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
+import VendorSidebar from '../components/VendorSidebar';
 import './VendorDashboard.css';
 
 // Distância mínima (m) entre leituras de GPS para serem aceites como
@@ -423,6 +425,7 @@ export default function VendorDashboard() {
 
   return (
     <div className="vd-wrapper">
+      <VendorSidebar onLogout={logout} />
       <div className="vd-container">
 
         {/* Hero Section */}
@@ -559,49 +562,144 @@ export default function VendorDashboard() {
           </span>
         </div>
 
+        {/* Statistics section */}
+        {vendor && (
+          <div className="vd-stats-section">
+            <h3 className="vd-stats-title">Estatísticas de Hoje</h3>
+            <div className="vd-stats-grid">
+              <div className="vd-stat-card">
+                <div className="vd-stat-icon">
+                  <FiEye />
+                </div>
+                <div className="vd-stat-value">128</div>
+                <div className="vd-stat-label">Visualizações no mapa</div>
+              </div>
+              <div className="vd-stat-card">
+                <div className="vd-stat-icon">
+                  <FiMousePointer />
+                </div>
+                <div className="vd-stat-value">32</div>
+                <div className="vd-stat-label">Cliques no perfil</div>
+              </div>
+              <div className="vd-stat-card">
+                <div className="vd-stat-icon">
+                  <FiPhone />
+                </div>
+                <div className="vd-stat-value">14</div>
+                <div className="vd-stat-label">Pedidos / Contactos</div>
+              </div>
+              <div className="vd-stat-card">
+                <div className="vd-stat-icon">
+                  <FiClock />
+                </div>
+                <div className="vd-stat-value">5h 24m</div>
+                <div className="vd-stat-label">Tempo online</div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Quick actions grid */}
-        <div className="vd-quick-grid">
-          <button className="vd-quick-card" onClick={openProfileModal}>
-            <span className="vd-quick-icon"><FiUser /></span>
-            <span className="vd-quick-label">Perfil</span>
-            <span className="vd-quick-desc">Ver e editar informações pessoais</span>
-          </button>
-          <button className="vd-quick-card" onClick={() => navigate('/routes')}>
-            <span className="vd-quick-icon"><FiSend /></span>
-            <span className="vd-quick-label">Trajetos</span>
-            <span className="vd-quick-desc">Consultar histórico de rotas</span>
-          </button>
-          <button className="vd-quick-card" onClick={() => navigate('/products')}>
-            <span className="vd-quick-icon"><FiShoppingBag /></span>
-            <span className="vd-quick-label">Produtos</span>
-            <span className="vd-quick-desc">Adicionar e gerir produtos</span>
-          </button>
-          <button className="vd-quick-card" onClick={() => navigate('/planos')}>
-            <span className="vd-quick-icon"><FiCheckSquare /></span>
-            <span className="vd-quick-label">Ativar Subscrição</span>
-            <span className="vd-quick-desc">Ativar ou renovar o plano</span>
-          </button>
-          <button className="vd-quick-card" onClick={() => navigate('/paid-weeks')}>
-            <span className="vd-quick-icon"><FiCalendar /></span>
-            <span className="vd-quick-label">Subscrições</span>
-            <span className="vd-quick-desc">Gerir planos e semanas pagas</span>
-          </button>
-          <button className="vd-quick-card" onClick={() => navigate('/invoices')}>
-            <span className="vd-quick-icon"><FiFileText /></span>
-            <span className="vd-quick-label">Faturas</span>
-            <span className="vd-quick-desc">Consultar faturas e recibos</span>
-          </button>
-          <button className="vd-quick-card" onClick={() => navigate('/contacto')}>
-            <span className="vd-quick-icon"><FiMail /></span>
-            <span className="vd-quick-label">Contactar Suporte</span>
-            <span className="vd-quick-desc">Enviar mensagem à equipa</span>
-          </button>
+        <div>
+          <h3 className="vd-stats-title">Ações Rápidas</h3>
+          <div className="vd-quick-grid">
+            <button className="vd-quick-card" onClick={openProfileModal}>
+              <span className="vd-quick-icon"><FiUser /></span>
+              <span className="vd-quick-label">Perfil</span>
+              <span className="vd-quick-desc">Ver e editar informações</span>
+            </button>
+            <button className="vd-quick-card" onClick={() => navigate('/routes')}>
+              <span className="vd-quick-icon"><FiSend /></span>
+              <span className="vd-quick-label">Trajetos</span>
+              <span className="vd-quick-desc">Histórico de rotas</span>
+            </button>
+            <button className="vd-quick-card" onClick={() => navigate('/products')}>
+              <span className="vd-quick-icon"><FiShoppingBag /></span>
+              <span className="vd-quick-label">Produtos</span>
+              <span className="vd-quick-desc">Gerir produtos</span>
+            </button>
+            <button className="vd-quick-card" onClick={() => navigate('/planos')}>
+              <span className="vd-quick-icon"><FiCheckSquare /></span>
+              <span className="vd-quick-label">Subscrição</span>
+              <span className="vd-quick-desc">Renovar plano</span>
+            </button>
+            <button className="vd-quick-card" onClick={() => navigate('/paid-weeks')}>
+              <span className="vd-quick-icon"><FiCalendar /></span>
+              <span className="vd-quick-label">Semanas Pagas</span>
+              <span className="vd-quick-desc">Gerir subscrições</span>
+            </button>
+            <button className="vd-quick-card" onClick={() => navigate('/invoices')}>
+              <span className="vd-quick-icon"><FiFileText /></span>
+              <span className="vd-quick-label">Faturas</span>
+              <span className="vd-quick-desc">Recibos e documentos</span>
+            </button>
+          </div>
         </div>
 
-        <button className="vd-logout-btn" onClick={logout}>
-          <FiLogOut size={15} />
-          Terminar Sessão
-        </button>
+        {/* Recent Activity and Tips section */}
+        <div className="vd-activity-section">
+          <div className="vd-activity-card">
+            <div className="vd-activity-card-title">
+              <span>Atividade Recente</span>
+              <a href="#" className="vd-activity-view-all">Ver tudo</a>
+            </div>
+            <div className="vd-activity-items">
+              <div className="vd-activity-item">
+                <div className="vd-activity-item-icon"><FiMapPin size={14} /></div>
+                <div className="vd-activity-item-content">
+                  <div className="vd-activity-item-title">Sua localização foi atualizada</div>
+                  <div className="vd-activity-item-time">há 2 min</div>
+                </div>
+              </div>
+              <div className="vd-activity-item">
+                <div className="vd-activity-item-icon"><FiUser size={14} /></div>
+                <div className="vd-activity-item-content">
+                  <div className="vd-activity-item-title">Perfil atualizado</div>
+                  <div className="vd-activity-item-time">há 1 hora</div>
+                </div>
+              </div>
+              <div className="vd-activity-item">
+                <div className="vd-activity-item-icon"><FiShoppingBag size={14} /></div>
+                <div className="vd-activity-item-content">
+                  <div className="vd-activity-item-title">Produto adicionado: Gelado de Chocolate</div>
+                  <div className="vd-activity-item-time">há 3 horas</div>
+                </div>
+              </div>
+              <div className="vd-activity-item">
+                <div className="vd-activity-item-icon"><FiCreditCard size={14} /></div>
+                <div className="vd-activity-item-content">
+                  <div className="vd-activity-item-title">Subscrição renovada com sucesso</div>
+                  <div className="vd-activity-item-time">há 1 dia</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="vd-tips-card">
+            <div className="vd-tips-title">💡 Dicas para Vendedores</div>
+            <div className="vd-tips-items">
+              <div className="vd-tip-item">
+                <div className="vd-tip-item-icon">✓</div>
+                <div>Mantenha sua localização ativa para aparecer no mapa</div>
+              </div>
+              <div className="vd-tip-item">
+                <div className="vd-tip-item-icon">✓</div>
+                <div>Atualize seus produtos regularmente</div>
+              </div>
+              <div className="vd-tip-item">
+                <div className="vd-tip-item-icon">✓</div>
+                <div>Ofereça vários métodos de pagamento</div>
+              </div>
+              <div className="vd-tip-item">
+                <div className="vd-tip-item-icon">✓</div>
+                <div>Horários de maior movimento: 15h-19h</div>
+              </div>
+            </div>
+            <div className="vd-tips-footer">
+              <a href="#" className="vd-tips-learn-more">Saber mais dicas →</a>
+            </div>
+          </div>
+        </div>
 
       </div>
 
