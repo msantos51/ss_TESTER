@@ -6,7 +6,7 @@ import {
   NavLink,
   useLocation,
 } from 'react-router-dom';
-import { FiUser, FiMenu, FiX } from 'react-icons/fi';
+import { FiUser, FiMenu, FiX, FiMapPin } from 'react-icons/fi';
 import { FaInstagram } from 'react-icons/fa';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -26,6 +26,7 @@ import VendorDetailScreen from './pages/VendorDetailScreen';
 import Invoices from './pages/Invoices';
 import Dashboard from './pages/Dashboard';
 import ModernMapLayout from './pages/ModernMapLayout';
+import Home from './pages/Home';
 import SobreProjeto from './pages/SobreProjeto';
 import Sustentabilidade from './pages/Sustentabilidade';
 import HowItWorks from './pages/HowItWorks';
@@ -177,6 +178,10 @@ function AppLayout() {
           <Link to={profileLink} className="profile-icon" aria-label="Perfil">
             <FiUser size={18} />
           </Link>
+          <Link to="/map" className="nav-cta">
+            <FiMapPin size={16} />
+            Explorar Mapa
+          </Link>
           <button
             className="menu-toggle"
             onClick={() => setMenuOpen((o) => !o)}
@@ -197,7 +202,7 @@ function AppLayout() {
 
       <div className="container">
         <Routes>
-          <Route path="/" element={<ModernMapLayout />} />
+          <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/sobre-projeto" element={<SobreProjeto />} />
           <Route path="/sustentabilidade" element={<Sustentabilidade />} />
