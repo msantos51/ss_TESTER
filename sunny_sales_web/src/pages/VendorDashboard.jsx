@@ -10,10 +10,10 @@ import {
   FiShoppingBag, FiNavigation, FiBarChart2,
   FiEdit2, FiAlertCircle, FiX,
   FiClock, FiTrendingUp, FiLogOut, FiSettings,
+  FiHome, FiHelpCircle, FiChevronRight, FiArrowLeft,
 } from 'react-icons/fi';
 import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
-import VendorSidebar from '../components/VendorSidebar';
 import './VendorDashboard.css';
 
 // Distância mínima (m) entre leituras de GPS para serem aceites como
@@ -83,6 +83,13 @@ function relativeTime(dateStr) {
   return new Date(dateStr).toLocaleDateString('pt-PT');
 }
 
+const SECTION_TITLES = {
+  inicio: 'Visão geral',
+  dados: 'Dados pessoais',
+  aparencia: 'Aparência',
+  seguranca: 'Segurança',
+};
+
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
@@ -92,9 +99,11 @@ export default function VendorDashboard() {
   const [notice, setNotice] = useState(null);
   const navigate = useNavigate();
 
-  // Profile modal state
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [profileTab, setProfileTab] = useState('aparencia');
+  // Secção ativa (painel central no PC; no telemóvel abre por cima do menu)
+  const [activeSection, setActiveSection] = useState('inicio');
+  const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
+
+  // Formulários de perfil (aparência / dados pessoais / segurança)
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editNif, setEditNif] = useState('');
@@ -235,6 +244,18 @@ export default function VendorDashboard() {
     checkPermission();
   }, []);
 
+  // Preenche os formulários de perfil com os dados atuais do vendedor
+  useEffect(() => {
+    if (!vendor) return;
+    setEditName(vendor.name || '');
+    setEditEmail(vendor.email || '');
+    setEditNif(vendor.nif || '');
+    setEditPhone(vendor.phone || '');
+    setEditProduct(vendor.product || '');
+    setEditPinColor(vendor.pin_color || '#7B61FF');
+    setEditPaymentMethods(vendor.payment_methods ? vendor.payment_methods.split(',').filter(Boolean) : []);
+  }, [vendor]);
+
   // Carrega os trajetos para calcular o resumo do dia e a atividade recente
   useEffect(() => {
     if (!vendor?.id) return;
@@ -317,39 +338,28 @@ export default function VendorDashboard() {
       .slice(0, 4);
   }, [routes]);
 
-  // ── Profile modal ─────────────────────────────────────
+  // ── Navegação entre secções ───────────────────────────
 
-  const openProfileModal = () => {
-    if (!vendor) return;
-    setProfileTab('aparencia');
-    setEditName(vendor.name || '');
-    setEditEmail(vendor.email || '');
-    setEditNif(vendor.nif || '');
-    setEditPhone(vendor.phone || '');
-    setEditProduct(vendor.product || '');
-    setEditPhoto(null);
-    setEditPhotoPreview(null);
-    setEditCropSrc(null);
-    setEditPinColor(vendor.pin_color || '#7B61FF');
-    setEditPaymentMethods(vendor.payment_methods ? vendor.payment_methods.split(',').filter(Boolean) : []);
+  const openSection = (id) => {
+    setActiveSection(id);
+    setMobilePanelOpen(true);
+    // Limpa mensagens de gravações anteriores ao entrar numa secção
     setEditError('');
     setEditSuccess('');
     setPersonalError('');
     setPersonalSuccess('');
-    setSecOldPassword('');
-    setSecNewPassword('');
     setSecError('');
     setSecSuccess('');
-    setProfileOpen(true);
+    if (id === 'seguranca') {
+      setSecOldPassword('');
+      setSecNewPassword('');
+    }
+    window.scrollTo({ top: 0 });
   };
 
-  const closeProfileModal = () => {
-    if (editPhotoPreview) URL.revokeObjectURL(editPhotoPreview);
-    if (editCropSrc) URL.revokeObjectURL(editCropSrc);
-    setProfileOpen(false);
-    setEditPhoto(null);
-    setEditPhotoPreview(null);
-    setEditCropSrc(null);
+  const closePanel = () => {
+    setMobilePanelOpen(false);
+    window.scrollTo({ top: 0 });
   };
 
   const handleEditPhoto = (e) => {
@@ -493,7 +503,7 @@ export default function VendorDashboard() {
     ? new Date(vendor.subscription_valid_until).toLocaleDateString('pt-PT')
     : null;
 
-  const modalAvatarSrc = editPhotoPreview
+  const formAvatarSrc = editPhotoPreview
     || (vendor?.profile_photo ? mediaUrl(vendor.profile_photo) : null);
 
   const todayLabel = new Date().toLocaleDateString('pt-PT', {
@@ -502,96 +512,57 @@ export default function VendorDashboard() {
     month: 'long',
   });
 
-  const quickActions = [
-    { path: '/routes', icon: <FiNavigation />, label: 'Trajetos', desc: 'Histórico de sessões' },
-    { path: '/stats', icon: <FiBarChart2 />, label: 'Estatísticas', desc: 'Km percorridos por dia' },
-    { path: '/products', icon: <FiShoppingBag />, label: 'Produtos', desc: 'Gerir o teu catálogo' },
-    { path: '/paid-weeks', icon: <FiCreditCard />, label: 'Subscrição', desc: 'Pagamentos e recibos' },
+  // ── Estrutura do menu (foto em cima, menus em baixo) ──
+
+  const menuGroups = [
+    {
+      label: 'Atividade',
+      items: [
+        { id: 'inicio', type: 'section', icon: <FiHome />, label: 'Visão geral' },
+        { id: 'location', type: 'toggle', icon: <FiMapPin />, label: 'Partilha de localização' },
+        { type: 'route', path: '/routes', icon: <FiNavigation />, label: 'Trajetos' },
+        { type: 'route', path: '/stats', icon: <FiBarChart2 />, label: 'Estatísticas' },
+      ],
+    },
+    {
+      label: 'Conta',
+      items: [
+        { id: 'dados', type: 'section', icon: <FiUser />, label: 'Dados pessoais' },
+        { id: 'aparencia', type: 'section', icon: <FiEdit2 />, label: 'Aparência' },
+        { id: 'seguranca', type: 'section', icon: <FiLock />, label: 'Segurança' },
+        { type: 'route', path: '/settings', icon: <FiSettings />, label: 'Definições' },
+      ],
+    },
+    {
+      label: 'Negócio',
+      items: [
+        { type: 'route', path: '/products', icon: <FiShoppingBag />, label: 'Produtos' },
+        {
+          type: 'route',
+          path: '/paid-weeks',
+          icon: <FiCreditCard />,
+          label: 'Subscrição',
+          value: subscriptionActive ? 'Ativa' : 'Inativa',
+          valueClass: subscriptionActive ? 'on' : 'off',
+        },
+        { type: 'route', path: '/invoices', icon: <FiFileText />, label: 'Faturas' },
+      ],
+    },
+    {
+      label: 'Suporte',
+      items: [
+        { type: 'route', path: '/faqs', icon: <FiHelpCircle />, label: 'Perguntas frequentes' },
+        { type: 'route', path: '/contacto', icon: <FiMail />, label: 'Contactar suporte' },
+      ],
+    },
   ];
 
-  return (
-    <div className="vd-wrapper">
-      <VendorSidebar onLogout={logout} />
-      <div className="vd-container">
-
-        {/* Cabeçalho */}
-        {vendor && (
-          <div className="vd-hero">
-            <span className="vd-hero-date">{todayLabel}</span>
-            <h1 className="vd-hero-title">
-              {getGreeting()}, {vendor.name.split(' ')[0]}
-            </h1>
-            <p className="vd-hero-subtitle">
-              Gere a tua presença no mapa e acompanha a tua atividade do dia.
-            </p>
-            <div className="vd-hero-chips">
-              <span className={`vd-hero-chip${subscriptionActive ? ' on' : ' off'}`}>
-                <span className="vd-hero-chip-dot" />
-                {subscriptionActive ? 'Subscrição ativa' : 'Subscrição inativa'}
-              </span>
-              <span className={`vd-hero-chip${sharing ? ' on' : ' off'}`}>
-                <span className="vd-hero-chip-dot" />
-                {sharing ? 'Visível no mapa' : 'Localização desligada'}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Aviso contextual (substitui os alert()) */}
-        {notice && (
-          <div className={`vd-notice vd-notice-${notice.type}`} role="alert">
-            <FiAlertCircle className="vd-notice-icon" />
-            <span className="vd-notice-text">{notice.text}</span>
-            <button
-              type="button"
-              className="vd-notice-close"
-              aria-label="Fechar aviso"
-              onClick={() => setNotice(null)}
-            >
-              <FiX />
-            </button>
-          </div>
-        )}
-
-        {/* Permissão de localização negada */}
-        {locationPermission === 'denied' && (
-          <div className="vd-cta-card warning">
-            <div className="vd-cta-text">
-              <span className="vd-cta-title">Permissão de localização negada</span>
-              <span className="vd-cta-desc">Ativa-a nas definições do browser para poderes partilhar a tua localização</span>
-            </div>
-          </div>
-        )}
-
-        {/* CTA de subscrição inativa */}
-        {vendor && !subscriptionActive && (
-          <div className="vd-cta-card">
-            <div className="vd-cta-text">
-              <span className="vd-cta-title">Subscrição inativa</span>
-              <span className="vd-cta-desc">Ativa a subscrição para apareceres no mapa e receberes clientes</span>
-            </div>
-            <button className="vd-cta-btn" onClick={() => navigate('/planos')}>
-              Ativar
-            </button>
-          </div>
-        )}
-
-        {/* Partilha de localização */}
-        <div className={`vd-location-card${sharing ? ' active' : ''}`}>
-          <div className="vd-location-icon-wrap">
-            <FiMapPin className="vd-location-icon" />
-            {sharing && <span className="vd-location-pulse" />}
-          </div>
-          <div className="vd-location-text">
-            <span className="vd-location-title">Partilha de localização</span>
-            <span className="vd-location-status">
-              {sharing
-                ? 'Ativa — estás visível no mapa'
-                : subscriptionActive
-                  ? 'Desligada — não apareces no mapa'
-                  : 'Requer subscrição ativa'}
-            </span>
-          </div>
+  const renderMenuItem = (item) => {
+    if (item.type === 'toggle') {
+      return (
+        <div key={item.id} className="vd-menu-row vd-menu-row-static">
+          <span className="vd-menu-row-icon">{item.icon}</span>
+          <span className="vd-menu-row-label">{item.label}</span>
           <label className="vendor-switch" aria-label="Ativar/desativar localização">
             <input
               type="checkbox"
@@ -601,465 +572,502 @@ export default function VendorDashboard() {
             <span className="slider" />
           </label>
         </div>
+      );
+    }
+    if (item.type === 'section') {
+      const active = activeSection === item.id;
+      return (
+        <button
+          key={item.id}
+          type="button"
+          className={`vd-menu-row${active ? ' active' : ''}`}
+          onClick={() => openSection(item.id)}
+        >
+          <span className="vd-menu-row-icon">{item.icon}</span>
+          <span className="vd-menu-row-label">{item.label}</span>
+          <FiChevronRight className="vd-menu-row-chevron" />
+        </button>
+      );
+    }
+    return (
+      <button
+        key={item.path}
+        type="button"
+        className="vd-menu-row"
+        onClick={() => navigate(item.path)}
+      >
+        <span className="vd-menu-row-icon">{item.icon}</span>
+        <span className="vd-menu-row-label">{item.label}</span>
+        {item.value && (
+          <span className={`vd-menu-row-value ${item.valueClass || ''}`}>{item.value}</span>
+        )}
+        <FiChevronRight className="vd-menu-row-chevron" />
+      </button>
+    );
+  };
 
-        <div className="vd-info-card">
-          💡 <strong>Dica:</strong> a app web partilha a localização enquanto o separador estiver
-          ativo. Para partilha contínua em segundo plano, usa a <strong>app móvel</strong>.
+  return (
+    <div className="vd-page">
+
+      {/* Aviso contextual (substitui os alert()) */}
+      {notice && (
+        <div className={`vd-notice vd-notice-${notice.type}`} role="alert">
+          <FiAlertCircle className="vd-notice-icon" />
+          <span className="vd-notice-text">{notice.text}</span>
+          <button
+            type="button"
+            className="vd-notice-close"
+            aria-label="Fechar aviso"
+            onClick={() => setNotice(null)}
+          >
+            <FiX />
+          </button>
         </div>
+      )}
 
-        {/* Resumo de hoje (dados reais dos trajetos) */}
-        {vendor && (
-          <div className="vd-stats-section">
-            <h3 className="vd-section-title">Resumo de hoje</h3>
-            <div className="vd-stats-grid">
-              <div className="vd-stat-card">
-                <div className="vd-stat-icon"><FiNavigation /></div>
-                <div className="vd-stat-value">
-                  {stats ? formatDistance(stats.distToday) : '—'}
+      <div className={`vd-layout${mobilePanelOpen ? ' panel-open' : ''}`}>
+
+        {/* ── Menu (telemóvel: foto em cima e menus em baixo;
+               PC: coluna fixa à esquerda) ─────────────────── */}
+        <aside className="vd-menu">
+          {vendor && (
+            <button type="button" className="vd-profile-head" onClick={() => openSection('dados')}>
+              {vendor.profile_photo ? (
+                <img
+                  src={mediaUrl(vendor.profile_photo)}
+                  alt="Foto de perfil"
+                  className="vd-avatar"
+                  style={{ borderColor: pinColor }}
+                />
+              ) : (
+                <div
+                  className="vd-avatar vd-avatar-placeholder"
+                  style={{ borderColor: pinColor, background: `${pinColor}22`, color: pinColor }}
+                >
+                  {vendor.name?.charAt(0)?.toUpperCase() || '?'}
                 </div>
-                <div className="vd-stat-label">Distância percorrida</div>
+              )}
+              <div className="vd-profile-head-meta">
+                <span className="vd-profile-head-name">{vendor.name}</span>
+                <span className="vd-profile-head-email">{vendor.email}</span>
+                <span className={`vd-sub-badge${subscriptionActive ? ' active' : ' inactive'}`}>
+                  <span className="vd-sub-dot" />
+                  {subscriptionActive
+                    ? <>Subscrição ativa{subscriptionDate && <span className="vd-sub-date"> · até {subscriptionDate}</span>}</>
+                    : 'Subscrição inativa'}
+                </span>
               </div>
-              <div className="vd-stat-card">
-                <div className="vd-stat-icon"><FiClock /></div>
-                <div className="vd-stat-value">
-                  {stats ? formatDuration(stats.msToday) : '—'}
-                </div>
-                <div className="vd-stat-label">Tempo online</div>
-              </div>
-              <div className="vd-stat-card">
-                <div className="vd-stat-icon"><FiMapPin /></div>
-                <div className="vd-stat-value">
-                  {stats ? stats.sessionsToday : '—'}
-                </div>
-                <div className="vd-stat-label">Sessões de partilha</div>
-              </div>
-              <div className="vd-stat-card">
-                <div className="vd-stat-icon"><FiTrendingUp /></div>
-                <div className="vd-stat-value">
-                  {stats ? formatDistance(stats.distWeek) : '—'}
-                </div>
-                <div className="vd-stat-label">Últimos 7 dias</div>
+              <FiChevronRight className="vd-menu-row-chevron" />
+            </button>
+          )}
+
+          {menuGroups.map((group) => (
+            <div className="vd-menu-section" key={group.label}>
+              <span className="vd-menu-section-label">{group.label}</span>
+              <div className="vd-menu-group">
+                {group.items.map(renderMenuItem)}
               </div>
             </div>
-          </div>
-        )}
+          ))}
 
-        {/* Ações rápidas */}
-        <div className="vd-quick-section">
-          <h3 className="vd-section-title">Ações rápidas</h3>
-          <div className="vd-quick-grid">
-            {quickActions.map((action) => (
-              <button
-                key={action.path}
-                type="button"
-                className="vd-quick-card"
-                onClick={() => navigate(action.path)}
-              >
-                <span className="vd-quick-icon">{action.icon}</span>
-                <span className="vd-quick-label">{action.label}</span>
-                <span className="vd-quick-desc">{action.desc}</span>
+          <div className="vd-menu-section">
+            <div className="vd-menu-group">
+              <button type="button" className="vd-menu-row danger" onClick={logout}>
+                <span className="vd-menu-row-icon"><FiLogOut /></span>
+                <span className="vd-menu-row-label">Terminar sessão</span>
               </button>
-            ))}
+            </div>
           </div>
-        </div>
+        </aside>
 
-        {/* Perfil + atividade recente */}
-        <div className="vd-bottom-section">
-          {vendor && (
-            <div className="vd-profile-card">
-              <div className="vd-profile-top">
-                {vendor.profile_photo ? (
-                  <img
-                    src={mediaUrl(vendor.profile_photo)}
-                    alt="Foto de perfil"
-                    className="vd-avatar"
-                    style={{ borderColor: pinColor }}
-                  />
-                ) : (
-                  <div
-                    className="vd-avatar vd-avatar-placeholder"
-                    style={{ borderColor: pinColor, background: `${pinColor}22`, color: pinColor }}
-                  >
-                    {vendor.name?.charAt(0)?.toUpperCase() || '?'}
+        {/* ── Painel central (PC) / vista de detalhe (telemóvel) ── */}
+        <section className="vd-panel">
+          <header className="vd-panel-header">
+            <button type="button" className="vd-panel-back" onClick={closePanel}>
+              <FiArrowLeft /> Voltar
+            </button>
+            <h2 className="vd-panel-title">{SECTION_TITLES[activeSection]}</h2>
+          </header>
+
+          {activeSection === 'inicio' && (
+            <div className="vd-panel-body">
+
+              {vendor && (
+                <div className="vd-hero">
+                  <span className="vd-hero-date">{todayLabel}</span>
+                  <h1 className="vd-hero-title">
+                    {getGreeting()}, {vendor.name.split(' ')[0]}
+                  </h1>
+                  <p className="vd-hero-subtitle">
+                    Gere a tua presença no mapa e acompanha a tua atividade do dia.
+                  </p>
+                  <div className="vd-hero-chips">
+                    <span className={`vd-hero-chip${subscriptionActive ? ' on' : ' off'}`}>
+                      <span className="vd-hero-chip-dot" />
+                      {subscriptionActive ? 'Subscrição ativa' : 'Subscrição inativa'}
+                    </span>
+                    <span className={`vd-hero-chip${sharing ? ' on' : ' off'}`}>
+                      <span className="vd-hero-chip-dot" />
+                      {sharing ? 'Visível no mapa' : 'Localização desligada'}
+                    </span>
                   </div>
-                )}
-                <div className="vd-profile-meta">
-                  <span className="vd-profile-name">{vendor.name}</span>
-                  <span className="vd-profile-product">{vendor.product}</span>
-                  <span className={`vd-sub-badge${subscriptionActive ? ' active' : ' inactive'}`}>
-                    <span className="vd-sub-dot" />
-                    {subscriptionActive
-                      ? <>Ativa{subscriptionDate && <span className="vd-sub-date"> · até {subscriptionDate}</span>}</>
-                      : 'Inativa'}
+                </div>
+              )}
+
+              {/* Permissão de localização negada */}
+              {locationPermission === 'denied' && (
+                <div className="vd-cta-card warning">
+                  <div className="vd-cta-text">
+                    <span className="vd-cta-title">Permissão de localização negada</span>
+                    <span className="vd-cta-desc">Ativa-a nas definições do browser para poderes partilhar a tua localização</span>
+                  </div>
+                </div>
+              )}
+
+              {/* CTA de subscrição inativa */}
+              {vendor && !subscriptionActive && (
+                <div className="vd-cta-card">
+                  <div className="vd-cta-text">
+                    <span className="vd-cta-title">Subscrição inativa</span>
+                    <span className="vd-cta-desc">Ativa a subscrição para apareceres no mapa e receberes clientes</span>
+                  </div>
+                  <button className="vd-cta-btn" onClick={() => navigate('/planos')}>
+                    Ativar
+                  </button>
+                </div>
+              )}
+
+              {/* Partilha de localização */}
+              <div className={`vd-location-card${sharing ? ' active' : ''}`}>
+                <div className="vd-location-icon-wrap">
+                  <FiMapPin className="vd-location-icon" />
+                  {sharing && <span className="vd-location-pulse" />}
+                </div>
+                <div className="vd-location-text">
+                  <span className="vd-location-title">Partilha de localização</span>
+                  <span className="vd-location-status">
+                    {sharing
+                      ? 'Ativa — estás visível no mapa'
+                      : subscriptionActive
+                        ? 'Desligada — não apareces no mapa'
+                        : 'Requer subscrição ativa'}
                   </span>
                 </div>
-                <button type="button" className="vd-edit-btn" onClick={openProfileModal}>
-                  <FiEdit2 size={13} /> Editar
-                </button>
+                <label className="vendor-switch" aria-label="Ativar/desativar localização">
+                  <input
+                    type="checkbox"
+                    checked={sharing}
+                    onChange={sharing ? stopSharing : startSharing}
+                  />
+                  <span className="slider" />
+                </label>
               </div>
 
-              <div className="vd-profile-divider" />
+              <div className="vd-info-card">
+                💡 <strong>Dica:</strong> a app web partilha a localização enquanto o separador estiver
+                ativo. Para partilha contínua em segundo plano, usa a <strong>app móvel</strong>.
+              </div>
 
-              <div className="vd-profile-details">
-                <div className="vd-detail-row">
-                  <span className="vd-detail-row-icon"><FiMail /></span>
-                  <span className="vd-detail-row-label">Email</span>
-                  <span className="vd-detail-row-value">{vendor.email}</span>
-                </div>
-                <div className="vd-detail-row">
-                  <span className="vd-detail-row-icon">
-                    <span className="vd-pin-dot" style={{ backgroundColor: pinColor }} />
-                  </span>
-                  <span className="vd-detail-row-label">Cor do pin</span>
-                  <span className="vd-detail-row-value" />
-                </div>
-                {vendor.payment_methods && (
-                  <div className="vd-detail-row vd-detail-row-payments">
-                    <span className="vd-detail-row-icon"><FiCreditCard /></span>
-                    <span className="vd-detail-row-label">Pagamentos</span>
-                    <div className="vd-payments-row">
-                      {vendor.payment_methods.split(',').filter(Boolean).map(m => (
-                        <span key={m} className="vd-payment-badge" title={m}>
-                          <span className="vd-payment-badge-icon">{PAYMENT_ICONS[m] || <FiCreditCard />}</span>
-                          <span className="vd-payment-badge-label">{m}</span>
-                        </span>
-                      ))}
+              {/* Resumo de hoje (dados reais dos trajetos) */}
+              {vendor && (
+                <div className="vd-stats-section">
+                  <h3 className="vd-section-title">Resumo de hoje</h3>
+                  <div className="vd-stats-grid">
+                    <div className="vd-stat-card">
+                      <div className="vd-stat-icon"><FiNavigation /></div>
+                      <div className="vd-stat-value">
+                        {stats ? formatDistance(stats.distToday) : '—'}
+                      </div>
+                      <div className="vd-stat-label">Distância percorrida</div>
+                    </div>
+                    <div className="vd-stat-card">
+                      <div className="vd-stat-icon"><FiClock /></div>
+                      <div className="vd-stat-value">
+                        {stats ? formatDuration(stats.msToday) : '—'}
+                      </div>
+                      <div className="vd-stat-label">Tempo online</div>
+                    </div>
+                    <div className="vd-stat-card">
+                      <div className="vd-stat-icon"><FiMapPin /></div>
+                      <div className="vd-stat-value">
+                        {stats ? stats.sessionsToday : '—'}
+                      </div>
+                      <div className="vd-stat-label">Sessões de partilha</div>
+                    </div>
+                    <div className="vd-stat-card">
+                      <div className="vd-stat-icon"><FiTrendingUp /></div>
+                      <div className="vd-stat-value">
+                        {stats ? formatDistance(stats.distWeek) : '—'}
+                      </div>
+                      <div className="vd-stat-label">Últimos 7 dias</div>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {/* Atividade recente */}
+              <div className="vd-activity-card">
+                <div className="vd-activity-card-title">
+                  <span>Atividade recente</span>
+                  {recentRoutes.length > 0 && (
+                    <Link to="/routes" className="vd-activity-view-all">Ver tudo</Link>
+                  )}
+                </div>
+                {routes === null && (
+                  <div className="vd-activity-empty">A carregar atividade…</div>
+                )}
+                {routes !== null && recentRoutes.length === 0 && (
+                  <div className="vd-activity-empty">
+                    Ainda não tens trajetos registados. Ativa a partilha de localização para
+                    começares a registar a tua atividade.
+                  </div>
+                )}
+                {recentRoutes.length > 0 && (
+                  <div className="vd-activity-items">
+                    {recentRoutes.map((r) => {
+                      const ongoing = !r.end_time;
+                      const duration = ongoing
+                        ? Date.now() - new Date(r.start_time).getTime()
+                        : new Date(r.end_time) - new Date(r.start_time);
+                      return (
+                        <Link to="/routes" key={r.id ?? r.start_time} className="vd-activity-item">
+                          <div className="vd-activity-item-icon"><FiNavigation size={14} /></div>
+                          <div className="vd-activity-item-content">
+                            <div className="vd-activity-item-title">
+                              {ongoing
+                                ? 'Sessão em curso'
+                                : `Sessão de ${formatDuration(duration)} · ${formatDistance(r.distance_m || 0)}`}
+                            </div>
+                            <div className="vd-activity-item-time">{relativeTime(r.start_time)}</div>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
+
+              {/* Dicas */}
+              <div className="vd-tips-card">
+                <div className="vd-tips-title">💡 Dicas para vendedores</div>
+                <div className="vd-tips-items">
+                  <div className="vd-tip-item">
+                    <div className="vd-tip-item-icon">✓</div>
+                    <div>Mantém a partilha de localização ativa para apareceres no mapa</div>
+                  </div>
+                  <div className="vd-tip-item">
+                    <div className="vd-tip-item-icon">✓</div>
+                    <div>Atualiza os teus produtos e métodos de pagamento regularmente</div>
+                  </div>
+                  <div className="vd-tip-item">
+                    <div className="vd-tip-item-icon">✓</div>
+                    <div>Uma foto de perfil ajuda os banhistas a reconhecer-te</div>
+                  </div>
+                  <div className="vd-tip-item">
+                    <div className="vd-tip-item-icon">✓</div>
+                    <div>O maior movimento na praia é entre as 15h e as 19h</div>
+                  </div>
+                </div>
+                <div className="vd-tips-footer">
+                  <Link to="/faqs" className="vd-tips-learn-more">Ver perguntas frequentes →</Link>
+                </div>
+              </div>
+
             </div>
           )}
 
-          <div className="vd-activity-card">
-            <div className="vd-activity-card-title">
-              <span>Atividade recente</span>
-              {recentRoutes.length > 0 && (
-                <Link to="/routes" className="vd-activity-view-all">Ver tudo</Link>
+          {activeSection === 'aparencia' && (
+            <form className="vd-panel-body vd-form" onSubmit={saveAppearance}>
+              {/* Avatar + photo upload */}
+              <div className="vd-form-photo-section">
+                {formAvatarSrc ? (
+                  <img
+                    src={formAvatarSrc}
+                    alt="Foto de perfil"
+                    className="vd-form-avatar"
+                    style={{ borderColor: editPinColor }}
+                  />
+                ) : (
+                  <div
+                    className="vd-form-avatar vd-form-avatar-placeholder"
+                    style={{ borderColor: editPinColor, background: `${editPinColor}22`, color: editPinColor }}
+                  >
+                    {vendor?.name?.charAt(0)?.toUpperCase() || '?'}
+                  </div>
+                )}
+                <label className="vd-form-photo-btn">
+                  Alterar foto
+                  <input type="file" accept="image/*" hidden onChange={handleEditPhoto} />
+                </label>
+              </div>
+
+              <div className="vd-form-field">
+                <label className="vd-form-label">Cor do Pin</label>
+                <PinColorPicker value={editPinColor} onChange={setEditPinColor} />
+              </div>
+
+              <div className="vd-form-field">
+                <label className="vd-form-label">Produto</label>
+                <select
+                  className="vd-form-input"
+                  value={editProduct}
+                  onChange={e => setEditProduct(e.target.value)}
+                >
+                  <option value="Bolas de Berlim">Bolas de Berlim</option>
+                  <option value="Gelados">Gelados</option>
+                  <option value="Acessórios de Praia">Acessórios de Praia</option>
+                </select>
+              </div>
+
+              <div className="vd-form-field">
+                <label className="vd-form-label">Métodos de pagamento aceites</label>
+                <div className="vd-form-payments-grid">
+                  {Object.keys(PAYMENT_ICONS).map((method) => (
+                    <button
+                      type="button"
+                      key={method}
+                      className={`vd-form-payment-chip${editPaymentMethods.includes(method) ? ' active' : ''}`}
+                      onClick={() => togglePaymentMethod(method)}
+                    >
+                      <span className="vd-form-payment-chip-icon">{PAYMENT_ICONS[method]}</span>
+                      {method}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {editError && <p className="vd-form-error">{editError}</p>}
+              {editSuccess && (
+                <p className="vd-form-success">
+                  <FiCheck size={14} /> {editSuccess}
+                </p>
               )}
-            </div>
-            {routes === null && (
-              <div className="vd-activity-empty">A carregar atividade…</div>
-            )}
-            {routes !== null && recentRoutes.length === 0 && (
-              <div className="vd-activity-empty">
-                Ainda não tens trajetos registados. Ativa a partilha de localização para
-                começares a registar a tua atividade.
+
+              <div className="vd-form-actions">
+                <button type="submit" className="vd-form-save" disabled={editSaving}>
+                  {editSaving ? 'A guardar…' : 'Guardar'}
+                </button>
               </div>
-            )}
-            {recentRoutes.length > 0 && (
-              <div className="vd-activity-items">
-                {recentRoutes.map((r) => {
-                  const ongoing = !r.end_time;
-                  const duration = ongoing
-                    ? Date.now() - new Date(r.start_time).getTime()
-                    : new Date(r.end_time) - new Date(r.start_time);
-                  return (
-                    <Link to="/routes" key={r.id ?? r.start_time} className="vd-activity-item">
-                      <div className="vd-activity-item-icon"><FiNavigation size={14} /></div>
-                      <div className="vd-activity-item-content">
-                        <div className="vd-activity-item-title">
-                          {ongoing
-                            ? 'Sessão em curso'
-                            : `Sessão de ${formatDuration(duration)} · ${formatDistance(r.distance_m || 0)}`}
-                        </div>
-                        <div className="vd-activity-item-time">{relativeTime(r.start_time)}</div>
-                      </div>
-                    </Link>
-                  );
-                })}
+            </form>
+          )}
+
+          {activeSection === 'dados' && (
+            <form className="vd-panel-body vd-form" onSubmit={savePersonalData}>
+              <div className="vd-form-field">
+                <label className="vd-form-label">Nome</label>
+                <input
+                  className="vd-form-input"
+                  type="text"
+                  value={editName}
+                  onChange={e => setEditName(e.target.value)}
+                  required
+                />
               </div>
-            )}
-          </div>
-        </div>
+              <div className="vd-form-field">
+                <label className="vd-form-label">Email</label>
+                <input
+                  className="vd-form-input"
+                  type="email"
+                  value={editEmail}
+                  onChange={e => setEditEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="vd-form-field">
+                <label className="vd-form-label">NIF</label>
+                <input
+                  className="vd-form-input"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={9}
+                  placeholder="123456789"
+                  value={editNif}
+                  onChange={e => setEditNif(e.target.value.replace(/\D/g, ''))}
+                />
+              </div>
+              <div className="vd-form-field">
+                <label className="vd-form-label">Telemóvel</label>
+                <input
+                  className="vd-form-input"
+                  type="tel"
+                  placeholder="912345678"
+                  value={editPhone}
+                  onChange={e => setEditPhone(e.target.value)}
+                />
+              </div>
 
-        {/* Dicas */}
-        <div className="vd-tips-card">
-          <div className="vd-tips-title">💡 Dicas para vendedores</div>
-          <div className="vd-tips-items">
-            <div className="vd-tip-item">
-              <div className="vd-tip-item-icon">✓</div>
-              <div>Mantém a partilha de localização ativa para apareceres no mapa</div>
-            </div>
-            <div className="vd-tip-item">
-              <div className="vd-tip-item-icon">✓</div>
-              <div>Atualiza os teus produtos e métodos de pagamento regularmente</div>
-            </div>
-            <div className="vd-tip-item">
-              <div className="vd-tip-item-icon">✓</div>
-              <div>Uma foto de perfil ajuda os banhistas a reconhecer-te</div>
-            </div>
-            <div className="vd-tip-item">
-              <div className="vd-tip-item-icon">✓</div>
-              <div>O maior movimento na praia é entre as 15h e as 19h</div>
-            </div>
-          </div>
-          <div className="vd-tips-footer">
-            <Link to="/faqs" className="vd-tips-learn-more">Ver perguntas frequentes →</Link>
-          </div>
-        </div>
+              {personalError && <p className="vd-form-error">{personalError}</p>}
+              {personalSuccess && (
+                <p className="vd-form-success">
+                  <FiCheck size={14} /> {personalSuccess}
+                </p>
+              )}
 
-        {/* Conta */}
-        <div className="vd-account-section">
-          <h3 className="vd-section-title">Conta</h3>
-          <div className="vd-account-actions">
-            <button
-              type="button"
-              className="vd-account-btn"
-              onClick={() => navigate('/settings')}
-            >
-              <FiSettings /> Definições
-            </button>
-            <button
-              type="button"
-              className="vd-account-btn vd-account-btn-danger"
-              onClick={logout}
-            >
-              <FiLogOut /> Terminar sessão
-            </button>
-          </div>
-        </div>
+              <div className="vd-form-actions">
+                <button type="submit" className="vd-form-save" disabled={personalSaving}>
+                  {personalSaving ? 'A guardar…' : 'Guardar'}
+                </button>
+              </div>
+            </form>
+          )}
 
+          {activeSection === 'seguranca' && (
+            <form className="vd-panel-body vd-form" onSubmit={savePassword}>
+              <div className="vd-form-security-header">
+                <FiLock size={24} className="vd-form-security-icon" />
+                <p className="vd-form-security-desc">
+                  Introduz a tua palavra-passe atual e escolhe uma nova.
+                </p>
+              </div>
+
+              <div className="vd-form-field">
+                <label className="vd-form-label">Palavra-passe atual</label>
+                <input
+                  className="vd-form-input"
+                  type="password"
+                  placeholder="Palavra-passe atual"
+                  value={secOldPassword}
+                  onChange={e => setSecOldPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                />
+              </div>
+              <div className="vd-form-field">
+                <label className="vd-form-label">Nova palavra-passe</label>
+                <input
+                  className="vd-form-input"
+                  type="password"
+                  placeholder="Mínimo 8 caracteres"
+                  value={secNewPassword}
+                  onChange={e => setSecNewPassword(e.target.value)}
+                  autoComplete="new-password"
+                  required
+                />
+              </div>
+
+              {secError && <p className="vd-form-error">{secError}</p>}
+              {secSuccess && (
+                <p className="vd-form-success">
+                  <FiCheck size={14} /> {secSuccess}
+                </p>
+              )}
+
+              <div className="vd-form-actions">
+                <button type="submit" className="vd-form-save" disabled={secSaving}>
+                  {secSaving ? 'A guardar…' : 'Alterar Palavra-passe'}
+                </button>
+              </div>
+            </form>
+          )}
+        </section>
       </div>
 
-      {/* Profile edit modal */}
-      {profileOpen && (
-        <div className="vd-modal-overlay" onClick={closeProfileModal}>
-          <div className="vd-modal" onClick={e => e.stopPropagation()}>
-            <div className="vd-modal-header">
-              <button type="button" className="back-btn" onClick={closeProfileModal}>
-                ← Voltar
-              </button>
-              <span className="vd-modal-title">Perfil</span>
-            </div>
-
-            {/* Tabs */}
-            <div className="vd-modal-tabs">
-              <button
-                type="button"
-                className={`vd-modal-tab${profileTab === 'aparencia' ? ' active' : ''}`}
-                onClick={() => setProfileTab('aparencia')}
-              >
-                <FiUser size={14} /> Aparência
-              </button>
-              <button
-                type="button"
-                className={`vd-modal-tab${profileTab === 'dados-pessoais' ? ' active' : ''}`}
-                onClick={() => setProfileTab('dados-pessoais')}
-              >
-                <FiFileText size={14} /> Dados Pessoais
-              </button>
-              <button
-                type="button"
-                className={`vd-modal-tab${profileTab === 'seguranca' ? ' active' : ''}`}
-                onClick={() => setProfileTab('seguranca')}
-              >
-                <FiLock size={14} /> Segurança
-              </button>
-            </div>
-
-            {profileTab === 'aparencia' && (
-              <form className="vd-modal-form" onSubmit={saveAppearance}>
-                {/* Avatar + photo upload */}
-                <div className="vd-modal-photo-section">
-                  {modalAvatarSrc ? (
-                    <img
-                      src={modalAvatarSrc}
-                      alt="Foto de perfil"
-                      className="vd-modal-avatar"
-                      style={{ borderColor: editPinColor }}
-                    />
-                  ) : (
-                    <div
-                      className="vd-modal-avatar vd-modal-avatar-placeholder"
-                      style={{ borderColor: editPinColor, background: `${editPinColor}22`, color: editPinColor }}
-                    >
-                      {vendor?.name?.charAt(0)?.toUpperCase() || '?'}
-                    </div>
-                  )}
-                  <label className="vd-modal-photo-btn">
-                    Alterar foto
-                    <input type="file" accept="image/*" hidden onChange={handleEditPhoto} />
-                  </label>
-                </div>
-
-                <div className="vd-modal-field">
-                  <label className="vd-modal-label">Cor do Pin</label>
-                  <PinColorPicker value={editPinColor} onChange={setEditPinColor} />
-                </div>
-
-                <div className="vd-modal-field">
-                  <label className="vd-modal-label">Produto</label>
-                  <select
-                    className="vd-modal-input"
-                    value={editProduct}
-                    onChange={e => setEditProduct(e.target.value)}
-                  >
-                    <option value="Bolas de Berlim">Bolas de Berlim</option>
-                    <option value="Gelados">Gelados</option>
-                    <option value="Acessórios de Praia">Acessórios de Praia</option>
-                  </select>
-                </div>
-
-                <div className="vd-modal-field">
-                  <label className="vd-modal-label">Métodos de pagamento aceites</label>
-                  <div className="vd-modal-payments-grid">
-                    {Object.keys(PAYMENT_ICONS).map((method) => (
-                      <button
-                        type="button"
-                        key={method}
-                        className={`vd-modal-payment-chip${editPaymentMethods.includes(method) ? ' active' : ''}`}
-                        onClick={() => togglePaymentMethod(method)}
-                      >
-                        <span className="vd-modal-payment-chip-icon">{PAYMENT_ICONS[method]}</span>
-                        {method}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {editError && <p className="vd-modal-error">{editError}</p>}
-                {editSuccess && (
-                  <p className="vd-modal-success">
-                    <FiCheck size={14} /> {editSuccess}
-                  </p>
-                )}
-
-                <div className="vd-modal-actions">
-                  <button type="button" className="vd-modal-cancel" onClick={closeProfileModal}>
-                    Cancelar
-                  </button>
-                  <button type="submit" className="vd-modal-save" disabled={editSaving}>
-                    {editSaving ? 'A guardar…' : 'Guardar'}
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {profileTab === 'dados-pessoais' && (
-              <form className="vd-modal-form" onSubmit={savePersonalData}>
-                <div className="vd-modal-field">
-                  <label className="vd-modal-label">Nome</label>
-                  <input
-                    className="vd-modal-input"
-                    type="text"
-                    value={editName}
-                    onChange={e => setEditName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="vd-modal-field">
-                  <label className="vd-modal-label">Email</label>
-                  <input
-                    className="vd-modal-input"
-                    type="email"
-                    value={editEmail}
-                    onChange={e => setEditEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="vd-modal-field">
-                  <label className="vd-modal-label">NIF</label>
-                  <input
-                    className="vd-modal-input"
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={9}
-                    placeholder="123456789"
-                    value={editNif}
-                    onChange={e => setEditNif(e.target.value.replace(/\D/g, ''))}
-                  />
-                </div>
-                <div className="vd-modal-field">
-                  <label className="vd-modal-label">Telemóvel</label>
-                  <input
-                    className="vd-modal-input"
-                    type="tel"
-                    placeholder="912345678"
-                    value={editPhone}
-                    onChange={e => setEditPhone(e.target.value)}
-                  />
-                </div>
-
-                {personalError && <p className="vd-modal-error">{personalError}</p>}
-                {personalSuccess && (
-                  <p className="vd-modal-success">
-                    <FiCheck size={14} /> {personalSuccess}
-                  </p>
-                )}
-
-                <div className="vd-modal-actions">
-                  <button type="button" className="vd-modal-cancel" onClick={closeProfileModal}>
-                    Cancelar
-                  </button>
-                  <button type="submit" className="vd-modal-save" disabled={personalSaving}>
-                    {personalSaving ? 'A guardar…' : 'Guardar'}
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {profileTab === 'seguranca' && (
-              <form className="vd-modal-form" onSubmit={savePassword}>
-                <div className="vd-modal-security-header">
-                  <FiLock size={24} className="vd-modal-security-icon" />
-                  <p className="vd-modal-security-desc">
-                    Introduz a tua palavra-passe atual e escolhe uma nova.
-                  </p>
-                </div>
-
-                <div className="vd-modal-field">
-                  <label className="vd-modal-label">Palavra-passe atual</label>
-                  <input
-                    className="vd-modal-input"
-                    type="password"
-                    placeholder="Palavra-passe atual"
-                    value={secOldPassword}
-                    onChange={e => setSecOldPassword(e.target.value)}
-                    autoComplete="current-password"
-                    required
-                  />
-                </div>
-                <div className="vd-modal-field">
-                  <label className="vd-modal-label">Nova palavra-passe</label>
-                  <input
-                    className="vd-modal-input"
-                    type="password"
-                    placeholder="Mínimo 8 caracteres"
-                    value={secNewPassword}
-                    onChange={e => setSecNewPassword(e.target.value)}
-                    autoComplete="new-password"
-                    required
-                  />
-                </div>
-
-                {secError && <p className="vd-modal-error">{secError}</p>}
-                {secSuccess && (
-                  <p className="vd-modal-success">
-                    <FiCheck size={14} /> {secSuccess}
-                  </p>
-                )}
-
-                <div className="vd-modal-actions">
-                  <button type="button" className="vd-modal-cancel" onClick={closeProfileModal}>
-                    Cancelar
-                  </button>
-                  <button type="submit" className="vd-modal-save" disabled={secSaving}>
-                    {secSaving ? 'A guardar…' : 'Alterar Palavra-passe'}
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {editCropSrc && (
-              <ImageCropper
-                src={editCropSrc}
-                onCancel={handleEditCropCancel}
-                onComplete={handleEditCropComplete}
-              />
-            )}
-          </div>
-        </div>
+      {editCropSrc && (
+        <ImageCropper
+          src={editCropSrc}
+          onCancel={handleEditCropCancel}
+          onComplete={handleEditCropComplete}
+        />
       )}
     </div>
   );
