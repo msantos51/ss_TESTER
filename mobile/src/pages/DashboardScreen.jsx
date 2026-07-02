@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import {
-  FiUser, FiMapPin, FiDollarSign, FiSmartphone, FiTerminal,
-  FiCreditCard, FiWifi, FiSend, FiCheckSquare, FiCalendar,
-  FiFileText, FiMail, FiLogOut, FiMap, FiShoppingBag, FiExternalLink
+  FiUser, FiSend, FiCheckSquare, FiCalendar,
+  FiFileText, FiMail, FiLogOut, FiShoppingBag,
+  FiChevronRight, FiExternalLink, FiMap
 } from 'react-icons/fi';
 import { BASE_URL, WEB_URL, mediaUrl } from '../config.js';
 import ProfileScreen from './ProfileScreen.jsx';
@@ -11,24 +11,8 @@ import RoutesScreen from './RoutesScreen.jsx';
 import ProductsScreen from './ProductsScreen.jsx';
 import InvoicesScreen from './InvoicesScreen.jsx';
 
-const PAYMENT_ICONS = {
-  'Numerário': <FiDollarSign />,
-  'MB Way': <FiSmartphone />,
-  'Multibanco': <FiTerminal />,
-  'Cartão': <FiCreditCard />,
-  'NFC': <FiWifi />,
-};
-
-function getGreeting() {
-  const h = new Date().getHours();
-  if (h < 12) return 'Bom dia';
-  if (h < 19) return 'Boa tarde';
-  return 'Boa noite';
-}
-
 export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUpdate }) {
   const { user } = auth;
-  const [activeTab, setActiveTab] = useState('dashboard');
   const [showProfile, setShowProfile] = useState(false);
   const [showPlans, setShowPlans] = useState(false);
   const [showRoutes, setShowRoutes] = useState(false);
@@ -42,7 +26,6 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
 
   const handleLogout = async () => {
     const token = localStorage.getItem('token');
-    const vendorId = localStorage.getItem('vendorId');
     try {
       await fetch(`${BASE_URL}/logout`, {
         method: 'POST',
@@ -56,94 +39,83 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
     window.open(`${WEB_URL}/#${path}`, '_system');
   };
 
+  // Menus agrupados (foto em cima, menus em baixo)
+  const menuGroups = [
+    {
+      label: 'Conta',
+      items: [
+        { icon: <FiUser />, label: 'Perfil', desc: 'Ver e editar informações', onClick: () => setShowProfile(true) },
+      ],
+    },
+    {
+      label: 'Atividade',
+      items: [
+        { icon: <FiMap />, label: 'Mapa', desc: 'Voltar ao mapa', onClick: () => onChangePage('map') },
+        { icon: <FiSend />, label: 'Trajetos', desc: 'Consultar histórico de rotas', onClick: () => setShowRoutes(true) },
+      ],
+    },
+    {
+      label: 'Negócio',
+      items: [
+        { icon: <FiShoppingBag />, label: 'Produtos', desc: 'Adicionar e gerir produtos', onClick: () => setShowProducts(true) },
+        {
+          icon: <FiCheckSquare />,
+          label: 'Subscrição',
+          value: subscriptionActive ? 'Ativa' : 'Inativa',
+          valueClass: subscriptionActive ? 'on' : 'off',
+          onClick: () => setShowPlans(true),
+        },
+        { icon: <FiCalendar />, label: 'Semanas pagas', external: true, onClick: () => openWebsite('/paid-weeks') },
+        { icon: <FiFileText />, label: 'Faturas', desc: 'Consultar faturas e recibos', onClick: () => setShowInvoices(true) },
+      ],
+    },
+    {
+      label: 'Suporte',
+      items: [
+        { icon: <FiMail />, label: 'Contactar suporte', external: true, onClick: () => openWebsite('/contacto') },
+      ],
+    },
+  ];
+
   return (
     <div className="dashboard-screen">
-      {/* Hero Section */}
+      {/* Foto em cima (cartão de perfil) */}
       {user && (
-        <div className="dashboard-hero">
-          <h1 className="dashboard-hero-title">Bem-vindo de volta!</h1>
-          <p className="dashboard-hero-subtitle">
-            Gerencie sua presença no mapa e mantenha seus clientes sempre informados.
-          </p>
-        </div>
-      )}
-
-      {/* Greeting */}
-      {user && (
-        <div className="dashboard-greeting">
-          <span className="dashboard-greeting-time">{getGreeting()},</span>
-          <h2 className="dashboard-greeting-name">{user.name.split(' ')[0]}</h2>
-        </div>
-      )}
-
-      {/* Profile card */}
-      {user && (
-        <div className="dashboard-profile-card">
-          <div className="dashboard-profile-top">
-            {user.profile_photo ? (
-              <img
-                src={mediaUrl(user.profile_photo)}
-                alt="Foto de perfil"
-                className="dashboard-avatar"
-                style={{ borderColor: user.pin_color || '#7B61FF' }}
-              />
-            ) : (
-              <div
-                className="dashboard-avatar dashboard-avatar-placeholder"
-                style={{
-                  borderColor: user.pin_color || '#7B61FF',
-                  background: `${user.pin_color || '#7B61FF'}22`,
-                  color: user.pin_color || '#7B61FF'
-                }}
-              >
-                {user.name?.charAt(0)?.toUpperCase() || '?'}
-              </div>
-            )}
-            <div className="dashboard-profile-meta">
-              <span className="dashboard-profile-name">{user.name}</span>
-              <span className="dashboard-profile-product">{user.product}</span>
-              <span className={`dashboard-sub-badge${subscriptionActive ? ' active' : ' inactive'}`}>
-                <span className="dashboard-sub-dot" />
-                {subscriptionActive
-                  ? <>Ativa{subscriptionDate && <span className="dashboard-sub-date"> · {subscriptionDate}</span>}</>
-                  : 'Inativa'}
-              </span>
+        <button className="dash-profile-head" onClick={() => setShowProfile(true)}>
+          {user.profile_photo ? (
+            <img
+              src={mediaUrl(user.profile_photo)}
+              alt="Foto de perfil"
+              className="dashboard-avatar"
+              style={{ borderColor: user.pin_color || '#7B61FF' }}
+            />
+          ) : (
+            <div
+              className="dashboard-avatar dashboard-avatar-placeholder"
+              style={{
+                borderColor: user.pin_color || '#7B61FF',
+                background: `${user.pin_color || '#7B61FF'}22`,
+                color: user.pin_color || '#7B61FF'
+              }}
+            >
+              {user.name?.charAt(0)?.toUpperCase() || '?'}
             </div>
+          )}
+          <div className="dash-profile-head-meta">
+            <span className="dash-profile-head-name">{user.name}</span>
+            <span className="dash-profile-head-email">{user.email}</span>
+            <span className={`dashboard-sub-badge${subscriptionActive ? ' active' : ' inactive'}`}>
+              <span className="dashboard-sub-dot" />
+              {subscriptionActive
+                ? <>Subscrição ativa{subscriptionDate && <span className="dashboard-sub-date"> · {subscriptionDate}</span>}</>
+                : 'Subscrição inativa'}
+            </span>
           </div>
-
-          <div className="dashboard-profile-divider" />
-
-          <div className="dashboard-profile-details">
-            <div className="dashboard-detail-row">
-              <span className="dashboard-detail-row-icon"><FiMail /></span>
-              <span className="dashboard-detail-row-label">EMAIL</span>
-              <span className="dashboard-detail-row-value">{user.email}</span>
-            </div>
-            <div className="dashboard-detail-row">
-              <span className="dashboard-detail-row-icon">
-                <span className="dashboard-pin-dot" style={{ backgroundColor: user.pin_color || '#7B61FF' }} />
-              </span>
-              <span className="dashboard-detail-row-label">COR DO PIN</span>
-            </div>
-            {user.payment_methods && (
-              <div className="dashboard-detail-row dashboard-detail-row-payments">
-                <span className="dashboard-detail-row-icon"><FiCreditCard /></span>
-                <span className="dashboard-detail-row-label">PAGAMENTOS</span>
-                <div className="dashboard-payments-row">
-                  {user.payment_methods.split(',').filter(Boolean).map(m => (
-                    <span key={m} className="dashboard-payment-badge" title={m}>
-                      <span className="dashboard-payment-badge-icon">{PAYMENT_ICONS[m] || <FiCreditCard />}</span>
-                      <span className="dashboard-payment-badge-label">{m}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+          <FiChevronRight className="dash-menu-row-chevron" />
+        </button>
       )}
 
-      {/* Subscription CTA if inactive */}
+      {/* CTA de subscrição inativa */}
       {user && !subscriptionActive && (
         <div className="dashboard-cta-card">
           <div className="dashboard-cta-text">
@@ -156,49 +128,35 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
         </div>
       )}
 
-      {/* Quick actions grid */}
-      <div className="dashboard-quick-grid">
-        <button className="dashboard-quick-card" onClick={() => setShowProfile(true)}>
-          <span className="dashboard-quick-icon"><FiUser /></span>
-          <span className="dashboard-quick-label">Perfil</span>
-          <span className="dashboard-quick-desc">Ver e editar informações</span>
-        </button>
-        <button className="dashboard-quick-card" onClick={() => setShowRoutes(true)}>
-          <span className="dashboard-quick-icon"><FiSend /></span>
-          <span className="dashboard-quick-label">Trajetos</span>
-          <span className="dashboard-quick-desc">Consultar histórico de rotas</span>
-        </button>
-        <button className="dashboard-quick-card" onClick={() => setShowProducts(true)}>
-          <span className="dashboard-quick-icon"><FiShoppingBag /></span>
-          <span className="dashboard-quick-label">Produtos</span>
-          <span className="dashboard-quick-desc">Adicionar e gerir produtos</span>
-        </button>
-        <button className="dashboard-quick-card" onClick={() => setShowPlans(true)}>
-          <span className="dashboard-quick-icon"><FiCheckSquare /></span>
-          <span className="dashboard-quick-label">Ativar Subscrição</span>
-          <span className="dashboard-quick-desc">Ativar ou renovar o plano</span>
-        </button>
-        <button className="dashboard-quick-card" onClick={() => openWebsite('/paid-weeks')}>
-          <span className="dashboard-quick-icon"><FiCalendar /></span>
-          <span className="dashboard-quick-label">Subscrições</span>
-          <span className="dashboard-quick-desc">Gerir planos e semanas pagas</span>
-        </button>
-        <button className="dashboard-quick-card" onClick={() => setShowInvoices(true)}>
-          <span className="dashboard-quick-icon"><FiFileText /></span>
-          <span className="dashboard-quick-label">Faturas</span>
-          <span className="dashboard-quick-desc">Consultar faturas e recibos</span>
-        </button>
-        <button className="dashboard-quick-card" onClick={() => openWebsite('/contacto')}>
-          <span className="dashboard-quick-icon"><FiMail /></span>
-          <span className="dashboard-quick-label">Contactar Suporte</span>
-          <span className="dashboard-quick-desc">Enviar mensagem à equipa</span>
-        </button>
-      </div>
+      {/* Menus em baixo (formato lista agrupada) */}
+      {menuGroups.map((group) => (
+        <div className="dash-menu-section" key={group.label}>
+          <span className="dash-menu-section-label">{group.label}</span>
+          <div className="dash-menu-group">
+            {group.items.map((item) => (
+              <button key={item.label} className="dash-menu-row" onClick={item.onClick}>
+                <span className="dash-menu-row-icon">{item.icon}</span>
+                <span className="dash-menu-row-label">{item.label}</span>
+                {item.value && (
+                  <span className={`dash-menu-row-value ${item.valueClass || ''}`}>{item.value}</span>
+                )}
+                {item.external
+                  ? <FiExternalLink className="dash-menu-row-chevron" />
+                  : <FiChevronRight className="dash-menu-row-chevron" />}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
 
-      <button className="dashboard-logout-btn" onClick={handleLogout}>
-        <FiLogOut size={15} />
-        Terminar Sessão
-      </button>
+      <div className="dash-menu-section">
+        <div className="dash-menu-group">
+          <button className="dash-menu-row danger" onClick={handleLogout}>
+            <span className="dash-menu-row-icon"><FiLogOut /></span>
+            <span className="dash-menu-row-label">Terminar Sessão</span>
+          </button>
+        </div>
+      </div>
 
       {showProfile && (
         <ProfileScreen auth={auth} onClose={() => setShowProfile(false)} onUserUpdate={onUserUpdate} />
