@@ -911,6 +911,53 @@
   padding: 0 4px;
 }
 
+/* ── Account actions (definições + terminar sessão) ──── */
+
+.vd-account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.vd-account-btn {
+  flex: 1;
+  min-width: 180px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 20px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: auto;
+  transition: background var(--transition), border-color var(--transition),
+    color var(--transition), transform var(--transition);
+}
+
+.vd-account-btn:hover {
+  background: var(--surface-alt);
+  border-color: var(--primary-light-solid);
+  color: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.vd-account-btn-danger {
+  background: rgba(239, 68, 68, 0.06);
+  border-color: rgba(239, 68, 68, 0.28);
+  color: #c62828;
+}
+
+.vd-account-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: #ef5350;
+  color: #c62828;
+}
+
 /* ── Edit profile button ─────────────────────────────── */
 
 .vd-edit-btn {

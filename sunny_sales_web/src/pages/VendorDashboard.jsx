@@ -9,7 +9,7 @@ import {
   FiUser, FiLock, FiCheck,
   FiShoppingBag, FiNavigation, FiBarChart2,
   FiEdit2, FiAlertCircle, FiX,
-  FiClock, FiTrendingUp,
+  FiClock, FiTrendingUp, FiLogOut, FiSettings,
 } from 'react-icons/fi';
 import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
@@ -796,6 +796,27 @@ export default function VendorDashboard() {
           </div>
           <div className="vd-tips-footer">
             <Link to="/faqs" className="vd-tips-learn-more">Ver perguntas frequentes →</Link>
+          </div>
+        </div>
+
+        {/* Conta */}
+        <div className="vd-account-section">
+          <h3 className="vd-section-title">Conta</h3>
+          <div className="vd-account-actions">
+            <button
+              type="button"
+              className="vd-account-btn"
+              onClick={() => navigate('/settings')}
+            >
+              <FiSettings /> Definições
+            </button>
+            <button
+              type="button"
+              className="vd-account-btn vd-account-btn-danger"
+              onClick={logout}
+            >
+              <FiLogOut /> Terminar sessão
+            </button>
           </div>
         </div>
 

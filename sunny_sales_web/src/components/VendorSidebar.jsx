@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  FiHome, FiUser, FiNavigation, FiShoppingBag,
-  FiCreditCard, FiFileText, FiBell, FiSettings, FiLogOut
+  FiHome, FiNavigation, FiBarChart2, FiShoppingBag,
+  FiCreditCard, FiFileText, FiSettings, FiLogOut
 } from 'react-icons/fi';
 import './VendorSidebar.css';
 
@@ -11,12 +11,11 @@ export default function VendorSidebar({ onLogout }) {
 
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: <FiHome size={18} /> },
-    { path: '/profile', label: 'Perfil', icon: <FiUser size={18} /> },
     { path: '/routes', label: 'Trajetos', icon: <FiNavigation size={18} /> },
+    { path: '/stats', label: 'Estatísticas', icon: <FiBarChart2 size={18} /> },
     { path: '/products', label: 'Produtos', icon: <FiShoppingBag size={18} /> },
     { path: '/paid-weeks', label: 'Subscrições', icon: <FiCreditCard size={18} /> },
     { path: '/invoices', label: 'Faturas', icon: <FiFileText size={18} /> },
-    { path: '/notifications', label: 'Notificações', icon: <FiBell size={18} /> },
   ];
 
   const isActive = (path) => location.pathname === path;
