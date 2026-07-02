@@ -11,6 +11,7 @@ import WeatherCard from '../components/WeatherCard';
 import {
   FiMapPin, FiTag, FiShoppingBag,
   FiDollarSign, FiSmartphone, FiTerminal, FiCreditCard, FiWifi,
+  FiSliders, FiCheck, FiX,
 } from 'react-icons/fi';
 import './ModernMapLayout.css';
 
@@ -238,6 +239,34 @@ export default function ModernMapLayout() {
   const resetFilters = () => {
     setSelectedProducts([]);
     setMaxDistance(null);
+  };
+
+  // ── Folha de filtros para mobile ──────────────────────────
+  // No desktop os filtros vivem na barra lateral; em ecrãs pequenos essa barra
+  // fica escondida, por isso os banhistas acedem aos filtros por esta folha.
+  const [showFilterSheet, setShowFilterSheet] = useState(false);
+  const activeFilterCount =
+    selectedProducts.length + (maxDistance !== null ? 1 : 0);
+
+  const openFilterSheet = () => {
+    setPendingProducts(selectedProducts);
+    setPendingDistance(maxDistance);
+    setShowFilterSheet(true);
+  };
+  const closeFilterSheet = () => setShowFilterSheet(false);
+  const togglePendingProduct = (p) => {
+    setPendingProducts((prev) =>
+      prev.includes(p) ? prev.filter((v) => v !== p) : [...prev, p]
+    );
+  };
+  const resetPendingFilters = () => {
+    setPendingProducts([]);
+    setPendingDistance(null);
+  };
+  const applyFilters = () => {
+    setSelectedProducts(pendingProducts);
+    setMaxDistance(pendingDistance);
+    setShowFilterSheet(false);
   };
 
   useEffect(() => {
@@ -723,6 +752,105 @@ export default function ModernMapLayout() {
           <div className="weather-overlay">
             <WeatherCard />
           </div>
+
+          {/* Botão flutuante de filtros (apenas mobile — ver CSS) */}
+          {!isVendorLogged && (
+            <button
+              type="button"
+              className={`filter-fab${activeFilterCount > 0 ? ' has-filters' : ''}`}
+              onClick={openFilterSheet}
+              aria-label="Abrir filtros"
+            >
+              <FiSliders size={16} />
+              Filtros
+              {activeFilterCount > 0 && <span>({activeFilterCount})</span>}
+            </button>
+          )}
+
+          {/* Folha de filtros (bottom sheet) para mobile */}
+          {!isVendorLogged && showFilterSheet && (
+            <div className="filter-overlay" onClick={closeFilterSheet}>
+              <div className="filter-sheet" onClick={(e) => e.stopPropagation()}>
+                <div className="filter-sheet-handle" />
+                <div className="filter-sheet-header">
+                  <span className="filter-sheet-label">Filtros</span>
+                  <button
+                    type="button"
+                    className="filter-back-btn"
+                    onClick={closeFilterSheet}
+                    aria-label="Fechar filtros"
+                  >
+                    <FiX size={18} /> Fechar
+                  </button>
+                </div>
+
+                <div className="filter-sheet-body">
+                  <div className="filter-section">
+                    <div className="filter-section-row">
+                      <span className="filter-section-title">Tipo de produto</span>
+                    </div>
+                    {PRODUCTS.map((p) => {
+                      const active = pendingProducts.includes(p);
+                      return (
+                        <button
+                          key={p}
+                          type="button"
+                          className={`filter-option${active ? ' active' : ''}`}
+                          onClick={() => togglePendingProduct(p)}
+                        >
+                          <FiShoppingBag className="filter-option-icon" size={16} />
+                          {p}
+                          {active && <FiCheck className="filter-check" size={16} />}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="filter-divider" />
+
+                  <div className="filter-section">
+                    <div className="filter-section-row">
+                      <span className="filter-section-title">Distância</span>
+                    </div>
+                    <div className="filter-distance-row">
+                      {DISTANCE_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.label}
+                          type="button"
+                          className={`filter-distance-opt${pendingDistance === opt.value ? ' active' : ''}`}
+                          onClick={() => setPendingDistance(opt.value)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                    {pendingDistance !== null && !clientPos && (
+                      <p className="filter-distance-hint">
+                        Ativa a localização para filtrar por distância.
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="filter-sheet-footer">
+                  <button
+                    type="button"
+                    className="filter-reset-all-btn"
+                    onClick={resetPendingFilters}
+                  >
+                    Limpar
+                  </button>
+                  <button
+                    type="button"
+                    className="filter-apply-btn"
+                    onClick={applyFilters}
+                  >
+                    Aplicar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
         </main>
       </div>
