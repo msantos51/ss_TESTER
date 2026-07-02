@@ -4,6 +4,7 @@
   top: 0;
   width: 240px;
   height: 100vh;
+  height: 100dvh;
   background: var(--surface);
   border-right: 1px solid var(--border);
   display: flex;

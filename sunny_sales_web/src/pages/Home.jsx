@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   FiMapPin, FiClock, FiHeart, FiBell, FiShield, FiUsers,
-  FiArrowRight, FiPlayCircle, FiSearch, FiNavigation, FiChevronRight,
+  FiArrowRight, FiPlayCircle, FiSearch,
 } from 'react-icons/fi';
 import { FaLeaf } from 'react-icons/fa';
 import './Home.css';
@@ -133,36 +133,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Mapa em tempo real ───────────────────────────── */}
-      <section className="home-map-section">
-        <div className="home-map-info">
-          <h2 className="home-map-title">Mapa em Tempo Real</h2>
-          <div className="home-map-city">Lisboa</div>
-          <p className="home-map-text">
-            Vê todos os vendedores ativos nas praias de Lisboa.
-          </p>
-          <Link to="/map" className="home-btn home-btn-outline">
-            <FiMapPin size={16} />
-            Explorar Mapa Completo
-          </Link>
-        </div>
-
-        <div className="home-map-preview" aria-hidden="true">
-          <span className="home-map-live">
-            <span className="home-map-live-dot" /> Atualizado agora
-          </span>
-          <div className="home-map-water" />
-          <div className="home-map-land" />
-          <span className="map-pin map-pin-a"><FiMapPin size={14} /></span>
-          <span className="map-pin map-pin-b"><FiNavigation size={14} /></span>
-          <span className="map-pin map-pin-c"><FiMapPin size={14} /></span>
-          <span className="map-pin map-pin-d"><FiMapPin size={14} /></span>
-          <span className="map-label map-label-a">Praia de Carcavelos</span>
-          <span className="map-label map-label-b">Praia da Torre</span>
-          <span className="map-label map-label-c">Praia da Conceição</span>
-        </div>
-      </section>
-
       {/* ── Cartões de funcionalidades ───────────────────── */}
       <section className="home-features">
         <Link to="/como-funciona" className="home-feature">
@@ -191,19 +161,6 @@ export default function Home() {
           </p>
           <span className="home-feature-link">Saber mais <FiArrowRight size={14} /></span>
         </Link>
-      </section>
-
-      {/* ── CTA final ────────────────────────────────────── */}
-      <section className="home-cta">
-        <div className="home-cta-inner">
-          <h2 className="home-cta-title">Pronto para encontrar o teu vendedor?</h2>
-          <p className="home-cta-text">
-            Abre o mapa e descobre quem está na tua praia neste momento.
-          </p>
-          <Link to="/map" className="home-btn home-btn-primary home-btn-lg">
-            Explorar Mapa <FiChevronRight size={18} />
-          </Link>
-        </div>
       </section>
     </div>
   );
