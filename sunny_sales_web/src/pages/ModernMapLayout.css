@@ -1,4 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* (em português) As fontes já são carregadas globalmente em index.css; um
+   @import aqui iria parar ao chunk CSS lazy desta página e, se a request
+   externa falhar ou demorar, o preload do Vite nunca resolve e a página
+   fica presa no loader. */
 
 body {
   margin: 0;
