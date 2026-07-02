@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import ImageCropper from '../components/ImageCropper';
@@ -286,7 +287,7 @@ export default function VendorRegister() {
           </button>
         )}
         {error && <p className="vr-error">{error}</p>}
-        <a href="/vendor-login" className="vr-login-link">Ir para o login</a>
+        <Link to="/vendor-login" className="vr-login-link">Ir para o login</Link>
       </div>
     );
   }
