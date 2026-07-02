@@ -391,7 +391,8 @@ body {
   top: 14px;
   right: 14px;
   z-index: 900;
-  display: flex;
+  /* Só é usado em mobile — no desktop os filtros vivem na barra lateral. */
+  display: none;
   align-items: center;
   gap: 7px;
   padding: 10px 16px;
@@ -1150,7 +1151,10 @@ body {
   position: absolute;
   bottom: 20px;
   left: 20px;
-  max-width: 340px;
+  /* Largura explícita para o cartão (e o seu skeleton de carregamento) não
+     colapsar quando ainda não há dados, garantindo espaço para o botão de
+     localização à direita (~64px) mesmo em ecrãs estreitos. */
+  width: min(300px, calc(100vw - 92px));
   z-index: 400;
   pointer-events: auto;
 }
@@ -1175,6 +1179,12 @@ body {
   .sidebar-left,
   .sidebar-right {
     display: none;
+  }
+
+  /* Em mobile os filtros passam a estar acessíveis pelo botão flutuante
+     que abre a folha de filtros. */
+  .filter-fab {
+    display: flex;
   }
 
   .map-wrapper {

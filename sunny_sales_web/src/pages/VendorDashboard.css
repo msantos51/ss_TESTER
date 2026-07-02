@@ -652,6 +652,12 @@
   align-items: start;
 }
 
+/* Permite que os cartões encolham dentro da grelha (min-width:auto por
+   omissão) para não forçarem overflow horizontal em ecrãs estreitos. */
+.vd-bottom-section > * {
+  min-width: 0;
+}
+
 /* ── Recent Activity ─────────────────────────────────── */
 
 .vd-activity-card {

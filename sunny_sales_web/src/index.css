@@ -45,7 +45,9 @@
   --transition-slow: 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 
   --navbar-h: 64px;
-  --footer-h: 32px;
+  /* Altura reservada para o rodapé fixo. Deve ser >= altura real do footer
+     em cada breakpoint para o conteúdo não ficar escondido atrás dele. */
+  --footer-h: 46px;
 
   font-family: 'Inter', 'Roboto', sans-serif;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
@@ -701,6 +703,9 @@ h2 {
 /* ── Responsive ──────────────────────────────────────── */
 
 @media (max-width: 768px) {
+  /* Em ecrãs médios o rodapé empilha em duas linhas e fica mais alto. */
+  :root { --footer-h: 58px; }
+
   .navbar {
     padding: 0 16px;
   }
@@ -768,6 +773,9 @@ h2 {
 }
 
 @media (max-width: 480px) {
+  /* Em telemóveis o rodapé usa fontes menores, logo é um pouco mais baixo. */
+  :root { --footer-h: 50px; }
+
   .navbar { padding: 0 14px; }
   .nav-logo { font-size: 1.2rem; }
 
