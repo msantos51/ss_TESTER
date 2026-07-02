@@ -87,6 +87,8 @@
   width: 100%;
   aspect-ratio: 1;
   border-radius: var(--radius-sm);
+  /* Anula o gradiente global de button, que tapava a cor definida inline */
+  background-image: none;
   border: 2.5px solid transparent;
   padding: 0;
   cursor: pointer;

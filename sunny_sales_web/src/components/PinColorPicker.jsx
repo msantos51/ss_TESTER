@@ -34,7 +34,7 @@ export default function PinColorPicker({ value, onChange }) {
               type="button"
               className={`pcp-color-btn ${value === color.value ? 'active' : ''}`}
               onClick={() => onChange(color.value)}
-              style={{ backgroundColor: color.value }}
+              style={{ background: color.value }}
               title={color.name}
               aria-label={`Cor ${color.name}`}
             />

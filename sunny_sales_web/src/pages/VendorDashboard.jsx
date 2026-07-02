@@ -10,7 +10,7 @@ import {
   FiShoppingBag, FiNavigation, FiBarChart2,
   FiEdit2, FiAlertCircle, FiX,
   FiClock, FiTrendingUp, FiLogOut, FiSettings,
-  FiHome, FiHelpCircle, FiChevronRight, FiArrowLeft,
+  FiHelpCircle, FiChevronRight, FiArrowLeft, FiRefreshCw,
 } from 'react-icons/fi';
 import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
@@ -518,8 +518,6 @@ export default function VendorDashboard() {
     {
       label: 'Atividade',
       items: [
-        { id: 'inicio', type: 'section', icon: <FiHome />, label: 'Visão geral' },
-        { id: 'location', type: 'toggle', icon: <FiMapPin />, label: 'Partilha de localização' },
         { type: 'route', path: '/routes', icon: <FiNavigation />, label: 'Trajetos' },
         { type: 'route', path: '/stats', icon: <FiBarChart2 />, label: 'Estatísticas' },
       ],
@@ -558,22 +556,6 @@ export default function VendorDashboard() {
   ];
 
   const renderMenuItem = (item) => {
-    if (item.type === 'toggle') {
-      return (
-        <div key={item.id} className="vd-menu-row vd-menu-row-static">
-          <span className="vd-menu-row-icon">{item.icon}</span>
-          <span className="vd-menu-row-label">{item.label}</span>
-          <label className="vendor-switch" aria-label="Ativar/desativar localização">
-            <input
-              type="checkbox"
-              checked={sharing}
-              onChange={sharing ? stopSharing : startSharing}
-            />
-            <span className="slider" />
-          </label>
-        </div>
-      );
-    }
     if (item.type === 'section') {
       const active = activeSection === item.id;
       return (
@@ -631,34 +613,57 @@ export default function VendorDashboard() {
                PC: coluna fixa à esquerda) ─────────────────── */}
         <aside className="vd-menu">
           {vendor && (
-            <button type="button" className="vd-profile-head" onClick={() => openSection('dados')}>
-              {vendor.profile_photo ? (
-                <img
-                  src={mediaUrl(vendor.profile_photo)}
-                  alt="Foto de perfil"
-                  className="vd-avatar"
-                  style={{ borderColor: pinColor }}
-                />
-              ) : (
-                <div
-                  className="vd-avatar vd-avatar-placeholder"
-                  style={{ borderColor: pinColor, background: `${pinColor}22`, color: pinColor }}
-                >
-                  {vendor.name?.charAt(0)?.toUpperCase() || '?'}
+            <div className="vd-profile-card">
+              <button type="button" className="vd-profile-head" onClick={() => openSection('dados')}>
+                {vendor.profile_photo ? (
+                  <img
+                    src={mediaUrl(vendor.profile_photo)}
+                    alt="Foto de perfil"
+                    className="vd-avatar"
+                    style={{ borderColor: pinColor }}
+                  />
+                ) : (
+                  <div
+                    className="vd-avatar vd-avatar-placeholder"
+                    style={{ borderColor: pinColor, background: `${pinColor}22`, color: pinColor }}
+                  >
+                    {vendor.name?.charAt(0)?.toUpperCase() || '?'}
+                  </div>
+                )}
+                <div className="vd-profile-head-meta">
+                  <span className="vd-profile-head-name">{vendor.name}</span>
+                  <span className="vd-profile-head-email">{vendor.email}</span>
+                  <span className={`vd-sub-badge${subscriptionActive ? ' active' : ' inactive'}`}>
+                    <span className="vd-sub-dot" />
+                    {subscriptionActive
+                      ? <>Subscrição ativa{subscriptionDate && <span className="vd-sub-date"> · até {subscriptionDate}</span>}</>
+                      : 'Subscrição inativa'}
+                  </span>
                 </div>
-              )}
-              <div className="vd-profile-head-meta">
-                <span className="vd-profile-head-name">{vendor.name}</span>
-                <span className="vd-profile-head-email">{vendor.email}</span>
-                <span className={`vd-sub-badge${subscriptionActive ? ' active' : ' inactive'}`}>
-                  <span className="vd-sub-dot" />
-                  {subscriptionActive
-                    ? <>Subscrição ativa{subscriptionDate && <span className="vd-sub-date"> · até {subscriptionDate}</span>}</>
-                    : 'Subscrição inativa'}
-                </span>
+              </button>
+
+              <button type="button" className="vd-renew-btn" onClick={() => navigate('/planos')}>
+                <FiRefreshCw size={14} /> Renovar subscrição
+              </button>
+
+              <div className="vd-profile-location">
+                <span className="vd-profile-location-icon"><FiMapPin /></span>
+                <div className="vd-profile-location-text">
+                  <span className="vd-profile-location-title">Partilha de localização</span>
+                  <span className={`vd-profile-location-status${sharing ? ' on' : ''}`}>
+                    {sharing ? 'Ativa — visível no mapa' : 'Desligada'}
+                  </span>
+                </div>
+                <label className="vendor-switch" aria-label="Ativar/desativar localização">
+                  <input
+                    type="checkbox"
+                    checked={sharing}
+                    onChange={sharing ? stopSharing : startSharing}
+                  />
+                  <span className="slider" />
+                </label>
               </div>
-              <FiChevronRight className="vd-menu-row-chevron" />
-            </button>
+            </div>
           )}
 
           {menuGroups.map((group) => (
