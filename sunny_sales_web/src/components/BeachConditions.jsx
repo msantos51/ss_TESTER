@@ -84,7 +84,7 @@ export default function BeachConditions() {
           humidity: wData.current?.relative_humidity_2m,
           uvMax: wData.daily?.uv_index_max?.[0],
         });
-      } catch (e) {
+      } catch {
         setError('Erro ao carregar dados.');
       } finally {
         setLoading(false);

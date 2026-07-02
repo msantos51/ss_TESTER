@@ -213,7 +213,6 @@ export default function ModernMapLayout() {
   const absEventFiredRef = useRef(false);
   const gpsMovingRef = useRef(false);
   const [compassReady, setCompassReady] = useState(false);
-  const [needsCompassPermission, setNeedsCompassPermission] = useState(false);
   const [showCompassModal, setShowCompassModal] = useState(false);
   const [showLocateHint, setShowLocateHint] = useState(false);
   const isVendorLogged = !!localStorage.getItem('user');
@@ -370,13 +369,11 @@ export default function ModernMapLayout() {
         if (result === 'granted') {
           setCompassReady(true);
         } else {
-          setNeedsCompassPermission(true);
           const dismissed = localStorage.getItem('compass_modal_dismissed');
           if (!dismissed) setShowCompassModal(true);
         }
       })
       .catch(() => {
-        setNeedsCompassPermission(true);
         const dismissed = localStorage.getItem('compass_modal_dismissed');
         if (!dismissed) setShowCompassModal(true);
       });
@@ -387,7 +384,6 @@ export default function ModernMapLayout() {
       const result = await DeviceOrientationEvent.requestPermission();
       if (result === 'granted') {
         setCompassReady(true);
-        setNeedsCompassPermission(false);
       }
     } catch (e) {
       console.error('Erro ao pedir permissão da bússola:', e);

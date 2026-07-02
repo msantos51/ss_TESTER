@@ -8,44 +8,58 @@ import {
 } from 'react-router-dom';
 import { FiUser, FiMenu, FiX, FiMapPin } from 'react-icons/fi';
 import { FaInstagram } from 'react-icons/fa';
-import { useState, useEffect, useRef } from 'react';
+import { lazy, Suspense, useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { BASE_URL } from './config';
-import About from './pages/About';
-import AccountSettings from './pages/AccountSettings';
-import VendorLogin from './pages/VendorLogin';
-import ManageAccount from './pages/ManageAccount';
-import PaidWeeksScreen from './pages/PaidWeeksScreen.jsx';
-import VendorRegister from './pages/VendorRegister';
-import RouteDetail from './pages/RouteDetail';
-import RoutesScreen from './pages/RoutesScreen';
-import ProductsScreen from './pages/ProductsScreen';
-import StatsScreen from './pages/StatsScreen';
-import TermsScreen from './pages/TermsScreen';
-import VendorDetailScreen from './pages/VendorDetailScreen';
-import Invoices from './pages/Invoices';
-import Dashboard from './pages/Dashboard';
-import ModernMapLayout from './pages/ModernMapLayout';
 import Home from './pages/Home';
-import SobreProjeto from './pages/SobreProjeto';
-import Sustentabilidade from './pages/Sustentabilidade';
-import HowItWorks from './pages/HowItWorks';
-
-import Sessions from './pages/Sessions';
-import ForgotPassword from './pages/ForgotPassword';
-import Contacto from './pages/Contacto';
-import PlanosVendedores from './pages/PlanosVendedores';
-import FAQ from './pages/FAQ';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsAndConditions from './pages/TermsAndConditions';
-import LegalNotice from './pages/LegalNotice';
-import CookiesPolicy from './pages/CookiesPolicy';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
+import LoadingDots from './components/LoadingDots';
 import './index.css';
+
+// (em português) As restantes páginas são carregadas sob demanda (code-splitting)
+// para reduzir o tamanho do bundle inicial. Apenas a Home é carregada de imediato.
+const About = lazy(() => import('./pages/About'));
+const AccountSettings = lazy(() => import('./pages/AccountSettings'));
+const VendorLogin = lazy(() => import('./pages/VendorLogin'));
+const ManageAccount = lazy(() => import('./pages/ManageAccount'));
+const PaidWeeksScreen = lazy(() => import('./pages/PaidWeeksScreen.jsx'));
+const VendorRegister = lazy(() => import('./pages/VendorRegister'));
+const RouteDetail = lazy(() => import('./pages/RouteDetail'));
+const RoutesScreen = lazy(() => import('./pages/RoutesScreen'));
+const ProductsScreen = lazy(() => import('./pages/ProductsScreen'));
+const StatsScreen = lazy(() => import('./pages/StatsScreen'));
+const TermsScreen = lazy(() => import('./pages/TermsScreen'));
+const VendorDetailScreen = lazy(() => import('./pages/VendorDetailScreen'));
+const Invoices = lazy(() => import('./pages/Invoices'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const ModernMapLayout = lazy(() => import('./pages/ModernMapLayout'));
+const SobreProjeto = lazy(() => import('./pages/SobreProjeto'));
+const Sustentabilidade = lazy(() => import('./pages/Sustentabilidade'));
+const HowItWorks = lazy(() => import('./pages/HowItWorks'));
+const Sessions = lazy(() => import('./pages/Sessions'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const Contacto = lazy(() => import('./pages/Contacto'));
+const PlanosVendedores = lazy(() => import('./pages/PlanosVendedores'));
+const FAQ = lazy(() => import('./pages/FAQ'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions'));
+const LegalNotice = lazy(() => import('./pages/LegalNotice'));
+const CookiesPolicy = lazy(() => import('./pages/CookiesPolicy'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+
+function PageLoader() {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem 0' }}>
+      <LoadingDots />
+    </div>
+  );
+}
 
 export default function App() {
   return (
     <Router>
+      <ScrollToTop />
       <AppLayout />
     </Router>
   );
@@ -201,6 +215,7 @@ function AppLayout() {
       />
 
       <div className="container">
+        <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -232,7 +247,9 @@ function AppLayout() {
           <Route path="/legal-notice" element={<LegalNotice />} />
           <Route path="/cookies-policy" element={<CookiesPolicy />} />
           <Route path="/como-funciona" element={<HowItWorks />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
+        </Suspense>
       </div>
       <Footer />
     </div>

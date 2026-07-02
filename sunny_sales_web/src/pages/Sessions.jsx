@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +8,7 @@ export default function Sessions() {
   const [sessions, setSessions] = useState([]);
   const navigate = useNavigate();
 
-  const fetchSessions = async () => {
+  const fetchSessions = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/vendor-login');
@@ -22,18 +22,23 @@ export default function Sessions() {
     } catch (e) {
       if (e.response && e.response.status === 401) navigate('/vendor-login');
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     fetchSessions();
-  }, []);
+  }, [fetchSessions]);
 
   const terminate = async (id) => {
     const token = localStorage.getItem('token');
-    await axios.delete(`${BASE_URL}/vendors/me/sessions/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    fetchSessions();
+    try {
+      await axios.delete(`${BASE_URL}/vendors/me/sessions/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (e) {
+      if (e.response && e.response.status === 401) navigate('/vendor-login');
+    } finally {
+      fetchSessions();
+    }
   };
 
   return (
