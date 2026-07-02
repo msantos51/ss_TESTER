@@ -9,7 +9,7 @@ import LocateHint from '../components/LocateHint';
 import WelcomeCard from '../components/WelcomeCard';
 import WeatherCard from '../components/WeatherCard';
 import {
-  FiMapPin,
+  FiMapPin, FiTag, FiShoppingBag,
   FiDollarSign, FiSmartphone, FiTerminal, FiCreditCard, FiWifi,
 } from 'react-icons/fi';
 import './ModernMapLayout.css';
@@ -648,6 +648,74 @@ export default function ModernMapLayout() {
                   Agora não
                 </button>
               </div>
+            </div>
+          )}
+
+          {selected && (
+            <div className="vendor-card">
+              <button
+                className="close-btn"
+                onClick={() => setSelected(null)}
+                aria-label="Fechar"
+              >
+                ×
+              </button>
+              {selected.profile_photo ? (
+                <img
+                  src={mediaUrl(selected.profile_photo)}
+                  alt={selected.name}
+                  className="card-photo"
+                />
+              ) : (
+                <div
+                  className="card-photo card-photo--placeholder"
+                  style={{ background: selected.pin_color || '#ccc' }}
+                />
+              )}
+              <h4 className="card-name">{selected.name}</h4>
+              {selected.product && (
+                <div className="card-product">
+                  <FiTag size={12} />
+                  <span>{selected.product}</span>
+                </div>
+              )}
+              {selected.payment_methods && (
+                <div className="card-payments">
+                  {selected.payment_methods.split(',').map((m) => {
+                    const method = m.trim();
+                    const Icon = PAYMENT_ICONS[method];
+                    return Icon ? (
+                      <span key={method} className="card-payment-chip">
+                        <Icon size={13} />
+                        <span className="card-payment-label">{method}</span>
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              )}
+              {vendorProducts.length > 0 && (
+                <div className="card-products">
+                  <div className="card-products-title">
+                    <FiShoppingBag size={13} />
+                    <span>Produtos disponíveis</span>
+                  </div>
+                  <div className="card-products-list">
+                    {vendorProducts.map((p) => (
+                      <div key={p.id} className="card-product-item">
+                        {p.photo ? (
+                          <img src={mediaUrl(p.photo)} alt={p.name} className="card-product-photo" />
+                        ) : (
+                          <div className="card-product-photo card-product-photo--placeholder">
+                            <FiShoppingBag size={14} />
+                          </div>
+                        )}
+                        <span className="card-product-name">{p.name}</span>
+                        <span className="card-product-price">{p.price.toFixed(2)} €</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
