@@ -2,16 +2,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   FiMapPin, FiClock, FiHeart, FiBell, FiShield, FiUsers,
-  FiArrowRight, FiPlayCircle, FiSearch, FiCheckCircle, FiEye,
-  FiStar, FiSmartphone,
+  FiArrowRight, FiPlayCircle, FiSearch, FiCheckCircle,
+  FiSmartphone,
 } from 'react-icons/fi';
-import { FaLeaf, FaUmbrellaBeach } from 'react-icons/fa';
+import { FaLeaf } from 'react-icons/fa';
 import './Home.css';
 
 // (em português) Página inicial / landing com apresentação da Sunny Sales.
 // Estrutura: hero com fundo de praia (telemóvel + destaques), secção para
-// vendedores com pré-visualização do mapa, cartão de estatísticas e uma
-// fila final de funcionalidades.
+// vendedores com pré-visualização do mapa e uma fila final de
+// funcionalidades.
 export default function Home() {
   return (
     <div className="home">
@@ -135,7 +135,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Vendedores + Números ─────────────────────────── */}
+      {/* ── Vendedores ───────────────────────────────────── */}
       <section className="home-mid">
         <div className="home-vendor-card">
           <div className="home-vendor-illustration" aria-hidden="true">
@@ -203,32 +203,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        <aside className="home-numbers">
-          <h3 className="home-numbers-title">A Sunny Sales em números</h3>
-          <div className="home-numbers-grid">
-            <div className="home-number">
-              <span className="home-number-icon"><FiUsers size={19} /></span>
-              <div className="home-number-value">+500</div>
-              <div className="home-number-label">Vendedores ativos</div>
-            </div>
-            <div className="home-number">
-              <span className="home-number-icon"><FaUmbrellaBeach size={17} /></span>
-              <div className="home-number-value">15+</div>
-              <div className="home-number-label">Praias cobertas</div>
-            </div>
-            <div className="home-number">
-              <span className="home-number-icon"><FiEye size={19} /></span>
-              <div className="home-number-value">50K+</div>
-              <div className="home-number-label">Utilizadores</div>
-            </div>
-            <div className="home-number">
-              <span className="home-number-icon"><FiStar size={19} /></span>
-              <div className="home-number-value">4.8</div>
-              <div className="home-number-label">Avaliação média</div>
-            </div>
-          </div>
-        </aside>
       </section>
 
       {/* ── Funcionalidades ──────────────────────────────── */}

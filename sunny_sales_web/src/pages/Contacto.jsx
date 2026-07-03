@@ -4,6 +4,9 @@ import { BASE_URL } from '../config';
 import './InfoPage.css';
 import './Contacto.css';
 
+const HERO_IMAGE =
+  'https://images.unsplash.com/photo-1471922694854-ff1b63b20054?auto=format&fit=crop&w=1000&q=80';
+
 const ASSUNTOS = [
   'Informação geral',
   'Suporte técnico',
@@ -97,19 +100,32 @@ export default function Contacto() {
   return (
     <div className="info-page">
 
-      <div className="info-hero">
-        <h1 className="info-hero-title">
-          Fala <span>Connosco</span>
-        </h1>
-        <p className="info-hero-lead">
-          Tens alguma questão, sugestão ou queres saber mais sobre o Sunny Sales?
-          Preenche o formulário abaixo e entraremos em contacto contigo.
-        </p>
+      <div className="info-hero info-hero--media">
+        <div className="info-hero-content">
+          <h1 className="info-hero-title">
+            Fala <span>Connosco</span>
+          </h1>
+          <p className="info-hero-lead">
+            Tens alguma questão, sugestão ou queres saber mais sobre o Sunny Sales?
+            Preenche o formulário abaixo e entraremos em contacto contigo.
+          </p>
 
-        <div className="info-badges">
-          <div className="info-badge info-badge-sky"><FiMail size={13} /> sunnysales.geral@gmail.com</div>
-          <div className="info-badge info-badge-sky">Resposta em 24–48 h</div>
-          <div className="info-badge info-badge-sky">Segunda a Sexta</div>
+          <div className="info-badges">
+            <div className="info-badge info-badge-sky"><FiMail size={13} /> sunnysales.geral@gmail.com</div>
+            <div className="info-badge info-badge-sky">Resposta em 24–48 h</div>
+            <div className="info-badge info-badge-sky">Segunda a Sexta</div>
+          </div>
+        </div>
+
+        <div className="info-hero-media">
+          <img
+            src={HERO_IMAGE}
+            alt="Horizonte do oceano num dia de sol"
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
         </div>
       </div>
 

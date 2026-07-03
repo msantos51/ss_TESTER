@@ -57,6 +57,39 @@
   font-weight: 700;
 }
 
+/* ── Hero with side image (matches SobreProjeto) ───────── */
+.pv-hero.pv-hero--media {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: stretch;
+  padding: 0;
+  overflow: hidden;
+}
+
+.pv-hero-content {
+  padding: 44px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.pv-hero-media {
+  position: relative;
+  min-height: 300px;
+  background: linear-gradient(135deg, #7fc4e3 0%, #f5b971 100%);
+}
+
+.pv-hero-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 
 /* ── Benefits ──────────────────────────────────────────── */
 .pv-benefits {
@@ -509,6 +542,18 @@
   .pv-plan-card--highlight:hover {
     transform: translateY(-4px);
   }
+  .pv-hero.pv-hero--media {
+    grid-template-columns: 1fr;
+    padding: 0;
+  }
+  .pv-hero--media .pv-hero-content {
+    order: 2;
+    padding: 34px 26px;
+  }
+  .pv-hero-media {
+    order: 1;
+    min-height: 200px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -516,6 +561,9 @@
     padding: 0 0.75rem 3rem;
   }
   .pv-hero {
+    padding: 28px 20px;
+  }
+  .pv-hero--media .pv-hero-content {
     padding: 28px 20px;
   }
   .pv-hero-stats {
