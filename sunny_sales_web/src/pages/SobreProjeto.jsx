@@ -3,8 +3,6 @@ import {
   FiMapPin,
   FiClock,
   FiSmartphone,
-  FiFilter,
-  FiShoppingBag,
   FiHeart,
   FiCompass,
 } from 'react-icons/fi';
@@ -14,33 +12,24 @@ const HERO_IMAGE =
   'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?auto=format&fit=crop&w=1000&q=80';
 
 const steps = [
-  {
-    icon: FiMapPin,
-    text: (
-      <>
-        O vendedor abre a aplicação e ativa a localização, ficando imediatamente
-        visível no mapa para todos os banhistas nas proximidades.
-      </>
-    ),
-  },
-  {
-    icon: FiFilter,
-    text: (
-      <>
-        O banhista acede ao mapa, filtra por tipo de produto e vê os vendedores
-        mais próximos em tempo real.
-      </>
-    ),
-  },
-  {
-    icon: FiShoppingBag,
-    text: (
-      <>
-        O vendedor passa e o banhista recebe o produto sem ter de se levantar,
-        de forma prática e eficiente para ambos.
-      </>
-    ),
-  },
+  (
+    <>
+      O vendedor abre a aplicação e ativa a localização, ficando imediatamente
+      visível no mapa para todos os banhistas nas proximidades.
+    </>
+  ),
+  (
+    <>
+      O banhista acede ao mapa, filtra por tipo de produto e vê os vendedores
+      mais próximos em tempo real.
+    </>
+  ),
+  (
+    <>
+      O vendedor passa e o banhista recebe o produto sem ter de se levantar,
+      de forma prática e eficiente para ambos.
+    </>
+  ),
 ];
 
 export default function SobreProjeto() {
@@ -95,14 +84,11 @@ export default function SobreProjeto() {
         </div>
 
         <ol className="sobre-timeline">
-          {steps.map((step, index) => (
+          {steps.map((text, index) => (
             <li key={index} className="sobre-step">
               <div className="sobre-step-number">{index + 1}</div>
               <div className="sobre-step-card">
-                <span className="sobre-step-icon">
-                  <step.icon />
-                </span>
-                <p className="sobre-step-text">{step.text}</p>
+                <p className="sobre-step-text">{text}</p>
               </div>
             </li>
           ))}

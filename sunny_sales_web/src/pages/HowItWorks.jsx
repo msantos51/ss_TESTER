@@ -3,23 +3,39 @@ import { FiCompass, FiGrid, FiZap } from 'react-icons/fi';
 import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
 
+const HERO_IMAGE =
+  'https://images.unsplash.com/photo-1509233725247-49e657c54213?auto=format&fit=crop&w=1000&q=80';
+
 export default function HowItWorks() {
   return (
     <div className="info-page">
 
-      <div className="info-hero">
-        <h1 className="info-hero-title">
-          Como <span>Funciona</span>
-        </h1>
-        <p className="info-hero-lead">
-          A <strong>Sunny Sales</strong> conecta vendedores ambulantes com clientes nas praias
-          através de uma plataforma inteligente que maximiza ganhos e oferece praticidade.
-        </p>
+      <div className="info-hero info-hero--media">
+        <div className="info-hero-content">
+          <h1 className="info-hero-title">
+            Como <span>Funciona</span>
+          </h1>
+          <p className="info-hero-lead">
+            A <strong>Sunny Sales</strong> conecta vendedores ambulantes com clientes nas praias
+            através de uma plataforma inteligente que maximiza ganhos e oferece praticidade.
+          </p>
 
-        <div className="info-badges">
-          <div className="info-badge info-badge-sky">Registo Simples</div>
-          <div className="info-badge info-badge-sky">Gestão de Rotas</div>
-          <div className="info-badge info-badge-sky">Relatórios em Tempo Real</div>
+          <div className="info-badges">
+            <div className="info-badge info-badge-sky">Registo Simples</div>
+            <div className="info-badge info-badge-sky">Gestão de Rotas</div>
+            <div className="info-badge info-badge-sky">Relatórios em Tempo Real</div>
+          </div>
+        </div>
+
+        <div className="info-hero-media">
+          <img
+            src={HERO_IMAGE}
+            alt="Praia ao entardecer com o mar calmo"
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
         </div>
       </div>
 

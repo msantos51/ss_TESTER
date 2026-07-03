@@ -387,11 +387,7 @@
 
 /* ── Vendedores + Números ─────────────────────────────── */
 .home-mid {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
-  gap: 1.25rem;
   margin-bottom: 2rem;
-  align-items: stretch;
 }
 
 .home-vendor-card {
@@ -549,55 +545,6 @@
   line-height: 1.45;
 }
 
-/* Cartão de números */
-.home-numbers {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 1.5rem 1.5rem;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-}
-.home-numbers-title {
-  font-size: 1rem;
-  font-weight: 800;
-  letter-spacing: -0.2px;
-  color: var(--navy);
-  margin: 0 0 16px;
-}
-.home-numbers-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  flex: 1;
-}
-.home-number {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 14px 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 3px;
-  background: var(--surface);
-}
-.home-number-icon {
-  color: var(--primary-dark);
-  margin-bottom: 5px;
-  display: flex;
-}
-.home-number-value {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--navy);
-  line-height: 1.1;
-}
-.home-number-label {
-  font-size: 0.74rem;
-  color: var(--text-secondary);
-}
-
 /* ── Funcionalidades (fila final) ─────────────────────── */
 .home-features {
   display: grid;
@@ -652,9 +599,6 @@
 @media (max-width: 1080px) {
   .home-mid {
     grid-template-columns: 1fr;
-  }
-  .home-numbers-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
 }
 

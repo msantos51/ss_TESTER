@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { FiUsers, FiShoppingBag } from 'react-icons/fi';
+import './InfoPage.css';
 import './FAQ.css';
+
+const HERO_IMAGE =
+  'https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=1000&q=80';
 
 const FAQS_BANHISTAS = [
   {
@@ -67,14 +71,27 @@ export default function FAQ() {
   return (
     <div className="info-page faq-page">
 
-      <div className="info-hero">
-        <h1 className="info-hero-title">
-          Perguntas <span>Frequentes</span>
-        </h1>
-        <p className="info-hero-lead">
-          Encontra respostas às perguntas mais comuns sobre o Sunny Sales, separadas para
-          banhistas e para vendedores.
-        </p>
+      <div className="info-hero info-hero--media">
+        <div className="info-hero-content">
+          <h1 className="info-hero-title">
+            Perguntas <span>Frequentes</span>
+          </h1>
+          <p className="info-hero-lead">
+            Encontra respostas às perguntas mais comuns sobre o Sunny Sales, separadas para
+            banhistas e para vendedores.
+          </p>
+        </div>
+
+        <div className="info-hero-media">
+          <img
+            src={HERO_IMAGE}
+            alt="Vista aérea das ondas do mar a chegar à praia"
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        </div>
       </div>
 
       <div className="faq-tabs">

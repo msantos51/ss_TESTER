@@ -161,7 +161,7 @@ function AppLayout() {
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/sustentabilidade"
           >
-            Sustentabilidade
+            Praia Sustentável
           </NavLink>
           <span className="nav-divider">|</span>
           <NavLink

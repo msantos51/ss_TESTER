@@ -6,6 +6,9 @@ import { BASE_URL } from '../config';
 import './InfoPage.css';
 import './PlanosVendedores.css';
 
+const HERO_IMAGE =
+  'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1000&q=80';
+
 const PLANS = [
   {
     id: 'semanal',
@@ -108,19 +111,32 @@ export default function PlanosVendedores() {
     <div className="pv-page">
 
       {/* ── Hero ── */}
-      <div className="pv-hero">
-        <h1 className="pv-hero-title">
-          O teu <span>negócio</span> no mapa
-        </h1>
-        <p className="pv-hero-lead">
-          Junta-te à plataforma que coloca os vendedores de praia no mapa,
-          literalmente. <strong>Mais visibilidade, mais clientes, mais vendas.</strong>
-        </p>
+      <div className="pv-hero pv-hero--media">
+        <div className="pv-hero-content">
+          <h1 className="pv-hero-title">
+            O teu <span>negócio</span> no mapa
+          </h1>
+          <p className="pv-hero-lead">
+            Junta-te à plataforma que coloca os vendedores de praia no mapa,
+            literalmente. <strong>Mais visibilidade, mais clientes, mais vendas.</strong>
+          </p>
 
-        <div className="info-badges">
-          <div className="info-badge"><FiZap size={14} /> Ativação imediata</div>
-          <div className="info-badge"><FiTrendingUp size={14} /> Sem taxas escondidas</div>
-          <div className="info-badge"><FiStar size={14} /> Cancela quando quiseres</div>
+          <div className="info-badges">
+            <div className="info-badge"><FiZap size={14} /> Ativação imediata</div>
+            <div className="info-badge"><FiTrendingUp size={14} /> Sem taxas escondidas</div>
+            <div className="info-badge"><FiStar size={14} /> Cancela quando quiseres</div>
+          </div>
+        </div>
+
+        <div className="pv-hero-media">
+          <img
+            src={HERO_IMAGE}
+            alt="Chapéus de sol e banhistas numa praia movimentada"
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
         </div>
       </div>
 
