@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../config';
-import BackHomeButton from '../components/BackHomeButton';
 import { FiMap, FiNavigation, FiClock, FiCalendar, FiChevronRight } from 'react-icons/fi';
 import './RoutesScreen.css';
 
@@ -33,7 +32,6 @@ export default function RoutesScreen() {
 
   return (
     <div className="rs-wrapper">
-      <BackHomeButton />
       <div className="rs-container">
 
         <div className="rs-header">

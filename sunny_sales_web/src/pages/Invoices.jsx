@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
-import BackHomeButton from '../components/BackHomeButton';
 
 export default function Invoices() {
   const [weeks, setWeeks] = useState([]);
@@ -27,7 +26,6 @@ export default function Invoices() {
 
   return (
     <div className="page-wrapper">
-      <BackHomeButton />
       <h2>Faturas Pagas</h2>
       {weeks.length === 0 && (
         <p className="page-empty">Sem faturas disponíveis.</p>

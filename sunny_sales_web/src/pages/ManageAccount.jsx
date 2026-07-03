@@ -3,7 +3,6 @@ import axios from 'axios';
 import { BASE_URL, mediaUrl } from '../config';
 import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
-import BackHomeButton from '../components/BackHomeButton';
 import {
   FiUser, FiLock, FiCamera, FiCheck,
   FiChevronDown, FiChevronUp, FiSave, FiDroplet,
@@ -112,7 +111,6 @@ export default function ManageAccount() {
   if (!vendor) {
     return (
       <div className="ma-wrapper">
-        <BackHomeButton />
         <p className="page-empty">Utilizador não autenticado.</p>
       </div>
     );
@@ -120,7 +118,6 @@ export default function ManageAccount() {
 
   return (
     <div className="ma-wrapper">
-      <BackHomeButton />
       <div className="ma-container">
         <h1 className="ma-title">Definições de Conta</h1>
 

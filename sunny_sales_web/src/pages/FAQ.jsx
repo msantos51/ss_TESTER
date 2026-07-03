@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { FiUsers, FiShoppingBag } from 'react-icons/fi';
-import BackHomeButton from '../components/BackHomeButton';
 import './FAQ.css';
 
 const FAQS_BANHISTAS = [
@@ -18,7 +17,7 @@ const FAQS_BANHISTAS = [
   },
   {
     q: 'Como pago aos vendedores?',
-    a: 'O pagamento é feito diretamente ao vendedor no momento da compra, com os métodos de pagamento que ele tiver disponíveis (numerário, MB Way, Multibanco, cartão ou NFC).',
+    a: 'O pagamento é feito diretamente ao vendedor no momento da compra, com os métodos de pagamento que ele tiver disponíveis (MB Way, numerário ou cartão).',
   },
   {
     q: 'A localização dos vendedores é em tempo real?',
@@ -67,7 +66,6 @@ export default function FAQ() {
 
   return (
     <div className="info-page faq-page">
-      <BackHomeButton />
 
       <div className="info-hero">
         <h1 className="info-hero-title">

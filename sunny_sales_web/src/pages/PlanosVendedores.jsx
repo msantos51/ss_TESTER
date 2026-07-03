@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FiCheck, FiZap, FiStar, FiTrendingUp, FiHelpCircle } from 'react-icons/fi';
-import BackHomeButton from '../components/BackHomeButton';
 import InfoBanner from '../components/InfoBanner';
 import { BASE_URL } from '../config';
 import './InfoPage.css';
@@ -107,7 +106,6 @@ export default function PlanosVendedores() {
 
   return (
     <div className="pv-page">
-      <BackHomeButton />
 
       {/* ── Hero ── */}
       <div className="pv-hero">

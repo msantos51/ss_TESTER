@@ -8,7 +8,6 @@ import {
   FiHeart,
   FiCompass,
 } from 'react-icons/fi';
-import BackHomeButton from '../components/BackHomeButton';
 import './SobreProjeto.css';
 
 const HERO_IMAGE =
@@ -47,7 +46,6 @@ const steps = [
 export default function SobreProjeto() {
   return (
     <div className="sobre-page">
-      <BackHomeButton />
 
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="sobre-hero">

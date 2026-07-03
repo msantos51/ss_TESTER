@@ -45,29 +45,6 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="home-stats">
-              <div className="home-stat">
-                <FiUsers className="home-stat-icon" />
-                <div>
-                  <div className="home-stat-value">+320</div>
-                  <div className="home-stat-label">Vendedores ativos</div>
-                </div>
-              </div>
-              <div className="home-stat">
-                <FiMapPin className="home-stat-icon" />
-                <div>
-                  <div className="home-stat-value">12</div>
-                  <div className="home-stat-label">Praias</div>
-                </div>
-              </div>
-              <div className="home-stat">
-                <FiClock className="home-stat-icon" />
-                <div>
-                  <div className="home-stat-value">100%</div>
-                  <div className="home-stat-label">Em tempo real</div>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Telemóvel ilustrativo */}

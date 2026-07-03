@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL, mediaUrl } from '../config';
-import BackHomeButton from '../components/BackHomeButton';
 import ImageCropper from '../components/ImageCropper';
 import { FiShoppingBag, FiPlus, FiTrash2, FiTag, FiEdit2, FiX, FiCheck } from 'react-icons/fi';
 import './ProductsScreen.css';
@@ -176,7 +175,6 @@ export default function ProductsScreen() {
 
   return (
     <div className="ps-wrapper">
-      <BackHomeButton />
       <div className="ps-container">
 
         <div className="ps-header">

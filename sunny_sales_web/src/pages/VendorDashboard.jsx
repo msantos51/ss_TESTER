@@ -5,13 +5,14 @@ import axios from 'axios';
 import {
   FiFileText,
   FiCreditCard, FiMail, FiMapPin,
-  FiDollarSign, FiSmartphone, FiTerminal, FiWifi,
+  FiSmartphone,
   FiUser, FiLock, FiCheck,
   FiShoppingBag, FiNavigation, FiBarChart2,
   FiEdit2, FiAlertCircle, FiX,
-  FiClock, FiTrendingUp, FiLogOut, FiSettings,
+  FiClock, FiTrendingUp, FiLogOut,
   FiHelpCircle, FiChevronRight, FiArrowLeft, FiRefreshCw,
 } from 'react-icons/fi';
+import { TbCurrencyEuro } from 'react-icons/tb';
 import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
 import './VendorDashboard.css';
@@ -31,11 +32,9 @@ function haversineDistance(lat1, lng1, lat2, lng2) {
 }
 
 const PAYMENT_ICONS = {
-  'Numerário': <FiDollarSign />,
   'MB Way': <FiSmartphone />,
-  'Multibanco': <FiTerminal />,
+  'Numerário': <TbCurrencyEuro />,
   'Cartão': <FiCreditCard />,
-  'NFC': <FiWifi />,
 };
 
 let watchId = null;
@@ -253,7 +252,11 @@ export default function VendorDashboard() {
     setEditPhone(vendor.phone || '');
     setEditProduct(vendor.product || '');
     setEditPinColor(vendor.pin_color || '#7B61FF');
-    setEditPaymentMethods(vendor.payment_methods ? vendor.payment_methods.split(',').filter(Boolean) : []);
+    setEditPaymentMethods(
+      vendor.payment_methods
+        ? vendor.payment_methods.split(',').map((m) => m.trim()).filter((m) => m in PAYMENT_ICONS)
+        : []
+    );
   }, [vendor]);
 
   // Carrega os trajetos para calcular o resumo do dia e a atividade recente
@@ -528,7 +531,6 @@ export default function VendorDashboard() {
         { id: 'dados', type: 'section', icon: <FiUser />, label: 'Dados pessoais' },
         { id: 'aparencia', type: 'section', icon: <FiEdit2 />, label: 'Aparência' },
         { id: 'seguranca', type: 'section', icon: <FiLock />, label: 'Segurança' },
-        { type: 'route', path: '/settings', icon: <FiSettings />, label: 'Definições' },
       ],
     },
     {

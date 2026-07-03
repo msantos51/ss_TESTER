@@ -12,6 +12,7 @@ import { lazy, Suspense, useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { BASE_URL } from './config';
 import Home from './pages/Home';
+import BackHomeButton from './components/BackHomeButton';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import LoadingDots from './components/LoadingDots';
@@ -47,6 +48,19 @@ const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions'));
 const LegalNotice = lazy(() => import('./pages/LegalNotice'));
 const CookiesPolicy = lazy(() => import('./pages/CookiesPolicy'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+
+// Rotas sem botão de voltar global: página inicial, mapa (tem UI própria),
+// dashboard (tem navegação interna) e páginas de autenticação.
+const HIDE_BACK_ROUTES = [
+  '/',
+  '/map',
+  '/dashboard',
+  '/login',
+  '/vendor-login',
+  '/register',
+  '/vendor-register',
+  '/forgot-password',
+];
 
 function PageLoader() {
   return (
@@ -215,6 +229,7 @@ function AppLayout() {
       />
 
       <div className="container">
+        {!HIDE_BACK_ROUTES.includes(location.pathname) && <BackHomeButton />}
         <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Home />} />

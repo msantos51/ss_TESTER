@@ -830,6 +830,14 @@ h2 {
 .span a { color: var(--text); }
 
 /* ── Back button ─────────────────────────────────────── */
+/* Linha do botão de voltar global: renderizada no layout (App.jsx) por baixo
+   da navbar, garantindo a mesma posição e aspeto em todas as páginas. */
+.back-btn-row {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
 .back-btn {
   background: none;
   border: none;

@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
-import BackHomeButton from '../components/BackHomeButton';
 
 export default function Sessions() {
   const [sessions, setSessions] = useState([]);
@@ -43,7 +42,6 @@ export default function Sessions() {
 
   return (
     <div className="page-wrapper">
-      <BackHomeButton />
       <h2>Sessões Ativas</h2>
       {sessions.length === 0 && (
         <p className="page-empty">Sem sessões ativas.</p>
