@@ -11,6 +11,7 @@ import {
   FiEdit2, FiAlertCircle, FiX,
   FiClock, FiTrendingUp, FiLogOut,
   FiHelpCircle, FiChevronRight, FiArrowLeft, FiRefreshCw,
+  FiHome,
 } from 'react-icons/fi';
 import { TbCurrencyEuro } from 'react-icons/tb';
 import ImageCropper from '../components/ImageCropper';
@@ -519,6 +520,12 @@ export default function VendorDashboard() {
 
   const menuGroups = [
     {
+      label: 'Painel',
+      items: [
+        { id: 'inicio', type: 'section', icon: <FiHome />, label: 'Visão geral' },
+      ],
+    },
+    {
       label: 'Atividade',
       items: [
         { type: 'route', path: '/routes', icon: <FiNavigation />, label: 'Trajetos' },
@@ -648,12 +655,19 @@ export default function VendorDashboard() {
                 <FiRefreshCw size={14} /> Renovar subscrição
               </button>
 
-              <div className="vd-profile-location">
-                <span className="vd-profile-location-icon"><FiMapPin /></span>
+              <div className={`vd-profile-location${sharing ? ' active' : ''}`}>
+                <span className="vd-profile-location-icon">
+                  <FiMapPin />
+                  {sharing && <span className="vd-profile-location-pulse" />}
+                </span>
                 <div className="vd-profile-location-text">
                   <span className="vd-profile-location-title">Partilha de localização</span>
                   <span className={`vd-profile-location-status${sharing ? ' on' : ''}`}>
-                    {sharing ? 'Ativa — visível no mapa' : 'Desligada'}
+                    {sharing
+                      ? 'Ativa — visível no mapa'
+                      : subscriptionActive
+                        ? 'Desligada'
+                        : 'Requer subscrição'}
                   </span>
                 </div>
                 <label className="vendor-switch" aria-label="Ativar/desativar localização">
@@ -744,35 +758,10 @@ export default function VendorDashboard() {
                 </div>
               )}
 
-              {/* Partilha de localização */}
-              <div className={`vd-location-card${sharing ? ' active' : ''}`}>
-                <div className="vd-location-icon-wrap">
-                  <FiMapPin className="vd-location-icon" />
-                  {sharing && <span className="vd-location-pulse" />}
-                </div>
-                <div className="vd-location-text">
-                  <span className="vd-location-title">Partilha de localização</span>
-                  <span className="vd-location-status">
-                    {sharing
-                      ? 'Ativa — estás visível no mapa'
-                      : subscriptionActive
-                        ? 'Desligada — não apareces no mapa'
-                        : 'Requer subscrição ativa'}
-                  </span>
-                </div>
-                <label className="vendor-switch" aria-label="Ativar/desativar localização">
-                  <input
-                    type="checkbox"
-                    checked={sharing}
-                    onChange={sharing ? stopSharing : startSharing}
-                  />
-                  <span className="slider" />
-                </label>
-              </div>
-
               <div className="vd-info-card">
                 💡 <strong>Dica:</strong> a app web partilha a localização enquanto o separador estiver
-                ativo. Para partilha contínua em segundo plano, usa a <strong>app móvel</strong>.
+                ativo. Podes ligá-la no interruptor <strong>Partilha de localização</strong>, no teu
+                perfil. Para partilha contínua em segundo plano, usa a <strong>app móvel</strong>.
               </div>
 
               {/* Resumo de hoje (dados reais dos trajetos) */}
@@ -785,7 +774,7 @@ export default function VendorDashboard() {
                       <div className="vd-stat-value">
                         {stats ? formatDistance(stats.distToday) : '—'}
                       </div>
-                      <div className="vd-stat-label">Distância percorrida</div>
+                      <div className="vd-stat-label">Distância hoje</div>
                     </div>
                     <div className="vd-stat-card">
                       <div className="vd-stat-icon"><FiClock /></div>
@@ -799,7 +788,7 @@ export default function VendorDashboard() {
                       <div className="vd-stat-value">
                         {stats ? stats.sessionsToday : '—'}
                       </div>
-                      <div className="vd-stat-label">Sessões de partilha</div>
+                      <div className="vd-stat-label">Sessões hoje</div>
                     </div>
                     <div className="vd-stat-card">
                       <div className="vd-stat-icon"><FiTrendingUp /></div>
