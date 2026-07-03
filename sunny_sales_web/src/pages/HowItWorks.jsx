@@ -1,13 +1,11 @@
 import React from 'react';
 import { FiCompass, FiGrid, FiZap } from 'react-icons/fi';
-import BackHomeButton from '../components/BackHomeButton';
 import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
 
 export default function HowItWorks() {
   return (
     <div className="info-page">
-      <BackHomeButton />
 
       <div className="info-hero">
         <h1 className="info-hero-title">

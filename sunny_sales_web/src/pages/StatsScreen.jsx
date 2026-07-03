@@ -4,7 +4,6 @@ import { BASE_URL } from '../config';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
-import BackHomeButton from '../components/BackHomeButton';
 import { FiBarChart2, FiNavigation, FiCalendar, FiTrendingUp } from 'react-icons/fi';
 import './StatsScreen.css';
 
@@ -63,7 +62,6 @@ export default function StatsScreen() {
 
   return (
     <div className="ss-wrapper">
-      <BackHomeButton />
       <div className="ss-container">
 
         <div className="ss-header">

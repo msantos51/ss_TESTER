@@ -1,12 +1,10 @@
 import React from 'react';
-import BackHomeButton from '../components/BackHomeButton';
 import './TermsScreen.css';
 import './InfoPage.css';
 
 export default function TermsScreen() {
   return (
     <div className="page-wrapper terms-page">
-      <BackHomeButton />
       <h2>Termos e Condições</h2>
 
       <div className="terms-section">

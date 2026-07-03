@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import BackHomeButton from '../components/BackHomeButton';
 import './VendorLogin.css';
 
 const isNotificationsEnabled = () =>
@@ -38,7 +37,6 @@ export default function AccountSettings() {
 
   return (
     <div className="form-box">
-      <BackHomeButton />
       <h2 className="title">Definições da Conta</h2>
 
       <div className="form">

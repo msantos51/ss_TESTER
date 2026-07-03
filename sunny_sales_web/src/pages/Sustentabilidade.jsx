@@ -1,7 +1,6 @@
 import React from 'react';
 import { MdDelete, MdRecycling, MdWaves, MdCleaningServices, MdWbSunny, MdLocalDrink, MdPeople, MdEco } from 'react-icons/md';
 import { FiHeart } from 'react-icons/fi';
-import BackHomeButton from '../components/BackHomeButton';
 import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
 
@@ -31,7 +30,6 @@ export default function Sustentabilidade() {
 
   return (
     <div className="info-page">
-      <BackHomeButton />
 
       <div className="info-hero green">
         <h1 className="info-hero-title">

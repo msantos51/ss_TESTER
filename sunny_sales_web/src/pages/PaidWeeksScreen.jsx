@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
-import BackHomeButton from '../components/BackHomeButton';
 import { FiCalendar, FiFileText, FiCheckCircle, FiCreditCard } from 'react-icons/fi';
 import './PaidWeeksScreen.css';
 
@@ -27,7 +26,6 @@ export default function PaidWeeksScreen() {
 
   return (
     <div className="pw-wrapper">
-      <BackHomeButton />
       <div className="pw-container">
 
         <div className="pw-header">

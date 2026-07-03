@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { FiMail, FiSend, FiCheckCircle, FiUser, FiMessageSquare } from 'react-icons/fi';
-import BackHomeButton from '../components/BackHomeButton';
 import { BASE_URL } from '../config';
 import './InfoPage.css';
 import './Contacto.css';
@@ -81,7 +80,6 @@ export default function Contacto() {
   if (enviado) {
     return (
       <div className="info-page">
-        <BackHomeButton />
         <div className="contacto-success">
           <FiCheckCircle className="contacto-success-icon" />
           <h2 className="contacto-success-title">Mensagem enviada!</h2>
@@ -98,7 +96,6 @@ export default function Contacto() {
 
   return (
     <div className="info-page">
-      <BackHomeButton />
 
       <div className="info-hero">
         <h1 className="info-hero-title">

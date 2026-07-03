@@ -2,7 +2,6 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { MapContainer, TileLayer, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import BackHomeButton from '../components/BackHomeButton';
 import { FiMapPin, FiClock, FiNavigation, FiCalendar } from 'react-icons/fi';
 import './RouteDetail.css';
 
@@ -13,7 +12,6 @@ export default function RouteDetail() {
   if (!route) {
     return (
       <div className="rd-wrapper">
-        <BackHomeButton />
         <div className="rd-empty">
           <FiMapPin className="rd-empty-icon" />
           <p>Trajeto não encontrado.</p>
@@ -33,7 +31,6 @@ export default function RouteDetail() {
 
   return (
     <div className="rd-wrapper">
-      <BackHomeButton />
       <div className="rd-container">
 
         <div className="rd-header">

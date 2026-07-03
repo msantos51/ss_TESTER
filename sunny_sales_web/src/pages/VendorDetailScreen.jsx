@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL, mediaUrl } from '../config';
-import BackHomeButton from '../components/BackHomeButton';
 import { FiShoppingBag, FiTag } from 'react-icons/fi';
 import './VendorDetailScreen.css';
 
@@ -60,7 +59,6 @@ export default function VendorDetailScreen() {
   if (loading) {
     return (
       <div className="page-wrapper">
-        <BackHomeButton />
         <p className="page-empty">A carregar...</p>
       </div>
     );
@@ -69,7 +67,6 @@ export default function VendorDetailScreen() {
   if (error || !vendor) {
     return (
       <div className="page-wrapper">
-        <BackHomeButton />
         <p className="page-empty">{error || 'Vendedor não encontrado.'}</p>
       </div>
     );
@@ -77,7 +74,6 @@ export default function VendorDetailScreen() {
 
   return (
     <div className="page-wrapper">
-      <BackHomeButton />
 
       <div className="vds-header">
         {vendor.profile_photo ? (

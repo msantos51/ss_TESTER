@@ -25,11 +25,9 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
   const fileInputRef = useRef(null);
 
   const PAYMENT_ICONS = {
-    'Numerário': <FiCreditCard />,
     'MB Way': <FiCreditCard />,
-    'Multibanco': <FiCreditCard />,
+    'Numerário': <FiCreditCard />,
     'Cartão': <FiCreditCard />,
-    'NFC': <FiCreditCard />,
   };
 
   const togglePaymentMethod = (method) => {

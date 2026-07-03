@@ -1,12 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import BackHomeButton from '../components/BackHomeButton';
 
 export default function About() {
   const navigate = useNavigate();
   return (
     <div className="page-wrapper">
-      <BackHomeButton />
       <h2>Sobre e Ajuda</h2>
 
       <ul className="page-list">

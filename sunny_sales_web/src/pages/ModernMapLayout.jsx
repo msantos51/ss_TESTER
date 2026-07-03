@@ -11,17 +11,16 @@ import WelcomeCard from '../components/WelcomeCard';
 import WeatherCard from '../components/WeatherCard';
 import {
   FiMapPin, FiTag, FiShoppingBag,
-  FiDollarSign, FiSmartphone, FiTerminal, FiCreditCard, FiWifi,
+  FiSmartphone, FiCreditCard,
   FiSliders, FiCheck, FiX,
 } from 'react-icons/fi';
+import { TbCurrencyEuro } from 'react-icons/tb';
 import './ModernMapLayout.css';
 
 const PAYMENT_ICONS = {
-  'Numerário':   FiDollarSign,
   'MB Way':      FiSmartphone,
-  'Multibanco':  FiTerminal,
+  'Numerário':   TbCurrencyEuro,
   'Cartão':      FiCreditCard,
-  'NFC':         FiWifi,
 };
 
 const DISTANCE_OPTIONS = [
