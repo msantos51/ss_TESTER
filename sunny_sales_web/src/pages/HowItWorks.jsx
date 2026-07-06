@@ -1,5 +1,10 @@
 import React from 'react';
-import { FiCompass, FiGrid, FiZap } from 'react-icons/fi';
+import {
+  FiCompass, FiGrid, FiZap, FiMapPin, FiBarChart2,
+  FiSmartphone, FiHeadphones,
+} from 'react-icons/fi';
+import { FaLeaf } from 'react-icons/fa';
+import { TbCurrencyEuro } from 'react-icons/tb';
 import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
 
@@ -87,7 +92,7 @@ export default function HowItWorks() {
         </div>
         <div className="info-cards">
           <div className="info-card">
-            <div className="info-card-icon">📍</div>
+            <div className="info-card-icon"><FiMapPin /></div>
             <h4 className="info-card-title">Rastreamento de Rotas</h4>
             <p className="info-card-text">
               Visualize suas rotas em tempo real com mapa interativo e dados de performance.
@@ -95,7 +100,7 @@ export default function HowItWorks() {
           </div>
 
           <div className="info-card">
-            <div className="info-card-icon">📊</div>
+            <div className="info-card-icon"><FiBarChart2 /></div>
             <h4 className="info-card-title">Analytics e Relatórios</h4>
             <p className="info-card-text">
               Analise dados detalhados sobre suas vendas, lucros e comportamento de clientes.
@@ -103,7 +108,7 @@ export default function HowItWorks() {
           </div>
 
           <div className="info-card">
-            <div className="info-card-icon">💰</div>
+            <div className="info-card-icon"><TbCurrencyEuro /></div>
             <h4 className="info-card-title">Pagamentos Simples</h4>
             <p className="info-card-text">
               Sistema seguro de pagamento com transferências rápidas e transparentes.
@@ -111,7 +116,7 @@ export default function HowItWorks() {
           </div>
 
           <div className="info-card">
-            <div className="info-card-icon">📱</div>
+            <div className="info-card-icon"><FiSmartphone /></div>
             <h4 className="info-card-title">App Mobile Intuitiva</h4>
             <p className="info-card-text">
               Aplicação fácil de usar, otimizada para dispositivos móveis com bateria eficiente.
@@ -119,7 +124,7 @@ export default function HowItWorks() {
           </div>
 
           <div className="info-card">
-            <div className="info-card-icon">🌍</div>
+            <div className="info-card-icon"><FaLeaf /></div>
             <h4 className="info-card-title">Sustentabilidade</h4>
             <p className="info-card-text">
               Envolvido em iniciativas ambientais para praias mais limpas e um planeta melhor.
@@ -127,7 +132,7 @@ export default function HowItWorks() {
           </div>
 
           <div className="info-card">
-            <div className="info-card-icon">🤝</div>
+            <div className="info-card-icon"><FiHeadphones /></div>
             <h4 className="info-card-title">Suporte 24/7</h4>
             <p className="info-card-text">
               Equipa dedicada pronta para ajudar com qualquer dúvida ou problema técnico.

@@ -157,6 +157,10 @@ body {
 .filter-radio input {
   cursor: pointer;
   accent-color: var(--primary);
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  margin: 0;
 }
 
 .checkbox-label,
@@ -233,9 +237,19 @@ body {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 24px 16px;
+  padding: 36px 16px;
   color: var(--text-secondary);
   text-align: center;
+}
+
+.vendors-empty > svg {
+  width: 48px;
+  height: 48px;
+  padding: 13px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary-dark);
 }
 
 .vendors-empty p {

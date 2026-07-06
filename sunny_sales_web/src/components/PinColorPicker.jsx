@@ -15,8 +15,9 @@ const PRESET_COLORS = [
 export default function PinColorPicker({ value, onChange }) {
   return (
     <div className="pcp-container">
+      {/* A etiqueta do campo é dada pelo formulário que usa o componente;
+          aqui evitamos uma segunda etiqueta redundante em maiúsculas. */}
       <div className="pcp-preview-section">
-        <label className="pcp-preview-label">Pré-visualização do pin</label>
         <div className="pcp-preview-pin" style={{ '--pin-color': value }}>
           <div className="pcp-pin-marker">
             <div className="pcp-pin-dot" />

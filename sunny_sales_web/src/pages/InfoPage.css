@@ -84,7 +84,11 @@
 .info-hero-media {
   position: relative;
   min-height: 300px;
-  background: linear-gradient(135deg, #7fc4e3 0%, #f5b971 100%);
+  /* Fallback tipo "praia" (sol + céu/mar/areia) enquanto a fotografia não
+     carrega — evita a mistura lamacenta de azul com laranja. */
+  background:
+    radial-gradient(circle at 76% 24%, rgba(255, 224, 158, 0.95) 0%, rgba(255, 224, 158, 0) 30%),
+    linear-gradient(180deg, #b3e0f0 0%, #93d2e8 40%, #74c5dd 58%, #f0e2c2 58.35%, #e9d5ae 100%);
 }
 
 .info-hero-media img {
@@ -184,7 +188,8 @@
 }
 
 .info-card-icon {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
+  color: var(--primary-dark);
   margin-bottom: 14px;
   display: flex;
   align-items: center;
