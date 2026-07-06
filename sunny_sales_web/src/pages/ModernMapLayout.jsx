@@ -856,7 +856,7 @@ export default function ModernMapLayout() {
           <div className="vendors-header">
             <h3 className="vendors-title">Vendedores perto de ti</h3>
             {nearbyVendorsCount !== null && (
-              <span className="vendors-count">{nearbyVendorsCount} à perto</span>
+              <span className="vendors-count">{nearbyVendorsCount} por perto</span>
             )}
           </div>
 

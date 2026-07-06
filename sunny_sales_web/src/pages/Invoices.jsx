@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FiFileText } from 'react-icons/fi';
 import { BASE_URL } from '../config';
 
 export default function Invoices() {
@@ -26,7 +27,13 @@ export default function Invoices() {
 
   return (
     <div className="page-wrapper">
-      <h2>Faturas Pagas</h2>
+      <div className="page-header">
+        <div className="page-header-icon"><FiFileText /></div>
+        <div>
+          <h2>Faturas Pagas</h2>
+          <p className="page-header-subtitle">Os recibos das tuas semanas de subscrição</p>
+        </div>
+      </div>
       {weeks.length === 0 && (
         <p className="page-empty">Sem faturas disponíveis.</p>
       )}

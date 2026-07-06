@@ -2,6 +2,7 @@
 import './VendorLogin.css';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FiUser } from 'react-icons/fi';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { SESSION_ENDED_MESSAGE_KEY } from '../sessionAuth';
@@ -95,46 +96,39 @@ export default function VendorLogin() {
 
   return (
     <div className="form-box">
-      <h2 className="title auth-title">Login de Vendedor</h2>
-      <p className="vl-subtitle">
-        Esta página destina-se apenas a vendedores.
-      </p>
-
-      {error && <p className="form-error">{error}</p>}
-
       <div className="form login-form auth-form">
+        <div className="auth-head">
+          <span className="auth-head-icon"><FiUser /></span>
+          <h2 className="title auth-title">Login de Vendedor</h2>
+          <p className="auth-head-sub">
+            Acede ao teu painel para gerires a tua presença no mapa.
+          </p>
+        </div>
+
+        {error && <p className="form-error">{error}</p>}
+
         <span className="input-span">
+          <label className="label" htmlFor="login-email">Email</label>
           <input
+            id="login-email"
             type="email"
-            placeholder="Email"
+            placeholder="email@exemplo.pt"
+            autoComplete="email"
             value={email}
             onChange={(e) => { setEmail(e.target.value); setError(null); }}
           />
         </span>
         <span className="input-span">
+          <label className="label" htmlFor="login-password">Palavra-passe</label>
           <input
+            id="login-password"
             type="password"
-            placeholder="Palavra-passe"
+            placeholder="A tua palavra-passe"
+            autoComplete="current-password"
             value={password}
             onChange={(e) => { setPassword(e.target.value); setError(null); }}
           />
         </span>
-
-        <button
-          className="submit"
-          onClick={login}
-          disabled={!email || !password || loading}
-        >
-          {loading ? <LoadingDots /> : 'Entrar'}
-        </button>
-
-        <button
-          type="button"
-          className="submit"
-          onClick={() => navigate('/vendor-register')}
-        >
-          Registar
-        </button>
 
         <p className="vl-forgot-row">
           <span
@@ -144,6 +138,24 @@ export default function VendorLogin() {
             Esqueci a palavra-passe
           </span>
         </p>
+
+        <button
+          className="submit"
+          onClick={login}
+          disabled={!email || !password || loading}
+        >
+          {loading ? <LoadingDots /> : 'Entrar'}
+        </button>
+
+        <div className="auth-divider"><span>ainda não tens conta?</span></div>
+
+        <button
+          type="button"
+          className="auth-secondary-btn"
+          onClick={() => navigate('/vendor-register')}
+        >
+          Criar conta de vendedor
+        </button>
       </div>
     </div>
   );
