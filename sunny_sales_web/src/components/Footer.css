@@ -5,7 +5,7 @@
   left: 0;
   width: 100%;
   overflow: hidden;
-  background: var(--primary, #4BA3C3);
+  background: var(--ink, #0c1b2a);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 1rem;
+  padding: 14px 1.25rem;
   padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   gap: 1rem;
   min-height: calc(var(--footer-h, 48px) + env(safe-area-inset-bottom, 0px));
@@ -24,14 +24,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   flex: 1;
-  color: rgba(255, 255, 255, 0.85);
-  font-family: 'Inter', 'Roboto', sans-serif;
-  font-weight: 600;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
   font-size: 0.8rem;
   text-align: center;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   animation: footerFade 0.5s ease;
   white-space: nowrap;
   overflow: hidden;
@@ -41,30 +41,37 @@
 .footer-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-shrink: 0;
   font-size: 0.75rem;
 }
 
 .footer-link {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   font-weight: 500;
-  transition: opacity var(--transition);
+  transition: color var(--transition);
   white-space: nowrap;
 }
 
 .footer-link:hover {
-  opacity: 0.7;
+  color: #fff;
   text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-link:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+  border-radius: 3px;
 }
 
 .footer-link-divider {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.28);
 }
 
 .footer-icon {
-  color: rgba(255, 255, 255, 0.9);
+  color: #7fd0ea;
   flex-shrink: 0;
   opacity: 0.9;
 }
@@ -87,7 +94,7 @@
   }
 
   .footer-links {
-    gap: 4px;
+    gap: 6px;
     font-size: 0.68rem;
   }
 
@@ -108,7 +115,7 @@
   }
 
   .footer-links {
-    gap: 3px;
+    gap: 5px;
     font-size: 0.63rem;
   }
 }

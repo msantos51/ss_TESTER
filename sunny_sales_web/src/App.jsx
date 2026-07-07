@@ -156,35 +156,30 @@ function AppLayout() {
           >
             Sobre o Projeto
           </NavLink>
-          <span className="nav-divider">|</span>
           <NavLink
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/sustentabilidade"
           >
             Praia Sustentável
           </NavLink>
-          <span className="nav-divider">|</span>
           <NavLink
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/planos"
           >
             Planos
           </NavLink>
-          <span className="nav-divider">|</span>
           <NavLink
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/como-funciona"
           >
             Para Vendedores
           </NavLink>
-          <span className="nav-divider">|</span>
           <NavLink
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/faqs"
           >
             FAQs
           </NavLink>
-          <span className="nav-divider">|</span>
           <NavLink
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/contacto"

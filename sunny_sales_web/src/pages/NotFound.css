@@ -8,14 +8,22 @@
   padding: 2rem 1rem;
 }
 
+.notfound {
+  animation: fadeInUp 0.45s var(--ease-out);
+}
+
 .notfound-code {
   font-size: clamp(3.5rem, 10vw, 5.5rem);
-  font-weight: 700;
-  letter-spacing: -2px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
   line-height: 1;
   margin: 0 0 8px;
+  background: linear-gradient(120deg, var(--primary), #0aa3c9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   color: var(--primary);
-  opacity: 0.35;
+  opacity: 0.5;
 }
 
 .notfound-title {
@@ -47,24 +55,32 @@
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 600;
-  padding: 11px 22px;
-  border-radius: var(--radius-md);
-  transition: background var(--transition);
+  padding: 11px 24px;
+  border-radius: var(--radius-full);
+  transition: background var(--transition), transform var(--transition),
+    box-shadow var(--transition), border-color var(--transition),
+    color var(--transition);
 }
 
 .notfound-btn-primary {
   color: #fff;
-  background: var(--primary);
+  background: var(--ink);
+  box-shadow: var(--shadow-sm);
 }
 .notfound-btn-primary:hover {
-  background: var(--primary-dark);
+  background: var(--navy-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-ink);
 }
 
 .notfound-btn-ghost {
-  color: var(--primary-dark);
-  border: 1.5px solid var(--primary);
-  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
 }
 .notfound-btn-ghost:hover {
-  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }

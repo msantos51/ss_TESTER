@@ -11,14 +11,16 @@
 .auth-head-icon {
   width: 54px;
   height: 54px;
-  border-radius: 50%;
-  background: var(--primary-light);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--primary-light-solid), #d5ecf4);
+  border: 1px solid rgba(14, 124, 158, 0.18);
   color: var(--primary-dark);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.35rem;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  box-shadow: var(--shadow-xs);
 }
 
 .auth-head .auth-title {
@@ -57,7 +59,7 @@
   content: '';
   height: 1px;
   flex: 1;
-  background: var(--border-strong);
+  background: var(--border);
 }
 
 /* Ação secundária (criar conta / voltar ao login) em estilo contorno,
@@ -66,17 +68,21 @@
   width: 100%;
   padding: 12px 22px;
   background: var(--surface);
-  color: var(--primary-dark);
-  border: 1.5px solid var(--primary);
-  border-radius: var(--radius-full);
+  color: var(--navy);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 650;
   min-height: 48px;
   box-shadow: none;
+  transition: border-color var(--transition), color var(--transition),
+    background var(--transition), box-shadow var(--transition);
 }
 
 .auth-secondary-btn:hover:not(:disabled) {
-  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  background: var(--surface);
   box-shadow: var(--shadow-sm);
   filter: none;
 }
@@ -86,18 +92,35 @@
   margin: 4px 0 0;
 }
 
+/* Mensagens de estado do formulário em formato de alerta */
 .form-error {
-  color: #c62828;
+  color: var(--error);
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
   font-size: 0.85rem;
-  margin-bottom: 0.5rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin: 0 0 0.5rem;
   text-align: center;
+  width: 100%;
+  animation: fadeIn 0.25s var(--ease-out);
 }
 
 .form-success {
-  color: var(--primary);
+  color: var(--success);
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
   font-size: 0.85rem;
-  margin-bottom: 0.5rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin: 0 0 0.5rem;
   text-align: center;
+  width: 100%;
+  animation: fadeIn 0.25s var(--ease-out);
 }
 
 .settings-row {

@@ -110,8 +110,8 @@
 }
 
 .sidebar-logout-btn:hover {
-  background: rgba(239, 68, 68, 0.06);
-  color: #c62828;
+  background: var(--error-bg);
+  color: var(--error);
 }
 
 @media (max-width: 768px) {

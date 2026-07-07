@@ -3,8 +3,8 @@
   margin: 0 auto;
   padding: 0 1rem 3rem;
   color: var(--text);
-  font-family: 'Inter', 'Roboto', sans-serif;
-  animation: fadeIn 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Inter', system-ui, sans-serif;
+  animation: fadeIn 0.45s var(--ease-out);
 }
 
 /* ── Hero ──────────────────────────────────────────────── */
@@ -15,33 +15,36 @@
   gap: 0;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-2xl);
   overflow: hidden;
   margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .sobre-hero-content {
-  padding: 44px 40px;
+  padding: 52px 48px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .sobre-hero-title {
-  font-size: clamp(1.75rem, 3.5vw, 2.4rem);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.5px;
+  font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
   margin: 0 0 18px;
   color: var(--navy);
+  text-wrap: balance;
 }
 
 .sobre-hero-lead {
-  font-size: 1rem;
+  font-size: 1.02rem;
   line-height: 1.7;
-  color: #46586c;
+  color: var(--text-secondary);
   margin: 0 0 26px;
   max-width: 460px;
+  text-wrap: pretty;
 }
 
 .sobre-hero-lead strong {
@@ -52,7 +55,7 @@
 .sobre-hero-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
 }
 
 .sobre-badge {
@@ -61,16 +64,22 @@
   gap: 8px;
   background: var(--surface-alt);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 8px 14px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  font-size: 0.84rem;
+  font-weight: 550;
   color: var(--text-secondary);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.sobre-badge:hover {
+  border-color: rgba(14, 124, 158, 0.35);
+  box-shadow: var(--shadow-xs);
 }
 
 .sobre-badge svg {
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
   color: var(--primary);
   stroke: var(--primary);
   flex-shrink: 0;
@@ -78,7 +87,7 @@
 
 .sobre-hero-media {
   position: relative;
-  min-height: 300px;
+  min-height: 320px;
   background: var(--surface-alt);
 }
 
@@ -89,6 +98,15 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Transição suave entre o conteúdo e a fotografia */
+.sobre-hero-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.35), transparent 30%);
+  pointer-events: none;
 }
 
 /* ── Section ───────────────────────────────────────────── */
@@ -122,8 +140,9 @@
 }
 
 .sobre-section-title {
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: clamp(1.25rem, 2.4vw, 1.5rem);
+  font-weight: 750;
+  letter-spacing: -0.02em;
   color: var(--navy);
   margin: 0;
 }
@@ -146,7 +165,7 @@
   top: 18px;
   bottom: 18px;
   width: 2px;
-  background: var(--border-strong);
+  background: linear-gradient(180deg, rgba(14, 124, 158, 0.35), var(--border-strong));
   z-index: 0;
 }
 
@@ -162,7 +181,7 @@
   height: 36px;
   min-width: 36px;
   border-radius: 50%;
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: #fff;
   display: flex;
   align-items: center;
@@ -171,6 +190,7 @@
   font-size: 0.95rem;
   z-index: 1;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px -4px rgba(14, 124, 158, 0.5);
 }
 
 .sobre-step-card {
@@ -178,16 +198,22 @@
   display: flex;
   align-items: center;
   gap: 18px;
-  background: #f6f8fa;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 18px 22px;
   box-shadow: var(--shadow-xs);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.sobre-step:hover .sobre-step-card {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
 }
 
 .sobre-step-text {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   line-height: 1.6;
   color: var(--text-secondary);
 }
@@ -198,11 +224,24 @@
   display: flex;
   align-items: center;
   gap: 22px;
-  background: var(--navy);
-  border-radius: var(--radius-lg);
-  padding: 30px 34px;
+  background: linear-gradient(135deg, var(--navy) 0%, #123a56 60%, #0e4d66 100%);
+  border-radius: var(--radius-xl);
+  padding: 32px 36px;
   color: #fff;
   overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.sobre-banner::after {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -100px;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(14, 163, 201, 0.25), transparent 65%);
+  pointer-events: none;
 }
 
 .sobre-banner-icon {
@@ -214,6 +253,7 @@
   min-width: 48px;
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   color: #fff;
   flex-shrink: 0;
   z-index: 1;
@@ -231,12 +271,13 @@
   font-size: 0.95rem;
   line-height: 1.6;
   font-weight: 400;
-  opacity: 0.9;
+  opacity: 0.88;
   z-index: 1;
 }
 
 .sobre-banner-text strong {
   font-weight: 700;
+  color: #fff;
 }
 
 /* ── Responsive ────────────────────────────────────────── */
@@ -246,13 +287,17 @@
   }
 
   .sobre-hero-content {
-    padding: 34px 26px;
+    padding: 36px 28px;
     order: 2;
   }
 
   .sobre-hero-media {
     order: 1;
-    min-height: 200px;
+    min-height: 210px;
+  }
+
+  .sobre-hero-media::after {
+    background: linear-gradient(180deg, transparent 65%, rgba(255, 255, 255, 0.4));
   }
 
   .sobre-hero-lead {
@@ -263,6 +308,10 @@
 @media (max-width: 480px) {
   .sobre-page {
     padding: 0 0.75rem 2rem;
+  }
+
+  .sobre-hero {
+    border-radius: var(--radius-xl);
   }
 
   .sobre-timeline::before {
