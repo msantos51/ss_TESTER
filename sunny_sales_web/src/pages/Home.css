@@ -3,9 +3,9 @@
 .home {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 0 1.25rem 3rem;
+  padding: 0 1.25rem 3.5rem;
   color: var(--text);
-  font-family: 'Inter', 'Roboto', sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 /* Shared buttons ------------------------------------------- */
@@ -15,157 +15,299 @@
   justify-content: center;
   gap: 8px;
   font-weight: 600;
-  font-size: 0.92rem;
-  padding: 12px 22px;
-  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  padding: 13px 26px;
+  border-radius: var(--radius-full);
   text-decoration: none;
   cursor: pointer;
   transition: background var(--transition), color var(--transition),
-    border-color var(--transition);
+    border-color var(--transition), transform var(--transition),
+    box-shadow var(--transition);
   white-space: nowrap;
 }
+.home-btn:active { transform: scale(0.98); }
 
 .home-btn-primary {
-  background: var(--secondary);
+  background: var(--ink);
   color: #fff;
+  box-shadow: var(--shadow-sm);
 }
 .home-btn-primary:hover {
-  background: var(--secondary-hover);
+  background: var(--navy-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-ink);
 }
 
 .home-btn-ghost {
   background: var(--surface);
   color: var(--text);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-xs);
 }
 .home-btn-ghost:hover {
   border-color: var(--primary);
   color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.home-btn-ghost svg {
+  transition: transform var(--transition);
+}
+.home-btn-ghost:hover svg {
+  transform: translateX(3px);
 }
 
-.home-btn-teal {
-  background: var(--primary-dark);
-  color: #fff;
+/* Botão claro sobre o painel escuro dos vendedores */
+.home-btn-light {
+  background: #fff;
+  color: var(--navy);
+  box-shadow: var(--shadow-sm);
 }
-.home-btn-teal:hover {
-  background: var(--navy);
+.home-btn-light:hover {
+  background: #eef4f8;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.4);
+}
+.home-btn-light svg {
+  transition: transform var(--transition);
+}
+.home-btn-light:hover svg {
+  transform: translateX(3px);
+}
+
+/* Kicker / etiqueta de secção ------------------------------ */
+.home-kicker {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin: 0 0 10px;
+}
+.home-kicker-light {
+  color: #7fd0ea;
+}
+
+.home-section-title {
+  font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--navy);
+  margin: 0 0 28px;
 }
 
 /* ── Hero ─────────────────────────────────────────────── */
 .home-hero {
-  padding: 4rem 0 3rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 2.5rem;
-  max-width: 640px;
+  position: relative;
+  padding: 5.5rem 0 4.5rem;
+  margin-bottom: 3rem;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  background: var(--surface);
+  border: 1px solid rgba(14, 124, 158, 0.25);
+  border-radius: var(--radius-full);
+  padding: 7px 16px;
+  margin-bottom: 26px;
+  box-shadow: var(--shadow-xs);
+  animation: fadeInUp 0.55s var(--ease-out) both;
+}
+
+.home-hero-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 3px rgba(20, 122, 61, 0.18);
+  animation: heroPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes heroPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(20, 122, 61, 0.18); }
+  50% { box-shadow: 0 0 0 6px rgba(20, 122, 61, 0.06); }
 }
 
 .home-hero-title {
-  font-size: clamp(1.9rem, 4vw, 2.6rem);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.5px;
+  font-size: clamp(2.2rem, 5.2vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
   color: var(--navy);
-  margin: 0 0 18px;
+  margin: 0 0 20px;
+  text-wrap: balance;
+  animation: fadeInUp 0.55s var(--ease-out) 0.06s both;
+}
+
+.home-hero-accent {
+  background: linear-gradient(100deg, var(--primary-dark) 0%, var(--primary) 45%, #0aa3c9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--primary-dark);
 }
 
 .home-hero-lead {
-  font-size: 1.05rem;
-  line-height: 1.65;
+  font-size: clamp(1rem, 1.5vw, 1.13rem);
+  line-height: 1.7;
   color: var(--text-secondary);
-  max-width: 540px;
-  margin: 0 0 28px;
+  max-width: 560px;
+  margin: 0 0 34px;
+  text-wrap: pretty;
+  animation: fadeInUp 0.55s var(--ease-out) 0.12s both;
 }
 
 .home-hero-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
+  animation: fadeInUp 0.55s var(--ease-out) 0.18s both;
 }
 
-/* ── Vendedores ───────────────────────────────────────── */
-.home-mid {
-  margin-bottom: 2.5rem;
+/* ── Funcionalidades ──────────────────────────────────── */
+.home-features-section {
+  margin-bottom: 3rem;
+  text-align: center;
+  animation: fadeInUp 0.55s var(--ease-out) 0.24s both;
 }
 
-.home-vendor-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 2rem;
-}
-
-.home-vendor-body {
-  max-width: 520px;
-}
-.home-vendor-title {
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-  color: var(--navy);
-  margin: 0 0 8px;
-}
-.home-vendor-lead {
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 0 0 16px;
-}
-.home-vendor-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-.home-vendor-list li {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 0.9rem;
-  color: var(--text);
-}
-.home-vendor-list svg {
-  color: var(--primary-dark);
-  flex-shrink: 0;
-}
-
-/* ── Funcionalidades (fila final) ─────────────────────── */
 .home-features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 1rem;
+  text-align: left;
 }
 .home-feature {
   display: flex;
   gap: 14px;
   align-items: flex-start;
-  padding: 20px;
+  padding: 22px 20px;
   text-decoration: none;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  transition: border-color var(--transition);
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--transition), transform var(--transition),
+    box-shadow var(--transition);
 }
 .home-feature:hover {
-  border-color: var(--primary);
+  border-color: rgba(14, 124, 158, 0.35);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.home-feature:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 .home-feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  background: var(--primary-light-solid);
   color: var(--primary-dark);
   flex-shrink: 0;
-  margin-top: 2px;
+  transition: background var(--transition), color var(--transition),
+    transform var(--transition);
+}
+.home-feature:hover .home-feature-icon {
+  background: var(--primary);
+  color: #fff;
+  transform: scale(1.06);
 }
 .home-feature-title {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 650;
   color: var(--text);
   margin: 0 0 4px;
 }
 .home-feature-text {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   color: var(--text-secondary);
   line-height: 1.55;
   margin: 0;
+}
+
+/* ── Vendedores ───────────────────────────────────────── */
+.home-mid {
+  margin-bottom: 1rem;
+  animation: fadeInUp 0.55s var(--ease-out) 0.3s both;
+}
+
+.home-vendor-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--navy) 0%, #123a56 60%, #0e4d66 100%);
+  border-radius: var(--radius-2xl);
+  padding: 3rem 2.75rem;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Brilho decorativo subtil no canto do painel */
+.home-vendor-card::after {
+  content: '';
+  position: absolute;
+  top: -140px;
+  right: -120px;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(14, 163, 201, 0.28), transparent 65%);
+  pointer-events: none;
+}
+
+.home-vendor-body {
+  position: relative;
+  z-index: 1;
+  max-width: 540px;
+}
+.home-vendor-title {
+  font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0 0 10px;
+}
+.home-vendor-lead {
+  font-size: 0.98rem;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.65;
+  margin: 0 0 20px;
+}
+.home-vendor-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.home-vendor-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+.home-vendor-list svg {
+  color: #64d3a9;
+  flex-shrink: 0;
 }
 
 /* ── Responsive ───────────────────────────────────────── */
@@ -174,15 +316,20 @@
     padding: 0 0.9rem 2.5rem;
   }
   .home-hero {
-    padding: 2.5rem 0 2rem;
+    padding: 3rem 0 2.5rem;
+    margin-bottom: 2.25rem;
+  }
+  .home-hero-actions {
+    width: 100%;
   }
   .home-hero-actions .home-btn {
     flex: 1 1 auto;
   }
   .home-vendor-card {
-    padding: 1.5rem 1.25rem;
+    padding: 2rem 1.5rem;
+    border-radius: var(--radius-xl);
   }
-  .home-btn-teal {
+  .home-btn-light {
     width: 100%;
   }
 }

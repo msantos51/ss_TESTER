@@ -16,31 +16,41 @@
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background: var(--border);
-  color: #fff;
+  background: var(--surface-alt);
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 0.3rem;
-  font-weight: bold;
+  font-weight: 700;
   font-size: 0.85rem;
+  transition: background var(--transition), color var(--transition),
+    border-color var(--transition), box-shadow var(--transition);
 }
 
 .vr-progress-circle.active {
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 12px -4px rgba(14, 124, 158, 0.5);
 }
 
 .vr-progress-circle.completed {
   background: var(--primary);
+  border-color: transparent;
+  color: #fff;
 }
 
 .vr-progress-label {
   font-size: 0.7rem;
-  color: var(--text-secondary);
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
 .vr-progress-label.active {
-  color: var(--primary);
+  color: var(--primary-dark);
+  font-weight: 650;
 }
 
 .vr-step-title {
@@ -91,7 +101,7 @@
 }
 
 .vr-success-msg {
-  color: var(--primary);
+  color: var(--success);
   margin-bottom: 1rem;
   font-size: 1.1rem;
 }
@@ -105,10 +115,15 @@
 }
 
 .vr-error {
-  color: #c62828;
+  color: var(--error);
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
   margin-bottom: 1rem;
   font-size: 0.85rem;
   text-align: center;
+  animation: fadeIn 0.25s var(--ease-out);
 }
 
 .vr-btn-row {
@@ -118,8 +133,16 @@
 }
 
 .vr-btn-prev {
-  background: var(--text-secondary);
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-strong);
   flex: 1;
+}
+
+.vr-btn-prev:hover:not(:disabled) {
+  border-color: var(--text-muted);
+  color: var(--text);
+  filter: none;
 }
 
 .vr-btn-next {

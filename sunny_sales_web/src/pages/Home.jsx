@@ -14,8 +14,14 @@ export default function Home() {
     <div className="home">
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="home-hero">
+        <span className="home-hero-badge">
+          <span className="home-hero-badge-dot" aria-hidden="true" />
+          Em tempo real nas praias portuguesas
+        </span>
+
         <h1 className="home-hero-title">
-          Encontra vendedores de praia perto de ti
+          Encontra <span className="home-hero-accent">vendedores de praia</span>{' '}
+          perto de ti
         </h1>
 
         <p className="home-hero-lead">
@@ -31,6 +37,57 @@ export default function Home() {
           </Link>
           <Link to="/como-funciona" className="home-btn home-btn-ghost">
             Como Funciona
+            <FiArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Funcionalidades ──────────────────────────────── */}
+      <section className="home-features-section">
+        <p className="home-kicker">Porquê a Sunny Sales</p>
+        <h2 className="home-section-title">
+          Tudo o que precisas para viver a praia
+        </h2>
+
+        <div className="home-features">
+          <Link to="/map" className="home-feature">
+            <span className="home-feature-icon"><FiMapPin size={20} /></span>
+            <div>
+              <h3 className="home-feature-title">Mapa Interativo</h3>
+              <p className="home-feature-text">
+                Explora o mapa e encontra vendedores perto de ti.
+              </p>
+            </div>
+          </Link>
+
+          <Link to="/faqs" className="home-feature">
+            <span className="home-feature-icon"><FiShield size={20} /></span>
+            <div>
+              <h3 className="home-feature-title">Seguro e Confiável</h3>
+              <p className="home-feature-text">
+                Todos os vendedores são verificados para garantir a tua segurança.
+              </p>
+            </div>
+          </Link>
+
+          <Link to="/sustentabilidade" className="home-feature">
+            <span className="home-feature-icon"><FaLeaf size={18} /></span>
+            <div>
+              <h3 className="home-feature-title">Sustentável</h3>
+              <p className="home-feature-text">
+                Promovemos o comércio local e práticas sustentáveis.
+              </p>
+            </div>
+          </Link>
+
+          <Link to="/como-funciona" className="home-feature">
+            <span className="home-feature-icon"><FiSmartphone size={20} /></span>
+            <div>
+              <h3 className="home-feature-title">Sempre Contigo</h3>
+              <p className="home-feature-text">
+                Disponível na web e em mobile, onde estiveres.
+              </p>
+            </div>
           </Link>
         </div>
       </section>
@@ -39,6 +96,7 @@ export default function Home() {
       <section className="home-mid">
         <div className="home-vendor-card">
           <div className="home-vendor-body">
+            <p className="home-kicker home-kicker-light">Para vendedores</p>
             <h2 className="home-vendor-title">És vendedor de praia?</h2>
             <p className="home-vendor-lead">
               Aumenta a tua visibilidade e chega a mais clientes todos os dias.
@@ -48,55 +106,12 @@ export default function Home() {
               <li><FiCheckCircle /> Gere os teus produtos e horários</li>
               <li><FiCheckCircle /> Recebe mais clientes na tua zona</li>
             </ul>
-            <Link to="/planos" className="home-btn home-btn-teal">
+            <Link to="/planos" className="home-btn home-btn-light">
               Saber mais para Vendedores
               <FiArrowRight size={16} />
             </Link>
           </div>
         </div>
-      </section>
-
-      {/* ── Funcionalidades ──────────────────────────────── */}
-      <section className="home-features">
-        <Link to="/map" className="home-feature">
-          <span className="home-feature-icon"><FiMapPin size={20} /></span>
-          <div>
-            <h3 className="home-feature-title">Mapa Interativo</h3>
-            <p className="home-feature-text">
-              Explora o mapa e encontra vendedores perto de ti.
-            </p>
-          </div>
-        </Link>
-
-        <Link to="/faqs" className="home-feature">
-          <span className="home-feature-icon"><FiShield size={20} /></span>
-          <div>
-            <h3 className="home-feature-title">Seguro e Confiável</h3>
-            <p className="home-feature-text">
-              Todos os vendedores são verificados para garantir a tua segurança.
-            </p>
-          </div>
-        </Link>
-
-        <Link to="/sustentabilidade" className="home-feature">
-          <span className="home-feature-icon"><FaLeaf size={18} /></span>
-          <div>
-            <h3 className="home-feature-title">Sustentável</h3>
-            <p className="home-feature-text">
-              Promovemos o comércio local e práticas sustentáveis.
-            </p>
-          </div>
-        </Link>
-
-        <Link to="/como-funciona" className="home-feature">
-          <span className="home-feature-icon"><FiSmartphone size={20} /></span>
-          <div>
-            <h3 className="home-feature-title">Sempre Contigo</h3>
-            <p className="home-feature-text">
-              Disponível na web e em mobile, onde estiveres.
-            </p>
-          </div>
-        </Link>
       </section>
     </div>
   );
