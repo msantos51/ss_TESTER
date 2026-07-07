@@ -12,7 +12,7 @@
 /* ── Hero Section ──────────────────────────────────– */
 
 .vendor-hero {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: var(--primary-dark);
   border-radius: var(--radius-xl);
   padding: 36px 28px 32px;
   margin-bottom: 1.75rem;
@@ -20,30 +20,6 @@
   text-align: center;
   position: relative;
   overflow: hidden;
-}
-
-.vendor-hero::before {
-  content: '';
-  position: absolute;
-  top: -60px;
-  right: -60px;
-  width: 220px;
-  height: 220px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.vendor-hero::after {
-  content: '';
-  position: absolute;
-  bottom: -80px;
-  left: -40px;
-  width: 200px;
-  height: 200px;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 50%;
-  pointer-events: none;
 }
 
 .vendor-hero-icon {
@@ -56,7 +32,7 @@
 
 .vendor-hero-title {
   font-size: clamp(1.55rem, 5vw, 2.3rem);
-  font-weight: 800;
+  font-weight: 700;
   margin: 0 0 10px;
   color: white;
   letter-spacing: -0.5px;
@@ -94,8 +70,7 @@
 }
 
 .vendor-card:hover {
-  box-shadow: var(--shadow-warm);
-  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
   border-top-color: var(--primary);
 }
 
@@ -164,13 +139,11 @@
   border: none;
   cursor: pointer;
   transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
-  box-shadow: 0 4px 16px rgba(75, 163, 195, 0.4);
   min-height: auto;
 }
 
 .vendor-btn:hover {
   background: var(--primary-hover);
-  transform: translateY(-2px);
   box-shadow: 0 6px 24px rgba(75, 163, 195, 0.5);
 }
 

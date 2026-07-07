@@ -39,7 +39,7 @@ const PLANS = [
     pricePerDay: (24.99 / 30).toFixed(2),
     badge: 'Mais Popular',
     highlight: true,
-    description: 'A escolha inteligente para vendedores regulares. Máxima poupança, máxima visibilidade.',
+    description: 'Para vendedores regulares. O preço por dia mais baixo dos três planos.',
     features: [
       'Visibilidade no mapa durante 30 dias',
       'Partilha de localização em tempo real',
@@ -114,7 +114,7 @@ export default function PlanosVendedores() {
       <div className="pv-hero pv-hero--media">
         <div className="pv-hero-content">
           <h1 className="pv-hero-title">
-            O teu <span>negócio</span> no mapa
+            O teu negócio no mapa
           </h1>
           <p className="pv-hero-lead">
             Junta-te à plataforma que coloca os vendedores de praia no mapa,
@@ -142,7 +142,6 @@ export default function PlanosVendedores() {
 
       {/* ── Pricing header ── */}
       <div className="pv-pricing-header">
-        <span className="pv-pricing-eyebrow"><FiZap size={14} /> Planos e Preços</span>
         <h2 className="pv-pricing-title">Escolhe o plano certo para ti</h2>
         <p className="pv-pricing-sub">
           Sem surpresas. Sem taxas escondidas. Cancela quando quiseres.

@@ -40,7 +40,7 @@ export default function SobreProjeto() {
       <section className="sobre-hero">
         <div className="sobre-hero-content">
           <h1 className="sobre-hero-title">
-            Sobre o <span>Projeto</span>
+            Sobre o Projeto
           </h1>
           <p className="sobre-hero-lead">
             O <strong>Sunny Sales</strong> conecta vendedores ambulantes de praia
@@ -105,32 +105,6 @@ export default function SobreProjeto() {
           <strong>praticidade, sustentabilidade</strong> e a{' '}
           <strong>valorização do comércio local</strong> nas praias portuguesas.
         </p>
-
-        <svg
-          className="sobre-banner-decor"
-          viewBox="0 0 240 120"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path
-            d="M0 96c20-10 40-10 60 0s40 10 60 0 40-10 60 0 40 10 60 0"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <path
-            d="M0 110c20-10 40-10 60 0s40 10 60 0 40-10 60 0 40 10 60 0"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <path
-            d="M186 70c0-18-14-32-32-32M186 70c0-18 14-32 32-32M186 70c8-14 24-20 40-16M186 70c-8-14-24-20-40-16M186 70v34"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
       </section>
     </div>
   );

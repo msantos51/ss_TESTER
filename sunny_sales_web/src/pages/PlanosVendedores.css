@@ -9,14 +9,13 @@
 .pv-hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #f4f7fa 0%, #e9f1f6 100%);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   padding: 44px 40px;
   text-align: left;
   color: var(--text);
   margin-bottom: 2.5rem;
-  box-shadow: var(--shadow-md);
 }
 
 .pv-hero-icon {
@@ -28,18 +27,14 @@
 }
 
 .pv-hero-title {
-  font-size: clamp(2rem, 4.5vw, 3.1rem);
-  font-weight: 800;
+  font-size: clamp(1.75rem, 3.5vw, 2.4rem);
+  font-weight: 700;
   margin: 0 0 18px;
-  line-height: 1.05;
-  letter-spacing: -1px;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
   position: relative;
   z-index: 1;
   color: var(--navy);
-}
-
-.pv-hero-title span {
-  color: var(--secondary);
 }
 
 .pv-hero-lead {
@@ -78,11 +73,8 @@
 .pv-hero-media {
   position: relative;
   min-height: 300px;
-  /* Fallback tipo "praia" (sol + céu/mar/areia) enquanto a fotografia não
-     carrega — evita a mistura lamacenta de azul com laranja. */
-  background:
-    radial-gradient(circle at 76% 24%, rgba(255, 224, 158, 0.95) 0%, rgba(255, 224, 158, 0) 30%),
-    linear-gradient(180deg, #b3e0f0 0%, #93d2e8 40%, #74c5dd 58%, #f0e2c2 58.35%, #e9d5ae 100%);
+  /* Fundo neutro enquanto a fotografia não carrega. */
+  background: var(--surface-alt);
 }
 
 .pv-hero-media img {
@@ -111,12 +103,6 @@
   display: flex;
   gap: 14px;
   align-items: flex-start;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--transition), transform var(--transition);
-}
-.pv-benefit-card:hover {
-  box-shadow: var(--shadow-warm);
-  transform: translateY(-2px);
 }
 
 .pv-benefit-icon {
@@ -149,41 +135,13 @@
   text-align: center;
   margin-bottom: 1.75rem;
 }
-.pv-pricing-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--primary);
-  background: var(--primary-light);
-  padding: 5px 14px;
-  border-radius: var(--radius-full);
-  margin-bottom: 14px;
-}
 .pv-pricing-title {
-  position: relative;
   display: block;
   font-size: clamp(1.35rem, 3.5vw, 1.75rem);
-  font-weight: 800;
+  font-weight: 700;
   color: var(--navy);
-  margin: 0 0 20px;
-  padding-bottom: 12px;
+  margin: 0 0 12px;
   letter-spacing: -0.3px;
-}
-
-.pv-pricing-title::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 0;
-  width: 64px;
-  height: 4px;
-  border-radius: var(--radius-full);
-  background: var(--secondary);
 }
 .pv-pricing-sub {
   font-size: 0.92rem;
@@ -202,29 +160,16 @@
 
 .pv-plan-card {
   background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   padding: 28px 22px 24px;
   position: relative;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--transition), transform var(--transition);
   display: flex;
   flex-direction: column;
 }
-.pv-plan-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-3px);
-}
 
 .pv-plan-card--highlight {
-  border-color: var(--secondary);
-  box-shadow: 0 8px 40px rgba(238, 155, 0, 0.22), var(--shadow-md);
-  background: linear-gradient(180deg, #fffdf5 0%, var(--surface) 100%);
-  transform: translateY(-6px);
-}
-.pv-plan-card--highlight:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 16px 56px rgba(238, 155, 0, 0.28), var(--shadow-lg);
+  border: 2px solid var(--secondary);
 }
 
 .pv-plan-badge {
@@ -232,17 +177,16 @@
   top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(90deg, var(--secondary) 0%, #f5a623 100%);
+  background: var(--secondary);
   color: white;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   padding: 5px 16px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   display: inline-flex;
   align-items: center;
   gap: 5px;
   white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(238, 155, 0, 0.4);
   letter-spacing: 0.03em;
 }
 
@@ -277,12 +221,9 @@
 }
 .pv-plan-amount {
   font-size: 3rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text);
   letter-spacing: -1px;
-}
-.pv-plan-card--highlight .pv-plan-amount {
-  color: var(--secondary);
 }
 .pv-plan-period {
   font-size: 0.9rem;
@@ -351,33 +292,29 @@
   width: 100%;
   text-align: center;
   padding: 13px 20px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   font-size: 0.92rem;
-  font-weight: 700;
+  font-weight: 600;
   font-family: inherit;
   text-decoration: none;
   cursor: pointer;
-  border: 2px solid var(--primary);
+  border: 1.5px solid var(--primary);
   color: var(--primary);
   background: transparent;
-  transition: background var(--transition), color var(--transition), box-shadow var(--transition), transform var(--transition);
+  transition: background var(--transition), color var(--transition);
 }
 .pv-plan-cta:hover {
   background: var(--primary);
   color: white;
-  box-shadow: var(--shadow-warm);
-  transform: translateY(-1px);
 }
 .pv-plan-cta--highlight {
   background: var(--secondary);
   border-color: var(--secondary);
   color: white;
-  box-shadow: 0 4px 18px rgba(238, 155, 0, 0.4);
 }
 .pv-plan-cta--highlight:hover {
   background: var(--secondary-hover);
   border-color: var(--secondary-hover);
-  box-shadow: 0 6px 28px rgba(238, 155, 0, 0.5);
 }
 
 /* ── Compare note ──────────────────────────────────────── */
@@ -408,7 +345,7 @@
 }
 .pv-faq-title {
   font-size: 1.05rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text);
   margin: 0 0 16px;
   letter-spacing: -0.2px;
@@ -465,13 +402,10 @@
 
 /* ── CTA final ─────────────────────────────────────────── */
 .pv-cta {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
-  border-radius: var(--radius-xl);
-  padding: 4px;
+  background: var(--navy);
+  border-radius: var(--radius-lg);
 }
 .pv-cta-inner {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
-  border-radius: calc(var(--radius-xl) - 4px);
   padding: 44px 28px;
   text-align: center;
 }
@@ -483,7 +417,7 @@
 }
 .pv-cta-title {
   font-size: 1.15rem;
-  font-weight: 800;
+  font-weight: 700;
   color: white;
   margin: 0 0 10px;
   letter-spacing: -0.3px;
@@ -508,21 +442,18 @@
   align-items: center;
   gap: 8px;
   padding: 13px 28px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: none;
-  transition: all var(--transition);
+  transition: background var(--transition);
 }
 .pv-cta-btn--primary {
   background: var(--secondary);
   color: white;
-  box-shadow: 0 4px 18px rgba(238, 155, 0, 0.45);
 }
 .pv-cta-btn--primary:hover {
   background: var(--secondary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(238, 155, 0, 0.55);
 }
 .pv-cta-btn--ghost {
   background: rgba(255,255,255,0.1);
@@ -531,7 +462,6 @@
 }
 .pv-cta-btn--ghost:hover {
   background: rgba(255,255,255,0.18);
-  transform: translateY(-2px);
 }
 
 /* ── Responsive ─────────────────────────────────────────── */
@@ -540,11 +470,7 @@
     grid-template-columns: 1fr;
   }
   .pv-plan-card--highlight {
-    transform: none;
     order: -1;
-  }
-  .pv-plan-card--highlight:hover {
-    transform: translateY(-4px);
   }
   .pv-hero.pv-hero--media {
     grid-template-columns: 1fr;

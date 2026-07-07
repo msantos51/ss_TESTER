@@ -2,7 +2,7 @@
   width: 100%;
   border-radius: 14px;
   overflow: hidden;
-  background: linear-gradient(135deg, #f5a623, #ee9b00 38%, #ee9b00 65%, #ffd166);
+  background: var(--secondary);
   color: #fff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
   font-family: 'Inter', 'Roboto', sans-serif;
@@ -36,7 +36,7 @@
 
 .weather-temp {
   font-size: 2.8rem;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.05;
   letter-spacing: -1px;
 }
@@ -120,7 +120,7 @@
 
 /* ── Skeleton state ────────────────────────── */
 .weather-card--skeleton {
-  background: linear-gradient(135deg, #f5a623, #ee9b00 38%, #ee9b00 65%, #ffd166);
+  background: var(--secondary);
   padding: 18px;
   display: flex;
   flex-direction: column;

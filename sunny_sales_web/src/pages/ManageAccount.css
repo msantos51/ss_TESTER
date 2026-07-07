@@ -16,7 +16,7 @@
 
 .ma-title {
   font-size: clamp(1.4rem, 5vw, 1.75rem);
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text);
   letter-spacing: -0.3px;
   margin: 0 0 4px;
@@ -68,7 +68,7 @@
   background: var(--primary-light-solid);
   color: var(--primary-dark);
   font-size: 2rem;
-  font-weight: 800;
+  font-weight: 700;
   border: 3px solid var(--primary-light-solid);
 }
 
@@ -424,8 +424,6 @@
 
 .ma-save-btn:hover:not(:disabled) {
   background: var(--primary-hover);
-  box-shadow: var(--shadow-warm-lg);
-  transform: translateY(-2px);
 }
 
 .ma-save-btn:active:not(:disabled) {
