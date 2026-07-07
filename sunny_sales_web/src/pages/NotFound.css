@@ -10,7 +10,7 @@
 
 .notfound-code {
   font-size: clamp(3.5rem, 10vw, 5.5rem);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -2px;
   line-height: 1;
   margin: 0 0 8px;
@@ -20,7 +20,7 @@
 
 .notfound-title {
   font-size: clamp(1.4rem, 4vw, 1.9rem);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.5px;
   color: var(--navy);
   margin: 0 0 10px;
@@ -46,20 +46,18 @@
   gap: 7px;
   text-decoration: none;
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
   padding: 11px 22px;
-  border-radius: var(--radius-full);
-  transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+  border-radius: var(--radius-md);
+  transition: background var(--transition);
 }
 
 .notfound-btn-primary {
   color: #fff;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  box-shadow: var(--shadow-warm);
+  background: var(--primary);
 }
 .notfound-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-warm-lg);
+  background: var(--primary-dark);
 }
 
 .notfound-btn-ghost {
@@ -69,5 +67,4 @@
 }
 .notfound-btn-ghost:hover {
   background: var(--primary-light);
-  transform: translateY(-2px);
 }

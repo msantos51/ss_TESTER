@@ -74,7 +74,7 @@ export default function FAQ() {
       <div className="info-hero info-hero--media">
         <div className="info-hero-content">
           <h1 className="info-hero-title">
-            Perguntas <span>Frequentes</span>
+            Perguntas Frequentes
           </h1>
           <p className="info-hero-lead">
             Encontra respostas às perguntas mais comuns sobre o Sunny Sales, separadas para

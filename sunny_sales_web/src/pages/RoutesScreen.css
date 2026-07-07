@@ -38,7 +38,7 @@
 
 .rs-title {
   font-size: clamp(1.3rem, 5vw, 1.65rem);
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text);
   letter-spacing: -0.3px;
   margin: 0 0 2px;
@@ -74,7 +74,7 @@
 
 .rs-stat-value {
   font-size: 1.35rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--primary-dark);
   line-height: 1;
 }
@@ -167,8 +167,7 @@
 }
 
 .rs-item:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
   border-color: var(--primary-light-solid);
 }
 

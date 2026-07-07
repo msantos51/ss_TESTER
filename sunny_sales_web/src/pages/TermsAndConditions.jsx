@@ -3,7 +3,7 @@ export default function TermsAndConditions() {
     <div className="legal-page">
       <div className="legal-container">
         <div className="legal-header">
-          <h1>Termos e <span>Condições</span></h1>
+          <h1>Termos e Condições</h1>
           <p className="last-updated">Última atualização: 25 de junho de 2026</p>
         </div>
 

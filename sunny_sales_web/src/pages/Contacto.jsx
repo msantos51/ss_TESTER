@@ -103,7 +103,7 @@ export default function Contacto() {
       <div className="info-hero info-hero--media">
         <div className="info-hero-content">
           <h1 className="info-hero-title">
-            Fala <span>Connosco</span>
+            Fala Connosco
           </h1>
           <p className="info-hero-lead">
             Tens alguma questão, sugestão ou queres saber mais sobre o Sunny Sales?

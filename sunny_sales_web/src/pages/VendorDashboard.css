@@ -86,7 +86,7 @@
   background: var(--primary-light-solid);
   color: var(--primary-dark);
   font-size: 1.6rem;
-  font-weight: 800;
+  font-weight: 700;
   border: 3px solid var(--primary-light-solid);
 }
 
@@ -101,7 +101,7 @@
 
 .vd-profile-head-name {
   font-size: 1.08rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
@@ -396,7 +396,7 @@
 
 .vd-panel-title {
   font-size: 1.15rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text);
   margin: 0;
 }
@@ -446,7 +446,7 @@
 /* ── Hero (saudação na Visão geral) ──────────────────── */
 
 .vd-hero {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: var(--primary-dark);
   border-radius: var(--radius-xl);
   padding: 28px 24px 24px;
   color: white;
@@ -454,30 +454,6 @@
   position: relative;
   overflow: hidden;
   animation: fadeIn 0.35s ease;
-}
-
-.vd-hero::before {
-  content: '';
-  position: absolute;
-  top: -60px;
-  right: -60px;
-  width: 220px;
-  height: 220px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.vd-hero::after {
-  content: '';
-  position: absolute;
-  bottom: -80px;
-  left: -40px;
-  width: 200px;
-  height: 200px;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 50%;
-  pointer-events: none;
 }
 
 .vd-hero-date {
@@ -498,7 +474,7 @@
 
 .vd-hero-title {
   font-size: clamp(1.45rem, 4vw, 1.9rem);
-  font-weight: 800;
+  font-weight: 700;
   margin: 0 0 8px;
   color: white;
   letter-spacing: -0.5px;
@@ -608,9 +584,9 @@
 /* ── Subscription CTA ────────────────────────────────── */
 
 .vd-cta-card {
-  background: linear-gradient(135deg, #e0f5f5 0%, #f0fafa 100%);
-  border: 1.5px solid var(--primary-light-solid);
-  border-radius: var(--radius-xl);
+  background: var(--primary-light-solid);
+  border: 1px solid rgba(10, 147, 150, 0.2);
+  border-radius: var(--radius-lg);
   padding: 16px 20px;
   display: flex;
   align-items: center;
@@ -724,7 +700,6 @@
 
 .vd-stat-card:hover {
   box-shadow: var(--shadow-sm);
-  transform: translateY(-2px);
 }
 
 .vd-stat-icon {
@@ -742,7 +717,7 @@
 
 .vd-stat-value {
   font-size: 1.6rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text);
   line-height: 1;
 }
@@ -862,7 +837,7 @@
 
 .vd-tips-title {
   font-size: 0.95rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text);
 }
 
@@ -891,7 +866,7 @@
   align-items: center;
   justify-content: center;
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 700;
   flex-shrink: 0;
   margin-top: 1px;
 }
@@ -1002,7 +977,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1.75rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .vd-form-photo-btn {

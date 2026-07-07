@@ -37,7 +37,7 @@ export default function Sustentabilidade() {
       <div className="info-hero green info-hero--media">
         <div className="info-hero-content">
           <h1 className="info-hero-title">
-            Praia <span>Sustentável</span>
+            Praia Sustentável
           </h1>
           <p className="info-hero-lead">
             Acreditamos que o futuro do comércio de praia deve ser mais{' '}

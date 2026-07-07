@@ -759,7 +759,7 @@ export default function VendorDashboard() {
               )}
 
               <div className="vd-info-card">
-                💡 <strong>Dica:</strong> a app web partilha a localização enquanto o separador estiver
+                <strong>Dica:</strong> a app web partilha a localização enquanto o separador estiver
                 ativo. Podes ligá-la no interruptor <strong>Partilha de localização</strong>, no teu
                 perfil. Para partilha contínua em segundo plano, usa a <strong>app móvel</strong>.
               </div>
@@ -845,7 +845,7 @@ export default function VendorDashboard() {
 
               {/* Dicas */}
               <div className="vd-tips-card">
-                <div className="vd-tips-title">💡 Dicas para vendedores</div>
+                <div className="vd-tips-title">Dicas para vendedores</div>
                 <div className="vd-tips-items">
                   <div className="vd-tip-item">
                     <div className="vd-tip-item-icon">✓</div>

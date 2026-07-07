@@ -18,18 +18,13 @@ export default function HowItWorks() {
       <div className="info-hero info-hero--media">
         <div className="info-hero-content">
           <h1 className="info-hero-title">
-            Como <span>Funciona</span>
+            Como Funciona
           </h1>
           <p className="info-hero-lead">
-            A <strong>Sunny Sales</strong> conecta vendedores ambulantes com clientes nas praias
-            através de uma plataforma inteligente que maximiza ganhos e oferece praticidade.
+            A <strong>Sunny Sales</strong> liga vendedores ambulantes a clientes nas praias
+            através de um mapa em tempo real. Saiba como registar-se, gerir as suas rotas
+            e acompanhar a sua atividade.
           </p>
-
-          <div className="info-badges">
-            <div className="info-badge info-badge-sky">Registo Simples</div>
-            <div className="info-badge info-badge-sky">Gestão de Rotas</div>
-            <div className="info-badge info-badge-sky">Relatórios em Tempo Real</div>
-          </div>
         </div>
 
         <div className="info-hero-media">
@@ -62,22 +57,21 @@ export default function HowItWorks() {
           <li>
             <div className="info-timeline-number">2</div>
             <div className="info-timeline-body info-timeline-body-muted">
-              Crie e personalize suas rotas de venda nas praias onde deseja operar,
-              escolhendo áreas estratégicas.
+              Crie e personalize as suas rotas de venda nas praias onde pretende
+              trabalhar.
             </div>
           </li>
           <li>
             <div className="info-timeline-number">3</div>
             <div className="info-timeline-body info-timeline-body-muted">
-              Acesse a aplicação mobile e comece a vender nas suas rotas com rastreamento
-              de clientes em tempo real.
+              Aceda à aplicação móvel e comece a vender nas suas rotas, partilhando a
+              sua localização em tempo real.
             </div>
           </li>
           <li>
             <div className="info-timeline-number">4</div>
             <div className="info-timeline-body info-timeline-body-muted">
-              Acompanhe estatísticas detalhadas das suas vendas, ganhos e performance
-              através do dashboard intuitivo.
+              Acompanhe as estatísticas das suas vendas e trajetos no painel de gestão.
             </div>
           </li>
         </ul>
@@ -93,17 +87,17 @@ export default function HowItWorks() {
         <div className="info-cards">
           <div className="info-card">
             <div className="info-card-icon"><FiMapPin /></div>
-            <h4 className="info-card-title">Rastreamento de Rotas</h4>
+            <h4 className="info-card-title">Rotas em Tempo Real</h4>
             <p className="info-card-text">
-              Visualize suas rotas em tempo real com mapa interativo e dados de performance.
+              Visualize as suas rotas no mapa interativo enquanto trabalha.
             </p>
           </div>
 
           <div className="info-card">
             <div className="info-card-icon"><FiBarChart2 /></div>
-            <h4 className="info-card-title">Analytics e Relatórios</h4>
+            <h4 className="info-card-title">Estatísticas e Relatórios</h4>
             <p className="info-card-text">
-              Analise dados detalhados sobre suas vendas, lucros e comportamento de clientes.
+              Analise os dados das suas vendas e trajetos ao longo do tempo.
             </p>
           </div>
 
@@ -111,15 +105,15 @@ export default function HowItWorks() {
             <div className="info-card-icon"><TbCurrencyEuro /></div>
             <h4 className="info-card-title">Pagamentos Simples</h4>
             <p className="info-card-text">
-              Sistema seguro de pagamento com transferências rápidas e transparentes.
+              Subscrição paga de forma segura, sem comissões sobre as vendas.
             </p>
           </div>
 
           <div className="info-card">
             <div className="info-card-icon"><FiSmartphone /></div>
-            <h4 className="info-card-title">App Mobile Intuitiva</h4>
+            <h4 className="info-card-title">Aplicação Móvel</h4>
             <p className="info-card-text">
-              Aplicação fácil de usar, otimizada para dispositivos móveis com bateria eficiente.
+              Aplicação simples de usar, pensada para o dia a dia na praia.
             </p>
           </div>
 
@@ -127,15 +121,15 @@ export default function HowItWorks() {
             <div className="info-card-icon"><FaLeaf /></div>
             <h4 className="info-card-title">Sustentabilidade</h4>
             <p className="info-card-text">
-              Envolvido em iniciativas ambientais para praias mais limpas e um planeta melhor.
+              Apoiamos o comércio local e iniciativas por praias mais limpas.
             </p>
           </div>
 
           <div className="info-card">
             <div className="info-card-icon"><FiHeadphones /></div>
-            <h4 className="info-card-title">Suporte 24/7</h4>
+            <h4 className="info-card-title">Suporte</h4>
             <p className="info-card-text">
-              Equipa dedicada pronta para ajudar com qualquer dúvida ou problema técnico.
+              Equipa disponível para ajudar com qualquer dúvida ou problema técnico.
             </p>
           </div>
         </div>
@@ -150,8 +144,8 @@ export default function HowItWorks() {
           </a>
         }
       >
-        Junte-se aos nossos vendedores e transforme o seu negócio na praia com a
-        plataforma mais inovadora do mercado.
+        Registe-se como vendedor e comece a usar a Sunny Sales no seu dia a dia
+        na praia.
       </InfoBanner>
     </div>
   );

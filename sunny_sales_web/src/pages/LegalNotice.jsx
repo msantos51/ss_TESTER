@@ -3,7 +3,7 @@ export default function LegalNotice() {
     <div className="legal-page">
       <div className="legal-container">
         <div className="legal-header">
-          <h1>Aviso <span>Legal</span></h1>
+          <h1>Aviso Legal</h1>
           <p className="last-updated">Última atualização: 25 de junho de 2026</p>
         </div>
 
