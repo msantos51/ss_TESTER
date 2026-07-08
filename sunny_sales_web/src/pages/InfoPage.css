@@ -135,7 +135,7 @@
 }
 
 .info-badge:hover {
-  border-color: rgba(14, 124, 158, 0.35);
+  border-color: rgba(169, 130, 27, 0.35);
   box-shadow: var(--shadow-xs);
 }
 
@@ -252,7 +252,7 @@
 /* Accent card */
 .info-card.accent {
   background: var(--primary-light-solid);
-  border-color: rgba(14, 124, 158, 0.25);
+  border-color: rgba(169, 130, 27, 0.25);
 }
 
 /* ── Section blocks ────────────────────────────────────── */
@@ -364,7 +364,7 @@
   top: 44px;
   bottom: 20px;
   width: 2px;
-  background: linear-gradient(180deg, rgba(14, 124, 158, 0.35), var(--border-strong));
+  background: linear-gradient(180deg, rgba(169, 130, 27, 0.35), var(--border-strong));
   z-index: 0;
 }
 
@@ -389,7 +389,7 @@
   font-size: 0.95rem;
   z-index: 1;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px -4px rgba(14, 124, 158, 0.5);
+  box-shadow: 0 4px 12px -4px rgba(169, 130, 27, 0.5);
 }
 
 .info-timeline-body {
