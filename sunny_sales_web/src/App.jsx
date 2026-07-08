@@ -82,6 +82,7 @@ export default function App() {
 function AppLayout() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
   const navLinksRef = useRef(null);
 
@@ -119,6 +120,14 @@ function AppLayout() {
     setMenuOpen(false);
   }, [location.pathname]);
 
+  // Navbar sem fundo sobre o hero da página inicial; ganha fundo ao rolar.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   // Close mobile menu on outside click
   useEffect(() => {
     if (!menuOpen) return;
@@ -140,10 +149,12 @@ function AppLayout() {
   }, [menuOpen]);
 
   const profileLink = isLoggedIn ? '/dashboard' : '/vendor-login';
+  // Na página inicial o header fica transparente enquanto está no topo.
+  const navTransparent = location.pathname === '/' && !scrolled && !menuOpen;
 
   return (
     <div className="wrapper">
-      <nav className="navbar">
+      <nav className={`navbar${navTransparent ? ' navbar--home' : ''}`}>
         <Link className="nav-logo" to="/">
           <img src="/logosite.png" alt="Sunny Sales" className="nav-logo-img" />
           Sunny Sales
