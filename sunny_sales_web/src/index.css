@@ -105,10 +105,8 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--bg);
-  /* Luz ambiente muito subtil no topo da página (brilho dourado). */
-  background-image:
-    radial-gradient(820px 400px at 88% -10%, rgba(236, 208, 111, 0.16), transparent 60%);
+  /* Fundo amarelo da marca em todas as páginas. */
+  background-color: var(--gold);
   background-repeat: no-repeat;
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
