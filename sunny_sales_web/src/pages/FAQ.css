@@ -70,7 +70,7 @@
 }
 
 .faq-item[open] {
-  border-color: rgba(14, 124, 158, 0.35);
+  border-color: rgba(169, 130, 27, 0.35);
   box-shadow: var(--shadow-sm);
 }
 

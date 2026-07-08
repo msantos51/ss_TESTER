@@ -241,7 +241,7 @@
   font-size: 1rem;
   flex-shrink: 0;
   text-decoration: none;
-  border: 1.5px solid rgba(14, 124, 158, 0.2);
+  border: 1.5px solid rgba(169, 130, 27, 0.2);
   transition: background var(--transition), box-shadow var(--transition);
 }
 

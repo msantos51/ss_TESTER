@@ -34,10 +34,24 @@ export default function Home() {
               a poucos passos de ti.
             </p>
 
-            <Link to="/map" className="hero-pill hero-pill-primary">
-              <FiMapPin size={16} />
-              Explorar Mapa
-            </Link>
+            <div className="hero-actions">
+              <Link to="/map" className="hero-pill hero-pill-primary">
+                <FiMapPin size={16} />
+                Explorar Mapa
+              </Link>
+              <Link to="/como-funciona" className="hero-textlink">
+                Como funciona
+                <FiArrowRight size={15} />
+              </Link>
+            </div>
+
+            <div className="hero-facts">
+              <span>Em tempo real</span>
+              <i aria-hidden="true" />
+              <span>Praias de Portugal</span>
+              <i aria-hidden="true" />
+              <span>Sem instalar app</span>
+            </div>
           </div>
 
           {/* ── Coluna do telemóvel (mockup do site) ────────── */}

@@ -71,9 +71,9 @@
 }
 
 .footer-icon {
-  color: #7fd0ea;
+  color: var(--gold, #ecd06f);
   flex-shrink: 0;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 @keyframes footerFade {

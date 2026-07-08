@@ -12,8 +12,8 @@
   width: 54px;
   height: 54px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, var(--primary-light-solid), #d5ecf4);
-  border: 1px solid rgba(14, 124, 158, 0.18);
+  background: linear-gradient(135deg, var(--primary-light-solid), #f0e2b0);
+  border: 1px solid rgba(169, 130, 27, 0.2);
   color: var(--primary-dark);
   display: flex;
   align-items: center;
