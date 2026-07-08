@@ -8,79 +8,72 @@ import { FaLeaf } from 'react-icons/fa';
 import './Home.css';
 
 // (em português) Página inicial / landing com apresentação da Sunny Sales.
-// Redesenhada com um visual de verão: hero de ecrã inteiro com gradiente
-// oceano→pôr-do-sol, mockup do mapa e chamadas para ação. Os menus e as
-// funcionalidades mantêm-se iguais — muda apenas o aspeto.
+// Hero de ecrã inteiro com fundo de sol (amarelo→âmbar) e o mockup do site
+// dentro de um telemóvel ao centro. O header fica sem fundo por cima do hero
+// (tratado em App.jsx). Os menus e as funcionalidades mantêm-se iguais.
 export default function Home() {
   return (
     <div className="home">
-      {/* ── Hero (banda de ecrã inteiro) ─────────────────── */}
+      {/* ── Hero (ecrã de sol) ───────────────────────────── */}
       <section className="home-hero">
+        {/* Fundo: raios de sol + brilho quente (evocam o splash) */}
+        <span className="hero-rays" aria-hidden="true" />
+        <span className="hero-sun" aria-hidden="true" />
+
         <div className="home-hero-inner">
-          {/* Coluna de texto */}
-          <div className="home-hero-content">
-            <span className="home-hero-badge">
-              <span className="home-hero-badge-dot" aria-hidden="true" />
-              Em tempo real nas praias portuguesas
-            </span>
+          <span className="home-hero-badge">
+            <span className="home-hero-badge-dot" aria-hidden="true" />
+            Em tempo real nas praias portuguesas
+          </span>
 
-            <h1 className="home-hero-title">
-              O teu verão começa com os{' '}
-              <span className="home-hero-accent">vendedores de praia</span>{' '}
-              perto de ti
-            </h1>
+          <h1 className="home-hero-title">
+            Os <span className="home-hero-accent">vendedores de praia</span>{' '}
+            perto de ti, em tempo real
+          </h1>
 
-            <p className="home-hero-lead">
-              A Sunny Sales liga banhistas e vendedores ambulantes através de um
-              mapa interativo em tempo real. Apoia o comércio local e vive a
-              praia com mais comodidade.
-            </p>
-
-            <div className="home-hero-actions">
-              <Link to="/map" className="home-btn home-btn-primary">
-                <FiMapPin size={18} />
-                Ver no Mapa
-                <FiArrowRight size={16} className="home-btn-arrow" aria-hidden="true" />
-              </Link>
-              <Link to="/como-funciona" className="home-btn home-btn-glass">
-                Como Funciona
-              </Link>
-            </div>
-
-            <ul className="home-hero-trust">
-              <li><FiCheckCircle /> Vendedores verificados</li>
-              <li><FiCheckCircle /> Sem custos para banhistas</li>
-              <li><FiCheckCircle /> Web e mobile</li>
-            </ul>
-          </div>
-
-          {/* Coluna visual: mockup do mapa + elementos de praia */}
-          <div className="home-hero-visual" aria-hidden="true">
-            <span className="hero-blob hero-blob-sun" />
-            <div className="hero-phone">
-              <span className="hero-phone-notch" />
-              <div className="hero-phone-screen">
-                <div className="hero-map">
-                  <span className="hero-map-grid" />
-                  <span className="hero-pin hero-pin-a"><FiMapPin size={13} /></span>
-                  <span className="hero-pin hero-pin-b"><FiMapPin size={13} /></span>
-                  <span className="hero-pin hero-pin-c"><FiMapPin size={13} /></span>
-                  <span className="hero-me"><FiNavigation size={12} /></span>
+          {/* Mockup do site dentro de um telemóvel */}
+          <div className="hero-phone" aria-hidden="true">
+            <span className="hero-phone-notch" />
+            <div className="hero-phone-screen">
+              <div className="ps-bar">
+                <span className="ps-logo">Sunny Sales</span>
+                <span className="ps-burger"><i /><i /><i /></span>
+              </div>
+              <div className="ps-hero">
+                <span className="ps-tag">Praia · tempo real</span>
+                <strong className="ps-title">Vendedores perto de ti</strong>
+                <span className="ps-cta">Ver no Mapa</span>
+              </div>
+              <div className="ps-map">
+                <span className="ps-grid" />
+                <span className="ps-pin ps-pin-a"><FiMapPin size={11} /></span>
+                <span className="ps-pin ps-pin-b"><FiMapPin size={11} /></span>
+                <span className="ps-pin ps-pin-c"><FiMapPin size={11} /></span>
+                <span className="ps-me"><FiNavigation size={10} /></span>
+              </div>
+              <div className="ps-card">
+                <span className="ps-card-emoji">🍦</span>
+                <div className="ps-card-body">
+                  <strong>Gelados do Zé</strong>
+                  <span>a 120 m · aberto</span>
                 </div>
-                <div className="hero-card">
-                  <span className="hero-card-emoji">🍦</span>
-                  <div className="hero-card-body">
-                    <strong>Gelados do Zé</strong>
-                    <span>a 120 m de ti · aberto</span>
-                  </div>
-                  <span className="hero-card-go"><FiArrowRight size={14} /></span>
-                </div>
+                <span className="ps-card-go"><FiArrowRight size={12} /></span>
               </div>
             </div>
+          </div>
 
-            <span className="hero-chip hero-chip-umbrella">⛱️</span>
-            <span className="hero-chip hero-chip-drink">🥤</span>
-            <span className="hero-chip hero-chip-palm">🌴</span>
+          {/* Trio de botões */}
+          <div className="hero-cta-row">
+            <Link to="/map" className="hero-pill hero-pill-primary">
+              <FiMapPin size={16} />
+              Explorar Mapa
+            </Link>
+            <Link to="/como-funciona" className="hero-pill">
+              Como Funciona
+            </Link>
+            <Link to="/planos" className="hero-pill">
+              Para Vendedores
+            </Link>
           </div>
         </div>
       </section>
