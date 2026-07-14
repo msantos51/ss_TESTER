@@ -153,7 +153,7 @@ export default function PlanosVendedores() {
         {PLANS.map((plan) => (
           <div
             key={plan.id}
-            className={`pv-plan-card${plan.highlight ? ' pv-plan-card--highlight' : ''}`}
+            className={`pv-plan-card reveal${plan.highlight ? ' pv-plan-card--highlight' : ''}`}
           >
             {plan.badge && (
               <div className="pv-plan-badge">
@@ -216,7 +216,7 @@ export default function PlanosVendedores() {
         </div>
         <div className="pv-faq-list">
           {FAQS.map((faq) => (
-            <details key={faq.q} className="pv-faq-item">
+            <details key={faq.q} className="pv-faq-item reveal">
               <summary className="pv-faq-q">{faq.q}</summary>
               <p className="pv-faq-a">{faq.a}</p>
             </details>

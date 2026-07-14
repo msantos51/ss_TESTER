@@ -56,7 +56,7 @@ function FaqGroup({ items }) {
   return (
     <div className="faq-list">
       {items.map((faq) => (
-        <details key={faq.q} className="faq-item">
+        <details key={faq.q} className="faq-item reveal">
           <summary className="faq-q">{faq.q}</summary>
           <p className="faq-a">{faq.a}</p>
         </details>

@@ -47,28 +47,28 @@ export default function HowItWorks() {
           <h2 className="info-section-title">Passo a Passo</h2>
         </div>
         <ul className="info-timeline">
-          <li>
+          <li className="reveal">
             <div className="info-timeline-number">1</div>
             <div className="info-timeline-body info-timeline-body-muted">
               Registe-se como vendedor na plataforma e complete o seu perfil com as
               informações necessárias.
             </div>
           </li>
-          <li>
+          <li className="reveal">
             <div className="info-timeline-number">2</div>
             <div className="info-timeline-body info-timeline-body-muted">
               Crie e personalize as suas rotas de venda nas praias onde pretende
               trabalhar.
             </div>
           </li>
-          <li>
+          <li className="reveal">
             <div className="info-timeline-number">3</div>
             <div className="info-timeline-body info-timeline-body-muted">
               Aceda à aplicação móvel e comece a vender nas suas rotas, partilhando a
               sua localização em tempo real.
             </div>
           </li>
-          <li>
+          <li className="reveal">
             <div className="info-timeline-number">4</div>
             <div className="info-timeline-body info-timeline-body-muted">
               Acompanhe as estatísticas das suas vendas e trajetos no painel de gestão.
@@ -85,7 +85,7 @@ export default function HowItWorks() {
           <h2 className="info-section-title">Principais Funcionalidades</h2>
         </div>
         <div className="info-cards">
-          <div className="info-card">
+          <div className="info-card reveal">
             <div className="info-card-icon"><FiMapPin /></div>
             <h4 className="info-card-title">Rotas em Tempo Real</h4>
             <p className="info-card-text">
@@ -93,7 +93,7 @@ export default function HowItWorks() {
             </p>
           </div>
 
-          <div className="info-card">
+          <div className="info-card reveal">
             <div className="info-card-icon"><FiBarChart2 /></div>
             <h4 className="info-card-title">Estatísticas e Relatórios</h4>
             <p className="info-card-text">
@@ -101,7 +101,7 @@ export default function HowItWorks() {
             </p>
           </div>
 
-          <div className="info-card">
+          <div className="info-card reveal">
             <div className="info-card-icon"><TbCurrencyEuro /></div>
             <h4 className="info-card-title">Pagamentos Simples</h4>
             <p className="info-card-text">
@@ -109,7 +109,7 @@ export default function HowItWorks() {
             </p>
           </div>
 
-          <div className="info-card">
+          <div className="info-card reveal">
             <div className="info-card-icon"><FiSmartphone /></div>
             <h4 className="info-card-title">Aplicação Móvel</h4>
             <p className="info-card-text">
@@ -117,7 +117,7 @@ export default function HowItWorks() {
             </p>
           </div>
 
-          <div className="info-card">
+          <div className="info-card reveal">
             <div className="info-card-icon"><FaLeaf /></div>
             <h4 className="info-card-title">Sustentabilidade</h4>
             <p className="info-card-text">
@@ -125,7 +125,7 @@ export default function HowItWorks() {
             </p>
           </div>
 
-          <div className="info-card">
+          <div className="info-card reveal">
             <div className="info-card-icon"><FiHeadphones /></div>
             <h4 className="info-card-title">Suporte</h4>
             <p className="info-card-text">

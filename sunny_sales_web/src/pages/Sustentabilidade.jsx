@@ -79,7 +79,10 @@ export default function Sustentabilidade() {
         </div>
         <ul className="sustainability-list">
           {items.map((item, index) => (
-            <li key={index} className="sustainability-item">
+            <li
+              key={index}
+              className={`sustainability-item reveal reveal-d${(index % 5) + 1}`}
+            >
               <span className="sustainability-icon">
                 <item.icon />
               </span>

@@ -16,6 +16,7 @@ import BackHomeButton from './components/BackHomeButton';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import LoadingDots from './components/LoadingDots';
+import useScrollReveal from './hooks/useScrollReveal';
 import './index.css';
 
 // (em português) As restantes páginas são carregadas sob demanda (code-splitting)
@@ -85,6 +86,9 @@ function AppLayout() {
   const [scrolled, setScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
   const navLinksRef = useRef(null);
+
+  // Revelação suave dos elementos .reveal ao entrarem no ecrã.
+  useScrollReveal();
 
   useEffect(() => {
     const token = localStorage.getItem('token');

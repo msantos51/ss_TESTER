@@ -9,14 +9,26 @@
 .pv-hero {
   position: relative;
   overflow: hidden;
-  background: var(--surface);
+  background:
+    radial-gradient(420px 260px at 100% 0%, rgba(244, 183, 49, 0.14), transparent 70%),
+    var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-2xl);
   padding: 52px 48px;
   text-align: left;
   color: var(--text);
   margin-bottom: 2.5rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
+}
+.pv-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: var(--grad-sun);
+  z-index: 2;
 }
 
 .pv-hero-icon {
@@ -76,8 +88,10 @@
 .pv-hero-media {
   position: relative;
   min-height: 320px;
-  /* Fundo neutro enquanto a fotografia não carrega. */
-  background: var(--surface-alt);
+  /* Fundo "praia" (sol sobre mar) enquanto a fotografia não carrega. */
+  background:
+    radial-gradient(circle at 72% 26%, rgba(255, 255, 255, 0.75), transparent 42%),
+    linear-gradient(160deg, #7fe0d9 0%, #43cec7 33%, #ffe08a 33.4%, #ffd36a 70%, #ffbf4d 100%);
 }
 
 .pv-hero-media img {
@@ -125,15 +139,16 @@
 }
 
 .pv-benefit-icon {
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  background: var(--primary-light-solid);
-  border-radius: var(--radius-md);
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  background: linear-gradient(135deg, var(--secondary-light), var(--teal-light));
+  border: 1px solid rgba(244, 183, 49, 0.22);
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--primary-dark);
+  color: var(--gold-strong);
 }
 
 .pv-benefit-title {
@@ -198,12 +213,26 @@
 
 .pv-plan-card--highlight {
   border: 2px solid var(--secondary);
-  box-shadow: var(--shadow-md), 0 0 0 5px rgba(169, 130, 27, 0.07);
+  background:
+    radial-gradient(320px 200px at 50% 0%, rgba(244, 183, 49, 0.12), transparent 70%),
+    var(--surface);
+  box-shadow: var(--shadow-lg), 0 0 0 5px rgba(244, 183, 49, 0.1);
+}
+
+.pv-plan-card--highlight::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  background: var(--grad-sun);
 }
 
 .pv-plan-card--highlight:hover {
   border-color: var(--secondary);
-  box-shadow: var(--shadow-lg), 0 0 0 5px rgba(169, 130, 27, 0.1);
+  box-shadow: var(--shadow-lg), 0 0 0 5px rgba(244, 183, 49, 0.14);
 }
 
 .pv-plan-badge {
@@ -211,10 +240,10 @@
   top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(120deg, var(--secondary), #d97a06);
-  color: white;
+  background: var(--grad-sun);
+  color: var(--ink);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
   padding: 6px 16px;
   border-radius: var(--radius-full);
   display: inline-flex;
@@ -222,7 +251,7 @@
   gap: 5px;
   white-space: nowrap;
   letter-spacing: 0.03em;
-  box-shadow: 0 6px 16px -6px rgba(169, 130, 27, 0.6);
+  box-shadow: 0 8px 18px -6px rgba(244, 167, 35, 0.7);
 }
 
 .pv-plan-header {
@@ -456,7 +485,7 @@
 
 /* ── CTA final ─────────────────────────────────────────── */
 .pv-cta {
-  background: linear-gradient(135deg, var(--navy) 0%, #123a56 60%, #0e4d66 100%);
+  background: var(--grad-dark);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
 }
