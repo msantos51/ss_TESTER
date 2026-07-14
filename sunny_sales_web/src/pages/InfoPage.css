@@ -9,7 +9,10 @@
 
 /* ── Hero ──────────────────────────────────────────────── */
 .info-hero {
-  background: var(--surface);
+  background:
+    radial-gradient(420px 260px at 100% 0%, rgba(244, 183, 49, 0.14), transparent 70%),
+    radial-gradient(360px 240px at 0% 100%, rgba(16, 179, 172, 0.1), transparent 70%),
+    var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-2xl);
   padding: 52px 48px;
@@ -18,11 +21,29 @@
   text-align: left;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
+}
+
+/* Fita solar no topo do hero */
+.info-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: var(--grad-sun);
+  z-index: 2;
 }
 
 .info-hero.green {
-  background: var(--surface);
+  background:
+    radial-gradient(420px 260px at 100% 0%, rgba(16, 179, 172, 0.16), transparent 70%),
+    radial-gradient(360px 240px at 0% 100%, rgba(15, 143, 71, 0.08), transparent 70%),
+    var(--surface);
+}
+.info-hero.green::before {
+  background: var(--grad-sea);
 }
 
 .info-hero-icon {
@@ -82,8 +103,11 @@
 .info-hero-media {
   position: relative;
   min-height: 320px;
-  /* Fundo neutro enquanto a fotografia não carrega. */
-  background: var(--surface-alt);
+  /* Fundo "praia" (sol sobre mar) enquanto a fotografia não carrega —
+     desenhado para ficar bonito mesmo sem imagem. */
+  background:
+    radial-gradient(circle at 72% 26%, rgba(255, 255, 255, 0.75), transparent 42%),
+    linear-gradient(160deg, #7fe0d9 0%, #43cec7 33%, #ffe08a 33.4%, #ffd36a 70%, #ffbf4d 100%);
 }
 
 .info-hero-media img {
@@ -180,32 +204,50 @@
 }
 
 .info-card {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 26px 22px;
   box-shadow: var(--shadow-xs);
+  overflow: hidden;
   transition: transform var(--transition), box-shadow var(--transition),
     border-color var(--transition);
 }
 
+.info-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--grad-sun);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-slow);
+}
+
 .info-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
   border-color: var(--border-strong);
+}
+
+.info-card:hover::before {
+  transform: scaleX(1);
 }
 
 .info-card-icon {
   font-size: 1.4rem;
-  color: var(--primary-dark);
+  color: var(--gold-strong);
   margin-bottom: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  background: var(--primary-light-solid);
-  border-radius: var(--radius-md);
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(135deg, var(--secondary-light), var(--teal-light));
+  border: 1px solid rgba(244, 183, 49, 0.22);
+  border-radius: var(--radius-lg);
   flex-shrink: 0;
 }
 
@@ -272,18 +314,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
-  background: var(--primary-light-solid);
-  color: var(--primary-dark);
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--secondary-light), var(--teal-light));
+  color: var(--gold-strong);
+  border: 1px solid rgba(244, 183, 49, 0.25);
   flex-shrink: 0;
 }
 
 .info-section-icon svg {
   width: 22px;
   height: 22px;
-  stroke: var(--primary-dark);
+  stroke: var(--gold-strong);
 }
 
 .info-section-title {
@@ -364,7 +407,7 @@
   top: 44px;
   bottom: 20px;
   width: 2px;
-  background: linear-gradient(180deg, rgba(169, 130, 27, 0.35), var(--border-strong));
+  background: linear-gradient(180deg, var(--amber), rgba(16, 179, 172, 0.5), var(--border-strong));
   z-index: 0;
 }
 
@@ -376,20 +419,22 @@
 }
 
 .info-timeline-number {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
+  background: var(--grad-sun);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 1rem;
   z-index: 1;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px -4px rgba(169, 130, 27, 0.5);
+  border: 2px solid #fff;
+  box-shadow: 0 6px 16px -4px rgba(244, 167, 35, 0.6);
 }
 
 .info-timeline-body {
@@ -428,7 +473,7 @@
   display: flex;
   align-items: center;
   gap: 22px;
-  background: linear-gradient(135deg, var(--navy) 0%, #123a56 60%, #0e4d66 100%);
+  background: var(--grad-dark);
   border-radius: var(--radius-xl);
   padding: 32px 36px;
   color: #fff;
@@ -437,16 +482,27 @@
   box-shadow: var(--shadow-lg);
 }
 
-/* Brilho decorativo subtil, coerente com o painel da Home */
+/* Brilho solar + oceano decorativo, coerente com a Home */
 .info-banner::after {
   content: '';
   position: absolute;
   top: -120px;
   right: -100px;
-  width: 340px;
-  height: 340px;
+  width: 380px;
+  height: 380px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(14, 163, 201, 0.25), transparent 65%);
+  background: radial-gradient(circle, rgba(244, 167, 35, 0.32), transparent 65%);
+  pointer-events: none;
+}
+.info-banner::before {
+  content: '';
+  position: absolute;
+  bottom: -140px;
+  left: -80px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 179, 172, 0.24), transparent 65%);
   pointer-events: none;
 }
 
@@ -504,30 +560,31 @@
   align-items: center;
   gap: 8px;
   margin-top: 16px;
-  background: #fff;
-  color: var(--navy);
-  font-weight: 600;
+  background: var(--grad-sun);
+  color: var(--ink);
+  font-weight: 700;
   font-size: 0.92rem;
-  padding: 11px 26px;
+  padding: 12px 26px;
   border-radius: var(--radius-full);
   text-decoration: none;
   border: none;
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: background var(--transition), transform var(--transition),
+  box-shadow: 0 12px 26px -10px rgba(244, 167, 35, 0.7);
+  transition: filter var(--transition), transform var(--transition),
     box-shadow var(--transition);
 }
 
 .info-banner-btn:hover {
-  background: #eef4f8;
+  filter: brightness(1.05);
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.4);
-  filter: none;
+  box-shadow: 0 16px 32px -10px rgba(244, 167, 35, 0.85);
 }
 
 /* ── CTA block ─────────────────────────────────────────── */
 .info-cta {
-  background: linear-gradient(135deg, var(--navy) 0%, #123a56 60%, #0e4d66 100%);
+  position: relative;
+  overflow: hidden;
+  background: var(--grad-dark);
   border-radius: var(--radius-xl);
   padding: 34px 30px;
   text-align: center;
@@ -535,45 +592,62 @@
   margin-top: 1.5rem;
   box-shadow: var(--shadow-lg);
 }
+.info-cta::after {
+  content: '';
+  position: absolute;
+  top: -140px;
+  right: -90px;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 167, 35, 0.3), transparent 65%);
+  pointer-events: none;
+}
 
 .info-cta-title {
-  font-size: 1.15rem;
+  position: relative;
+  z-index: 1;
+  font-size: 1.25rem;
   font-weight: 750;
   margin: 0 0 8px;
   color: white;
 }
 
 .info-cta-text {
+  position: relative;
+  z-index: 1;
   font-size: 0.9rem;
-  opacity: 0.78;
+  opacity: 0.8;
   margin: 0 0 20px;
   line-height: 1.65;
   text-align: left;
 }
 
 .info-cta-btn {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #fff;
-  color: var(--navy);
-  font-weight: 600;
+  background: var(--grad-sun);
+  color: var(--ink);
+  font-weight: 700;
   font-size: 0.95rem;
-  padding: 12px 28px;
+  padding: 13px 28px;
   border-radius: var(--radius-full);
   text-decoration: none;
   border: none;
   cursor: pointer;
-  transition: background var(--transition), transform var(--transition),
+  box-shadow: 0 12px 26px -10px rgba(244, 167, 35, 0.7);
+  transition: filter var(--transition), transform var(--transition),
     box-shadow var(--transition);
   min-height: auto;
 }
 
 .info-cta-btn:hover {
-  background: #eef4f8;
+  filter: brightness(1.05);
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.4);
-  filter: none;
+  box-shadow: 0 16px 32px -10px rgba(244, 167, 35, 0.85);
 }
 
 /* ── Footer text ───────────────────────────────────────── */

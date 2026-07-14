@@ -3,53 +3,62 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400..800&display=swap');
 
 /* ════════════════════════════════════════════════════════
-   Sunny Sales — Design System 2026
-   Estilo editorial monocromático (inspirado em YellowTelescope):
-   preto e branco de alto contraste, com amarelo-dourado como
-   único acento de marca e tipografia display grande.
+   Sunny Sales — Design System 2026 · "Sunlit & Alive"
+   Identidade solar viva: tinta profunda + dourado/âmbar do sol
+   como cor de marca, com um turquesa-oceano fresco como acento
+   secundário (sinais em tempo real). Fundos quentes e camadas
+   com profundidade, movimento e brilho. Sol encontra o mar.
    ════════════════════════════════════════════════════════ */
 
 :root {
   /* ── Cor principal (tinta / ações e UI) ── */
   --primary: #141414;
   --primary-hover: #000000;
-  --primary-dark: #000000;
+  --primary-dark: #1a1408;
   --primary-light: rgba(20, 20, 20, 0.05);
-  --primary-light-solid: #f6f0dd;
+  --primary-light-solid: #fbf1cf;
 
   /* ── Cor de destaque (dourado — o acento da marca) ── */
-  --secondary: #ecd06f;
-  --secondary-hover: #dcbb4a;
-  --secondary-light: rgba(236, 208, 111, 0.22);
+  --secondary: #f4b731;
+  --secondary-hover: #e8a20d;
+  --secondary-light: rgba(244, 183, 49, 0.22);
 
-  /* Dourado legível para texto/ícones sobre fundo claro */
-  --gold: #ecd06f;
-  --gold-strong: #a9821b;
+  /* Dourado / âmbar do sol, legível sobre fundo claro */
+  --gold: #f7cf4e;
+  --gold-strong: #b07d10;
+  --amber: #f6a623;
+  --amber-strong: #e0850a;
+  --coral: #ff8a5b;
+
+  /* Turquesa-oceano — acento secundário (tempo real, "vivo") */
+  --teal: #10b3ac;
+  --teal-strong: #0a8f89;
+  --teal-light: rgba(16, 179, 172, 0.14);
 
   /* ── Tinta (ações primárias, headings, footer) ── */
-  --ink: #0a0a0a;
-  --ink-hover: #1e1e1e;
-  --navy: #0a0a0a;
-  --navy-light: #232323;
+  --ink: #0e0d0a;
+  --ink-hover: #201d16;
+  --navy: #12100a;
+  --navy-light: #262218;
   --navy-border: rgba(255, 255, 255, 0.14);
 
   /* ── Superfícies ── */
   --bg: #ffffff;
   --surface: #ffffff;
-  --surface-alt: #faf8f1;
-  --surface-warm: #faf6e9;
+  --surface-alt: #fbf7ec;
+  --surface-warm: #fdf6e3;
 
   /* ── Texto ── */
-  --text: #0a0a0a;
-  --text-secondary: #565656;
-  --text-muted: #8c8c8c;
+  --text: #12100a;
+  --text-secondary: #5a5344;
+  --text-muted: #918876;
 
   /* ── Bordas ── */
-  --border: #ececec;
-  --border-strong: #dadada;
+  --border: #efe7d4;
+  --border-strong: #e2d6bd;
 
   /* ── Cores semânticas ── */
-  --success: #147a3d;
+  --success: #0f8f47;
   --success-bg: #ecfdf3;
   --success-border: #b7e5c7;
   --warning: #b45309;
@@ -59,16 +68,24 @@
   --error-bg: #fdf1f2;
   --error-border: #f6c6cc;
 
-  /* ── Sombras (camadas suaves, estilo produto premium) ── */
-  --shadow-xs: 0 1px 2px rgba(13, 33, 54, 0.05);
-  --shadow-sm: 0 1px 2px rgba(13, 33, 54, 0.04), 0 2px 8px rgba(13, 33, 54, 0.05);
-  --shadow-md: 0 2px 4px rgba(13, 33, 54, 0.04), 0 10px 28px -6px rgba(13, 33, 54, 0.1);
-  --shadow-lg: 0 4px 8px rgba(13, 33, 54, 0.04), 0 24px 56px -16px rgba(13, 33, 54, 0.18);
+  /* ── Gradientes de marca ── */
+  --grad-sun: linear-gradient(120deg, #ffdf6b 0%, #f7b733 48%, #ff8a5b 100%);
+  --grad-gold: linear-gradient(120deg, #ffd75f, #f4a723);
+  --grad-sea: linear-gradient(120deg, #33d6cf, #0a8f89);
+  --grad-dusk: linear-gradient(125deg, #ffcf4a 0%, #ff8a5b 45%, #10b3ac 120%);
+  /* Painéis escuros premium (banners/CTA): tinta quente com brilho solar */
+  --grad-dark: linear-gradient(140deg, #201a0c 0%, #12100a 52%, #14140f 100%);
+
+  /* ── Sombras (camadas quentes, estilo produto premium) ── */
+  --shadow-xs: 0 1px 2px rgba(60, 44, 8, 0.06);
+  --shadow-sm: 0 1px 2px rgba(60, 44, 8, 0.05), 0 2px 8px rgba(60, 44, 8, 0.06);
+  --shadow-md: 0 2px 4px rgba(60, 44, 8, 0.05), 0 12px 30px -8px rgba(60, 44, 8, 0.14);
+  --shadow-lg: 0 4px 8px rgba(60, 44, 8, 0.05), 0 28px 60px -18px rgba(48, 34, 4, 0.24);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
-  --shadow-primary: 0 10px 28px -10px rgba(10, 10, 10, 0.5);
-  --shadow-ink: 0 10px 28px -10px rgba(10, 10, 10, 0.5);
-  --shadow-gold: 0 12px 30px -12px rgba(236, 208, 111, 0.65);
+  --shadow-primary: 0 14px 32px -12px rgba(14, 13, 10, 0.55);
+  --shadow-ink: 0 14px 32px -12px rgba(14, 13, 10, 0.55);
+  --shadow-gold: 0 16px 34px -14px rgba(244, 167, 35, 0.7);
 
   /* ── Raios ── */
   --radius-xs: 6px;
@@ -105,8 +122,9 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
-  /* Fundo amarelo da marca em todas as páginas. */
-  background-color: var(--gold);
+  /* Fundo solar em camadas: brilho de sol no topo, calor de pôr-do-sol
+     e um toque de oceano em baixo. Muito mais vivo que o amarelo plano. */
+  background-color: #ffd94f;
   background-repeat: no-repeat;
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
@@ -116,8 +134,22 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Camada decorativa fixa por trás de todo o conteúdo. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(1100px 620px at 12% -10%, rgba(255, 255, 255, 0.85), transparent 58%),
+    radial-gradient(1200px 720px at 108% -6%, rgba(255, 138, 91, 0.32), transparent 55%),
+    radial-gradient(1000px 900px at 50% 128%, rgba(16, 179, 172, 0.16), transparent 60%),
+    linear-gradient(180deg, #ffe37e 0%, #ffd657 44%, #ffce41 100%);
+}
+
 ::selection {
-  background: rgba(236, 208, 111, 0.4);
+  background: rgba(244, 183, 49, 0.42);
   color: var(--text);
 }
 
@@ -159,10 +191,11 @@ body {
   display: flex;
   align-items: center;
   padding: 0 28px;
-  background: rgba(255, 255, 255, 0.82);
-  -webkit-backdrop-filter: saturate(180%) blur(16px);
-  backdrop-filter: saturate(180%) blur(16px);
-  border-bottom: 1px solid var(--border);
+  background: rgba(255, 251, 240, 0.78);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
+  border-bottom: 1px solid rgba(226, 214, 189, 0.7);
+  box-shadow: 0 6px 24px -18px rgba(60, 44, 8, 0.5);
   z-index: 1100;
   gap: 16px;
   transition: background var(--transition), border-color var(--transition),
@@ -264,7 +297,7 @@ body {
   bottom: -1px;
   height: 3px;
   border-radius: 2px 2px 0 0;
-  background: var(--secondary);
+  background: var(--grad-sun);
 }
 
 .nav-link-icon {
@@ -313,21 +346,21 @@ body {
   align-items: center;
   gap: 7px;
   text-decoration: none;
-  color: #fff;
+  color: var(--ink);
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
   padding: 9px 18px;
   border-radius: var(--radius-full);
-  background: var(--ink);
-  box-shadow: var(--shadow-xs);
-  transition: background var(--transition), transform var(--transition),
+  background: var(--grad-sun);
+  box-shadow: 0 8px 20px -10px rgba(244, 167, 35, 0.85);
+  transition: filter var(--transition), transform var(--transition),
     box-shadow var(--transition);
 }
 .nav-cta:hover {
-  background: var(--navy-light);
+  filter: brightness(1.04) saturate(1.05);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-ink);
+  box-shadow: 0 12px 26px -10px rgba(244, 167, 35, 0.95);
 }
 .nav-cta:active { transform: translateY(0); }
 .nav-cta:focus-visible {
@@ -562,9 +595,9 @@ button:disabled {
 .form input:focus,
 .form select:focus,
 .input:focus {
-  border-color: var(--primary);
+  border-color: var(--secondary);
   background: var(--surface);
-  box-shadow: 0 0 0 3.5px var(--primary-light);
+  box-shadow: 0 0 0 3.5px var(--secondary-light);
 }
 
 .form input::placeholder {
@@ -762,6 +795,72 @@ h2 {
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.97); }
   to   { opacity: 1; transform: scale(1); }
+}
+
+/* ════════════════════════════════════════════════════════
+   Utilitários de movimento & marca
+   ════════════════════════════════════════════════════════ */
+
+/* Texto com gradiente solar */
+.grad-text {
+  background: var(--grad-sun);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Revelação ao rolar: os elementos com .reveal sobem e aparecem quando
+   entram no ecrã. O JS (useScrollReveal) adiciona .reveal-init (esconde)
+   ao observar cada elemento e .in quando este fica visível. Sem JS, ou
+   sem suporte, tudo permanece visível. */
+.reveal.reveal-init {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  will-change: opacity, transform;
+}
+.reveal.reveal-init.in {
+  opacity: 1;
+  transform: none;
+}
+.reveal-init.reveal-d1 { transition-delay: 0.06s; }
+.reveal-init.reveal-d2 { transition-delay: 0.12s; }
+.reveal-init.reveal-d3 { transition-delay: 0.18s; }
+.reveal-init.reveal-d4 { transition-delay: 0.24s; }
+.reveal-init.reveal-d5 { transition-delay: 0.30s; }
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes floatyX {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(10px, -12px); }
+}
+@keyframes spinSlow {
+  to { transform: rotate(360deg); }
+}
+@keyframes auroraShift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(2.5%, -2%, 0) scale(1.08); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes shimmerMove {
+  to { background-position: 200% center; }
+}
+@keyframes pinPulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 179, 172, 0.5); }
+  70% { box-shadow: 0 0 0 14px rgba(16, 179, 172, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 179, 172, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal.reveal-init {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 /* ── Responsive ──────────────────────────────────────── */

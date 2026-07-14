@@ -11,7 +11,7 @@ import React from 'react';
  */
 export default function InfoBanner({ icon: Icon, title, children, action }) {
   return (
-    <section className="info-banner">
+    <section className="info-banner reveal">
       {Icon && (
         <span className="info-banner-icon">
           <Icon />

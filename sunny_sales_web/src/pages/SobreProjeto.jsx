@@ -85,7 +85,10 @@ export default function SobreProjeto() {
 
         <ol className="sobre-timeline">
           {steps.map((text, index) => (
-            <li key={index} className="sobre-step">
+            <li
+              key={index}
+              className={`sobre-step reveal reveal-d${(index % 3) + 1}`}
+            >
               <div className="sobre-step-number">{index + 1}</div>
               <div className="sobre-step-card">
                 <p className="sobre-step-text">{text}</p>
@@ -96,7 +99,7 @@ export default function SobreProjeto() {
       </section>
 
       {/* ── Banner ───────────────────────────────────────── */}
-      <section className="sobre-banner">
+      <section className="sobre-banner reveal">
         <span className="sobre-banner-icon">
           <FiHeart />
         </span>
