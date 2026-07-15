@@ -158,7 +158,11 @@ function AppLayout() {
 
   return (
     <div className="wrapper">
-      <nav className={`navbar${navTransparent ? ' navbar--home' : ''}`}>
+      <nav
+        className={`navbar${navTransparent ? ' navbar--home' : ''}${
+          scrolled ? ' navbar--scrolled' : ''
+        }`}
+      >
         <Link className="nav-logo" to="/">
           <img src="/logosite.png" alt="Sunny Sales" className="nav-logo-img" />
           Sunny Sales

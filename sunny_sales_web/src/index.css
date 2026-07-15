@@ -1,111 +1,115 @@
-/* Fontes: Space Grotesk (display editorial) + Inter (texto).
+/* Fontes: Plus Jakarta Sans (display premium) + Inter (texto).
    Um único pedido cobre todos os pesos usados. */
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400..800&display=swap');
 
 /* ════════════════════════════════════════════════════════
-   Sunny Sales — Design System 2026 · "Sunlit & Alive"
-   Identidade solar viva: tinta profunda + dourado/âmbar do sol
-   como cor de marca, com um turquesa-oceano fresco como acento
-   secundário (sinais em tempo real). Fundos quentes e camadas
-   com profundidade, movimento e brilho. Sol encontra o mar.
+   Sunny Sales — Design System 2026 · "Coastal Premium"
+   Luz de verão numa tela clara e arejada. Dourado-mel do sol
+   como cor de marca; azul-oceano fresco como acento secundário;
+   tinta azul-marinho profunda para o texto. Muito espaço em
+   branco, profundidade apenas por brilhos e gradientes
+   extremamente discretos. Sol e mar, ao nível premium.
    ════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Cor principal (tinta / ações e UI) ── */
-  --primary: #141414;
-  --primary-hover: #000000;
-  --primary-dark: #1a1408;
-  --primary-light: rgba(20, 20, 20, 0.05);
-  --primary-light-solid: #fbf1cf;
+  /* ── Cor principal (tinta azul-marinho / ações e UI) ── */
+  --primary: #0d2137;
+  --primary-hover: #081726;
+  --primary-dark: #0a1a2b;
+  --primary-light: rgba(13, 33, 55, 0.05);
+  --primary-light-solid: #fdf3d6;
 
-  /* ── Cor de destaque (dourado — o acento da marca) ── */
-  --secondary: #f4b731;
-  --secondary-hover: #e8a20d;
-  --secondary-light: rgba(244, 183, 49, 0.22);
+  /* ── Cor de destaque (dourado-mel do sol — o acento da marca) ── */
+  --secondary: #f2a71b;
+  --secondary-hover: #e0940c;
+  --secondary-light: rgba(242, 167, 27, 0.18);
 
   /* Dourado / âmbar do sol, legível sobre fundo claro */
-  --gold: #f7cf4e;
-  --gold-strong: #b07d10;
-  --amber: #f6a623;
-  --amber-strong: #e0850a;
-  --coral: #ff8a5b;
+  --gold: #f6c453;
+  --gold-strong: #b3800f;
+  --amber: #f59e0b;
+  --amber-strong: #d97706;
+  --coral: #ff9166;
 
-  /* Turquesa-oceano — acento secundário (tempo real, "vivo") */
-  --teal: #10b3ac;
-  --teal-strong: #0a8f89;
-  --teal-light: rgba(16, 179, 172, 0.14);
+  /* Azul-oceano — acento secundário fresco (tempo real, "vivo") */
+  --teal: #0fb0c4;
+  --teal-strong: #0a7d8c;
+  --teal-light: rgba(15, 176, 196, 0.13);
+  --sky: #38bdf8;
 
-  /* ── Tinta (ações primárias, headings, footer) ── */
-  --ink: #0e0d0a;
-  --ink-hover: #201d16;
-  --navy: #12100a;
-  --navy-light: #262218;
+  /* ── Tinta azul-marinho (ações primárias, headings, footer) ── */
+  --ink: #0c1b2e;
+  --ink-hover: #14283f;
+  --navy: #0c1b2e;
+  --navy-light: #17324c;
   --navy-border: rgba(255, 255, 255, 0.14);
 
   /* ── Superfícies ── */
-  --bg: #ffffff;
+  --bg: #fbfaf6;
   --surface: #ffffff;
-  --surface-alt: #fbf7ec;
-  --surface-warm: #fdf6e3;
+  --surface-alt: #f6f7f9;
+  --surface-warm: #fdf9ef;
 
-  /* ── Texto ── */
-  --text: #12100a;
-  --text-secondary: #5a5344;
-  --text-muted: #918876;
+  /* ── Texto (azul muito escuro) ── */
+  --text: #0d1b2a;
+  --text-secondary: #51606f;
+  --text-muted: #8695a3;
 
   /* ── Bordas ── */
-  --border: #efe7d4;
-  --border-strong: #e2d6bd;
+  --border: #e9edf1;
+  --border-strong: #d8dee5;
 
   /* ── Cores semânticas ── */
-  --success: #0f8f47;
+  --success: #0f9d58;
   --success-bg: #ecfdf3;
   --success-border: #b7e5c7;
   --warning: #b45309;
   --warning-bg: #fffaeb;
   --warning-border: #fbe1a0;
-  --error: #d3273e;
+  --error: #e0334b;
   --error-bg: #fdf1f2;
   --error-border: #f6c6cc;
 
-  /* ── Gradientes de marca ── */
-  --grad-sun: linear-gradient(120deg, #ffdf6b 0%, #f7b733 48%, #ff8a5b 100%);
-  --grad-gold: linear-gradient(120deg, #ffd75f, #f4a723);
-  --grad-sea: linear-gradient(120deg, #33d6cf, #0a8f89);
-  --grad-dusk: linear-gradient(125deg, #ffcf4a 0%, #ff8a5b 45%, #10b3ac 120%);
-  /* Painéis escuros premium (banners/CTA): tinta quente com brilho solar */
-  --grad-dark: linear-gradient(140deg, #201a0c 0%, #12100a 52%, #14140f 100%);
+  /* ── Gradientes de marca (mais suaves, luz de verão) ── */
+  --grad-sun: linear-gradient(120deg, #ffd873 0%, #f6ac28 52%, #ff9a56 100%);
+  --grad-gold: linear-gradient(120deg, #ffd873, #f2a71b);
+  --grad-sea: linear-gradient(120deg, #57d6e6, #0a7d8c);
+  --grad-dusk: linear-gradient(125deg, #ffd166 0%, #ff9a56 44%, #0fb0c4 128%);
+  /* Painéis escuros premium (banners/CTA): azul-marinho oceânico profundo */
+  --grad-dark: linear-gradient(150deg, #12293f 0%, #0c1b2e 55%, #0a1826 100%);
 
-  /* ── Sombras (camadas quentes, estilo produto premium) ── */
-  --shadow-xs: 0 1px 2px rgba(60, 44, 8, 0.06);
-  --shadow-sm: 0 1px 2px rgba(60, 44, 8, 0.05), 0 2px 8px rgba(60, 44, 8, 0.06);
-  --shadow-md: 0 2px 4px rgba(60, 44, 8, 0.05), 0 12px 30px -8px rgba(60, 44, 8, 0.14);
-  --shadow-lg: 0 4px 8px rgba(60, 44, 8, 0.05), 0 28px 60px -18px rgba(48, 34, 4, 0.24);
+  /* ── Sombras (difusas, tinta azul-marinho, produto premium) ── */
+  --shadow-xs: 0 1px 2px rgba(13, 27, 42, 0.05);
+  --shadow-sm: 0 1px 3px rgba(13, 27, 42, 0.05), 0 2px 8px rgba(13, 27, 42, 0.05);
+  --shadow-md: 0 2px 6px -2px rgba(13, 27, 42, 0.06), 0 14px 34px -12px rgba(13, 27, 42, 0.14);
+  --shadow-lg: 0 4px 10px -4px rgba(13, 27, 42, 0.06), 0 30px 64px -20px rgba(13, 27, 42, 0.24);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
-  --shadow-primary: 0 14px 32px -12px rgba(14, 13, 10, 0.55);
-  --shadow-ink: 0 14px 32px -12px rgba(14, 13, 10, 0.55);
-  --shadow-gold: 0 16px 34px -14px rgba(244, 167, 35, 0.7);
+  --shadow-primary: 0 14px 32px -12px rgba(12, 27, 46, 0.5);
+  --shadow-ink: 0 16px 34px -14px rgba(12, 27, 46, 0.55);
+  --shadow-gold: 0 16px 34px -14px rgba(242, 167, 27, 0.6);
 
-  /* ── Raios ── */
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
-  --radius-2xl: 24px;
+  /* ── Raios (cantos modernos, suaves) ── */
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
   --radius-full: 9999px;
 
   /* ── Movimento ── */
-  --transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* Tipografia display (headings editoriais) vs corpo */
-  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  /* Tipografia display (headings premium) vs corpo */
+  --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
-  --navbar-h: 64px;
+  --navbar-h: 68px;
+  --navbar-h-scrolled: 58px;
   /* Altura reservada para o rodapé fixo. Deve ser >= altura real do footer
      em cada breakpoint para o conteúdo não ficar escondido atrás dele. */
   --footer-h: 46px;
@@ -122,9 +126,10 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
-  /* Fundo solar em camadas: brilho de sol no topo, calor de pôr-do-sol
-     e um toque de oceano em baixo. Muito mais vivo que o amarelo plano. */
-  background-color: #ffd94f;
+  /* Tela clara e arejada com luz de verão extremamente discreta:
+     brilho de sol no topo e um toque de oceano em baixo. Premium,
+     limpo, com muito espaço para respirar (nada de amarelo saturado). */
+  background-color: var(--bg);
   background-repeat: no-repeat;
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
@@ -134,7 +139,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Camada decorativa fixa por trás de todo o conteúdo. */
+/* Camada decorativa fixa por trás de todo o conteúdo: brilhos solares
+   e oceânicos muito subtis sobre um branco quente. */
 body::before {
   content: '';
   position: fixed;
@@ -142,14 +148,14 @@ body::before {
   z-index: -2;
   pointer-events: none;
   background:
-    radial-gradient(1100px 620px at 12% -10%, rgba(255, 255, 255, 0.85), transparent 58%),
-    radial-gradient(1200px 720px at 108% -6%, rgba(255, 138, 91, 0.32), transparent 55%),
-    radial-gradient(1000px 900px at 50% 128%, rgba(16, 179, 172, 0.16), transparent 60%),
-    linear-gradient(180deg, #ffe37e 0%, #ffd657 44%, #ffce41 100%);
+    radial-gradient(1200px 720px at 12% -12%, rgba(255, 210, 110, 0.24), transparent 56%),
+    radial-gradient(1000px 640px at 102% -6%, rgba(255, 150, 100, 0.10), transparent 55%),
+    radial-gradient(1100px 900px at 50% 122%, rgba(15, 176, 196, 0.09), transparent 62%),
+    linear-gradient(180deg, #fdfbf6 0%, #f9f8f3 52%, #f6f7f6 100%);
 }
 
 ::selection {
-  background: rgba(244, 183, 49, 0.42);
+  background: rgba(242, 167, 27, 0.32);
   color: var(--text);
 }
 
@@ -191,16 +197,28 @@ body::before {
   display: flex;
   align-items: center;
   padding: 0 28px;
-  background: rgba(255, 251, 240, 0.78);
+  background: rgba(255, 255, 255, 0.68);
   -webkit-backdrop-filter: saturate(180%) blur(18px);
   backdrop-filter: saturate(180%) blur(18px);
-  border-bottom: 1px solid rgba(226, 214, 189, 0.7);
-  box-shadow: 0 6px 24px -18px rgba(60, 44, 8, 0.5);
+  border-bottom: 1px solid rgba(224, 230, 236, 0.7);
+  box-shadow: 0 4px 20px -16px rgba(13, 27, 42, 0.4);
   z-index: 1100;
   gap: 16px;
   transition: background var(--transition), border-color var(--transition),
-    box-shadow var(--transition);
+    box-shadow var(--transition), height var(--transition-slow),
+    -webkit-backdrop-filter var(--transition), backdrop-filter var(--transition);
 }
+
+/* Ao rolar: encolhe ligeiramente, aumenta o blur e ganha profundidade. */
+.navbar.navbar--scrolled {
+  height: var(--navbar-h-scrolled);
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: saturate(185%) blur(24px);
+  backdrop-filter: saturate(185%) blur(24px);
+  border-bottom-color: rgba(216, 222, 229, 0.85);
+  box-shadow: 0 8px 30px -18px rgba(13, 27, 42, 0.5);
+}
+.navbar--scrolled .nav-logo-img { height: 44px; }
 
 /* Header sem fundo sobre o hero de sol da página inicial (topo da página) */
 .navbar.navbar--home {
@@ -251,6 +269,7 @@ body::before {
   height: 52px;
   width: auto;
   flex-shrink: 0;
+  transition: height var(--transition-slow);
 }
 
 .nav-links {
@@ -442,6 +461,7 @@ button {
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
+  letter-spacing: -0.005em;
   padding: 10px 22px;
   min-height: 44px;
   display: inline-flex;
@@ -449,17 +469,21 @@ button {
   justify-content: center;
   gap: 6px;
   cursor: pointer;
+  box-shadow: var(--shadow-xs);
   transition: background var(--transition), opacity var(--transition),
-    box-shadow var(--transition), transform var(--transition);
+    box-shadow var(--transition), transform var(--transition), filter var(--transition);
   -webkit-tap-highlight-color: transparent;
 }
 
 button:hover:not(:disabled) {
-  filter: brightness(0.96);
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 button:active:not(:disabled) {
-  transform: scale(0.985);
+  transform: translateY(0) scale(0.985);
+  box-shadow: var(--shadow-xs);
 }
 
 button:focus-visible {
