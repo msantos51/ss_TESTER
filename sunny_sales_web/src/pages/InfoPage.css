@@ -40,7 +40,7 @@
 
 .info-hero-title {
   font-size: clamp(1.8rem, 3.6vw, 2.5rem);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.12;
   letter-spacing: -0.03em;
   margin: 0 0 18px;
@@ -88,7 +88,7 @@
   position: relative;
   min-height: 320px;
   /* Fundo neutro azul-claro enquanto a fotografia não carrega. */
-  background: linear-gradient(160deg, #eaf1f8 0%, #d7e5f1 100%);
+  background: #f4f4f5;
 }
 
 .info-hero-media img {
@@ -134,7 +134,7 @@
   gap: 8px;
   font-size: 0.84rem;
   color: var(--text-secondary);
-  font-weight: 550;
+  font-weight: 500;
   white-space: nowrap;
   transition: border-color var(--transition), box-shadow var(--transition);
 }
@@ -301,7 +301,7 @@
 
 .info-section-title {
   font-size: clamp(1.25rem, 2.4vw, 1.5rem);
-  font-weight: 750;
+  font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--navy);
   margin: 0;
@@ -488,7 +488,7 @@
 .info-banner-title {
   margin: 0 0 6px;
   font-size: 1.15rem;
-  font-weight: 750;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: #fff;
 }
@@ -514,21 +514,19 @@
   margin-top: 16px;
   background: var(--secondary);
   color: var(--ink);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.92rem;
   padding: 12px 26px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   text-decoration: none;
   border: none;
   cursor: pointer;
   box-shadow: none;
-  transition: background var(--transition), transform var(--transition),
-    box-shadow var(--transition);
+  transition: background var(--transition), box-shadow var(--transition);
 }
 
 .info-banner-btn:hover {
   background: var(--secondary-hover);
-  transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
 }
 
@@ -552,7 +550,7 @@
   position: relative;
   z-index: 1;
   font-size: 1.25rem;
-  font-weight: 750;
+  font-weight: 600;
   margin: 0 0 8px;
   color: white;
 }
@@ -575,22 +573,20 @@
   gap: 8px;
   background: var(--secondary);
   color: var(--ink);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.95rem;
   padding: 13px 28px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   text-decoration: none;
   border: none;
   cursor: pointer;
   box-shadow: none;
-  transition: background var(--transition), transform var(--transition),
-    box-shadow var(--transition);
+  transition: background var(--transition), box-shadow var(--transition);
   min-height: auto;
 }
 
 .info-cta-btn:hover {
   background: var(--secondary-hover);
-  transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
 }
 
@@ -610,7 +606,7 @@
 /* ── Legacy title/lead (kept for compatibility) ────────── */
 .info-page-title {
   font-size: clamp(1.5rem, 5vw, 2.2rem);
-  font-weight: 750;
+  font-weight: 600;
   letter-spacing: -0.025em;
   text-align: center;
   margin: 0 0 8px;
@@ -702,7 +698,7 @@
 }
 
 .info-link {
-  color: var(--primary);
+  color: var(--blue);
   font-weight: 600;
 }
 

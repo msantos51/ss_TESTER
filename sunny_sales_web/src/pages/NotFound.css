@@ -14,16 +14,11 @@
 
 .notfound-code {
   font-size: clamp(3.5rem, 10vw, 5.5rem);
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1;
   margin: 0 0 8px;
-  background: linear-gradient(120deg, var(--primary), #0aa3c9);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: var(--primary);
-  opacity: 0.5;
+  color: var(--border-strong);
 }
 
 .notfound-title {
@@ -54,9 +49,9 @@
   gap: 7px;
   text-decoration: none;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 500;
   padding: 11px 24px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   transition: background var(--transition), transform var(--transition),
     box-shadow var(--transition), border-color var(--transition),
     color var(--transition);
@@ -68,9 +63,9 @@
   box-shadow: var(--shadow-sm);
 }
 .notfound-btn-primary:hover {
-  background: var(--navy-light);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-ink);
+  background: var(--ink-hover);
+  transform: none;
+  box-shadow: none;
 }
 
 .notfound-btn-ghost {
@@ -79,8 +74,8 @@
   background: var(--surface);
 }
 .notfound-btn-ghost:hover {
-  border-color: var(--primary);
-  color: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  border-color: var(--text-muted);
+  color: var(--text);
+  transform: none;
+  box-shadow: none;
 }

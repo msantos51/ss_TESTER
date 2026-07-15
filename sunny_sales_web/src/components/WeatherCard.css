@@ -1,10 +1,11 @@
 .weather-card {
   width: 100%;
-  border-radius: 14px;
+  border-radius: var(--radius-lg, 16px);
   overflow: hidden;
-  background: var(--secondary);
-  color: #fff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  background: var(--surface, #ffffff);
+  color: var(--text, #0f0f0f);
+  border: 1px solid var(--border, #ececec);
+  box-shadow: var(--shadow-md, 0 8px 30px rgba(0, 0, 0, 0.04));
   font-family: 'Inter', 'Roboto', sans-serif;
   user-select: none;
   flex-shrink: 0;
@@ -15,7 +16,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 14px 18px 10px;
+  padding: 14px 18px 12px;
 }
 
 /* Left column */
@@ -31,20 +32,21 @@
   gap: 6px;
   font-size: 0.8rem;
   font-weight: 500;
-  opacity: 0.92;
+  color: var(--text-secondary, #6b7280);
 }
 
 .weather-temp {
-  font-size: 2.8rem;
-  font-weight: 700;
+  font-size: 2.6rem;
+  font-weight: 600;
   line-height: 1.05;
-  letter-spacing: -1px;
+  letter-spacing: -0.03em;
+  color: var(--text, #0f0f0f);
 }
 
 .weather-minmax {
   font-size: 0.78rem;
   font-weight: 500;
-  opacity: 0.78;
+  color: var(--text-muted, #9ca3af);
 }
 
 /* Right column */
@@ -57,24 +59,25 @@
 }
 
 .weather-time {
-  font-size: 1.9rem;
-  font-weight: 700;
+  font-size: 1.8rem;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.02em;
+  color: var(--text, #0f0f0f);
 }
 
 .weather-date {
   font-size: 0.72rem;
   font-weight: 500;
-  opacity: 0.82;
+  color: var(--text-muted, #9ca3af);
   letter-spacing: 0.04em;
 }
 
 .weather-city {
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: 0.8125rem;
+  font-weight: 500;
   margin-top: 5px;
-  opacity: 0.95;
+  color: var(--text-secondary, #6b7280);
 }
 
 /* ── Tide strip ────────────────────────────── */
@@ -82,8 +85,9 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
-  background: rgba(0, 0, 0, 0.18);
-  padding: 9px 18px 10px;
+  background: var(--surface-warm, #fafafa);
+  border-top: 1px solid var(--border, #ececec);
+  padding: 10px 18px 11px;
 }
 
 .tide-row {
@@ -91,6 +95,7 @@
   align-items: center;
   gap: 7px;
   font-size: 0.78rem;
+  color: var(--text-secondary, #6b7280);
 }
 
 .tide-icon {
@@ -99,28 +104,29 @@
 }
 
 .tide-icon--high {
-  color: #fff;
+  color: var(--text, #0f0f0f);
 }
 
 .tide-icon--low {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--text-muted, #9ca3af);
 }
 
 .tide-label {
-  font-weight: 600;
-  opacity: 0.82;
+  font-weight: 500;
+  color: var(--text-muted, #9ca3af);
   min-width: 76px;
   letter-spacing: 0.01em;
 }
 
 .tide-times {
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  font-weight: 600;
+  color: var(--text, #0f0f0f);
+  letter-spacing: 0.02em;
 }
 
 /* ── Skeleton state ────────────────────────── */
 .weather-card--skeleton {
-  background: var(--secondary);
+  background: var(--surface, #ffffff);
   padding: 18px;
   display: flex;
   flex-direction: column;
@@ -130,7 +136,7 @@
 .weather-skeleton-line {
   height: 18px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--surface-alt, #f6f6f6);
   width: 60%;
   animation: weatherPulse 1.4s ease-in-out infinite;
 }
@@ -141,14 +147,14 @@
 }
 
 @keyframes weatherPulse {
-  0%, 100% { opacity: 0.5; }
+  0%, 100% { opacity: 0.55; }
   50%       { opacity: 1; }
 }
 
 /* ── Mobile tweaks ─────────────────────────── */
 @media (max-width: 480px) {
-  .weather-temp  { font-size: 2.2rem; }
-  .weather-time  { font-size: 1.6rem; }
-  .weather-main  { padding: 12px 14px 8px; }
-  .weather-tides { padding: 8px 14px 9px; }
+  .weather-temp  { font-size: 2.1rem; }
+  .weather-time  { font-size: 1.55rem; }
+  .weather-main  { padding: 12px 14px 10px; }
+  .weather-tides { padding: 9px 14px 10px; }
 }

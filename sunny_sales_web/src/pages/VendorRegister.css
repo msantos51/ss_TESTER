@@ -30,10 +30,10 @@
 }
 
 .vr-progress-circle.active {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: var(--ink);
   border-color: transparent;
   color: #fff;
-  box-shadow: var(--shadow-primary);
+  box-shadow: none;
 }
 
 .vr-progress-circle.completed {
@@ -50,7 +50,7 @@
 
 .vr-progress-label.active {
   color: var(--primary-dark);
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .vr-step-title {
