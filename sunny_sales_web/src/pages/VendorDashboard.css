@@ -153,21 +153,21 @@
   width: 100%;
   background: var(--primary);
   border: none;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   padding: 10px 20px;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #fff;
   cursor: pointer;
   min-height: auto;
-  box-shadow: var(--shadow-warm);
-  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+  box-shadow: none;
+  transition: background var(--transition);
 }
 
 .vd-renew-btn:hover {
-  background: var(--primary-hover);
-  box-shadow: var(--shadow-warm-lg);
-  transform: translateY(-1px);
+  background: var(--ink-hover);
+  box-shadow: none;
+  transform: none;
 }
 
 /* Partilha de localização fixa no card do perfil */
@@ -189,7 +189,7 @@
   justify-content: center;
   border-radius: 50%;
   background: var(--surface-alt);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   color: var(--text-muted);
   font-size: 1rem;
   flex-shrink: 0;
@@ -377,7 +377,7 @@
   align-items: center;
   gap: 6px;
   background: var(--surface);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: var(--radius-full);
   padding: 7px 14px;
   font-size: 0.82rem;
@@ -519,12 +519,12 @@
   height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
-  background: #ffb3ab;
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .vd-hero-chip.on .vd-hero-chip-dot {
-  background: #8ef0a0;
-  box-shadow: 0 0 6px rgba(142, 240, 160, 0.8);
+  background: #4ade80;
+  box-shadow: none;
 }
 
 /* ── Notice banner (substitui os alert()) ─────────────── */
@@ -623,22 +623,22 @@
   background: var(--primary);
   color: #fff;
   border: none;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   padding: 8px 20px;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
   min-height: auto;
-  box-shadow: var(--shadow-warm);
-  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+  box-shadow: none;
+  transition: background var(--transition);
 }
 
 .vd-cta-btn:hover {
-  background: var(--primary-hover);
-  box-shadow: var(--shadow-warm-lg);
-  transform: translateY(-1px);
+  background: var(--ink-hover);
+  box-shadow: none;
+  transform: none;
 }
 
 @keyframes locPulse {
@@ -650,9 +650,9 @@
 /* ── Info card (dica app móvel) ──────────────────────── */
 
 .vd-info-card {
-  background: var(--primary-light);
-  border: 1px solid rgba(75, 163, 195, 0.22);
-  border-left: 4px solid var(--primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--ink);
   border-radius: var(--radius-lg);
   padding: 13px 16px;
   font-size: 0.83rem;
@@ -918,7 +918,7 @@
   background-color: var(--border-strong);
   transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: var(--radius-full);
-  border: 1.5px solid transparent;
+  border: 1px solid transparent;
 }
 
 .vendor-switch .slider::before {
@@ -983,7 +983,7 @@
 .vd-form-photo-btn {
   display: inline-block;
   background: var(--surface-alt);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: var(--radius-full);
   padding: 7px 16px;
   font-size: 0.82rem;
@@ -1016,7 +1016,7 @@
 .vd-form-input {
   width: 100%;
   padding: 10px 14px;
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--surface-alt);
   color: var(--text);
@@ -1044,7 +1044,7 @@
   align-items: center;
   gap: 6px;
   background: var(--surface-alt);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: var(--radius-full);
   padding: 7px 14px;
   font-size: 0.82rem;
@@ -1098,21 +1098,21 @@
   flex: 1;
   background: var(--primary);
   border: none;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   padding: 11px 24px;
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #fff;
   cursor: pointer;
   min-height: auto;
-  box-shadow: var(--shadow-warm);
-  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+  box-shadow: none;
+  transition: background var(--transition);
 }
 
 .vd-form-save:hover:not(:disabled) {
-  background: var(--primary-hover);
-  box-shadow: var(--shadow-warm-lg);
-  transform: translateY(-1px);
+  background: var(--ink-hover);
+  box-shadow: none;
+  transform: none;
 }
 
 .vd-form-save:disabled {

@@ -76,7 +76,8 @@ body {
 }
 
 .leaflet-container {
-  background: #aad3df;
+  /* Neutro claro, alinhado com os tiles CARTO Positron */
+  background: #e9eaec;
   font-family: 'Inter', 'Roboto', sans-serif;
 }
 
@@ -263,7 +264,7 @@ body {
   gap: 10px;
   padding: 10px;
   background: var(--surface-alt);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--transition);
@@ -285,7 +286,7 @@ body {
   border-radius: var(--radius-md);
   object-fit: cover;
   flex-shrink: 0;
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
 }
 
 .vendor-item-photo--placeholder {
@@ -346,13 +347,13 @@ body {
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: 999px;
   padding: 7px 14px;
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--text);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-md);
   pointer-events: none;
   white-space: nowrap;
 }
@@ -369,9 +370,9 @@ body {
 }
 
 .map-container .leaflet-control-zoom {
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
@@ -414,13 +415,13 @@ body {
   gap: 7px;
   padding: 10px 16px;
   background: var(--surface);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-full);
   color: var(--text);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-md);
   transition: background var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition);
   min-height: auto;
   -webkit-tap-highlight-color: transparent;
@@ -570,7 +571,7 @@ body {
 }
 
 .filter-reset-link:hover {
-  color: white;
+  color: var(--text);
   transform: none;
   box-shadow: none;
 }
@@ -584,7 +585,7 @@ body {
   padding: 12px 14px;
   margin-bottom: 8px;
   background: var(--surface-alt);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text);
   font-size: 0.9rem;
@@ -600,9 +601,9 @@ body {
 }
 
 .filter-option:hover {
-  border-color: var(--primary);
-  background: var(--primary);
-  color: white;
+  border-color: var(--text-muted);
+  background: var(--surface);
+  color: var(--text);
   transform: none;
   box-shadow: none;
 }
@@ -642,7 +643,7 @@ body {
   gap: 5px;
   padding: 9px 18px;
   background: var(--surface-alt);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: var(--radius-full);
   color: var(--text);
   font-size: 0.875rem;
@@ -653,9 +654,9 @@ body {
 }
 
 .filter-distance-opt:hover {
-  border-color: var(--primary);
-  background: var(--primary);
-  color: white;
+  border-color: var(--text-muted);
+  background: var(--surface);
+  color: var(--text);
   transform: none;
   box-shadow: none;
 }
@@ -687,7 +688,7 @@ body {
   flex: 1;
   padding: 13px 12px;
   background: var(--primary-light);
-  border: 1.5px solid var(--primary);
+  border: 1px solid var(--primary);
   border-radius: var(--radius-sm);
   color: var(--primary);
   font-size: 0.9rem;
@@ -707,7 +708,7 @@ body {
   flex: 1.6;
   padding: 13px 12px;
   background: var(--primary);
-  border: 1.5px solid var(--primary);
+  border: 1px solid var(--primary);
   border-radius: var(--radius-sm);
   color: white;
   font-size: 0.9rem;
@@ -917,41 +918,42 @@ body {
   position: absolute;
   bottom: 20px;
   right: 14px;
-  width: 50px;
-  height: 50px;
-  background: #F5A623;
+  width: 48px;
+  height: 48px;
+  background: var(--secondary);
   border: none;
   border-radius: var(--radius-full);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(245, 166, 35, 0.45);
-  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+  box-shadow: var(--shadow-md);
+  transition: background var(--transition), box-shadow var(--transition);
   z-index: 500;
   -webkit-tap-highlight-color: transparent;
   min-height: auto;
   padding: 0;
-  color: #ffffff;
+  color: var(--ink);
 }
 
 .locate-btn .locate-icon,
 .vendor-locate-btn .locate-icon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 
 .locate-btn:hover,
 .vendor-locate-btn:hover {
-  background: #e09615;
-  box-shadow: 0 6px 20px rgba(245, 166, 35, 0.55);
-  transform: scale(1.06);
+  background: var(--secondary-hover);
+  box-shadow: var(--shadow-lg);
+  transform: none;
 }
 
 .locate-btn:active,
 .vendor-locate-btn:active {
-  transform: scale(0.96);
-  box-shadow: 0 2px 8px rgba(245, 166, 35, 0.35);
+  transform: none;
+  opacity: 0.9;
+  box-shadow: var(--shadow-sm);
 }
 
 .compass-btn {
@@ -961,7 +963,7 @@ body {
   width: 46px;
   height: 46px;
   background: var(--surface);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-full);
   cursor: pointer;
   display: flex;
@@ -1007,7 +1009,7 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--shadow-lg);
   animation: sheetSlideUp 0.26s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -1138,7 +1140,7 @@ body {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: rgba(25, 118, 210, 0.22);
+  background: rgba(37, 99, 235, 0.18);
   animation: user-pulse 2s ease-out infinite;
   pointer-events: none;
 }
@@ -1148,9 +1150,9 @@ body {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #1976d2;
+  background: var(--blue, #2563eb);
   border: 2.5px solid white;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.55);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;

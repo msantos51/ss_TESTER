@@ -44,7 +44,7 @@
 .bc-selector select {
   width: 100%;
   padding: 10px 12px;
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   background: var(--surface-alt);
   font-family: 'Inter', 'Roboto', sans-serif;

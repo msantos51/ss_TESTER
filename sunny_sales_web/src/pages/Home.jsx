@@ -15,9 +15,9 @@ import {
 import './Home.css';
 
 // (em português) Página inicial / landing da Sunny Sales.
-// Versão "Clean": sóbria e profissional. Apenas duas cores de marca
-// (azul + amarelo) sobre neutros, sem animações nem enfeites. O header
-// e o rodapé são geridos em App.jsx.
+// Versão "Premium Minimal": quase monocromática sobre branco, com o
+// amarelo reservado ao CTA principal e a pequenos indicadores e o azul
+// apenas no mapa. O header e o rodapé são geridos em App.jsx.
 
 const STEPS = [
   {
@@ -127,9 +127,9 @@ export default function Home() {
                 12 vendedores ativos
               </div>
 
-              <span className="hero-pin" style={{ top: '34%', left: '28%' }}>🍩</span>
-              <span className="hero-pin" style={{ top: '52%', left: '64%' }}>🍦</span>
-              <span className="hero-pin" style={{ top: '68%', left: '40%' }}>🥤</span>
+              <span className="hero-pin" style={{ top: '34%', left: '28%' }} />
+              <span className="hero-pin hero-pin--accent" style={{ top: '52%', left: '64%' }} />
+              <span className="hero-pin" style={{ top: '68%', left: '40%' }} />
               <span className="hero-me" style={{ top: '78%', left: '54%' }} />
             </div>
           </div>
@@ -152,7 +152,7 @@ export default function Home() {
             <span className="home-stat-label">Abre e usa no browser</span>
           </div>
           <div className="home-stat">
-            <span className="home-stat-num">🇵🇹</span>
+            <span className="home-stat-num">PT</span>
             <span className="home-stat-label">Praias portuguesas</span>
           </div>
         </div>
@@ -219,7 +219,7 @@ export default function Home() {
               key={c.label}
               className={`cat-chip reveal reveal-d${(i % 5) + 1}`}
             >
-              <span className="cat-emoji">{c.emoji}</span>
+              <span className="cat-dot" aria-hidden="true" />
               <span className="cat-label">{c.label}</span>
             </div>
           ))}

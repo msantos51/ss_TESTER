@@ -32,7 +32,7 @@
 
 .pv-hero-title {
   font-size: clamp(1.8rem, 3.6vw, 2.5rem);
-  font-weight: 800;
+  font-weight: 600;
   margin: 0 0 18px;
   line-height: 1.12;
   letter-spacing: -0.03em;
@@ -80,7 +80,7 @@
   position: relative;
   min-height: 320px;
   /* Fundo neutro azul-claro enquanto a fotografia não carrega. */
-  background: linear-gradient(160deg, #eaf1f8 0%, #d7e5f1 100%);
+  background: #f4f4f5;
 }
 
 .pv-hero-media img {
@@ -161,7 +161,7 @@
 .pv-pricing-title {
   display: block;
   font-size: clamp(1.4rem, 3.5vw, 1.9rem);
-  font-weight: 800;
+  font-weight: 600;
   color: var(--navy);
   margin: 0 0 12px;
   letter-spacing: -0.025em;
@@ -201,9 +201,9 @@
 }
 
 .pv-plan-card--highlight {
-  border: 2px solid var(--secondary);
+  border: 1px solid var(--secondary);
   background: var(--surface);
-  box-shadow: var(--shadow-md), 0 0 0 4px rgba(245, 179, 1, 0.1);
+  box-shadow: 0 0 0 3px var(--secondary-light);
 }
 
 .pv-plan-card--highlight::before {
@@ -212,7 +212,7 @@
 
 .pv-plan-card--highlight:hover {
   border-color: var(--secondary);
-  box-shadow: var(--shadow-md), 0 0 0 4px rgba(245, 179, 1, 0.16);
+  box-shadow: var(--shadow-md), 0 0 0 3px var(--secondary-light);
 }
 
 .pv-plan-badge {
@@ -223,7 +223,7 @@
   background: var(--secondary);
   color: var(--ink);
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 600;
   padding: 6px 16px;
   border-radius: var(--radius-full);
   display: inline-flex;
@@ -265,7 +265,7 @@
 }
 .pv-plan-amount {
   font-size: 3.2rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--navy);
   letter-spacing: -0.04em;
 }
@@ -287,7 +287,7 @@
   align-items: center;
   gap: 5px;
   background: var(--secondary-light);
-  color: #a05e04;
+  color: var(--gold-strong);
   font-size: 0.75rem;
   font-weight: 700;
   padding: 4px 12px;
@@ -336,9 +336,9 @@
   width: 100%;
   text-align: center;
   padding: 13px 20px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   font-size: 0.92rem;
-  font-weight: 650;
+  font-weight: 600;
   font-family: inherit;
   text-decoration: none;
   cursor: pointer;
@@ -353,8 +353,8 @@
   background: var(--ink);
   border-color: var(--ink);
   color: white;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-ink);
+  transform: none;
+  box-shadow: none;
   filter: none;
 }
 .pv-plan-cta--highlight {
@@ -364,8 +364,8 @@
   box-shadow: var(--shadow-sm);
 }
 .pv-plan-cta--highlight:hover {
-  background: var(--navy-light);
-  border-color: var(--navy-light);
+  background: var(--ink-hover);
+  border-color: var(--ink-hover);
 }
 
 /* ── Compare note ──────────────────────────────────────── */
@@ -481,7 +481,7 @@
 }
 .pv-cta-title {
   font-size: 1.15rem;
-  font-weight: 750;
+  font-weight: 600;
   color: white;
   margin: 0 0 10px;
   letter-spacing: -0.01em;
@@ -506,21 +506,20 @@
   align-items: center;
   gap: 8px;
   padding: 13px 28px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
-  transition: background var(--transition), transform var(--transition),
-    box-shadow var(--transition);
+  transition: background var(--transition);
 }
 .pv-cta-btn--primary {
   background: #fff;
   color: var(--navy);
 }
 .pv-cta-btn--primary:hover {
-  background: #eef4f8;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.4);
+  background: #f4f4f4;
+  transform: none;
+  box-shadow: none;
 }
 .pv-cta-btn--ghost {
   background: rgba(255,255,255,0.1);

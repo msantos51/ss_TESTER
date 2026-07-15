@@ -5,8 +5,8 @@
   left: 0;
   width: 100%;
   overflow: hidden;
-  background: var(--ink, #0c1b2a);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface, #ffffff);
+  border-top: 1px solid var(--border, #ececec);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -26,13 +26,13 @@
   justify-content: center;
   gap: 8px;
   flex: 1;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--text-muted, #9ca3af);
   font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 0.8rem;
+  font-weight: 400;
+  font-size: 0.8125rem;
   text-align: center;
   letter-spacing: 0.01em;
-  animation: footerFade 0.5s ease;
+  animation: footerFade 0.4s ease;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -47,7 +47,7 @@
 }
 
 .footer-link {
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-secondary, #6b7280);
   text-decoration: none;
   font-weight: 500;
   transition: color var(--transition);
@@ -55,25 +55,25 @@
 }
 
 .footer-link:hover {
-  color: #fff;
+  color: var(--text, #0f0f0f);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .footer-link:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline: 2px solid var(--text, #0f0f0f);
   outline-offset: 2px;
   border-radius: 3px;
 }
 
 .footer-link-divider {
-  color: rgba(255, 255, 255, 0.28);
+  color: var(--border-strong, #e2e2e2);
 }
 
 .footer-icon {
-  color: var(--gold, #ecd06f);
+  color: var(--text-muted, #9ca3af);
   flex-shrink: 0;
-  opacity: 0.95;
+  opacity: 0.9;
 }
 
 @keyframes footerFade {

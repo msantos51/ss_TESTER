@@ -94,7 +94,7 @@
   height: 96px;
   border-radius: var(--radius-lg);
   object-fit: cover;
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
 }
 
 .ps-form-photo-placeholder {
@@ -130,7 +130,7 @@
 
 .ps-form-input {
   background: var(--surface-alt);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
   font-size: 0.9rem;
@@ -319,7 +319,7 @@
 
 .ps-edit-cancel {
   background: var(--surface-alt);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   color: var(--text-secondary);
 }
 
