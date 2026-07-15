@@ -9,26 +9,17 @@
 .pv-hero {
   position: relative;
   overflow: hidden;
-  background:
-    radial-gradient(420px 260px at 100% 0%, rgba(244, 183, 49, 0.14), transparent 70%),
-    var(--surface);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-2xl);
   padding: 52px 48px;
   text-align: left;
   color: var(--text);
   margin-bottom: 2.5rem;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 .pv-hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 5px;
-  background: var(--grad-sun);
-  z-index: 2;
+  display: none;
 }
 
 .pv-hero-icon {
@@ -88,10 +79,8 @@
 .pv-hero-media {
   position: relative;
   min-height: 320px;
-  /* Fundo "praia" (sol sobre mar) enquanto a fotografia não carrega. */
-  background:
-    radial-gradient(circle at 72% 26%, rgba(255, 255, 255, 0.75), transparent 42%),
-    linear-gradient(160deg, #7fe0d9 0%, #43cec7 33%, #ffe08a 33.4%, #ffd36a 70%, #ffbf4d 100%);
+  /* Fundo neutro azul-claro enquanto a fotografia não carrega. */
+  background: linear-gradient(160deg, #eaf1f8 0%, #d7e5f1 100%);
 }
 
 .pv-hero-media img {
@@ -142,13 +131,13 @@
   width: 46px;
   height: 46px;
   min-width: 46px;
-  background: linear-gradient(135deg, var(--secondary-light), var(--teal-light));
-  border: 1px solid rgba(244, 183, 49, 0.22);
+  background: var(--primary-light-solid);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--gold-strong);
+  color: var(--primary);
 }
 
 .pv-benefit-title {
@@ -213,26 +202,17 @@
 
 .pv-plan-card--highlight {
   border: 2px solid var(--secondary);
-  background:
-    radial-gradient(320px 200px at 50% 0%, rgba(244, 183, 49, 0.12), transparent 70%),
-    var(--surface);
-  box-shadow: var(--shadow-lg), 0 0 0 5px rgba(244, 183, 49, 0.1);
+  background: var(--surface);
+  box-shadow: var(--shadow-md), 0 0 0 4px rgba(245, 179, 1, 0.1);
 }
 
 .pv-plan-card--highlight::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  background: var(--grad-sun);
+  display: none;
 }
 
 .pv-plan-card--highlight:hover {
   border-color: var(--secondary);
-  box-shadow: var(--shadow-lg), 0 0 0 5px rgba(244, 183, 49, 0.14);
+  box-shadow: var(--shadow-md), 0 0 0 4px rgba(245, 179, 1, 0.16);
 }
 
 .pv-plan-badge {
@@ -240,7 +220,7 @@
   top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--grad-sun);
+  background: var(--secondary);
   color: var(--ink);
   font-size: 0.75rem;
   font-weight: 800;
@@ -251,7 +231,7 @@
   gap: 5px;
   white-space: nowrap;
   letter-spacing: 0.03em;
-  box-shadow: 0 8px 18px -6px rgba(244, 167, 35, 0.7);
+  box-shadow: var(--shadow-sm);
 }
 
 .pv-plan-header {
@@ -343,7 +323,7 @@
   line-height: 1.45;
 }
 .pv-plan-check {
-  color: var(--success);
+  color: var(--primary);
   flex-shrink: 0;
   margin-top: 1px;
 }
@@ -394,7 +374,7 @@
   align-items: center;
   gap: 10px;
   background: var(--primary-light-solid);
-  border: 1px solid rgba(169, 130, 27, 0.25);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 16px 22px;
   font-size: 0.9rem;
@@ -440,7 +420,7 @@
   border-color: var(--border-strong);
 }
 .pv-faq-item[open] {
-  border-color: rgba(169, 130, 27, 0.35);
+  border-color: var(--border-strong);
   box-shadow: var(--shadow-sm);
 }
 

@@ -33,7 +33,7 @@
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   border-color: transparent;
   color: #fff;
-  box-shadow: 0 4px 12px -4px rgba(169, 130, 27, 0.5);
+  box-shadow: var(--shadow-primary);
 }
 
 .vr-progress-circle.completed {

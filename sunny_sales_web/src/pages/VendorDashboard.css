@@ -390,7 +390,7 @@
 
 .vd-panel-back:hover {
   background: var(--primary-light);
-  border-color: rgba(169, 130, 27, 0.3);
+  border-color: var(--border-strong);
   color: var(--primary-dark);
 }
 
@@ -585,7 +585,7 @@
 
 .vd-cta-card {
   background: var(--primary-light-solid);
-  border: 1px solid rgba(169, 130, 27, 0.2);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 16px 20px;
   display: flex;
@@ -995,7 +995,7 @@
 
 .vd-form-photo-btn:hover {
   background: var(--primary-light);
-  border-color: rgba(169, 130, 27, 0.3);
+  border-color: var(--border-strong);
   color: var(--primary-dark);
 }
 

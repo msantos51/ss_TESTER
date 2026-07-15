@@ -15,23 +15,20 @@ import {
 import './Home.css';
 
 // (em português) Página inicial / landing da Sunny Sales.
-// Um hero solar e dinâmico com um mapa "ao vivo", seguido de secções
-// que revelam ao rolar: como funciona, funcionalidades, categorias de
-// produtos e chamadas à ação. O header e o rodapé são geridos em App.jsx.
+// Versão "Clean": sóbria e profissional. Apenas duas cores de marca
+// (azul + amarelo) sobre neutros, sem animações nem enfeites. O header
+// e o rodapé são geridos em App.jsx.
 
 const STEPS = [
   {
-    icon: FiMapPin,
     title: 'Abre o mapa',
     text: 'Sem instalar nada. Abre o mapa e vê quem está a vender perto de ti, agora mesmo.',
   },
   {
-    icon: FiFilter,
     title: 'Filtra o que queres',
     text: 'Bolas de Berlim, gelados, bebidas… filtra por produto e por distância.',
   },
   {
-    icon: FiZap,
     title: 'Recebe sem te levantares',
     text: 'Vês o vendedor a aproximar-se em tempo real. É só acenar quando passar.',
   },
@@ -79,24 +76,11 @@ const CATEGORIES = [
   { emoji: '🥥', label: 'E muito mais' },
 ];
 
-const MARQUEE = [
-  'Gelados', 'Bolas de Berlim', 'Bebidas frescas', 'Fruta da época',
-  'Acessórios de praia', 'Água fresca', 'Snacks',
-];
-
 export default function Home() {
   return (
     <div className="home">
       {/* ══════════════ HERO ══════════════ */}
       <section className="home-hero">
-        <div className="home-hero-bg" aria-hidden="true">
-          <span className="hero-sun" />
-          <span className="hero-orb hero-orb-1" />
-          <span className="hero-orb hero-orb-2" />
-          <span className="hero-orb hero-orb-3" />
-          <span className="hero-grid" />
-        </div>
-
         <div className="home-hero-inner">
           {/* Coluna do texto */}
           <div className="hero-copy">
@@ -135,7 +119,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Coluna do mapa "ao vivo" */}
+          {/* Coluna do mapa (estático, sem animação) */}
           <div className="hero-visual" aria-hidden="true">
             <div className="hero-map">
               <div className="hero-map-live">
@@ -143,52 +127,11 @@ export default function Home() {
                 12 vendedores ativos
               </div>
 
-              <span className="hero-route" />
-
-              {/* Pins de vendedores */}
-              <span className="hero-pin hero-pin--gold" style={{ top: '58%', left: '30%' }}>
-                <span className="hero-pin-emoji">🍩</span>
-              </span>
-              <span className="hero-pin hero-pin--coral" style={{ top: '72%', left: '58%' }}>
-                <span className="hero-pin-emoji">🍦</span>
-              </span>
-              <span className="hero-pin hero-pin--teal" style={{ top: '46%', left: '68%' }}>
-                <span className="hero-pin-emoji">🥤</span>
-              </span>
-
-              {/* "Estás aqui" */}
-              <span className="hero-me" style={{ top: '80%', left: '40%' }}>
-                <span className="hero-me-ring" />
-              </span>
-
-              {/* Chips flutuantes */}
-              <div className="hero-chip hero-chip-1">
-                <span className="hero-chip-emoji">🍩</span>
-                <div>
-                  <strong>Bolas de Berlim</strong>
-                  <em>a 40 m de ti</em>
-                </div>
-              </div>
-              <div className="hero-chip hero-chip-2">
-                <span className="hero-chip-emoji">🍦</span>
-                <div>
-                  <strong>Gelados</strong>
-                  <em>a chegar</em>
-                </div>
-              </div>
+              <span className="hero-pin" style={{ top: '34%', left: '28%' }}>🍩</span>
+              <span className="hero-pin" style={{ top: '52%', left: '64%' }}>🍦</span>
+              <span className="hero-pin" style={{ top: '68%', left: '40%' }}>🥤</span>
+              <span className="hero-me" style={{ top: '78%', left: '54%' }} />
             </div>
-          </div>
-        </div>
-
-        {/* Faixa deslizante de produtos */}
-        <div className="hero-marquee" aria-hidden="true">
-          <div className="hero-marquee-track">
-            {[...MARQUEE, ...MARQUEE].map((item, i) => (
-              <span key={i} className="hero-marquee-item">
-                {item}
-                <i />
-              </span>
-            ))}
           </div>
         </div>
       </section>
@@ -226,20 +169,16 @@ export default function Home() {
         </header>
 
         <div className="home-steps">
-          {STEPS.map((step, i) => {
-            const Icon = step.icon;
-            return (
-              <article
-                key={step.title}
-                className={`step-card reveal reveal-d${i + 1}`}
-              >
-                <span className="step-num">{i + 1}</span>
-                <span className="step-icon"><Icon size={22} /></span>
-                <h3 className="step-title">{step.title}</h3>
-                <p className="step-text">{step.text}</p>
-              </article>
-            );
-          })}
+          {STEPS.map((step, i) => (
+            <article
+              key={step.title}
+              className={`step-card reveal reveal-d${i + 1}`}
+            >
+              <span className="step-num">{i + 1}</span>
+              <h3 className="step-title">{step.title}</h3>
+              <p className="step-text">{step.text}</p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -290,7 +229,6 @@ export default function Home() {
       {/* ══════════════ CTA VENDEDORES (escuro) ══════════════ */}
       <section className="home-section">
         <div className="home-vendor reveal">
-          <div className="home-vendor-glow" aria-hidden="true" />
           <div className="home-vendor-body">
             <span className="home-eyebrow home-eyebrow--light">Para vendedores</span>
             <h2 className="home-vendor-title">
@@ -317,7 +255,6 @@ export default function Home() {
       {/* ══════════════ CTA FINAL ══════════════ */}
       <section className="home-section">
         <div className="home-final reveal">
-          <span className="home-final-sun" aria-hidden="true" />
           <h2 className="home-final-title">Pronto para o teu próximo mergulho?</h2>
           <p className="home-final-text">
             Descobre quem está a vender na tua praia — agora mesmo.

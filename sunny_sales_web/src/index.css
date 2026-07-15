@@ -3,63 +3,62 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400..800&display=swap');
 
 /* ════════════════════════════════════════════════════════
-   Sunny Sales — Design System 2026 · "Coastal Premium"
-   Luz de verão numa tela clara e arejada. Dourado-mel do sol
-   como cor de marca; azul-oceano fresco como acento secundário;
-   tinta azul-marinho profunda para o texto. Muito espaço em
-   branco, profundidade apenas por brilhos e gradientes
-   extremamente discretos. Sol e mar, ao nível premium.
+   Sunny Sales — Design System 2026 · "Clean"
+   Design sóbrio e profissional: apenas duas cores de marca —
+   azul (UI, texto, secções escuras) e amarelo (um único acento
+   para destaques e CTA) — sobre neutros claros. Muito espaço
+   em branco, sem gradientes vistosos nem enfeites. Simples.
    ════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Cor principal (tinta azul-marinho / ações e UI) ── */
-  --primary: #0d2137;
-  --primary-hover: #081726;
-  --primary-dark: #0a1a2b;
-  --primary-light: rgba(13, 33, 55, 0.05);
-  --primary-light-solid: #fdf3d6;
+  /* ── Azul da marca (cor principal: UI, texto, botões, escuros) ── */
+  --primary: #123a5e;
+  --primary-hover: #0e2f4c;
+  --primary-dark: #0e2f4c;
+  --primary-light: rgba(18, 58, 94, 0.06);
+  --primary-light-solid: #eaf1f8;
 
-  /* ── Cor de destaque (dourado-mel do sol — o acento da marca) ── */
-  --secondary: #f2a71b;
-  --secondary-hover: #e0940c;
-  --secondary-light: rgba(242, 167, 27, 0.18);
+  /* ── Amarelo da marca (único acento: CTA e destaques pontuais) ── */
+  --secondary: #f5b301;
+  --secondary-hover: #e0a300;
+  --secondary-light: rgba(245, 179, 1, 0.16);
 
-  /* Dourado / âmbar do sol, legível sobre fundo claro */
-  --gold: #f6c453;
-  --gold-strong: #b3800f;
-  --amber: #f59e0b;
-  --amber-strong: #d97706;
-  --coral: #ff9166;
+  /* Tons de amarelo — compatibilidade; todos derivam do mesmo amarelo */
+  --gold: #f5b301;
+  --gold-strong: #a9760c;
+  --amber: #f5b301;
+  --amber-strong: #a9760c;
+  --coral: #f5b301;
 
-  /* Azul-oceano — acento secundário fresco (tempo real, "vivo") */
-  --teal: #0fb0c4;
-  --teal-strong: #0a7d8c;
-  --teal-light: rgba(15, 176, 196, 0.13);
-  --sky: #38bdf8;
+  /* Tons de azul — compatibilidade; acentos "frios" passam a azul da marca */
+  --teal: #2b6ca3;
+  --teal-strong: #123a5e;
+  --teal-light: rgba(18, 58, 94, 0.08);
+  --sky: #3f82bb;
 
-  /* ── Tinta azul-marinho (ações primárias, headings, footer) ── */
-  --ink: #0c1b2e;
-  --ink-hover: #14283f;
-  --navy: #0c1b2e;
-  --navy-light: #17324c;
+  /* ── Azul-marinho (secções escuras, rodapé, ações primárias) ── */
+  --ink: #123a5e;
+  --ink-hover: #0e2f4c;
+  --navy: #123a5e;
+  --navy-light: #1c4b73;
   --navy-border: rgba(255, 255, 255, 0.14);
 
   /* ── Superfícies ── */
-  --bg: #fbfaf6;
+  --bg: #f6f8fa;
   --surface: #ffffff;
-  --surface-alt: #f6f7f9;
-  --surface-warm: #fdf9ef;
+  --surface-alt: #f1f4f7;
+  --surface-warm: #fbfbfa;
 
   /* ── Texto (azul muito escuro) ── */
-  --text: #0d1b2a;
-  --text-secondary: #51606f;
-  --text-muted: #8695a3;
+  --text: #16222e;
+  --text-secondary: #55616e;
+  --text-muted: #8a94a0;
 
   /* ── Bordas ── */
-  --border: #e9edf1;
-  --border-strong: #d8dee5;
+  --border: #e7eaf0;
+  --border-strong: #d6dbe2;
 
-  /* ── Cores semânticas ── */
+  /* ── Cores semânticas (usadas só em contexto funcional) ── */
   --success: #0f9d58;
   --success-bg: #ecfdf3;
   --success-border: #b7e5c7;
@@ -70,24 +69,24 @@
   --error-bg: #fdf1f2;
   --error-border: #f6c6cc;
 
-  /* ── Gradientes de marca (mais suaves, luz de verão) ── */
-  --grad-sun: linear-gradient(120deg, #ffd873 0%, #f6ac28 52%, #ff9a56 100%);
-  --grad-gold: linear-gradient(120deg, #ffd873, #f2a71b);
-  --grad-sea: linear-gradient(120deg, #57d6e6, #0a7d8c);
-  --grad-dusk: linear-gradient(125deg, #ffd166 0%, #ff9a56 44%, #0fb0c4 128%);
-  /* Painéis escuros premium (banners/CTA): azul-marinho oceânico profundo */
-  --grad-dark: linear-gradient(150deg, #12293f 0%, #0c1b2e 55%, #0a1826 100%);
+  /* ── Gradientes (subtis, só amarelo ou só azul) ── */
+  --grad-sun: linear-gradient(135deg, #ffc93c, #f3a80a);
+  --grad-gold: linear-gradient(135deg, #ffc93c, #f3a80a);
+  --grad-sea: linear-gradient(135deg, #2b6ca3, #123a5e);
+  --grad-dusk: linear-gradient(135deg, #ffcf5a, #f3a80a);
+  /* Painéis escuros (banners/CTA): azul-marinho sóbrio */
+  --grad-dark: linear-gradient(160deg, #16436a 0%, #102f4c 100%);
 
-  /* ── Sombras (difusas, tinta azul-marinho, produto premium) ── */
-  --shadow-xs: 0 1px 2px rgba(13, 27, 42, 0.05);
-  --shadow-sm: 0 1px 3px rgba(13, 27, 42, 0.05), 0 2px 8px rgba(13, 27, 42, 0.05);
-  --shadow-md: 0 2px 6px -2px rgba(13, 27, 42, 0.06), 0 14px 34px -12px rgba(13, 27, 42, 0.14);
-  --shadow-lg: 0 4px 10px -4px rgba(13, 27, 42, 0.06), 0 30px 64px -20px rgba(13, 27, 42, 0.24);
+  /* ── Sombras (neutras e suaves) ── */
+  --shadow-xs: 0 1px 2px rgba(18, 40, 66, 0.05);
+  --shadow-sm: 0 1px 2px rgba(18, 40, 66, 0.05), 0 2px 6px rgba(18, 40, 66, 0.04);
+  --shadow-md: 0 2px 6px -2px rgba(18, 40, 66, 0.06), 0 10px 24px -14px rgba(18, 40, 66, 0.12);
+  --shadow-lg: 0 4px 10px -6px rgba(18, 40, 66, 0.05), 0 22px 46px -24px rgba(18, 40, 66, 0.18);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
-  --shadow-primary: 0 14px 32px -12px rgba(12, 27, 46, 0.5);
-  --shadow-ink: 0 16px 34px -14px rgba(12, 27, 46, 0.55);
-  --shadow-gold: 0 16px 34px -14px rgba(242, 167, 27, 0.6);
+  --shadow-primary: 0 12px 26px -14px rgba(18, 58, 94, 0.45);
+  --shadow-ink: 0 12px 26px -14px rgba(18, 58, 94, 0.45);
+  --shadow-gold: 0 12px 26px -14px rgba(245, 179, 1, 0.4);
 
   /* ── Raios (cantos modernos, suaves) ── */
   --radius-xs: 8px;
@@ -95,7 +94,7 @@
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
-  --radius-2xl: 28px;
+  --radius-2xl: 24px;
   --radius-full: 9999px;
 
   /* ── Movimento ── */
@@ -126,11 +125,8 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
-  /* Tela clara e arejada com luz de verão extremamente discreta:
-     brilho de sol no topo e um toque de oceano em baixo. Premium,
-     limpo, com muito espaço para respirar (nada de amarelo saturado). */
+  /* Fundo neutro, claro e uniforme — sem enfeites nem gradientes. */
   background-color: var(--bg);
-  background-repeat: no-repeat;
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
@@ -139,23 +135,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Camada decorativa fixa por trás de todo o conteúdo: brilhos solares
-   e oceânicos muito subtis sobre um branco quente. */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-  background:
-    radial-gradient(1200px 720px at 12% -12%, rgba(255, 210, 110, 0.24), transparent 56%),
-    radial-gradient(1000px 640px at 102% -6%, rgba(255, 150, 100, 0.10), transparent 55%),
-    radial-gradient(1100px 900px at 50% 122%, rgba(15, 176, 196, 0.09), transparent 62%),
-    linear-gradient(180deg, #fdfbf6 0%, #f9f8f3 52%, #f6f7f6 100%);
-}
-
 ::selection {
-  background: rgba(242, 167, 27, 0.32);
+  background: rgba(245, 179, 1, 0.28);
   color: var(--text);
 }
 
@@ -314,9 +295,9 @@ body::before {
   left: 13px;
   right: 13px;
   bottom: -1px;
-  height: 3px;
+  height: 2px;
   border-radius: 2px 2px 0 0;
-  background: var(--grad-sun);
+  background: var(--secondary);
 }
 
 .nav-link-icon {
@@ -350,7 +331,7 @@ body::before {
 .profile-icon:hover {
   color: var(--primary-dark);
   background: var(--primary-light);
-  border-color: rgba(169, 130, 27, 0.45);
+  border-color: var(--border-strong);
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
 }
@@ -371,15 +352,15 @@ body::before {
   white-space: nowrap;
   padding: 9px 18px;
   border-radius: var(--radius-full);
-  background: var(--grad-sun);
-  box-shadow: 0 8px 20px -10px rgba(244, 167, 35, 0.85);
-  transition: filter var(--transition), transform var(--transition),
+  background: var(--secondary);
+  box-shadow: none;
+  transition: background var(--transition), transform var(--transition),
     box-shadow var(--transition);
 }
 .nav-cta:hover {
-  filter: brightness(1.04) saturate(1.05);
+  background: var(--secondary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 12px 26px -10px rgba(244, 167, 35, 0.95);
+  box-shadow: var(--shadow-sm);
 }
 .nav-cta:active { transform: translateY(0); }
 .nav-cta:focus-visible {
@@ -619,9 +600,9 @@ button:disabled {
 .form input:focus,
 .form select:focus,
 .input:focus {
-  border-color: var(--secondary);
+  border-color: var(--primary);
   background: var(--surface);
-  box-shadow: 0 0 0 3.5px var(--secondary-light);
+  box-shadow: 0 0 0 3px rgba(18, 58, 94, 0.13);
 }
 
 .form input::placeholder {
@@ -874,9 +855,9 @@ h2 {
   to { background-position: 200% center; }
 }
 @keyframes pinPulse {
-  0% { box-shadow: 0 0 0 0 rgba(16, 179, 172, 0.5); }
-  70% { box-shadow: 0 0 0 14px rgba(16, 179, 172, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(16, 179, 172, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(18, 58, 94, 0.5); }
+  70% { box-shadow: 0 0 0 14px rgba(18, 58, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(18, 58, 94, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1191,7 +1172,7 @@ h2 {
   text-decoration: none;
   padding: 6px 14px;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(169, 130, 27, 0.5);
+  border: 1px solid var(--border-strong);
   white-space: nowrap;
   transition: background var(--transition), color var(--transition),
     border-color var(--transition);
