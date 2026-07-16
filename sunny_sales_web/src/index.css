@@ -220,6 +220,37 @@ body {
   }
 }
 
+/* ── Skip link (navegação por teclado) ───────────────── */
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 2000;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  box-shadow: var(--shadow-lg);
+  /* Escondido até receber foco por teclado */
+  transform: translateY(calc(-100% - 16px));
+  transition: transform var(--transition);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* O destino do skip link não precisa de anel de foco próprio */
+.container:focus {
+  outline: none;
+}
+
 /* ── Navbar ──────────────────────────────────────────── */
 
 .navbar {
