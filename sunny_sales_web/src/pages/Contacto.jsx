@@ -3,9 +3,10 @@ import { FiMail, FiSend, FiCheckCircle, FiUser, FiMessageSquare } from 'react-ic
 import { BASE_URL } from '../config';
 import './InfoPage.css';
 import './Contacto.css';
+import HeroImage from '../components/HeroImage';
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1471922694854-ff1b63b20054?auto=format&fit=crop&w=1000&q=80';
+  'https://images.unsplash.com/photo-1471922694854-ff1b63b20054';
 
 const ASSUNTOS = [
   'Informação geral',
@@ -126,14 +127,7 @@ export default function Contacto() {
         </div>
 
         <div className="info-hero-media">
-          <img
-            src={HERO_IMAGE}
-            alt="Horizonte do oceano num dia de sol"
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          <HeroImage src={HERO_IMAGE} alt="Horizonte do oceano num dia de sol" />
         </div>
       </div>
 

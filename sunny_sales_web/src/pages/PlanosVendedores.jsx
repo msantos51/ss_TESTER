@@ -6,9 +6,10 @@ import { BASE_URL } from '../config';
 import './InfoPage.css';
 import './FAQ.css';
 import './PlanosVendedores.css';
+import HeroImage from '../components/HeroImage';
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1000&q=80';
+  'https://images.unsplash.com/photo-1519046904884-53103b34b206';
 
 const PLANS = [
   {
@@ -130,14 +131,7 @@ export default function PlanosVendedores() {
         </div>
 
         <div className="info-hero-media">
-          <img
-            src={HERO_IMAGE}
-            alt="Chapéus de sol e banhistas numa praia movimentada"
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          <HeroImage src={HERO_IMAGE} alt="Chapéus de sol e banhistas numa praia movimentada" />
         </div>
       </section>
 

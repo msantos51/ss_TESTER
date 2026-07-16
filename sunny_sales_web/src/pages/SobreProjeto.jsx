@@ -8,9 +8,10 @@ import {
 } from 'react-icons/fi';
 import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
+import HeroImage from '../components/HeroImage';
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?auto=format&fit=crop&w=1000&q=80';
+  'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6';
 
 const steps = [
   (
@@ -64,14 +65,7 @@ export default function SobreProjeto() {
         </div>
 
         <div className="info-hero-media">
-          <img
-            src={HERO_IMAGE}
-            alt="Chapéu de sol numa praia portuguesa ao pôr do sol"
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          <HeroImage src={HERO_IMAGE} alt="Chapéu de sol numa praia portuguesa ao pôr do sol" />
         </div>
       </section>
 

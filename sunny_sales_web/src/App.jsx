@@ -15,6 +15,7 @@ import Home from './pages/Home';
 import BackHomeButton from './components/BackHomeButton';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import PageMeta from './components/PageMeta';
 import LoadingDots from './components/LoadingDots';
 import useScrollReveal from './hooks/useScrollReveal';
 import './index.css';
@@ -75,6 +76,7 @@ export default function App() {
   return (
     <Router>
       <ScrollToTop />
+      <PageMeta />
       <AppLayout />
     </Router>
   );
@@ -179,9 +181,11 @@ function AppLayout() {
         aria-label="Navegação principal"
       >
         <Link className="nav-logo" to="/">
-          {/* alt vazio: o texto "Sunny Sales" ao lado já identifica o link */}
+          {/* alt vazio: o texto "Sunny Sales" ao lado já identifica o link.
+              Versão 68px do logótipo (2×) — o original só é usado como
+              favicon/og:image. */}
           <img
-            src="/logosite.png"
+            src="/logosite-nav.png"
             alt=""
             width="34"
             height="34"

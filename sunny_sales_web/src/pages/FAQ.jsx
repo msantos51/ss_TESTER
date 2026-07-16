@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { FiUsers, FiShoppingBag } from 'react-icons/fi';
 import './InfoPage.css';
 import './FAQ.css';
+import HeroImage from '../components/HeroImage';
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=1000&q=80';
+  'https://images.unsplash.com/photo-1473116763249-2faaef81ccda';
 
 const FAQS_BANHISTAS = [
   {
@@ -83,14 +84,7 @@ export default function FAQ() {
         </div>
 
         <div className="info-hero-media">
-          <img
-            src={HERO_IMAGE}
-            alt="Vista aérea das ondas do mar a chegar à praia"
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          <HeroImage src={HERO_IMAGE} alt="Vista aérea das ondas do mar a chegar à praia" />
         </div>
       </div>
 

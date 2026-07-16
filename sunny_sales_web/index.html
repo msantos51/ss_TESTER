@@ -19,11 +19,18 @@
     <meta name="twitter:title" content="Sunny Sales — Vendedores de praia em tempo real" />
     <meta name="twitter:description" content="Encontra vendedores ambulantes na praia em tempo real. Bolas de Berlim, gelados e acessórios de praia perto de ti." />
 
-    <!-- Fontes: liga mais cedo aos servidores para reduzir o tempo de carregamento -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fonte Inter self-hosted: preload do subset latin (o mais usado) -->
+    <link
+      rel="preload"
+      href="/fonts/inter-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <!-- As imagens hero das páginas internas vêm do Unsplash -->
+    <link rel="preconnect" href="https://images.unsplash.com" />
 
-    <title>Sunny Sales</title>
+    <title>Sunny Sales — Vendedores de praia em tempo real</title>
   </head>
   <body>
     <div id="root"></div>

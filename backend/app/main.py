@@ -244,11 +244,26 @@ if not supabase:
 
 # Servir a aplicação web compilada, se existir
 WEB_DIST = Path(__file__).resolve().parents[2] / "sunny_sales_web" / "dist"
+
+
+class ImmutableStaticFiles(StaticFiles):
+    """StaticFiles com cache imutável de 1 ano.
+
+    Seguro para /assets porque o Vite gera nomes de ficheiro com hash do
+    conteúdo — qualquer alteração produz um URL novo (invalidação correta).
+    """
+
+    def file_response(self, *args, **kwargs):
+        response = super().file_response(*args, **kwargs)
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return response
+
+
 if WEB_DIST.is_dir():
     # Servir ficheiros estáticos gerados pelo Vite (JS/CSS)
     assets_path = WEB_DIST / "assets"
     if assets_path.is_dir():
-        app.mount("/assets", StaticFiles(directory=str(assets_path)), name="assets")
+        app.mount("/assets", ImmutableStaticFiles(directory=str(assets_path)), name="assets")
 
 # Criar as tabelas na base de dados (com retry para quando a BD ainda não está disponível)
 def _init_db(max_retries: int = 5, retry_delay: int = 5) -> None:
@@ -1980,10 +1995,27 @@ async def contact_form(
 # SPA: servir o frontend React (deve ficar APÓS todas as rotas de API para
 # não interceptar chamadas como GET /vendors/ ou GET /vendors/me)
 # --------------------------
+
+# Cache-Control por tipo de ficheiro:
+# - index.html: no-cache (o browser revalida sempre e apanha novos deploys);
+# - /assets/*: o Vite gera nomes com hash, por isso podem ser imutáveis;
+# - restantes estáticos (logótipos, fontes): cache moderada de 7 dias.
+_INDEX_CACHE = "no-cache"
+_IMMUTABLE_CACHE = "public, max-age=31536000, immutable"
+_STATIC_CACHE = "public, max-age=604800"
+
+
+def _index_response(web_dist_root: Path) -> FileResponse:
+    return FileResponse(
+        web_dist_root / "index.html",
+        headers={"Cache-Control": _INDEX_CACHE},
+    )
+
+
 if WEB_DIST.is_dir():
     @app.get("/", response_class=HTMLResponse, include_in_schema=False)
     async def serve_index():
-        return FileResponse(WEB_DIST / "index.html")
+        return _index_response(WEB_DIST.resolve())
 
     @app.get("/{path_name:path}", response_class=HTMLResponse, include_in_schema=False)
     async def serve_spa(path_name: str):
@@ -1994,7 +2026,14 @@ if WEB_DIST.is_dir():
         web_dist_root = WEB_DIST.resolve()
         candidate = (web_dist_root / path_name).resolve()
         if candidate.is_file() and candidate.is_relative_to(web_dist_root):
-            return FileResponse(candidate)
-        return FileResponse(web_dist_root / "index.html")
+            if candidate.name == "index.html":
+                return _index_response(web_dist_root)
+            cache = (
+                _IMMUTABLE_CACHE
+                if path_name.startswith("assets/")
+                else _STATIC_CACHE
+            )
+            return FileResponse(candidate, headers={"Cache-Control": cache})
+        return _index_response(web_dist_root)
 # Force redeploy at Tue Jun 23 10:55:15 UTC 2026
 # Endpoint status: Contact form working - POST /api/contact

@@ -7,9 +7,10 @@ import { FaLeaf } from 'react-icons/fa';
 import { TbCurrencyEuro } from 'react-icons/tb';
 import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
+import HeroImage from '../components/HeroImage';
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1509233725247-49e657c54213?auto=format&fit=crop&w=1000&q=80';
+  'https://images.unsplash.com/photo-1509233725247-49e657c54213';
 
 export default function HowItWorks() {
   return (
@@ -28,14 +29,7 @@ export default function HowItWorks() {
         </div>
 
         <div className="info-hero-media">
-          <img
-            src={HERO_IMAGE}
-            alt="Praia ao entardecer com o mar calmo"
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          <HeroImage src={HERO_IMAGE} alt="Praia ao entardecer com o mar calmo" />
         </div>
       </div>
 
