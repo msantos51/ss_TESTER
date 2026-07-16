@@ -154,7 +154,7 @@
 .hero-pill:hover { background: var(--surface-alt); }
 .hero-pill:active { opacity: 0.9; }
 .hero-pill:focus-visible {
-  outline: 2px solid var(--text);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 /* CTA principal — o único elemento amarelo de peso na página */
