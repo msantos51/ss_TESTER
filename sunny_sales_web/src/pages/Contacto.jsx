@@ -3,9 +3,10 @@ import { FiMail, FiSend, FiCheckCircle, FiUser, FiMessageSquare } from 'react-ic
 import { BASE_URL } from '../config';
 import './InfoPage.css';
 import './Contacto.css';
+import HeroImage from '../components/HeroImage';
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1471922694854-ff1b63b20054?auto=format&fit=crop&w=1000&q=80';
+  'https://images.unsplash.com/photo-1471922694854-ff1b63b20054';
 
 const ASSUNTOS = [
   'Informação geral',
@@ -14,6 +15,10 @@ const ASSUNTOS = [
   'Reportar problema',
   'Outro',
 ];
+
+// Limite do campo de mensagem; o contador avisa visualmente perto do limite.
+const MENSAGEM_MAX = 1000;
+const MENSAGEM_WARN = Math.round(MENSAGEM_MAX * 0.9);
 
 export default function Contacto() {
   const [form, setForm] = useState({ nome: '', email: '', assunto: '', mensagem: '' });
@@ -45,6 +50,10 @@ export default function Contacto() {
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
+      // Leva o foco ao primeiro campo com erro (navegação por teclado
+      // e leitores de ecrã ficam logo no sítio certo).
+      const first = ['nome', 'email', 'assunto', 'mensagem'].find((f) => errs[f]);
+      if (first) document.getElementById(`c-${first}`)?.focus();
       return;
     }
     setLoading(true);
@@ -118,14 +127,7 @@ export default function Contacto() {
         </div>
 
         <div className="info-hero-media">
-          <img
-            src={HERO_IMAGE}
-            alt="Horizonte do oceano num dia de sol"
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          <HeroImage src={HERO_IMAGE} alt="Horizonte do oceano num dia de sol" />
         </div>
       </div>
 
@@ -135,7 +137,7 @@ export default function Contacto() {
           <div className="contacto-row">
             <div className={`contacto-field${errors.nome ? ' has-error' : ''}`}>
               <label className="contacto-label" htmlFor="c-nome">
-                <FiUser size={14} /> Nome
+                <FiUser size={14} aria-hidden="true" /> Nome
               </label>
               <input
                 id="c-nome"
@@ -145,13 +147,19 @@ export default function Contacto() {
                 value={form.nome}
                 onChange={handleChange('nome')}
                 autoComplete="name"
+                aria-invalid={errors.nome ? true : undefined}
+                aria-describedby={errors.nome ? 'c-nome-error' : undefined}
               />
-              {errors.nome && <span className="contacto-error">{errors.nome}</span>}
+              {errors.nome && (
+                <span id="c-nome-error" className="contacto-error" role="alert">
+                  {errors.nome}
+                </span>
+              )}
             </div>
 
             <div className={`contacto-field${errors.email ? ' has-error' : ''}`}>
               <label className="contacto-label" htmlFor="c-email">
-                <FiMail size={14} /> Email
+                <FiMail size={14} aria-hidden="true" /> Email
               </label>
               <input
                 id="c-email"
@@ -161,8 +169,14 @@ export default function Contacto() {
                 value={form.email}
                 onChange={handleChange('email')}
                 autoComplete="email"
+                aria-invalid={errors.email ? true : undefined}
+                aria-describedby={errors.email ? 'c-email-error' : undefined}
               />
-              {errors.email && <span className="contacto-error">{errors.email}</span>}
+              {errors.email && (
+                <span id="c-email-error" className="contacto-error" role="alert">
+                  {errors.email}
+                </span>
+              )}
             </div>
           </div>
 
@@ -175,18 +189,24 @@ export default function Contacto() {
               className="contacto-input contacto-select"
               value={form.assunto}
               onChange={handleChange('assunto')}
+              aria-invalid={errors.assunto ? true : undefined}
+              aria-describedby={errors.assunto ? 'c-assunto-error' : undefined}
             >
               <option value="">Seleciona um assunto…</option>
               {ASSUNTOS.map((a) => (
                 <option key={a} value={a}>{a}</option>
               ))}
             </select>
-            {errors.assunto && <span className="contacto-error">{errors.assunto}</span>}
+            {errors.assunto && (
+              <span id="c-assunto-error" className="contacto-error" role="alert">
+                {errors.assunto}
+              </span>
+            )}
           </div>
 
           <div className={`contacto-field${errors.mensagem ? ' has-error' : ''}`}>
             <label className="contacto-label" htmlFor="c-mensagem">
-              <FiMessageSquare size={14} /> Mensagem
+              <FiMessageSquare size={14} aria-hidden="true" /> Mensagem
             </label>
             <textarea
               id="c-mensagem"
@@ -195,14 +215,28 @@ export default function Contacto() {
               value={form.mensagem}
               onChange={handleChange('mensagem')}
               rows={5}
+              maxLength={MENSAGEM_MAX}
+              aria-invalid={errors.mensagem ? true : undefined}
+              aria-describedby={`c-mensagem-chars${errors.mensagem ? ' c-mensagem-error' : ''}`}
             />
-            <div className="contacto-chars">
-              {form.mensagem.length} caracteres
+            <div
+              id="c-mensagem-chars"
+              className={`contacto-chars${form.mensagem.length >= MENSAGEM_WARN ? ' warn' : ''}`}
+            >
+              {form.mensagem.length}/{MENSAGEM_MAX} caracteres
             </div>
-            {errors.mensagem && <span className="contacto-error">{errors.mensagem}</span>}
+            {errors.mensagem && (
+              <span id="c-mensagem-error" className="contacto-error" role="alert">
+                {errors.mensagem}
+              </span>
+            )}
           </div>
 
-          {errors.submit && <div className="contacto-error contacto-submit-error">{errors.submit}</div>}
+          {errors.submit && (
+            <div className="contacto-error contacto-submit-error" role="alert">
+              {errors.submit}
+            </div>
+          )}
 
           <button
             type="submit"

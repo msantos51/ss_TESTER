@@ -75,6 +75,89 @@ body {
   background: transparent;
 }
 
+/* ── Skeleton de carregamento dos tiles ───────────────── */
+
+.map-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 450;
+  /* Nunca bloqueia a interação: o mapa por baixo continua utilizável. */
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e9eaec;
+  /* Grelha ténue tipo "mapa vazio" enquanto os tiles não chegam */
+  background-image:
+    linear-gradient(to right, rgba(15, 15, 15, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 15, 15, 0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 1;
+  transition: opacity 0.5s var(--ease-out);
+}
+
+.map-skeleton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 70%
+  );
+  background-size: 220% 100%;
+  animation: mapShimmer 1.6s ease-in-out infinite;
+}
+
+.map-skeleton--hidden {
+  opacity: 0;
+}
+
+.map-skeleton-card {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  padding: 10px 20px 10px 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.map-skeleton-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--primary-light-solid);
+  color: var(--primary);
+  animation: mapPinPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes mapShimmer {
+  0% { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
+}
+
+@keyframes mapPinPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-skeleton::before,
+  .map-skeleton-pin {
+    animation: none;
+  }
+}
+
 .leaflet-container {
   /* Neutro claro, alinhado com os tiles CARTO Positron */
   background: #e9eaec;
@@ -275,6 +358,11 @@ body {
   border-color: var(--primary);
 }
 
+.vendor-item:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 .vendor-item.active {
   background: var(--primary-light-solid);
   border-color: var(--primary);
@@ -394,6 +482,16 @@ body {
 
 .map-container .leaflet-control-zoom-in {
   border-bottom: 1px solid var(--border) !important;
+}
+
+/* Em ecrãs de toque, os botões +/- do mapa passam a 44×44px */
+@media (pointer: coarse), (max-width: 768px) {
+  .map-container .leaflet-control-zoom-in,
+  .map-container .leaflet-control-zoom-out {
+    width: 44px !important;
+    height: 44px !important;
+    line-height: 44px !important;
+  }
 }
 
 .map-container .leaflet-control-zoom-in:hover,
@@ -517,8 +615,9 @@ body {
   display: flex;
   align-items: center;
   gap: 5px;
-  min-height: auto;
-  padding: 6px 10px 6px 6px;
+  /* Alvo de toque ≥44px (a folha de filtros é exclusiva de mobile) */
+  min-height: 44px;
+  padding: 6px 12px 6px 8px;
   background: transparent;
   border: none;
   border-radius: var(--radius-full);
@@ -774,6 +873,14 @@ body {
   justify-content: center;
   box-shadow: var(--shadow-xs);
   transition: background var(--transition), color var(--transition);
+}
+
+/* Área de toque expandida para ≥44×44px sem alterar o tamanho visual */
+.close-btn::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
 }
 .close-btn:hover {
   background: var(--primary-light);

@@ -1,25 +1,68 @@
-/* Fonte única: Inter (300–700). Uma só família para display e corpo,
-   diferenciada apenas por peso e tracking. */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* Fonte única: Inter variável (100–900), self-hosted em /fonts — elimina
+   o round-trip a fonts.googleapis.com/gstatic. Subsets latin + latin-ext
+   (suficientes para PT); font-display: swap evita texto invisível. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
 
 /* ════════════════════════════════════════════════════════
-   Sunny Sales — Design System · "Premium Minimal"
-   Interface praticamente monocromática sobre branco:
-   texto quase-preto (#0F0F0F), cinzas neutros, bordas de 1px
-   (#ECECEC) e sombras quase impercetíveis. O amarelo existe
-   apenas no CTA principal e em pequenos indicadores; o azul
-   apenas em links, mapa e estados ativos pontuais.
+   Sunny Sales — Design System
+
+   PALETA (regras de uso):
+   · --primary (teal do logótipo) — cor de marca para acentos,
+     ícones, links, estados ativos e pequenos destaques.
+     Nunca é fundo de grandes áreas.
+   · --secondary (amarelo/dourado) — exclusivo de AÇÕES
+     PRIMÁRIAS (CTA "Explorar Mapa", submissões, "Escolher
+     plano" em destaque) e micro-indicadores (pontos, badge).
+   · --ink (quase-preto) — ações de navegação secundárias
+     (botão do header, botões utilitários) e texto principal.
+   · --navy (azul-marinho) — fundo de blocos institucionais
+     de contraste (painel "Para Vendedores", banners escuros).
+   · Cinzentos --text-secondary/--text-muted/--border —
+     hierarquia de texto e separadores. Todos os pares
+     texto/fundo cumprem WCAG AA (≥4.5:1 em texto normal).
+
+   TIPOGRAFIA (escala única, aplicada em todo o site):
+   · --fs-display  40→58px  Hero da Home (peso 650)
+   · --fs-h1       32→44px  Título hero das páginas internas
+   · --fs-h2       28→32px  Títulos de secção
+   · --fs-h3       20→24px  Subtítulos / cabeçalhos de card
+   · --fs-lead     17→20px  Parágrafo de apoio sob títulos
+   · --fs-body     16px     Corpo
+   · --fs-body-sm  15px     Corpo compacto (cards, listas)
+   · --fs-caption  13px     Legendas, labels, eyebrows
    ════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Cor primária de UI: quase-preto (botões, títulos, estados) ── */
-  --primary: #0f0f0f;
-  --primary-hover: #2b2b2b;
-  --primary-dark: #0f0f0f;
-  --primary-light: rgba(15, 15, 15, 0.04);
-  --primary-light-solid: #f4f4f4;
+  /* ── Cor primária de marca: teal do logótipo ──
+     #0e7f94 garante AA (4.69:1) para texto/ícones sobre branco;
+     #18a8c0 (bright) é só decorativo, nunca texto. */
+  --primary: #0e7f94;
+  --primary-hover: #0c7286;
+  --primary-dark: #0a5464;
+  --primary-bright: #18a8c0;
+  --primary-light: rgba(14, 127, 148, 0.08);
+  --primary-light-solid: #e9f4f6;
 
-  /* ── Amarelo da marca (apenas CTA principal e pequenos detalhes) ── */
+  /* ── Amarelo da marca (ações primárias e micro-indicadores) ── */
   --secondary: #f5b301;
   --secondary-hover: #e8a800;
   --secondary-light: rgba(245, 179, 1, 0.16);
@@ -31,20 +74,21 @@
   --amber-strong: #8a6600;
   --coral: #f5b301;
 
-  /* ── Azul (apenas links, mapa e pequenos estados ativos) ── */
-  --blue: #2563eb;
-  --blue-hover: #1d4ed8;
-  --teal: #2563eb;
-  --teal-strong: #1d4ed8;
-  --teal-light: rgba(37, 99, 235, 0.08);
-  --sky: #3b82f6;
+  /* ── Aliases de azul/teal (links, mapa, estados ativos) ── */
+  --blue: #0e7f94;
+  --blue-hover: #0a5464;
+  --teal: #0e7f94;
+  --teal-strong: #0a5464;
+  --teal-light: rgba(14, 127, 148, 0.08);
+  --sky: #18a8c0;
 
-  /* ── "Ink" (secções escuras, botões primários) ── */
+  /* ── "Ink" (texto e botões de navegação secundária) ── */
   --ink: #0f0f0f;
   --ink-hover: #262626;
-  --navy: #0f0f0f;
-  --navy-light: #262626;
-  --navy-border: rgba(255, 255, 255, 0.12);
+  /* ── Azul-marinho (blocos escuros institucionais) ── */
+  --navy: #0d2b39;
+  --navy-light: #12374a;
+  --navy-border: rgba(255, 255, 255, 0.14);
 
   /* ── Superfícies ── */
   --bg: #fcfcfc;
@@ -52,10 +96,10 @@
   --surface-alt: #f6f6f6;
   --surface-warm: #fafafa;
 
-  /* ── Texto ── */
+  /* ── Texto (todos AA sobre --surface/--bg) ── */
   --text: #0f0f0f;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
+  --text-secondary: #6b7280;  /* 4.83:1 sobre branco */
+  --text-muted: #71717a;      /* 4.83:1 sobre branco */
 
   /* ── Bordas (muito subtis) ── */
   --border: #ececec;
@@ -76,10 +120,10 @@
   /* ── Gradientes legados — achatados para cores planas ── */
   --grad-sun: linear-gradient(135deg, #f5b301, #f5b301);
   --grad-gold: linear-gradient(135deg, #f5b301, #f5b301);
-  --grad-sea: linear-gradient(135deg, #2563eb, #2563eb);
+  --grad-sea: linear-gradient(135deg, #0e7f94, #0e7f94);
   --grad-dusk: linear-gradient(135deg, #f5b301, #f5b301);
-  /* Painéis escuros: quase-preto plano, sem brilhos */
-  --grad-dark: linear-gradient(180deg, #141414 0%, #0f0f0f 100%);
+  /* Painéis escuros: azul-marinho institucional */
+  --grad-dark: linear-gradient(180deg, #12374a 0%, #0d2b39 100%);
 
   /* ── Sombras (quase impercetíveis) ── */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
@@ -88,7 +132,7 @@
   --shadow-lg: 0 2px 8px rgba(0, 0, 0, 0.03), 0 8px 30px rgba(0, 0, 0, 0.06);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
-  --shadow-primary: 0 8px 24px -12px rgba(15, 15, 15, 0.28);
+  --shadow-primary: 0 8px 24px -12px rgba(14, 127, 148, 0.35);
   --shadow-ink: 0 8px 24px -12px rgba(15, 15, 15, 0.28);
   --shadow-gold: 0 8px 24px -12px rgba(245, 179, 1, 0.35);
 
@@ -100,6 +144,28 @@
   --radius-xl: 16px;
   --radius-2xl: 20px;
   --radius-full: 9999px;
+
+  /* ── Escala tipográfica ── */
+  --fs-display: clamp(2.5rem, 4.4vw, 3.625rem);
+  --fs-h1: clamp(2rem, 3.6vw, 2.75rem);
+  --fs-h2: clamp(1.75rem, 3vw, 2rem);
+  --fs-h3: clamp(1.25rem, 2vw, 1.5rem);
+  --fs-lead: clamp(1.0625rem, 1.4vw, 1.25rem);
+  --fs-body: 1rem;
+  --fs-body-sm: 0.9375rem;
+  --fs-caption: 0.8125rem;
+
+  /* ── Espaçamento (ritmo vertical de secções) ── */
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --section-pad: clamp(4rem, 8vw, 7rem);
+
+  /* ── Foco visível (teclado): teal, ≥3:1 sobre fundos claros ── */
+  --focus-ring: #0c7286;
 
   /* ── Movimento (200ms, ease-out, nada mais) ── */
   --transition: 0.2s cubic-bezier(0, 0, 0.2, 1);
@@ -143,7 +209,7 @@ body {
 }
 
 ::selection {
-  background: rgba(15, 15, 15, 0.9);
+  background: var(--navy);
   color: #fff;
 }
 
@@ -172,6 +238,37 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* ── Skip link (navegação por teclado) ───────────────── */
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 2000;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  box-shadow: var(--shadow-lg);
+  /* Escondido até receber foco por teclado */
+  transform: translateY(calc(-100% - 16px));
+  transition: transform var(--transition);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* O destino do skip link não precisa de anel de foco próprio */
+.container:focus {
+  outline: none;
 }
 
 /* ── Navbar ──────────────────────────────────────────── */
@@ -267,7 +364,7 @@ body {
   background: transparent;
 }
 .nav-link:focus-visible {
-  outline: 2px solid var(--text);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 .nav-link.active {
@@ -314,7 +411,7 @@ body {
   box-shadow: none;
 }
 .profile-icon:focus-visible {
-  outline: 2px solid var(--text);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -342,7 +439,7 @@ body {
 }
 .nav-cta:active { transform: none; }
 .nav-cta:focus-visible {
-  outline: 2px solid var(--text);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -370,7 +467,7 @@ body {
   filter: none;
 }
 .menu-toggle:focus-visible {
-  outline: 2px solid var(--text);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -448,7 +545,7 @@ button:active:not(:disabled) {
 }
 
 button:focus-visible {
-  outline: 2px solid var(--text);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -743,7 +840,7 @@ main {
 
 h2 {
   font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-size: var(--fs-h2);
   font-weight: 600;
   letter-spacing: -0.02em;
   margin-bottom: 1rem;
@@ -852,6 +949,22 @@ h2 {
 
   .navbar {
     padding: 0 16px;
+  }
+
+  /* Alvos de toque ≥44×44px em mobile (ícones do header e botão voltar) */
+  .profile-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .menu-toggle {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .back-btn {
+    min-height: 44px;
+    padding: 6px 12px;
   }
 
   .nav-links {
@@ -1009,7 +1122,7 @@ h2 {
   filter: none;
 }
 .back-btn:focus-visible {
-  outline: 2px solid var(--text);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -1291,7 +1404,9 @@ h2 {
 }
 
 .legal-container {
-  max-width: 1080px;
+  /* Largura máxima de leitura confortável (~72ch) — igual em todas
+     as páginas legais para não parecerem fora do design system. */
+  max-width: 760px;
   margin: 0 auto;
   color: var(--text);
   line-height: 1.7;
@@ -1308,9 +1423,9 @@ h2 {
 .legal-header h1,
 .legal-container h1 {
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
-  font-weight: 600;
-  line-height: 1.15;
+  font-size: var(--fs-h1);
+  font-weight: 650;
+  line-height: 1.12;
   letter-spacing: -0.025em;
   margin: 0;
   color: var(--text);
@@ -1340,7 +1455,7 @@ h2 {
 }
 
 .legal-container h2 {
-  font-size: 1.25rem;
+  font-size: var(--fs-h3);
   font-weight: 600;
   margin-bottom: 1rem;
   margin-top: 0;

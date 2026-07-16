@@ -6,10 +6,12 @@ import {
   FiHeart,
   FiCompass,
 } from 'react-icons/fi';
-import './SobreProjeto.css';
+import InfoBanner from '../components/InfoBanner';
+import './InfoPage.css';
+import HeroImage from '../components/HeroImage';
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?auto=format&fit=crop&w=1000&q=80';
+  'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6';
 
 const steps = [
   (
@@ -34,81 +36,67 @@ const steps = [
 
 export default function SobreProjeto() {
   return (
-    <div className="sobre-page">
+    <div className="info-page">
 
-      {/* ── Hero ─────────────────────────────────────────── */}
-      <section className="sobre-hero">
-        <div className="sobre-hero-content">
-          <h1 className="sobre-hero-title">
+      {/* ── Hero (padrão partilhado das páginas internas) ── */}
+      <section className="info-hero info-hero--media">
+        <div className="info-hero-content">
+          <h1 className="info-hero-title">
             Sobre o Projeto
           </h1>
-          <p className="sobre-hero-lead">
+          <p className="info-hero-lead">
             O <strong>Sunny Sales</strong> conecta vendedores ambulantes de praia
             a banhistas através de um{' '}
             <strong>mapa interativo em tempo real</strong>, unindo tradição,
             tecnologia e sustentabilidade nas praias portuguesas.
           </p>
 
-          <div className="sobre-hero-badges">
-            <span className="sobre-badge">
+          <div className="info-badges">
+            <span className="info-badge">
               <FiMapPin /> Praias portuguesas
             </span>
-            <span className="sobre-badge">
+            <span className="info-badge">
               <FiClock /> Localização em tempo real
             </span>
-            <span className="sobre-badge">
+            <span className="info-badge">
               <FiSmartphone /> Web &amp; Mobile
             </span>
           </div>
         </div>
 
-        <div className="sobre-hero-media">
-          <img
-            src={HERO_IMAGE}
-            alt="Chapéu de sol numa praia portuguesa ao pôr do sol"
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+        <div className="info-hero-media">
+          <HeroImage src={HERO_IMAGE} alt="Chapéu de sol numa praia portuguesa ao pôr do sol" />
         </div>
       </section>
 
       {/* ── Como Funciona ────────────────────────────────── */}
-      <section className="sobre-section">
-        <div className="sobre-section-head">
-          <span className="sobre-section-icon">
+      <section className="info-section">
+        <div className="info-section-head">
+          <span className="info-section-icon">
             <FiCompass />
           </span>
-          <h2 className="sobre-section-title">Como Funciona</h2>
+          <h2 className="info-section-title">Como Funciona</h2>
         </div>
 
-        <ol className="sobre-timeline">
+        <ol className="info-timeline">
           {steps.map((text, index) => (
             <li
               key={index}
-              className={`sobre-step reveal reveal-d${(index % 3) + 1}`}
+              className={`reveal reveal-d${(index % 3) + 1}`}
             >
-              <div className="sobre-step-number">{index + 1}</div>
-              <div className="sobre-step-card">
-                <p className="sobre-step-text">{text}</p>
-              </div>
+              <div className="info-timeline-number">{index + 1}</div>
+              <div className="info-timeline-body">{text}</div>
             </li>
           ))}
         </ol>
       </section>
 
       {/* ── Banner ───────────────────────────────────────── */}
-      <section className="sobre-banner reveal">
-        <span className="sobre-banner-icon">
-          <FiHeart />
-        </span>
-        <p className="sobre-banner-text">
-          O <strong>Sunny Sales</strong> promove{' '}
-          <strong>praticidade, sustentabilidade</strong> e a{' '}
-          <strong>valorização do comércio local</strong> nas praias portuguesas.
-        </p>
-      </section>
+      <InfoBanner icon={FiHeart}>
+        O <strong>Sunny Sales</strong> promove{' '}
+        <strong>praticidade, sustentabilidade</strong> e a{' '}
+        <strong>valorização do comércio local</strong> nas praias portuguesas.
+      </InfoBanner>
     </div>
   );
 }

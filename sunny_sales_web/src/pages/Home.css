@@ -63,8 +63,10 @@
 
 .home-hero-title {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 4.4vw, 3.625rem);
-  font-weight: 600;
+  font-size: var(--fs-display);
+  /* Peso 650 (Inter suporta pesos intermédios) para reforçar o contraste
+     entre o H1 e o parágrafo de apoio. */
+  font-weight: 650;
   line-height: 1.06;
   letter-spacing: -0.035em;
   color: var(--text);
@@ -90,7 +92,7 @@
 }
 
 .home-hero-lead {
-  font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+  font-size: var(--fs-lead);
   line-height: 1.6;
   font-weight: 400;
   color: var(--text-secondary);
@@ -154,7 +156,7 @@
 .hero-pill:hover { background: var(--surface-alt); }
 .hero-pill:active { opacity: 0.9; }
 .hero-pill:focus-visible {
-  outline: 2px solid var(--text);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 /* CTA principal — o único elemento amarelo de peso na página */
@@ -276,10 +278,12 @@
 }
 
 /* ═══════════════ SECÇÕES ═══════════════ */
+/* Ritmo vertical único entre todas as secções (stats, passos, features,
+   categorias, CTAs) — ver token --section-pad. */
 .home-section {
   max-width: 1120px;
   margin: 0 auto;
-  padding: clamp(4rem, 8vw, 7rem) 1rem 0;
+  padding: var(--section-pad) 1rem 0;
 }
 
 .home-head {
@@ -481,7 +485,7 @@
   box-shadow: none;
 }
 .home-vendor-body { max-width: 620px; }
-.home-eyebrow--light { color: rgba(255, 255, 255, 0.55); }
+.home-eyebrow--light { color: rgba(255, 255, 255, 0.68); }
 .home-vendor-title {
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 3.4vw, 2.5rem);
@@ -492,7 +496,8 @@
   line-height: 1.1;
 }
 .home-vendor-text {
-  color: rgba(255, 255, 255, 0.72);
+  /* 0.82 de opacidade sobre navy ≈ 10:1 — folga confortável acima de AA */
+  color: rgba(255, 255, 255, 0.82);
   font-size: 1.0625rem;
   line-height: 1.6;
   margin: 0 0 32px;
@@ -577,4 +582,17 @@
 
 @media (max-width: 400px) {
   .hero-map { max-width: 300px; }
+
+  /* Em ecrãs muito estreitos (320–400px) o H1 reduz e o destaque
+     pode quebrar linha — evita overflow horizontal. */
+  .home-hero-title {
+    font-size: 2.15rem;
+    max-width: none;
+  }
+  .home-hero-accent { white-space: normal; }
+  .home-hero-badge {
+    font-size: 0.75rem;
+    padding: 5px 12px;
+    text-align: center;
+  }
 }

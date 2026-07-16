@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { FiUsers, FiShoppingBag } from 'react-icons/fi';
 import './InfoPage.css';
 import './FAQ.css';
+import HeroImage from '../components/HeroImage';
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=1000&q=80';
+  'https://images.unsplash.com/photo-1473116763249-2faaef81ccda';
 
 const FAQS_BANHISTAS = [
   {
@@ -83,30 +84,25 @@ export default function FAQ() {
         </div>
 
         <div className="info-hero-media">
-          <img
-            src={HERO_IMAGE}
-            alt="Vista aérea das ondas do mar a chegar à praia"
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          <HeroImage src={HERO_IMAGE} alt="Vista aérea das ondas do mar a chegar à praia" />
         </div>
       </div>
 
-      <div className="faq-tabs">
+      <div className="faq-tabs" role="group" aria-label="Escolher grupo de perguntas">
         <button
           className={`faq-tab${tab === 'banhistas' ? ' active' : ''}`}
           onClick={() => setTab('banhistas')}
+          aria-pressed={tab === 'banhistas'}
         >
-          <FiUsers size={16} />
+          <FiUsers size={16} aria-hidden="true" />
           Banhistas
         </button>
         <button
           className={`faq-tab${tab === 'vendedores' ? ' active' : ''}`}
           onClick={() => setTab('vendedores')}
+          aria-pressed={tab === 'vendedores'}
         >
-          <FiShoppingBag size={16} />
+          <FiShoppingBag size={16} aria-hidden="true" />
           Vendedores
         </button>
       </div>

@@ -15,6 +15,7 @@ import Home from './pages/Home';
 import BackHomeButton from './components/BackHomeButton';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import PageMeta from './components/PageMeta';
 import LoadingDots from './components/LoadingDots';
 import useScrollReveal from './hooks/useScrollReveal';
 import './index.css';
@@ -75,6 +76,7 @@ export default function App() {
   return (
     <Router>
       <ScrollToTop />
+      <PageMeta />
       <AppLayout />
     </Router>
   );
@@ -156,15 +158,39 @@ function AppLayout() {
   // Na página inicial o header fica transparente enquanto está no topo.
   const navTransparent = location.pathname === '/' && !scrolled && !menuOpen;
 
+  // Salta o foco diretamente para o conteúdo (o href="#conteudo" normal
+  // não funciona com HashRouter, que interpretaria o hash como rota).
+  const skipToContent = (e) => {
+    e.preventDefault();
+    const el = document.getElementById('conteudo');
+    if (el) {
+      el.focus({ preventScroll: true });
+      el.scrollIntoView();
+    }
+  };
+
   return (
     <div className="wrapper">
+      <a href="#conteudo" className="skip-link" onClick={skipToContent}>
+        Saltar para o conteúdo
+      </a>
       <nav
         className={`navbar${navTransparent ? ' navbar--home' : ''}${
           scrolled ? ' navbar--scrolled' : ''
         }`}
+        aria-label="Navegação principal"
       >
         <Link className="nav-logo" to="/">
-          <img src="/logosite.png" alt="Sunny Sales" className="nav-logo-img" />
+          {/* alt vazio: o texto "Sunny Sales" ao lado já identifica o link.
+              Versão 68px do logótipo (2×) — o original só é usado como
+              favicon/og:image. */}
+          <img
+            src="/logosite-nav.png"
+            alt=""
+            width="34"
+            height="34"
+            className="nav-logo-img"
+          />
           Sunny Sales
         </Link>
 
@@ -242,7 +268,7 @@ function AppLayout() {
         aria-hidden="true"
       />
 
-      <div className="container">
+      <div className="container" role="main" id="conteudo" tabIndex={-1}>
         {!HIDE_BACK_ROUTES.includes(location.pathname) && <BackHomeButton />}
         <Suspense fallback={<PageLoader />}>
         <Routes>

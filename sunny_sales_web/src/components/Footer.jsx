@@ -100,7 +100,7 @@ export default function Footer() {
     <footer className="footer-wrapper">
       <div className="footer-content">
         <div className="footer-message">
-          <FiRefreshCw size={11} className="footer-icon" />
+          <FiRefreshCw size={11} className="footer-icon" aria-hidden="true" />
           {messages[index]}
         </div>
         <div className="footer-links">

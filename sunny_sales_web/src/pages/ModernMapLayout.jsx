@@ -108,6 +108,25 @@ function getVendorPinHtml(color) {
   return `<div class="vendor-pin-marker" style="--pin-color: ${safeColor};"></div>`;
 }
 
+// Traduz os controlos +/- do Leaflet (que vêm com títulos em inglês)
+// e garante aria-labels em português.
+function MapZoomA11y() {
+  const map = useMap();
+  useEffect(() => {
+    const zoomIn = map.zoomControl?._zoomInButton;
+    const zoomOut = map.zoomControl?._zoomOutButton;
+    if (zoomIn) {
+      zoomIn.setAttribute('aria-label', 'Aproximar mapa');
+      zoomIn.title = 'Aproximar mapa';
+    }
+    if (zoomOut) {
+      zoomOut.setAttribute('aria-label', 'Afastar mapa');
+      zoomOut.title = 'Afastar mapa';
+    }
+  }, [map]);
+  return null;
+}
+
 function MapBearingController({ targetBearingRef }) {
   const map = useMap();
   useEffect(() => {
@@ -244,6 +263,17 @@ export default function ModernMapLayout() {
   // No desktop os filtros vivem na barra lateral; em ecrãs pequenos essa barra
   // fica escondida, por isso os banhistas acedem aos filtros por esta folha.
   const [showFilterSheet, setShowFilterSheet] = useState(false);
+
+  // Skeleton do mapa: escondido assim que os tiles visíveis terminam de
+  // carregar (evento "load" do TileLayer), com timeout de segurança para
+  // ligações lentas ou tiles bloqueados.
+  const [tilesLoaded, setTilesLoaded] = useState(false);
+
+  useEffect(() => {
+    if (tilesLoaded) return undefined;
+    const t = setTimeout(() => setTilesLoaded(true), 6000);
+    return () => clearTimeout(t);
+  }, [tilesLoaded]);
   const activeFilterCount =
     selectedProducts.length + (maxDistance !== null ? 1 : 0);
 
@@ -564,7 +594,7 @@ export default function ModernMapLayout() {
       </div>}
 
       <div className="map-wrapper">
-        <main className="map-area">
+        <section className="map-area" aria-label="Mapa de vendedores">
           <MapContainer
             ref={mapRef}
             center={[38.7169, -9.1399]}
@@ -573,12 +603,14 @@ export default function ModernMapLayout() {
             rotate={true}
             bearing={0}
           >
+            <MapZoomA11y />
             <MapBearingController targetBearingRef={targetBearingRef} />
             <TileLayer
               url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
               attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
               subdomains="abcd"
               maxZoom={19}
+              eventHandlers={{ load: () => setTilesLoaded(true) }}
             />
             {!isVendorLogged && clientPos && (
               <Marker
@@ -656,6 +688,20 @@ export default function ModernMapLayout() {
               />
             )}
           </MapContainer>
+
+          {/* Skeleton sobre o mapa enquanto os tiles carregam — desvanece
+              suavemente para eliminar a sensação de "página em branco". */}
+          <div
+            className={`map-skeleton${tilesLoaded ? ' map-skeleton--hidden' : ''}`}
+            aria-hidden="true"
+          >
+            <div className="map-skeleton-card">
+              <span className="map-skeleton-pin">
+                <FiMapPin size={19} />
+              </span>
+              A carregar o mapa…
+            </div>
+          </div>
 
           {/* Compass permission modal — shown automatically on first iOS visit */}
           {showCompassModal && (
@@ -848,7 +894,7 @@ export default function ModernMapLayout() {
             </div>
           )}
 
-        </main>
+        </section>
       </div>
 
       {!isVendorLogged && <div className="sidebar-right">
@@ -872,6 +918,15 @@ export default function ModernMapLayout() {
                   key={v.id}
                   className={`vendor-item ${selected?.id === v.id ? 'active' : ''}`}
                   onClick={() => focusVendor(v)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Ver vendedor ${v.name} no mapa`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      focusVendor(v);
+                    }
+                  }}
                 >
                   {v.profile_photo ? (
                     <img

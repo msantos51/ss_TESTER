@@ -4,10 +4,12 @@ import { FiCheck, FiZap, FiStar, FiTrendingUp, FiHelpCircle } from 'react-icons/
 import InfoBanner from '../components/InfoBanner';
 import { BASE_URL } from '../config';
 import './InfoPage.css';
+import './FAQ.css';
 import './PlanosVendedores.css';
+import HeroImage from '../components/HeroImage';
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1000&q=80';
+  'https://images.unsplash.com/photo-1519046904884-53103b34b206';
 
 const PLANS = [
   {
@@ -108,15 +110,15 @@ export default function PlanosVendedores() {
   };
 
   return (
-    <div className="pv-page">
+    <div className="info-page pv-page">
 
-      {/* ── Hero ── */}
-      <div className="pv-hero pv-hero--media">
-        <div className="pv-hero-content">
-          <h1 className="pv-hero-title">
+      {/* ── Hero (padrão partilhado das páginas internas) ── */}
+      <section className="info-hero info-hero--media">
+        <div className="info-hero-content">
+          <h1 className="info-hero-title">
             O teu negócio no mapa
           </h1>
-          <p className="pv-hero-lead">
+          <p className="info-hero-lead">
             Junta-te à plataforma que coloca os vendedores de praia no mapa,
             literalmente. <strong>Mais visibilidade, mais clientes, mais vendas.</strong>
           </p>
@@ -128,17 +130,10 @@ export default function PlanosVendedores() {
           </div>
         </div>
 
-        <div className="pv-hero-media">
-          <img
-            src={HERO_IMAGE}
-            alt="Chapéus de sol e banhistas numa praia movimentada"
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+        <div className="info-hero-media">
+          <HeroImage src={HERO_IMAGE} alt="Chapéus de sol e banhistas numa praia movimentada" />
         </div>
-      </div>
+      </section>
 
       {/* ── Pricing header ── */}
       <div className="pv-pricing-header">
@@ -214,11 +209,11 @@ export default function PlanosVendedores() {
           </span>
           <h2 className="info-section-title">Perguntas frequentes</h2>
         </div>
-        <div className="pv-faq-list">
+        <div className="faq-list">
           {FAQS.map((faq) => (
-            <details key={faq.q} className="pv-faq-item reveal">
-              <summary className="pv-faq-q">{faq.q}</summary>
-              <p className="pv-faq-a">{faq.a}</p>
+            <details key={faq.q} className="faq-item reveal">
+              <summary className="faq-q">{faq.q}</summary>
+              <p className="faq-a">{faq.a}</p>
             </details>
           ))}
         </div>
