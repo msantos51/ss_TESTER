@@ -432,7 +432,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(16, 21, 28, 0.88);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--border-strong);
@@ -1040,7 +1040,7 @@ body {
   -webkit-tap-highlight-color: transparent;
   min-height: auto;
   padding: 0;
-  color: var(--ink);
+  color: #fff;
 }
 
 .locate-btn .locate-icon,

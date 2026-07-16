@@ -64,9 +64,9 @@
 }
 
 .contacto-input:focus {
-  border-color: var(--text);
+  border-color: var(--text-muted);
   background: var(--surface);
-  box-shadow: 0 0 0 3px rgba(15, 15, 15, 0.06);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.07);
 }
 
 .contacto-select {
@@ -114,20 +114,20 @@
 }
 
 /* ── Submit button ─────────────────────────────────────── */
-/* Submeter o formulário é a ação primária da página → amarelo
-   (ver DESIGN_SYSTEM.md · paleta). */
+/* Submeter o formulário é a ação primária da página → acento
+   vermelho-alaranjado (ver DESIGN_SYSTEM.md · paleta). */
 .contacto-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   background: var(--secondary);
-  color: var(--ink);
+  color: #fff;
   font-weight: 600;
   font-size: 0.95rem;
   padding: 12px 28px;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-btn);
   cursor: pointer;
   transition: background var(--transition);
   align-self: flex-start;
@@ -161,8 +161,8 @@
   content: '';
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(15, 15, 15, 0.3);
-  border-top-color: var(--ink);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
   border-radius: 50%;
   animation: contacto-spin 0.7s linear infinite;
 }

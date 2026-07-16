@@ -66,8 +66,8 @@
 .pv-pricing-title {
   display: block;
   font-size: clamp(1.4rem, 3.5vw, 1.9rem);
-  font-weight: 600;
-  color: var(--navy);
+  font-weight: 700;
+  color: var(--text);
   margin: 0 0 12px;
   letter-spacing: -0.025em;
 }
@@ -122,7 +122,7 @@
   border-color: var(--secondary);
   transform: translateY(-8px);
   box-shadow: 0 0 0 4px var(--secondary-light), var(--shadow-lg),
-    0 16px 40px -18px rgba(245, 179, 1, 0.45);
+    0 16px 40px -18px rgba(239, 65, 54, 0.45);
 }
 
 .pv-plan-badge {
@@ -131,7 +131,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: var(--secondary);
-  color: var(--ink);
+  color: #fff;
   font-size: 0.75rem;
   font-weight: 600;
   padding: 6px 16px;
@@ -169,14 +169,14 @@
 .pv-plan-currency {
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--navy);
+  color: var(--text);
   align-self: flex-start;
   margin-top: 8px;
 }
 .pv-plan-amount {
   font-size: 3.2rem;
-  font-weight: 600;
-  color: var(--navy);
+  font-weight: 700;
+  color: var(--text);
   letter-spacing: -0.04em;
 }
 .pv-plan-period {
@@ -247,15 +247,15 @@
   width: 100%;
   text-align: center;
   padding: 13px 20px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-btn);
   font-size: 0.92rem;
   font-weight: 600;
   font-family: inherit;
   text-decoration: none;
   cursor: pointer;
   border: 1px solid var(--border-strong);
-  color: var(--navy);
-  background: var(--surface);
+  color: var(--text);
+  background: transparent;
   transition: background var(--transition), color var(--transition),
     border-color var(--transition), transform var(--transition),
     box-shadow var(--transition);
@@ -268,17 +268,17 @@
   box-shadow: none;
   filter: none;
 }
-/* Ação primária da página = amarelo (ver DESIGN_SYSTEM.md · paleta) */
+/* Ação primária da página = acento vermelho-alaranjado */
 .pv-plan-cta--highlight {
   background: var(--secondary);
   border-color: var(--secondary);
-  color: var(--ink);
-  box-shadow: var(--shadow-sm);
+  color: #fff;
+  box-shadow: var(--shadow-accent);
 }
 .pv-plan-cta--highlight:hover {
   background: var(--secondary-hover);
   border-color: var(--secondary-hover);
-  color: var(--ink);
+  color: #fff;
 }
 
 /* ── Compare note ──────────────────────────────────────── */
@@ -351,18 +351,18 @@
   align-items: center;
   gap: 8px;
   padding: 13px 28px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-btn);
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
   transition: background var(--transition);
 }
 .pv-cta-btn--primary {
-  background: #fff;
-  color: var(--navy);
+  background: var(--accent);
+  color: #fff;
 }
 .pv-cta-btn--primary:hover {
-  background: #f4f4f4;
+  background: var(--accent-hover);
   transform: none;
   box-shadow: none;
 }

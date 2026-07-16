@@ -25,7 +25,7 @@
   font-size: clamp(1.4rem, 4vw, 1.9rem);
   font-weight: 700;
   letter-spacing: -0.5px;
-  color: var(--navy);
+  color: var(--text);
   margin: 0 0 10px;
 }
 
@@ -51,7 +51,7 @@
   font-size: 0.9rem;
   font-weight: 500;
   padding: 11px 24px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-btn);
   transition: background var(--transition), transform var(--transition),
     box-shadow var(--transition), border-color var(--transition),
     color var(--transition);
@@ -71,7 +71,7 @@
 .notfound-btn-ghost {
   color: var(--text);
   border: 1px solid var(--border-strong);
-  background: var(--surface);
+  background: transparent;
 }
 .notfound-btn-ghost:hover {
   border-color: var(--text-muted);
