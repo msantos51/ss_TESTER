@@ -900,6 +900,22 @@ h2 {
     padding: 0 16px;
   }
 
+  /* Alvos de toque ≥44×44px em mobile (ícones do header e botão voltar) */
+  .profile-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .menu-toggle {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .back-btn {
+    min-height: 44px;
+    padding: 6px 12px;
+  }
+
   .nav-links {
     display: none;
     position: fixed;

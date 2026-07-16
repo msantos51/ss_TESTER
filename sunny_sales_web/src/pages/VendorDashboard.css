@@ -384,12 +384,13 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
-  padding: 7px 14px;
+  padding: 7px 16px;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text-secondary);
   cursor: pointer;
-  min-height: auto;
+  /* Só aparece em mobile → alvo de toque ≥44px */
+  min-height: 44px;
   transition: background var(--transition), border-color var(--transition), color var(--transition);
 }
 
@@ -569,6 +570,7 @@
 }
 
 .vd-notice-close {
+  position: relative;
   background: transparent;
   border: none;
   color: inherit;
@@ -580,6 +582,13 @@
   min-height: auto;
   opacity: 0.6;
   transition: opacity var(--transition);
+}
+
+/* Área de toque expandida para ≥44×44px sem alterar o tamanho visual */
+.vd-notice-close::after {
+  content: '';
+  position: absolute;
+  inset: -12px;
 }
 
 .vd-notice-close:hover {

@@ -52,6 +52,9 @@
   font-weight: 500;
   transition: color var(--transition);
   white-space: nowrap;
+  /* Aumenta a área de toque sem alterar a altura visual do rodapé */
+  padding: 10px 4px;
+  margin: -10px -4px;
 }
 
 .footer-link:hover {
@@ -90,12 +93,12 @@
   }
 
   .footer-message {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
   }
 
   .footer-links {
-    gap: 6px;
-    font-size: 0.68rem;
+    gap: 8px;
+    font-size: 0.75rem;
   }
 
   .footer-link-divider {
@@ -111,11 +114,11 @@
   }
 
   .footer-message {
-    font-size: 0.65rem;
+    font-size: 0.72rem;
   }
 
   .footer-links {
-    gap: 5px;
-    font-size: 0.63rem;
+    gap: 7px;
+    font-size: 0.72rem;
   }
 }

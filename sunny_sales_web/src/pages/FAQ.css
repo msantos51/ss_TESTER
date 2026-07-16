@@ -151,5 +151,7 @@
     justify-content: center;
     padding: 9px 12px;
     font-size: 0.85rem;
+    /* Alvo de toque ≥44px em mobile */
+    min-height: 44px;
   }
 }

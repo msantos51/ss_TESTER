@@ -308,6 +308,11 @@
   color: var(--navy);
   margin: 0;
   display: block;
+  /* Palavras longas em PT ("Consciencialização") hifenizam em ecrãs
+     estreitos em vez de causarem scroll horizontal. */
+  hyphens: auto;
+  overflow-wrap: break-word;
+  min-width: 0;
 }
 
 /* When the title stands alone (no icon-chip header) keep spacing tidy */
@@ -655,6 +660,10 @@
 @media (max-width: 480px) {
   .info-page {
     padding: 0 0.75rem 2rem;
+  }
+
+  .info-section-title {
+    font-size: 1.5rem;
   }
 
   .info-cards {

@@ -582,4 +582,17 @@
 
 @media (max-width: 400px) {
   .hero-map { max-width: 300px; }
+
+  /* Em ecrãs muito estreitos (320–400px) o H1 reduz e o destaque
+     pode quebrar linha — evita overflow horizontal. */
+  .home-hero-title {
+    font-size: 2.15rem;
+    max-width: none;
+  }
+  .home-hero-accent { white-space: normal; }
+  .home-hero-badge {
+    font-size: 0.75rem;
+    padding: 5px 12px;
+    text-align: center;
+  }
 }

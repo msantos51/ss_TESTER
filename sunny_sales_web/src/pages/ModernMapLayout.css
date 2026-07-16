@@ -479,6 +479,16 @@ body {
   border-bottom: 1px solid var(--border) !important;
 }
 
+/* Em ecrãs de toque, os botões +/- do mapa passam a 44×44px */
+@media (pointer: coarse), (max-width: 768px) {
+  .map-container .leaflet-control-zoom-in,
+  .map-container .leaflet-control-zoom-out {
+    width: 44px !important;
+    height: 44px !important;
+    line-height: 44px !important;
+  }
+}
+
 .map-container .leaflet-control-zoom-in:hover,
 .map-container .leaflet-control-zoom-out:hover {
   background: var(--primary-light-solid) !important;
@@ -600,8 +610,9 @@ body {
   display: flex;
   align-items: center;
   gap: 5px;
-  min-height: auto;
-  padding: 6px 10px 6px 6px;
+  /* Alvo de toque ≥44px (a folha de filtros é exclusiva de mobile) */
+  min-height: 44px;
+  padding: 6px 12px 6px 8px;
   background: transparent;
   border: none;
   border-radius: var(--radius-full);
@@ -857,6 +868,14 @@ body {
   justify-content: center;
   box-shadow: var(--shadow-xs);
   transition: background var(--transition), color var(--transition);
+}
+
+/* Área de toque expandida para ≥44×44px sem alterar o tamanho visual */
+.close-btn::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
 }
 .close-btn:hover {
   background: var(--primary-light);
