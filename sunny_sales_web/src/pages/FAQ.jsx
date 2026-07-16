@@ -94,19 +94,21 @@ export default function FAQ() {
         </div>
       </div>
 
-      <div className="faq-tabs">
+      <div className="faq-tabs" role="group" aria-label="Escolher grupo de perguntas">
         <button
           className={`faq-tab${tab === 'banhistas' ? ' active' : ''}`}
           onClick={() => setTab('banhistas')}
+          aria-pressed={tab === 'banhistas'}
         >
-          <FiUsers size={16} />
+          <FiUsers size={16} aria-hidden="true" />
           Banhistas
         </button>
         <button
           className={`faq-tab${tab === 'vendedores' ? ' active' : ''}`}
           onClick={() => setTab('vendedores')}
+          aria-pressed={tab === 'vendedores'}
         >
-          <FiShoppingBag size={16} />
+          <FiShoppingBag size={16} aria-hidden="true" />
           Vendedores
         </button>
       </div>

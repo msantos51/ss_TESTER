@@ -58,6 +58,15 @@ function getGreeting() {
   return 'Boa noite';
 }
 
+// Iniciais do nome (primeiro + último) para o avatar sem fotografia.
+function getInitials(name) {
+  const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  const first = parts[0][0];
+  const last = parts.length > 1 ? parts[parts.length - 1][0] : '';
+  return (first + last).toUpperCase();
+}
+
 function formatDistance(meters) {
   if (meters >= 1000) return `${(meters / 1000).toFixed(1)} km`;
   return `${Math.round(meters)} m`;
@@ -635,8 +644,9 @@ export default function VendorDashboard() {
                   <div
                     className="vd-avatar vd-avatar-placeholder"
                     style={{ borderColor: pinColor, background: `${pinColor}22`, color: pinColor }}
+                    aria-hidden="true"
                   >
-                    {vendor.name?.charAt(0)?.toUpperCase() || '?'}
+                    {getInitials(vendor.name)}
                   </div>
                 )}
                 <div className="vd-profile-head-meta">
@@ -768,35 +778,25 @@ export default function VendorDashboard() {
               {vendor && (
                 <div className="vd-stats-section">
                   <h3 className="vd-section-title">Resumo de hoje</h3>
-                  <div className="vd-stats-grid">
-                    <div className="vd-stat-card">
-                      <div className="vd-stat-icon"><FiNavigation /></div>
-                      <div className="vd-stat-value">
-                        {stats ? formatDistance(stats.distToday) : '—'}
+                  {/* Enquanto os trajetos carregam mostram-se skeletons em vez
+                      de travessões estáticos. */}
+                  <div className="vd-stats-grid" aria-busy={stats === null}>
+                    {[
+                      { icon: <FiNavigation />, label: 'Distância hoje', value: stats && formatDistance(stats.distToday) },
+                      { icon: <FiClock />, label: 'Tempo online', value: stats && formatDuration(stats.msToday) },
+                      { icon: <FiMapPin />, label: 'Sessões hoje', value: stats && String(stats.sessionsToday) },
+                      { icon: <FiTrendingUp />, label: 'Últimos 7 dias', value: stats && formatDistance(stats.distWeek) },
+                    ].map((card) => (
+                      <div className="vd-stat-card" key={card.label}>
+                        <div className="vd-stat-icon">{card.icon}</div>
+                        <div className="vd-stat-value">
+                          {stats ? card.value : (
+                            <span className="vd-skeleton vd-skeleton-stat" aria-hidden="true" />
+                          )}
+                        </div>
+                        <div className="vd-stat-label">{card.label}</div>
                       </div>
-                      <div className="vd-stat-label">Distância hoje</div>
-                    </div>
-                    <div className="vd-stat-card">
-                      <div className="vd-stat-icon"><FiClock /></div>
-                      <div className="vd-stat-value">
-                        {stats ? formatDuration(stats.msToday) : '—'}
-                      </div>
-                      <div className="vd-stat-label">Tempo online</div>
-                    </div>
-                    <div className="vd-stat-card">
-                      <div className="vd-stat-icon"><FiMapPin /></div>
-                      <div className="vd-stat-value">
-                        {stats ? stats.sessionsToday : '—'}
-                      </div>
-                      <div className="vd-stat-label">Sessões hoje</div>
-                    </div>
-                    <div className="vd-stat-card">
-                      <div className="vd-stat-icon"><FiTrendingUp /></div>
-                      <div className="vd-stat-value">
-                        {stats ? formatDistance(stats.distWeek) : '—'}
-                      </div>
-                      <div className="vd-stat-label">Últimos 7 dias</div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -810,12 +810,22 @@ export default function VendorDashboard() {
                   )}
                 </div>
                 {routes === null && (
-                  <div className="vd-activity-empty">A carregar atividade…</div>
+                  <div aria-busy="true" aria-label="A carregar atividade">
+                    <span className="vd-skeleton vd-skeleton-row" aria-hidden="true" />
+                    <span className="vd-skeleton vd-skeleton-row" aria-hidden="true" />
+                    <span className="vd-skeleton vd-skeleton-row" aria-hidden="true" />
+                  </div>
                 )}
                 {routes !== null && recentRoutes.length === 0 && (
-                  <div className="vd-activity-empty">
-                    Ainda não tens trajetos registados. Ativa a partilha de localização para
-                    começares a registar a tua atividade.
+                  <div className="vd-empty-state">
+                    <span className="vd-empty-state-icon" aria-hidden="true">
+                      <FiNavigation />
+                    </span>
+                    <span className="vd-empty-state-title">Ainda sem atividade</span>
+                    <p className="vd-empty-state-text">
+                      Ativa a partilha de localização no interruptor do teu perfil para
+                      começares a registar trajetos e sessões.
+                    </p>
                   </div>
                 )}
                 {recentRoutes.length > 0 && (
@@ -887,8 +897,9 @@ export default function VendorDashboard() {
                   <div
                     className="vd-form-avatar vd-form-avatar-placeholder"
                     style={{ borderColor: editPinColor, background: `${editPinColor}22`, color: editPinColor }}
+                    aria-hidden="true"
                   >
-                    {vendor?.name?.charAt(0)?.toUpperCase() || '?'}
+                    {getInitials(vendor?.name)}
                   </div>
                 )}
                 <label className="vd-form-photo-btn">
