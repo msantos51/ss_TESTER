@@ -23,25 +23,26 @@
 }
 
 /* ════════════════════════════════════════════════════════
-   Sunny Sales — Design System
+   Sunny Sales — Design System "Dark Sport / Premium"
 
    PALETA (regras de uso):
-   · --primary (teal do logótipo) — cor de marca para acentos,
-     ícones, links, estados ativos e pequenos destaques.
-     Nunca é fundo de grandes áreas.
-   · --secondary (amarelo/dourado) — exclusivo de AÇÕES
-     PRIMÁRIAS (CTA "Explorar Mapa", submissões, "Escolher
-     plano" em destaque) e micro-indicadores (pontos, badge).
-   · --ink (quase-preto) — ações de navegação secundárias
-     (botão do header, botões utilitários) e texto principal.
-   · --navy (azul-marinho) — fundo de blocos institucionais
-     de contraste (painel "Para Vendedores", banners escuros).
-   · Cinzentos --text-secondary/--text-muted/--border —
-     hierarquia de texto e separadores. Todos os pares
-     texto/fundo cumprem WCAG AA (≥4.5:1 em texto normal).
+   · Fundos escuros — azul-petróleo/carvão (--bg #10151c) com
+     gradientes subtis até --bg-raised (#1a212b) em heroes e
+     secções de destaque. --surface/--surface-alt para cards.
+   · --secondary / --accent (vermelho-alaranjado #ef4136) —
+     AÇÕES PRIMÁRIAS (CTAs, submissões), sublinhado do item
+     de menu ativo, ícones, badges e pequenos detalhes.
+     Texto sobre o acento: sempre branco (#fff).
+   · --primary é alias do acento (ícones, links, estados
+     ativos) para compatibilidade com os componentes.
+   · Texto: --text (#f5f5f5) para títulos/corpo sobre escuro;
+     --text-secondary (#c9ced6) para parágrafos de apoio.
+     Sobre fundos claros residuais usar --ink-on-light.
+   · --navy — painéis escuros institucionais (ligeiramente
+     mais claros que o fundo, com borda subtil).
 
    TIPOGRAFIA (escala única, aplicada em todo o site):
-   · --fs-display  40→58px  Hero da Home (peso 650)
+   · --fs-display  48→64px  Hero da Home (peso 800)
    · --fs-h1       32→44px  Título hero das páginas internas
    · --fs-h2       28→32px  Títulos de secção
    · --fs-h3       20→24px  Subtítulos / cabeçalhos de card
@@ -49,94 +50,109 @@
    · --fs-body     16px     Corpo
    · --fs-body-sm  15px     Corpo compacto (cards, listas)
    · --fs-caption  13px     Legendas, labels, eyebrows
+   · Menu de navegação: uppercase com tracking 0.08em.
+
+   BOTÕES: formato pílula (--radius-btn). Primário sólido
+   vermelho-alaranjado com texto branco; secundário outline
+   branco/transparente; hover com leve escurecimento.
    ════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Cor primária de marca: teal do logótipo ──
-     #0e7f94 garante AA (4.69:1) para texto/ícones sobre branco;
-     #18a8c0 (bright) é só decorativo, nunca texto. */
-  --primary: #0e7f94;
-  --primary-hover: #0c7286;
-  --primary-dark: #0a5464;
-  --primary-bright: #18a8c0;
-  --primary-light: rgba(14, 127, 148, 0.08);
-  --primary-light-solid: #e9f4f6;
+  /* ── Acento vermelho-alaranjado (CTA e destaques) ── */
+  --accent: #ef4136;
+  --accent-hover: #d63527;
+  --accent-soft: rgba(239, 65, 54, 0.16);
+  /* Tom claro do acento — texto/ícones de acento sobre fundo escuro */
+  --accent-text: #ff8d84;
 
-  /* ── Amarelo da marca (ações primárias e micro-indicadores) ── */
-  --secondary: #f5b301;
-  --secondary-hover: #e8a800;
-  --secondary-light: rgba(245, 179, 1, 0.16);
+  /* ── Cor primária (alias do acento, compatibilidade) ── */
+  --primary: #ef4136;
+  --primary-hover: #d63527;
+  --primary-dark: #ff8d84;
+  --primary-bright: #ff6f61;
+  --primary-light: rgba(239, 65, 54, 0.12);
+  --primary-light-solid: #271e23;
 
-  /* Tons de amarelo — compatibilidade */
-  --gold: #f5b301;
-  --gold-strong: #8a6600;
-  --amber: #f5b301;
-  --amber-strong: #8a6600;
-  --coral: #f5b301;
+  /* ── Ação primária (CTAs sólidos) ── */
+  --secondary: #ef4136;
+  --secondary-hover: #d63527;
+  --secondary-light: rgba(239, 65, 54, 0.18);
 
-  /* ── Aliases de azul/teal (links, mapa, estados ativos) ── */
-  --blue: #0e7f94;
-  --blue-hover: #0a5464;
-  --teal: #0e7f94;
-  --teal-strong: #0a5464;
-  --teal-light: rgba(14, 127, 148, 0.08);
-  --sky: #18a8c0;
+  /* Tons legados de amarelo — remapeados para o acento */
+  --gold: #ef4136;
+  --gold-strong: #ffb3ab;
+  --amber: #ef4136;
+  --amber-strong: #ffb3ab;
+  --coral: #ef4136;
 
-  /* ── "Ink" (texto e botões de navegação secundária) ── */
-  --ink: #0f0f0f;
-  --ink-hover: #262626;
-  /* ── Azul-marinho (blocos escuros institucionais) ── */
-  --navy: #0d2b39;
-  --navy-light: #12374a;
-  --navy-border: rgba(255, 255, 255, 0.14);
+  /* ── Aliases de azul/teal (links funcionais, mapa) ── */
+  --blue: #5cc0d4;
+  --blue-hover: #86d3e2;
+  --teal: #5cc0d4;
+  --teal-strong: #86d3e2;
+  --teal-light: rgba(92, 192, 212, 0.12);
+  --sky: #5cc0d4;
 
-  /* ── Superfícies ── */
-  --bg: #fcfcfc;
-  --surface: #ffffff;
-  --surface-alt: #f6f6f6;
-  --surface-warm: #fafafa;
+  /* ── "Ink" (botões sólidos de navegação → acento) ── */
+  --ink: #ef4136;
+  --ink-hover: #d63527;
+  /* Texto escuro para eventuais fundos claros residuais */
+  --ink-on-light: #151b22;
+  /* ── Painéis escuros institucionais ── */
+  --navy: #151d27;
+  --navy-light: #1c2531;
+  --navy-border: rgba(255, 255, 255, 0.12);
 
-  /* ── Texto (todos AA sobre --surface/--bg) ── */
-  --text: #0f0f0f;
-  --text-secondary: #6b7280;  /* 4.83:1 sobre branco */
-  --text-muted: #71717a;      /* 4.83:1 sobre branco */
+  /* ── Superfícies (tons escuros de azul-petróleo/carvão) ── */
+  --bg-deep: #0b0f15;
+  --bg: #10151c;
+  --bg-raised: #1a212b;
+  --surface: #1a212b;
+  --surface-alt: #232d3a;
+  --surface-warm: #1a212b;
 
-  /* ── Bordas (muito subtis) ── */
-  --border: #ececec;
-  --border-strong: #e2e2e2;
+  /* ── Texto (todos AA sobre --bg/--surface) ── */
+  --text: #f5f5f5;
+  --text-secondary: #c9ced6;
+  --text-muted: #98a2ae;
+
+  /* ── Bordas (subtis sobre escuro) ── */
+  --border: #262f3a;
+  --border-strong: #364253;
 
   /* ── Cores semânticas (só em contexto funcional) ── */
-  --success: #16a34a;
-  --success-bg: #f0fdf4;
-  --success-border: #bbf7d0;
-  --warning: #b45309;
-  --warning-bg: #fffbeb;
-  --warning-border: #fde68a;
-  --error: #dc2626;
-  --error-bg: #fef2f2;
-  --error-border: #fecaca;
-  --danger: #dc2626;
+  --success: #4ade80;
+  --success-bg: rgba(74, 222, 128, 0.1);
+  --success-border: rgba(74, 222, 128, 0.35);
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.12);
+  --warning-border: rgba(251, 191, 36, 0.35);
+  --error: #f87171;
+  --error-bg: rgba(248, 113, 113, 0.12);
+  --error-border: rgba(248, 113, 113, 0.4);
+  --danger: #f87171;
 
-  /* ── Gradientes legados — achatados para cores planas ── */
-  --grad-sun: linear-gradient(135deg, #f5b301, #f5b301);
-  --grad-gold: linear-gradient(135deg, #f5b301, #f5b301);
-  --grad-sea: linear-gradient(135deg, #0e7f94, #0e7f94);
-  --grad-dusk: linear-gradient(135deg, #f5b301, #f5b301);
-  /* Painéis escuros: azul-marinho institucional */
-  --grad-dark: linear-gradient(180deg, #12374a 0%, #0d2b39 100%);
+  /* ── Gradientes legados — achatados para o acento ── */
+  --grad-sun: linear-gradient(135deg, #ef4136, #ef4136);
+  --grad-gold: linear-gradient(135deg, #ef4136, #ef4136);
+  --grad-sea: linear-gradient(135deg, #5cc0d4, #5cc0d4);
+  --grad-dusk: linear-gradient(135deg, #ef4136, #ef4136);
+  /* Painéis escuros: gradiente subtil entre dois tons do fundo */
+  --grad-dark: linear-gradient(155deg, #1a212b 0%, #10151c 100%);
 
-  /* ── Sombras (quase impercetíveis) ── */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03), 0 2px 8px rgba(0, 0, 0, 0.03);
-  --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 2px 8px rgba(0, 0, 0, 0.03), 0 8px 30px rgba(0, 0, 0, 0.06);
+  /* ── Sombras (profundas, para fundo escuro) ── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 2px 8px rgba(0, 0, 0, 0.3), 0 12px 36px rgba(0, 0, 0, 0.45);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
-  --shadow-primary: 0 8px 24px -12px rgba(14, 127, 148, 0.35);
-  --shadow-ink: 0 8px 24px -12px rgba(15, 15, 15, 0.28);
-  --shadow-gold: 0 8px 24px -12px rgba(245, 179, 1, 0.35);
+  --shadow-primary: 0 8px 24px -12px rgba(239, 65, 54, 0.45);
+  --shadow-ink: 0 8px 24px -12px rgba(239, 65, 54, 0.45);
+  --shadow-gold: 0 8px 24px -12px rgba(239, 65, 54, 0.45);
+  --shadow-accent: 0 10px 28px -12px rgba(239, 65, 54, 0.55);
 
-  /* ── Raios (contidos, nunca exagerados) ── */
+  /* ── Raios (contidos; botões em pílula) ── */
   --radius-xs: 8px;
   --radius-sm: 10px;
   --radius-md: 12px;
@@ -144,9 +160,11 @@
   --radius-xl: 16px;
   --radius-2xl: 20px;
   --radius-full: 9999px;
+  /* Botões: formato pílula em todo o site */
+  --radius-btn: var(--radius-full);
 
   /* ── Escala tipográfica ── */
-  --fs-display: clamp(2.5rem, 4.4vw, 3.625rem);
+  --fs-display: clamp(3rem, 5.2vw, 4rem);
   --fs-h1: clamp(2rem, 3.6vw, 2.75rem);
   --fs-h2: clamp(1.75rem, 3vw, 2rem);
   --fs-h3: clamp(1.25rem, 2vw, 1.5rem);
@@ -164,8 +182,8 @@
   --space-2xl: 48px;
   --section-pad: clamp(4rem, 8vw, 7rem);
 
-  /* ── Foco visível (teclado): teal, ≥3:1 sobre fundos claros ── */
-  --focus-ring: #0c7286;
+  /* ── Foco visível (teclado): acento claro, ≥3:1 sobre escuro ── */
+  --focus-ring: #ff8d84;
 
   /* ── Movimento (200ms, ease-out, nada mais) ── */
   --transition: 0.2s cubic-bezier(0, 0, 0.2, 1);
@@ -186,6 +204,8 @@
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   color: var(--text);
+  /* Controlos nativos (inputs, scrollbars) em modo escuro */
+  color-scheme: dark;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -209,7 +229,7 @@ body {
 }
 
 ::selection {
-  background: var(--navy);
+  background: var(--accent);
   color: #fff;
 }
 
@@ -282,12 +302,13 @@ body {
   display: flex;
   align-items: center;
   padding: 0 28px;
-  background: var(--surface);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
   box-shadow: none;
   z-index: 1100;
   gap: 16px;
-  transition: border-color var(--transition), height var(--transition-slow);
+  transition: border-color var(--transition), height var(--transition-slow),
+    background var(--transition);
 }
 
 /* Ao rolar: encolhe ligeiramente. Sem blur nem sombras. */
@@ -297,10 +318,10 @@ body {
 }
 .navbar--scrolled .nav-logo-img { height: 30px; }
 
-/* No topo da página inicial o header funde-se com o hero branco:
-   apenas desaparece a linha inferior. */
+/* No topo da página inicial o header é transparente sobre o hero escuro:
+   funde-se com o gradiente e só ganha fundo ao rolar. */
 .navbar.navbar--home {
-  background: var(--surface);
+  background: transparent;
   border-bottom-color: transparent;
   box-shadow: none;
 }
@@ -348,8 +369,11 @@ body {
   position: relative;
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
+  /* Itens de menu em maiúsculas com leve tracking (estilo sport/premium) */
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   padding: 8px 12px;
   border-radius: var(--radius-sm);
   background: transparent;
@@ -371,9 +395,16 @@ body {
   color: var(--text);
   font-weight: 600;
 }
-/* Sem traço decorativo: o estado ativo é apenas texto mais escuro. */
+/* Item ativo: sublinhado fino vermelho-alaranjado */
 .nav-link.active::after {
-  display: none;
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
 }
 
 .nav-link-icon {
@@ -415,7 +446,7 @@ body {
   outline-offset: 2px;
 }
 
-/* Botão principal do header: preto, texto branco, raio 12px */
+/* Botão principal do header: pílula vermelho-alaranjada, texto branco */
 .nav-cta {
   display: inline-flex;
   align-items: center;
@@ -423,17 +454,17 @@ body {
   text-decoration: none;
   color: #fff;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
-  padding: 9px 16px;
+  padding: 9px 18px;
   margin-left: 6px;
-  border-radius: var(--radius-md);
-  background: var(--ink);
+  border-radius: var(--radius-btn);
+  background: var(--accent);
   box-shadow: none;
   transition: background var(--transition);
 }
 .nav-cta:hover {
-  background: var(--ink-hover);
+  background: var(--accent-hover);
   transform: none;
   box-shadow: none;
 }
@@ -476,7 +507,7 @@ body {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(15, 15, 15, 0.32);
+  background: rgba(4, 6, 9, 0.6);
   backdrop-filter: blur(2px);
   z-index: 1040;
   opacity: 0;
@@ -507,11 +538,11 @@ body {
 /* ── Buttons ─────────────────────────────────────────── */
 
 button {
-  --btn-bg: var(--ink);
+  --btn-bg: var(--accent);
   --btn-color: #fff;
   box-sizing: border-box;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-btn);
   background: var(--btn-bg);
   color: var(--btn-color);
   font-family: 'Inter', system-ui, sans-serif;
@@ -531,8 +562,11 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-button:hover:not(:disabled) {
-  background: var(--ink-hover);
+/* :where(:enabled) contribui especificidade zero — (0,1,1) no total —
+   para que os hovers específicos dos componentes
+   (.menu-toggle:hover, .filter-*:hover, …) ganhem sempre. */
+button:where(:enabled):hover {
+  background: var(--accent-hover);
   filter: none;
   transform: none;
   box-shadow: none;
@@ -555,7 +589,7 @@ button:disabled {
 }
 
 .black-button {
-  background: var(--ink);
+  background: var(--accent);
   color: #fff;
 }
 
@@ -677,9 +711,9 @@ button:disabled {
 .form input:focus,
 .form select:focus,
 .input:focus {
-  border-color: var(--text);
+  border-color: var(--text-muted);
   background: var(--surface);
-  box-shadow: 0 0 0 3px rgba(15, 15, 15, 0.06);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.07);
 }
 
 .form input::placeholder {
@@ -690,10 +724,10 @@ button:disabled {
 .form-btn {
   width: 100%;
   padding: 13px 22px;
-  background: var(--ink);
+  background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-btn);
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 0.95rem;
   font-weight: 500;
@@ -704,7 +738,7 @@ button:disabled {
 
 .form .submit:hover:not(:disabled),
 .form-btn:hover:not(:disabled) {
-  background: var(--ink-hover);
+  background: var(--accent-hover);
   box-shadow: none;
   transform: none;
   filter: none;
@@ -754,7 +788,7 @@ button:disabled {
 .apple-login-button,
 .google-login-button {
   padding: 12px 16px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-btn);
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -768,12 +802,12 @@ button:disabled {
 }
 
 .apple-login-button {
-  background: var(--ink);
+  background: var(--accent);
   color: #fff;
   border: none;
 }
 .apple-login-button:hover {
-  background: var(--ink-hover);
+  background: var(--accent-hover);
 }
 
 .google-login-button {
@@ -791,7 +825,7 @@ button:disabled {
 /* ── Toggle ──────────────────────────────────────────── */
 
 input[type='checkbox'] {
-  accent-color: var(--ink);
+  accent-color: var(--accent);
 }
 
 .theme-checkbox {
@@ -800,7 +834,7 @@ input[type='checkbox'] {
   appearance: none;
   width: 4em;
   height: 2em;
-  background: linear-gradient(to right, #e5e5e5 50%, var(--ink) 50%) no-repeat;
+  background: linear-gradient(to right, #3a4553 50%, var(--accent) 50%) no-repeat;
   background-size: 205%;
   background-position: 0;
   transition: 0.3s;
@@ -841,23 +875,23 @@ main {
 h2 {
   font-family: var(--font-display);
   font-size: var(--fs-h2);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 1rem;
 }
 
 .btn-top {
-  background: var(--ink);
+  background: var(--accent);
   color: #fff;
   padding: 9px 20px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-btn);
   text-decoration: none;
   font-weight: 500;
   font-size: 0.88rem;
   transition: background var(--transition);
 }
 .btn-top:hover {
-  background: var(--ink-hover);
+  background: var(--accent-hover);
   transform: none;
   box-shadow: none;
 }
@@ -880,15 +914,6 @@ h2 {
 /* ════════════════════════════════════════════════════════
    Utilitários de movimento & marca
    ════════════════════════════════════════════════════════ */
-
-/* Destaque de marca em texto (usado sobre painéis escuros) */
-.grad-text {
-  background: var(--grad-sun);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
 
 /* Revelação ao rolar: subtil e rápida. O JS (useScrollReveal) adiciona
    .reveal-init (esconde) e .in quando o elemento fica visível. */
@@ -928,9 +953,9 @@ h2 {
   to { background-position: 200% center; }
 }
 @keyframes pinPulse {
-  0% { box-shadow: 0 0 0 0 rgba(15, 15, 15, 0.35); }
-  70% { box-shadow: 0 0 0 14px rgba(15, 15, 15, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(15, 15, 15, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(239, 65, 54, 0.4); }
+  70% { box-shadow: 0 0 0 14px rgba(239, 65, 54, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 65, 54, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -991,7 +1016,7 @@ h2 {
 
   .nav-link {
     padding: 12px 16px;
-    font-size: 1rem;
+    font-size: 0.9rem;
     border-radius: var(--radius-md);
     min-height: 48px;
     display: flex;
@@ -1004,9 +1029,12 @@ h2 {
     background: var(--surface-alt);
   }
 
+  /* No menu móvel o item ativo usa um traço de acento à esquerda
+     (em vez do sublinhado fino usado no desktop). */
   .nav-link.active {
     color: var(--text);
     background: var(--surface-alt);
+    box-shadow: inset 3px 0 0 var(--accent);
   }
 
   .nav-link.active::after {
@@ -1259,7 +1287,7 @@ h2 {
   color: var(--text);
   text-decoration: none;
   padding: 7px 14px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-btn);
   border: 1px solid var(--border-strong);
   white-space: nowrap;
   transition: background var(--transition), color var(--transition),
@@ -1267,8 +1295,8 @@ h2 {
   flex-shrink: 0;
 }
 .page-link-btn:hover {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--accent);
+  border-color: var(--accent);
   color: #fff;
 }
 
@@ -1278,7 +1306,7 @@ h2 {
   color: var(--error);
   background: transparent;
   border: 1px solid var(--error-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-btn);
   padding: 7px 14px;
   white-space: nowrap;
   cursor: pointer;

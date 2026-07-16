@@ -633,10 +633,10 @@
   color: var(--text-secondary);
 }
 
-/* Ação primária do painel = amarelo (ver DESIGN_SYSTEM.md · paleta) */
+/* Ação primária do painel = acento vermelho-alaranjado */
 .vd-cta-btn {
   background: var(--secondary);
-  color: var(--ink);
+  color: #fff;
   border: none;
   border-radius: var(--radius-md);
   padding: 8px 20px;
@@ -852,7 +852,7 @@
   background: linear-gradient(
     90deg,
     var(--surface-alt) 25%,
-    #efefef 37%,
+    rgba(255, 255, 255, 0.08) 37%,
     var(--surface-alt) 63%
   );
   background-size: 400% 100%;
@@ -1183,16 +1183,16 @@
   margin-top: 4px;
 }
 
-/* Guardar = ação primária → amarelo com texto ink (10.3:1) */
+/* Guardar = ação primária → acento com texto branco */
 .vd-form-save {
   flex: 1;
   background: var(--secondary);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-btn);
   padding: 11px 24px;
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--ink);
+  color: #fff;
   cursor: pointer;
   min-height: auto;
   box-shadow: none;

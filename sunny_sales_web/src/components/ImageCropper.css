@@ -14,7 +14,7 @@
 }
 
 .cropper-box {
-  background: #fff;
+  background: var(--surface);
   padding: 10px;
   display: flex;
   flex-direction: column;

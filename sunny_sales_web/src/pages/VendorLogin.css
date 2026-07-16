@@ -67,10 +67,10 @@
 .auth-secondary-btn {
   width: 100%;
   padding: 12px 22px;
-  background: var(--surface);
-  color: var(--navy);
+  background: transparent;
+  color: var(--text);
   border: 1px solid var(--border-strong);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-btn);
   font-size: 0.95rem;
   font-weight: 600;
   min-height: 48px;
@@ -82,7 +82,7 @@
 .auth-secondary-btn:hover:not(:disabled) {
   border-color: var(--primary);
   color: var(--primary-dark);
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.04);
   box-shadow: var(--shadow-sm);
   filter: none;
 }
