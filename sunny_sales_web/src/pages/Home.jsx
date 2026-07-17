@@ -3,15 +3,15 @@ import { Link } from 'react-router-dom';
 import {
   FiMapPin,
   FiArrowRight,
-  FiSmartphone,
-  FiZap,
+  FiChevronDown,
 } from 'react-icons/fi';
 import './Home.css';
 
 // (em português) Página inicial / landing da Sunny Sales.
-// Versão "Dark Sport/Premium": fundo azul-petróleo/carvão muito escuro,
-// tipografia bold e acento vermelho-alaranjado nos CTAs e detalhes.
-// O header e o rodapé são geridos em App.jsx.
+// Versão "Oceano / Editorial": fotografia de oceano turquesa em fundo,
+// hero centrado com título gigante branco em caixa alta (estilo editorial
+// de viagens), caixas brancas com texto preto e caixas pretas com texto
+// branco. O header e o rodapé são geridos em App.jsx.
 
 export default function Home() {
   return (
@@ -19,61 +19,38 @@ export default function Home() {
       {/* ══════════════ HERO ══════════════ */}
       <section className="home-hero">
         <div className="home-hero-inner">
-          {/* Coluna do texto */}
-          <div className="hero-copy">
-            <span className="home-hero-badge">
-              <span className="home-hero-badge-dot" aria-hidden="true" />
-              Em tempo real nas praias portuguesas
-            </span>
+          <span className="home-hero-eyebrow">
+            Vendedores de praia em tempo real
+          </span>
 
-            <h1 className="home-hero-title">
-              Os vendedores de praia perto de ti,{' '}
-              <span className="home-hero-accent">em tempo real</span>
-            </h1>
+          <h1 className="home-hero-title">
+            Sunny Sales
+          </h1>
 
-            <p className="home-hero-lead">
-              Encontra gelados, bebidas, bolas de Berlim e muito mais,
-              a poucos passos de ti — sem sair da toalha.
-            </p>
+          <p className="home-hero-lead">
+            Gelados, bebidas e bolas de Berlim a poucos passos da tua
+            toalha — descobre quem está a vender na tua praia, sem
+            instalar nada.
+          </p>
 
-            <div className="hero-actions">
-              <Link to="/map" className="hero-pill hero-pill-primary">
-                <FiMapPin size={18} />
-                Explorar Mapa
-              </Link>
-              <Link to="/como-funciona" className="hero-pill hero-pill-ghost">
-                Como funciona
-                <FiArrowRight size={16} />
-              </Link>
-            </div>
-
-            <div className="hero-facts">
-              <span><FiZap size={13} /> Em tempo real</span>
-              <i aria-hidden="true" />
-              <span><FiMapPin size={13} /> Praias de Portugal</span>
-              <i aria-hidden="true" />
-              <span><FiSmartphone size={13} /> Sem instalar app</span>
-            </div>
+          <div className="hero-actions">
+            <Link to="/map" className="hero-pill hero-pill-primary">
+              <FiMapPin size={18} />
+              Explorar Mapa
+            </Link>
+            <Link to="/como-funciona" className="hero-pill hero-pill-ghost">
+              Como funciona
+              <FiArrowRight size={16} />
+            </Link>
           </div>
+        </div>
 
-          {/* Coluna do mapa (estático, sem animação) */}
-          <div className="hero-visual" aria-hidden="true">
-            <div className="hero-map">
-              <div className="hero-map-live">
-                <span className="hero-map-live-dot" />
-                12 vendedores ativos
-              </div>
-
-              <span className="hero-pin" style={{ top: '34%', left: '28%' }} />
-              <span className="hero-pin hero-pin--accent" style={{ top: '52%', left: '64%' }} />
-              <span className="hero-pin" style={{ top: '68%', left: '40%' }} />
-              <span className="hero-me" style={{ top: '78%', left: '54%' }} />
-            </div>
-          </div>
+        <div className="home-hero-scroll" aria-hidden="true">
+          <FiChevronDown size={22} />
         </div>
       </section>
 
-      {/* ══════════════ STATS ══════════════ */}
+      {/* ══════════════ STATS — caixas brancas ══════════════ */}
       <section className="home-section">
         <div className="home-stats reveal">
           <div className="home-stat">
@@ -95,7 +72,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══════════════ CTA FINAL ══════════════ */}
+      {/* ══════════════ CTA FINAL — caixa preta ══════════════ */}
       <section className="home-section">
         <div className="home-final reveal">
           <h2 className="home-final-title">Pronto para o teu próximo mergulho?</h2>

@@ -23,26 +23,33 @@
 }
 
 /* ════════════════════════════════════════════════════════
-   Sunny Sales — Design System "Dark Sport / Premium"
+   Sunny Sales — Design System "Oceano / Editorial"
+
+   CONCEITO (inspirado em landings de vela/viagens):
+   · O site inteiro assenta sobre uma FOTOGRAFIA de oceano
+     turquesa (vista aérea), fixa, com um véu escuro por
+     cima para garantir contraste.
+   · Texto diretamente sobre a imagem: sempre BRANCO.
+   · Conteúdo em dois tipos de caixas:
+       — pretas (petróleo quase preto) com texto branco →
+         cards, formulários, painéis (--surface);
+       — brancas com texto preto → botões/CTAs e caixas de
+         destaque (usar --accent + --on-accent).
+   · Sem cores decorativas: a paleta é branco/preto sobre o
+     turquesa da fotografia. Azul --blue apenas para links.
 
    PALETA (regras de uso):
-   · Fundos escuros — azul-petróleo/carvão (--bg #10151c) com
-     gradientes subtis até --bg-raised (#1a212b) em heroes e
-     secções de destaque. --surface/--surface-alt para cards.
-   · --secondary / --accent (vermelho-alaranjado #ef4136) —
-     AÇÕES PRIMÁRIAS (CTAs, submissões), sublinhado do item
-     de menu ativo, ícones, badges e pequenos detalhes.
-     Texto sobre o acento: sempre branco (#fff).
-   · --primary é alias do acento (ícones, links, estados
-     ativos) para compatibilidade com os componentes.
-   · Texto: --text (#f5f5f5) para títulos/corpo sobre escuro;
-     --text-secondary (#c9ced6) para parágrafos de apoio.
-     Sobre fundos claros residuais usar --ink-on-light.
-   · --navy — painéis escuros institucionais (ligeiramente
-     mais claros que o fundo, com borda subtil).
+   · --accent / --primary / --secondary = BRANCO. São as
+     "caixas brancas": botões sólidos, badges, destaques.
+     Texto sobre estes fundos: --on-accent (quase preto).
+   · --surface / --surface-alt — caixas pretas translúcidas;
+     texto --text (branco) e --text-secondary.
+   · --bg-* — tons de petróleo escuro (fundo de reserva
+     enquanto a imagem carrega; painéis do mapa).
+   · --blue — links funcionais (turquesa clara).
 
    TIPOGRAFIA (escala única, aplicada em todo o site):
-   · --fs-display  48→64px  Hero da Home (peso 800)
+   · --fs-display  56→120px Hero da Home (peso 800, CAIXA ALTA)
    · --fs-h1       32→44px  Título hero das páginas internas
    · --fs-h2       28→32px  Títulos de secção
    · --fs-h3       20→24px  Subtítulos / cabeçalhos de card
@@ -53,72 +60,74 @@
    · Menu de navegação: uppercase com tracking 0.08em.
 
    BOTÕES: formato pílula (--radius-btn). Primário sólido
-   vermelho-alaranjado com texto branco; secundário outline
-   branco/transparente; hover com leve escurecimento.
+   BRANCO com texto quase preto; secundário outline branco
+   sobre transparente; hover com leve tom frio.
    ════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Acento vermelho-alaranjado (CTA e destaques) ── */
-  --accent: #ef4136;
-  --accent-hover: #d63527;
-  --accent-soft: rgba(239, 65, 54, 0.16);
-  /* Tom claro do acento — texto/ícones de acento sobre fundo escuro */
-  --accent-text: #ff8d84;
+  /* ── Acento = branco (caixas/CTAs brancos) ── */
+  --accent: #ffffff;
+  --accent-hover: #dbe6e9;
+  --accent-soft: rgba(255, 255, 255, 0.16);
+  /* Texto/ícones "de acento" sobre fundo escuro */
+  --accent-text: #ffffff;
+  /* Texto sobre superfícies brancas (botões, badges, caixas claras) */
+  --on-accent: #0d1519;
 
   /* ── Cor primária (alias do acento, compatibilidade) ── */
-  --primary: #ef4136;
-  --primary-hover: #d63527;
-  --primary-dark: #ff8d84;
-  --primary-bright: #ff6f61;
-  --primary-light: rgba(239, 65, 54, 0.12);
-  --primary-light-solid: #271e23;
+  --primary: #ffffff;
+  --primary-hover: #dbe6e9;
+  --primary-dark: #ffffff;
+  --primary-bright: #ffffff;
+  --primary-light: rgba(255, 255, 255, 0.14);
+  --primary-light-solid: #1e2c33;
 
   /* ── Ação primária (CTAs sólidos) ── */
-  --secondary: #ef4136;
-  --secondary-hover: #d63527;
-  --secondary-light: rgba(239, 65, 54, 0.18);
+  --secondary: #ffffff;
+  --secondary-hover: #dbe6e9;
+  --secondary-light: rgba(255, 255, 255, 0.16);
 
-  /* Tons legados de amarelo — remapeados para o acento */
-  --gold: #ef4136;
-  --gold-strong: #ffb3ab;
-  --amber: #ef4136;
-  --amber-strong: #ffb3ab;
-  --coral: #ef4136;
+  /* Tons legados de amarelo — remapeados para branco */
+  --gold: #ffffff;
+  --gold-strong: #ffffff;
+  --amber: #ffffff;
+  --amber-strong: #ffffff;
+  --coral: #ffffff;
 
   /* ── Aliases de azul/teal (links funcionais, mapa) ── */
-  --blue: #5cc0d4;
-  --blue-hover: #86d3e2;
-  --teal: #5cc0d4;
-  --teal-strong: #86d3e2;
-  --teal-light: rgba(92, 192, 212, 0.12);
-  --sky: #5cc0d4;
+  --blue: #7fd8e4;
+  --blue-hover: #a8e5ed;
+  --teal: #7fd8e4;
+  --teal-strong: #a8e5ed;
+  --teal-light: rgba(127, 216, 228, 0.14);
+  --sky: #7fd8e4;
 
-  /* ── "Ink" (botões sólidos de navegação → acento) ── */
-  --ink: #ef4136;
-  --ink-hover: #d63527;
-  /* Texto escuro para eventuais fundos claros residuais */
-  --ink-on-light: #151b22;
+  /* ── "Ink" (botões sólidos de navegação → branco) ── */
+  --ink: #ffffff;
+  --ink-hover: #dbe6e9;
+  /* Texto escuro para fundos claros (caixas brancas) */
+  --ink-on-light: #0d1519;
   /* ── Painéis escuros institucionais ── */
-  --navy: #151d27;
-  --navy-light: #1c2531;
-  --navy-border: rgba(255, 255, 255, 0.12);
+  --navy: #0d1a20;
+  --navy-light: #13232b;
+  --navy-border: rgba(255, 255, 255, 0.14);
 
-  /* ── Superfícies (tons escuros de azul-petróleo/carvão) ── */
-  --bg-deep: #0b0f15;
-  --bg: #10151c;
-  --bg-raised: #1a212b;
-  --surface: #1a212b;
-  --surface-alt: #232d3a;
-  --surface-warm: #1a212b;
+  /* ── Superfícies: caixas pretas (petróleo quase preto) ── */
+  --bg-deep: #04141a;
+  --bg: #061a21;
+  --bg-raised: #0b222b;
+  --surface: rgba(6, 18, 23, 0.88);
+  --surface-alt: rgba(20, 38, 46, 0.92);
+  --surface-warm: rgba(6, 18, 23, 0.88);
 
-  /* ── Texto (todos AA sobre --bg/--surface) ── */
-  --text: #f5f5f5;
-  --text-secondary: #c9ced6;
-  --text-muted: #98a2ae;
+  /* ── Texto (todos AA sobre --bg/--surface e sobre a foto c/ véu) ── */
+  --text: #ffffff;
+  --text-secondary: #cddade;
+  --text-muted: #9db1b7;
 
   /* ── Bordas (subtis sobre escuro) ── */
-  --border: #262f3a;
-  --border-strong: #364253;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.24);
 
   /* ── Cores semânticas (só em contexto funcional) ── */
   --success: #4ade80;
@@ -132,25 +141,25 @@
   --error-border: rgba(248, 113, 113, 0.4);
   --danger: #f87171;
 
-  /* ── Gradientes legados — achatados para o acento ── */
-  --grad-sun: linear-gradient(135deg, #ef4136, #ef4136);
-  --grad-gold: linear-gradient(135deg, #ef4136, #ef4136);
-  --grad-sea: linear-gradient(135deg, #5cc0d4, #5cc0d4);
-  --grad-dusk: linear-gradient(135deg, #ef4136, #ef4136);
+  /* ── Gradientes legados — achatados para branco/turquesa ── */
+  --grad-sun: linear-gradient(135deg, #ffffff, #ffffff);
+  --grad-gold: linear-gradient(135deg, #ffffff, #ffffff);
+  --grad-sea: linear-gradient(135deg, #7fd8e4, #7fd8e4);
+  --grad-dusk: linear-gradient(135deg, #ffffff, #ffffff);
   /* Painéis escuros: gradiente subtil entre dois tons do fundo */
-  --grad-dark: linear-gradient(155deg, #1a212b 0%, #10151c 100%);
+  --grad-dark: linear-gradient(155deg, rgba(11, 34, 43, 0.94) 0%, rgba(5, 16, 21, 0.94) 100%);
 
-  /* ── Sombras (profundas, para fundo escuro) ── */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 2px 8px rgba(0, 0, 0, 0.3), 0 12px 36px rgba(0, 0, 0, 0.45);
+  /* ── Sombras (profundas, para assentar caixas na foto) ── */
+  --shadow-xs: 0 1px 2px rgba(0, 10, 14, 0.35);
+  --shadow-sm: 0 1px 2px rgba(0, 10, 14, 0.35), 0 2px 8px rgba(0, 10, 14, 0.3);
+  --shadow-md: 0 10px 34px rgba(0, 12, 16, 0.45);
+  --shadow-lg: 0 2px 8px rgba(0, 10, 14, 0.35), 0 16px 44px rgba(0, 12, 16, 0.55);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
-  --shadow-primary: 0 8px 24px -12px rgba(239, 65, 54, 0.45);
-  --shadow-ink: 0 8px 24px -12px rgba(239, 65, 54, 0.45);
-  --shadow-gold: 0 8px 24px -12px rgba(239, 65, 54, 0.45);
-  --shadow-accent: 0 10px 28px -12px rgba(239, 65, 54, 0.55);
+  --shadow-primary: 0 10px 28px -14px rgba(0, 12, 16, 0.7);
+  --shadow-ink: 0 10px 28px -14px rgba(0, 12, 16, 0.7);
+  --shadow-gold: 0 10px 28px -14px rgba(0, 12, 16, 0.7);
+  --shadow-accent: 0 12px 32px -14px rgba(0, 12, 16, 0.75);
 
   /* ── Raios (contidos; botões em pílula) ── */
   --radius-xs: 8px;
@@ -182,8 +191,8 @@
   --space-2xl: 48px;
   --section-pad: clamp(4rem, 8vw, 7rem);
 
-  /* ── Foco visível (teclado): acento claro, ≥3:1 sobre escuro ── */
-  --focus-ring: #ff8d84;
+  /* ── Foco visível (teclado): branco, ≥3:1 sobre escuro ── */
+  --focus-ring: #ffffff;
 
   /* ── Movimento (200ms, ease-out, nada mais) ── */
   --transition: 0.2s cubic-bezier(0, 0, 0.2, 1);
@@ -219,7 +228,8 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--bg);
+  /* Cor de reserva enquanto a fotografia carrega */
+  background-color: var(--bg-deep);
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
@@ -228,9 +238,43 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Fotografia de oceano fixa atrás de todo o site + véu escuro por cima
+   (garante contraste AA do texto branco em qualquer zona da imagem).
+   Pseudo-elemento fixo em vez de background-attachment: fixed, que o
+   iOS Safari não suporta. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(3, 14, 18, 0.44) 0%,
+      rgba(3, 14, 18, 0.26) 26%,
+      rgba(3, 14, 18, 0.3) 62%,
+      rgba(2, 11, 15, 0.52) 100%
+    ),
+    url('/ocean-bg.webp') center / cover no-repeat;
+}
+
+@media (max-width: 768px) {
+  body::before {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(3, 14, 18, 0.5) 0%,
+        rgba(3, 14, 18, 0.34) 26%,
+        rgba(3, 14, 18, 0.38) 62%,
+        rgba(2, 11, 15, 0.58) 100%
+      ),
+      url('/ocean-bg-mobile.webp') center / cover no-repeat;
+  }
+}
+
 ::selection {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 /* Scrollbar fina e neutra */
@@ -268,7 +312,7 @@ body {
   left: 12px;
   z-index: 2000;
   background: var(--ink);
-  color: #fff;
+  color: var(--on-accent);
   font-size: 0.875rem;
   font-weight: 600;
   padding: 12px 18px;
@@ -302,8 +346,11 @@ body {
   display: flex;
   align-items: center;
   padding: 0 28px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
+  /* Caixa preta translúcida sobre a fotografia */
+  background: rgba(4, 15, 19, 0.82);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: none;
   z-index: 1100;
   gap: 16px;
@@ -311,17 +358,19 @@ body {
     background var(--transition);
 }
 
-/* Ao rolar: encolhe ligeiramente. Sem blur nem sombras. */
+/* Ao rolar: encolhe ligeiramente. */
 .navbar.navbar--scrolled {
   height: var(--navbar-h-scrolled);
-  border-bottom-color: var(--border);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 .navbar--scrolled .nav-logo-img { height: 30px; }
 
-/* No topo da página inicial o header é transparente sobre o hero escuro:
-   funde-se com o gradiente e só ganha fundo ao rolar. */
+/* No topo da página inicial o header é transparente sobre a fotografia
+   (como no design de referência) e só ganha fundo ao rolar. */
 .navbar.navbar--home {
   background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   border-bottom-color: transparent;
   box-shadow: none;
 }
@@ -452,7 +501,7 @@ body {
   align-items: center;
   gap: 7px;
   text-decoration: none;
-  color: #fff;
+  color: var(--on-accent);
   font-size: 0.85rem;
   font-weight: 600;
   white-space: nowrap;
@@ -539,7 +588,7 @@ body {
 
 button {
   --btn-bg: var(--accent);
-  --btn-color: #fff;
+  --btn-color: var(--on-accent);
   box-sizing: border-box;
   border: none;
   border-radius: var(--radius-btn);
@@ -590,7 +639,7 @@ button:disabled {
 
 .black-button {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 /* ── Forms ───────────────────────────────────────────── */
@@ -725,7 +774,7 @@ button:disabled {
   width: 100%;
   padding: 13px 22px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   border: none;
   border-radius: var(--radius-btn);
   font-family: 'Inter', system-ui, sans-serif;
@@ -803,7 +852,7 @@ button:disabled {
 
 .apple-login-button {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   border: none;
 }
 .apple-login-button:hover {
@@ -819,7 +868,7 @@ button:disabled {
   border-color: var(--text-muted);
 }
 
-.apple-icon { color: #fff; font-size: 18px; }
+.apple-icon { color: var(--on-accent); font-size: 18px; }
 .google-icon { color: var(--text); font-size: 18px; }
 
 /* ── Toggle ──────────────────────────────────────────── */
@@ -859,6 +908,7 @@ input[type='checkbox'] {
 
 .theme-checkbox:checked::before {
   left: calc(100% - 1.5em - 0.25em);
+  background: var(--on-accent);
 }
 
 .theme-checkbox:checked {
@@ -882,7 +932,7 @@ h2 {
 
 .btn-top {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   padding: 9px 20px;
   border-radius: var(--radius-btn);
   text-decoration: none;
@@ -953,9 +1003,9 @@ h2 {
   to { background-position: 200% center; }
 }
 @keyframes pinPulse {
-  0% { box-shadow: 0 0 0 0 rgba(239, 65, 54, 0.4); }
-  70% { box-shadow: 0 0 0 14px rgba(239, 65, 54, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(239, 65, 54, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.45); }
+  70% { box-shadow: 0 0 0 14px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1000,7 +1050,9 @@ h2 {
     width: 100%;
     flex-direction: column;
     align-items: stretch;
-    background: var(--surface);
+    background: rgba(4, 15, 19, 0.92);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border);
     border-radius: 0 0 var(--radius-lg) var(--radius-lg);
     box-shadow: var(--shadow-md);
@@ -1297,7 +1349,7 @@ h2 {
 .page-link-btn:hover {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .page-danger-btn {

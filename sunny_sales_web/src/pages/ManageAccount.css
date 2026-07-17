@@ -295,7 +295,7 @@
 .ma-product-chip.selected {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: var(--on-accent);
   box-shadow: var(--shadow-warm);
 }
 
@@ -374,14 +374,14 @@
 .ma-payment-chip.active {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: var(--on-accent);
   box-shadow: var(--shadow-warm);
 }
 
 .ma-payment-chip.active:hover {
   background: var(--primary-hover);
   border-color: var(--primary-hover);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .ma-payment-icon {
@@ -405,7 +405,7 @@
 
 .ma-save-btn {
   background: var(--primary);
-  color: #fff;
+  color: var(--on-accent);
   border: none;
   border-radius: var(--radius-md);
   padding: 14px 32px;

@@ -121,8 +121,7 @@
 .pv-plan-card--highlight:hover {
   border-color: var(--secondary);
   transform: translateY(-8px);
-  box-shadow: 0 0 0 4px var(--secondary-light), var(--shadow-lg),
-    0 16px 40px -18px rgba(239, 65, 54, 0.45);
+  box-shadow: 0 0 0 4px var(--secondary-light), var(--shadow-lg);
 }
 
 .pv-plan-badge {
@@ -131,7 +130,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: var(--secondary);
-  color: #fff;
+  color: var(--on-accent);
   font-size: 0.75rem;
   font-weight: 600;
   padding: 6px 16px;
@@ -263,7 +262,7 @@
 .pv-plan-cta:hover {
   background: var(--ink);
   border-color: var(--ink);
-  color: white;
+  color: var(--on-accent);
   transform: none;
   box-shadow: none;
   filter: none;
@@ -272,13 +271,13 @@
 .pv-plan-cta--highlight {
   background: var(--secondary);
   border-color: var(--secondary);
-  color: #fff;
+  color: var(--on-accent);
   box-shadow: var(--shadow-accent);
 }
 .pv-plan-cta--highlight:hover {
   background: var(--secondary-hover);
   border-color: var(--secondary-hover);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 /* ── Compare note ──────────────────────────────────────── */
@@ -359,7 +358,7 @@
 }
 .pv-cta-btn--primary {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 .pv-cta-btn--primary:hover {
   background: var(--accent-hover);

@@ -114,7 +114,7 @@
   border: none;
   border-radius: var(--radius-btn);
   background: var(--secondary);
-  color: #fff;
+  color: var(--on-accent);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
