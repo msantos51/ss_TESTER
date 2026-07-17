@@ -247,7 +247,7 @@
 
 .pw-receipt-btn:hover {
   background: var(--primary);
-  color: #fff;
+  color: var(--on-accent);
   box-shadow: var(--shadow-warm);
 }
 

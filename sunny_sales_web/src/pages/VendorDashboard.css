@@ -157,7 +157,7 @@
   padding: 10px 20px;
   font-size: 0.85rem;
   font-weight: 500;
-  color: #fff;
+  color: var(--on-accent);
   cursor: pointer;
   min-height: auto;
   box-shadow: none;
@@ -455,7 +455,7 @@
   background: var(--primary-dark);
   border-radius: var(--radius-xl);
   padding: 28px 24px 24px;
-  color: white;
+  color: var(--on-accent);
   text-align: left;
   position: relative;
   overflow: hidden;
@@ -482,7 +482,7 @@
   font-size: clamp(1.45rem, 4vw, 1.9rem);
   font-weight: 700;
   margin: 0 0 8px;
-  color: white;
+  color: var(--on-accent);
   letter-spacing: -0.5px;
   position: relative;
   z-index: 1;
@@ -513,11 +513,11 @@
   gap: 7px;
   padding: 5px 14px 5px 10px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(13, 21, 25, 0.06);
+  border: 1px solid rgba(13, 21, 25, 0.16);
   font-size: 0.78rem;
   font-weight: 700;
-  color: white;
+  color: var(--on-accent);
 }
 
 .vd-hero-chip-dot {
@@ -525,7 +525,7 @@
   height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(13, 21, 25, 0.3);
 }
 
 .vd-hero-chip.on .vd-hero-chip-dot {
@@ -636,7 +636,7 @@
 /* Ação primária do painel = acento vermelho-alaranjado */
 .vd-cta-btn {
   background: var(--secondary);
-  color: #fff;
+  color: var(--on-accent);
   border: none;
   border-radius: var(--radius-md);
   padding: 8px 20px;
@@ -1153,7 +1153,7 @@
 .vd-form-payment-chip.active {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .vd-form-payment-chip:hover {
@@ -1192,7 +1192,7 @@
   padding: 11px 24px;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--on-accent);
   cursor: pointer;
   min-height: auto;
   box-shadow: none;

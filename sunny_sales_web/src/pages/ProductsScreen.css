@@ -150,7 +150,7 @@
   justify-content: center;
   gap: 6px;
   background: var(--primary);
-  color: white;
+  color: var(--on-accent);
   border: none;
   border-radius: var(--radius-md);
   padding: 13px 18px;
@@ -326,7 +326,7 @@
 .ps-edit-save {
   background: var(--primary);
   border: none;
-  color: white;
+  color: var(--on-accent);
 }
 
 .ps-edit-cancel:disabled,

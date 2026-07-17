@@ -58,7 +58,7 @@
 }
 
 .notfound-btn-primary {
-  color: #fff;
+  color: var(--on-accent);
   background: var(--ink);
   box-shadow: var(--shadow-sm);
 }

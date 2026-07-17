@@ -32,14 +32,14 @@
 .vr-progress-circle.active {
   background: var(--ink);
   border-color: transparent;
-  color: #fff;
+  color: var(--on-accent);
   box-shadow: none;
 }
 
 .vr-progress-circle.completed {
   background: var(--primary);
   border-color: transparent;
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .vr-progress-label {

@@ -401,7 +401,7 @@
   min-width: 42px;
   border-radius: 50%;
   background: var(--primary);
-  color: #fff;
+  color: var(--on-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -520,7 +520,7 @@
   gap: 8px;
   margin-top: 16px;
   background: var(--secondary);
-  color: #fff;
+  color: var(--on-accent);
   font-weight: 600;
   font-size: 0.92rem;
   padding: 12px 26px;
@@ -579,7 +579,7 @@
   align-items: center;
   gap: 8px;
   background: var(--secondary);
-  color: #fff;
+  color: var(--on-accent);
   font-weight: 600;
   font-size: 0.95rem;
   padding: 13px 28px;

@@ -142,7 +142,7 @@
 .ss-period-btn.active {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: var(--on-accent);
   box-shadow: var(--shadow-warm);
 }
 

@@ -5,8 +5,11 @@
   left: 0;
   width: 100%;
   overflow: hidden;
-  background: var(--surface, #ffffff);
-  border-top: 1px solid var(--border, #ececec);
+  /* Caixa preta translúcida sobre a fotografia (par do header) */
+  background: rgba(4, 15, 19, 0.82);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
