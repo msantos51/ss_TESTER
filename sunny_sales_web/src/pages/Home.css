@@ -40,6 +40,10 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.65));
+  padding: 40px 30px;
+  border-radius: 12px;
+  color: #ffffff;
 }
 
 /* Eyebrow: linha pequena teal com tracking largo por cima do título */
@@ -49,7 +53,7 @@
   letter-spacing: 0.34em;
   text-indent: 0.34em; /* compensa o tracking para centrar oticamente */
   text-transform: uppercase;
-  color: var(--primary);
+  color: #ffffff;
   margin-bottom: clamp(14px, 2.5vw, 26px);
   animation: heroRise 0.7s var(--ease-out) both;
 }
@@ -63,7 +67,7 @@
   line-height: 0.98;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: var(--text);
+  color: #ffffff;
   white-space: nowrap;
   animation: heroRise 0.7s 0.08s var(--ease-out) both;
 }
@@ -74,8 +78,9 @@
   font-size: var(--fs-lead);
   line-height: 1.6;
   font-weight: 400;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.9);
   text-wrap: pretty;
+  text-align: justify;
   animation: heroRise 0.7s 0.16s var(--ease-out) both;
 }
 
@@ -195,7 +200,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text);
-  text-align: center;
+  text-align: justify;
   border-radius: var(--radius-lg);
   padding: 28px 20px;
   box-shadow: var(--shadow-sm);
