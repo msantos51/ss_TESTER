@@ -64,52 +64,52 @@
    ════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Acento = teal (verde-água da marca) ── */
-  --accent: #2b7c6d;
-  --accent-hover: #236457;
-  --accent-soft: rgba(43, 124, 109, 0.12);
+  /* ── Acento = teal/cyan (#199fb1) ── */
+  --accent: #199fb1;
+  --accent-hover: #147a8f;
+  --accent-soft: rgba(25, 159, 177, 0.12);
   /* Ícones/realces "de acento" sobre fundo claro */
-  --accent-text: #2b7c6d;
+  --accent-text: #199fb1;
   /* Texto sobre superfícies teal (botões, badges, blocos) */
   --on-accent: #ffffff;
 
   /* ── Cor primária (alias do acento, compatibilidade) ── */
-  --primary: #2b7c6d;
-  --primary-hover: #236457;
-  --primary-dark: #1e5a4f;
-  --primary-bright: #3aa08d;
-  --primary-light: rgba(43, 124, 109, 0.1);
-  --primary-light-solid: #e6f1ee;
+  --primary: #199fb1;
+  --primary-hover: #147a8f;
+  --primary-dark: #0d5a6d;
+  --primary-bright: #2fb8c6;
+  --primary-light: rgba(25, 159, 177, 0.1);
+  --primary-light-solid: #e0f7fb;
 
   /* ── Ação primária (CTAs sólidos) ── */
-  --secondary: #2b7c6d;
-  --secondary-hover: #236457;
-  --secondary-light: rgba(43, 124, 109, 0.12);
+  --secondary: #199fb1;
+  --secondary-hover: #147a8f;
+  --secondary-light: rgba(25, 159, 177, 0.12);
 
-  /* Tons legados de amarelo — remapeados para teal */
-  --gold: #2b7c6d;
-  --gold-strong: #1e5a4f;
-  --amber: #2b7c6d;
-  --amber-strong: #1e5a4f;
-  --coral: #2b7c6d;
+  /* Tons legados de amarelo — remapeados para cyan */
+  --gold: #199fb1;
+  --gold-strong: #0d5a6d;
+  --amber: #199fb1;
+  --amber-strong: #0d5a6d;
+  --coral: #199fb1;
 
   /* ── Aliases de azul/teal (links funcionais, mapa) ── */
-  --blue: #1d6a5c;
-  --blue-hover: #14574b;
-  --teal: #1d6a5c;
-  --teal-strong: #14574b;
-  --teal-light: rgba(43, 124, 109, 0.12);
-  --sky: #1d6a5c;
+  --blue: #147a8f;
+  --blue-hover: #0d5a6d;
+  --teal: #147a8f;
+  --teal-strong: #0d5a6d;
+  --teal-light: rgba(25, 159, 177, 0.12);
+  --sky: #147a8f;
 
-  /* ── "Ink" (botões sólidos de navegação → teal) ── */
-  --ink: #2b7c6d;
-  --ink-hover: #236457;
+  /* ── "Ink" (botões sólidos de navegação → cyan) ── */
+  --ink: #199fb1;
+  --ink-hover: #147a8f;
   /* Texto escuro para fundos claros */
   --ink-on-light: #1b2c33;
-  /* ── Painéis institucionais (agora teal escuro) ── */
-  --navy: #1e5a4f;
-  --navy-light: #236457;
-  --navy-border: rgba(30, 90, 79, 0.2);
+  /* ── Painéis institucionais (agora cyan escuro) ── */
+  --navy: #0d5a6d;
+  --navy-light: #147a8f;
+  --navy-border: rgba(13, 90, 109, 0.2);
 
   /* ── Superfícies: fundo branco e cartões claros ── */
   --bg-deep: #f1f5f4;
@@ -140,13 +140,13 @@
   --error-border: rgba(185, 28, 28, 0.35);
   --danger: #b91c1c;
 
-  /* ── Gradientes legados — achatados para teal ── */
-  --grad-sun: linear-gradient(135deg, #2b7c6d, #2b7c6d);
-  --grad-gold: linear-gradient(135deg, #2b7c6d, #2b7c6d);
-  --grad-sea: linear-gradient(135deg, #2b7c6d, #1e5a4f);
-  --grad-dusk: linear-gradient(135deg, #2b7c6d, #2b7c6d);
-  /* Blocos de destaque: gradiente teal (texto branco por cima) */
-  --grad-dark: linear-gradient(155deg, #2b7c6d 0%, #1e5a4f 100%);
+  /* ── Gradientes legados — achatados para cyan ── */
+  --grad-sun: linear-gradient(135deg, #199fb1, #199fb1);
+  --grad-gold: linear-gradient(135deg, #199fb1, #199fb1);
+  --grad-sea: linear-gradient(135deg, #199fb1, #0d5a6d);
+  --grad-dusk: linear-gradient(135deg, #199fb1, #199fb1);
+  /* Blocos de destaque: gradiente cyan (texto branco por cima) */
+  --grad-dark: linear-gradient(155deg, #199fb1 0%, #0d5a6d 100%);
 
   /* ── Sombras (suaves, tema claro) ── */
   --shadow-xs: 0 1px 2px rgba(20, 45, 52, 0.06);
@@ -155,10 +155,10 @@
   --shadow-lg: 0 2px 8px rgba(20, 45, 52, 0.06), 0 18px 44px rgba(20, 45, 52, 0.14);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
-  --shadow-primary: 0 10px 24px -12px rgba(43, 124, 109, 0.45);
-  --shadow-ink: 0 10px 24px -12px rgba(43, 124, 109, 0.45);
-  --shadow-gold: 0 10px 24px -12px rgba(43, 124, 109, 0.45);
-  --shadow-accent: 0 12px 28px -12px rgba(43, 124, 109, 0.5);
+  --shadow-primary: 0 10px 24px -12px rgba(25, 159, 177, 0.45);
+  --shadow-ink: 0 10px 24px -12px rgba(25, 159, 177, 0.45);
+  --shadow-gold: 0 10px 24px -12px rgba(25, 159, 177, 0.45);
+  --shadow-accent: 0 12px 28px -12px rgba(25, 159, 177, 0.5);
 
   /* ── Raios (contidos; botões em pílula) ── */
   --radius-xs: 8px;
@@ -190,8 +190,8 @@
   --space-2xl: 48px;
   --section-pad: clamp(4rem, 8vw, 7rem);
 
-  /* ── Foco visível (teclado): teal escuro, ≥3:1 sobre branco ── */
-  --focus-ring: #1d6a5c;
+  /* ── Foco visível (teclado): cyan escuro, ≥3:1 sobre branco ── */
+  --focus-ring: #147a8f;
 
   /* ── Movimento (200ms, ease-out, nada mais) ── */
   --transition: 0.2s cubic-bezier(0, 0, 0.2, 1);

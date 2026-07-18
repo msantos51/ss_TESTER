@@ -2,7 +2,7 @@
   width: 100%;
   border-radius: var(--radius-lg, 16px);
   overflow: hidden;
-  background: var(--surface, #ffffff);
+  background: #ffd966;
   color: var(--text, #0f0f0f);
   border: 1px solid var(--border, #ececec);
   box-shadow: var(--shadow-md, 0 8px 30px rgba(0, 0, 0, 0.04));

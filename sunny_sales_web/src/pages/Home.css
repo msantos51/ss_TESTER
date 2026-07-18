@@ -28,6 +28,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%25" style="stop-color:%23199fb1;stop-opacity:1" /><stop offset="100%25" style="stop-color:%230d5a6d;stop-opacity:1" /></linearGradient></defs><rect fill="url(%23grad)" width="1200" height="800"/><path fill-opacity="0.1" fill="white" d="M0,400 Q300,300 600,400 T1200,400 L1200,800 L0,800 Z"></path></svg>');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 .home-hero-inner {
@@ -42,19 +46,19 @@
   text-align: center;
 }
 
-/* Eyebrow: linha pequena teal com tracking largo por cima do título */
+/* Eyebrow: linha pequena branca com tracking largo por cima do título */
 .home-hero-eyebrow {
   font-size: clamp(0.8125rem, 1.4vw, 1rem);
   font-weight: 600;
   letter-spacing: 0.34em;
   text-indent: 0.34em; /* compensa o tracking para centrar oticamente */
   text-transform: uppercase;
-  color: var(--primary);
+  color: #ffffff;
   margin-bottom: clamp(14px, 2.5vw, 26px);
   animation: heroRise 0.7s var(--ease-out) both;
 }
 
-/* Título gigante em caixa alta, petróleo escuro sobre branco */
+/* Título gigante em caixa alta, branco sobre fundo de gradiente */
 .home-hero-title {
   margin: 0;
   font-family: var(--font-display);
@@ -63,7 +67,7 @@
   line-height: 0.98;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: var(--text);
+  color: #ffffff;
   white-space: nowrap;
   animation: heroRise 0.7s 0.08s var(--ease-out) both;
 }
@@ -74,7 +78,7 @@
   font-size: var(--fs-lead);
   line-height: 1.6;
   font-weight: 400;
-  color: var(--text-secondary);
+  color: #ffffff;
   text-wrap: pretty;
   animation: heroRise 0.7s 0.16s var(--ease-out) both;
 }
@@ -147,7 +151,7 @@
   position: absolute;
   bottom: calc(var(--footer-h) + 18px);
   left: 50%;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.6);
   line-height: 0;
   animation: scrollNudge 2.2s ease-in-out infinite;
 }
@@ -195,7 +199,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text);
-  text-align: center;
+  text-align: justify;
   border-radius: var(--radius-lg);
   padding: 28px 20px;
   box-shadow: var(--shadow-sm);
