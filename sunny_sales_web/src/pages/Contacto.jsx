@@ -3,10 +3,6 @@ import { FiMail, FiSend, FiCheckCircle, FiUser, FiMessageSquare } from 'react-ic
 import { BASE_URL } from '../config';
 import './InfoPage.css';
 import './Contacto.css';
-import HeroImage from '../components/HeroImage';
-
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1471922694854-ff1b63b20054';
 
 const ASSUNTOS = [
   'Informação geral',
@@ -109,25 +105,19 @@ export default function Contacto() {
   return (
     <div className="info-page">
 
-      <div className="info-hero info-hero--media">
-        <div className="info-hero-content">
-          <h1 className="info-hero-title">
-            Fala Connosco
-          </h1>
-          <p className="info-hero-lead">
-            Tens alguma questão, sugestão ou queres saber mais sobre o Sunny Sales?
-            Preenche o formulário abaixo e entraremos em contacto contigo.
-          </p>
+      <div className="info-hero">
+        <h1 className="info-hero-title">
+          Fala Connosco
+        </h1>
+        <p className="info-hero-lead">
+          Tens alguma questão, sugestão ou queres saber mais sobre o Sunny Sales?
+          Preenche o formulário abaixo e entraremos em contacto contigo.
+        </p>
 
-          <div className="info-badges">
-            <div className="info-badge info-badge-sky"><FiMail size={13} /> sunnysales.geral@gmail.com</div>
-            <div className="info-badge info-badge-sky">Resposta em 24–48 h</div>
-            <div className="info-badge info-badge-sky">Segunda a Sexta</div>
-          </div>
-        </div>
-
-        <div className="info-hero-media">
-          <HeroImage src={HERO_IMAGE} alt="Horizonte do oceano num dia de sol" />
+        <div className="info-badges">
+          <div className="info-badge info-badge-sky"><FiMail size={13} /> sunnysales.geral@gmail.com</div>
+          <div className="info-badge info-badge-sky">Resposta em 24–48 h</div>
+          <div className="info-badge info-badge-sky">Segunda a Sexta</div>
         </div>
       </div>
 

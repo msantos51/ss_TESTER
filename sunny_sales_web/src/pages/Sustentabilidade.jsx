@@ -3,10 +3,6 @@ import { MdDelete, MdRecycling, MdWaves, MdCleaningServices, MdWbSunny, MdLocalD
 import { FiHeart } from 'react-icons/fi';
 import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
-import HeroImage from '../components/HeroImage';
-
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e';
 
 export default function Sustentabilidade() {
   const items = [
@@ -35,32 +31,26 @@ export default function Sustentabilidade() {
   return (
     <div className="info-page">
 
-      <div className="info-hero green info-hero--media">
-        <div className="info-hero-content">
-          <h1 className="info-hero-title">
-            Praia Sustentável
-          </h1>
-          <p className="info-hero-lead">
-            Acreditamos que o futuro do comércio de praia deve ser mais{' '}
-            <strong>eficiente, consciente e ecológico</strong>. Cada decisão conta para
-            um litoral mais saudável e praias mais limpas.
-          </p>
+      <div className="info-hero green">
+        <h1 className="info-hero-title">
+          Praia Sustentável
+        </h1>
+        <p className="info-hero-lead">
+          Acreditamos que o futuro do comércio de praia deve ser mais{' '}
+          <strong>eficiente, consciente e ecológico</strong>. Cada decisão conta para
+          um litoral mais saudável e praias mais limpas.
+        </p>
 
-          <div className="info-badges">
-            <div className="info-badge">
-              <MdDelete /> Emissões reduzidas
-            </div>
-            <div className="info-badge">
-              <MdRecycling /> Embalagens eco-friendly
-            </div>
-            <div className="info-badge">
-              <MdWaves /> Praias mais limpas
-            </div>
+        <div className="info-badges">
+          <div className="info-badge">
+            <MdDelete /> Emissões reduzidas
           </div>
-        </div>
-
-        <div className="info-hero-media">
-          <HeroImage src={HERO_IMAGE} alt="Praia de águas cristalinas e areia limpa" />
+          <div className="info-badge">
+            <MdRecycling /> Embalagens eco-friendly
+          </div>
+          <div className="info-badge">
+            <MdWaves /> Praias mais limpas
+          </div>
         </div>
       </div>
 

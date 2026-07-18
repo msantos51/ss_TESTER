@@ -1,11 +1,11 @@
 /* ══════════════════════════════════════════════════════════
-   Sunny Sales — Landing "Oceano / Editorial"
-   A fotografia de oceano é o fundo global do site (index.css);
-   o hero ocupa o primeiro ecrã inteiro e centra o texto branco
-   sobre ela, ao estilo dos posters de viagens: eyebrow com
-   tracking largo + título gigante em caixa alta + CTAs em
-   pílula. Por baixo, caixas brancas (texto preto) e uma caixa
-   preta (texto branco) apresentam o produto.
+   Sunny Sales — Landing "Areia Branca / Teal"
+   Fundo branco em todo o site (index.css); o hero ocupa o
+   primeiro ecrã inteiro e centra o texto escuro sobre branco:
+   eyebrow teal com tracking largo + título gigante em caixa
+   alta + CTAs em pílula (primário teal). Por baixo, cartões
+   brancos com borda suave e um bloco final teal com texto
+   branco apresentam o produto.
    ══════════════════════════════════════════════════════════ */
 
 .home {
@@ -42,21 +42,19 @@
   text-align: center;
 }
 
-/* Eyebrow: linha pequena com tracking largo por cima do título,
-   como o "OUR NEW ADVENTURES" do design de referência */
+/* Eyebrow: linha pequena teal com tracking largo por cima do título */
 .home-hero-eyebrow {
   font-size: clamp(0.8125rem, 1.4vw, 1rem);
   font-weight: 600;
   letter-spacing: 0.34em;
   text-indent: 0.34em; /* compensa o tracking para centrar oticamente */
   text-transform: uppercase;
-  color: #fff;
-  text-shadow: 0 1px 24px rgba(2, 20, 26, 0.45);
+  color: var(--primary);
   margin-bottom: clamp(14px, 2.5vw, 26px);
   animation: heroRise 0.7s var(--ease-out) both;
 }
 
-/* Título gigante em caixa alta, branco puro sobre a água */
+/* Título gigante em caixa alta, petróleo escuro sobre branco */
 .home-hero-title {
   margin: 0;
   font-family: var(--font-display);
@@ -65,9 +63,8 @@
   line-height: 0.98;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--text);
   white-space: nowrap;
-  text-shadow: 0 4px 60px rgba(2, 20, 26, 0.5);
   animation: heroRise 0.7s 0.08s var(--ease-out) both;
 }
 
@@ -77,8 +74,7 @@
   font-size: var(--fs-lead);
   line-height: 1.6;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.94);
-  text-shadow: 0 1px 20px rgba(2, 20, 26, 0.5);
+  color: var(--text-secondary);
   text-wrap: pretty;
   animation: heroRise 0.7s 0.16s var(--ease-out) both;
 }
@@ -117,9 +113,9 @@
   outline-offset: 3px;
 }
 
-/* CTA principal — caixa branca com texto quase preto */
+/* CTA principal — pílula teal com texto branco */
 .hero-pill-primary {
-  background: #fff;
+  background: var(--accent);
   color: var(--on-accent);
   border: none;
   box-shadow: var(--shadow-accent);
@@ -129,17 +125,15 @@
   transform: translateY(-1px);
 }
 
-/* Botão secundário — contorno branco sobre a fotografia */
+/* Botão secundário — contorno cinzento sobre branco */
 .hero-pill-ghost {
-  background: rgba(5, 18, 23, 0.26);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  color: #fff;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text);
 }
 .hero-pill-ghost:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: #fff;
+  background: var(--surface-alt);
+  border-color: var(--text-muted);
 }
 
 .hero-pill-lg {
@@ -153,7 +147,7 @@
   position: absolute;
   bottom: calc(var(--footer-h) + 18px);
   left: 50%;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-muted);
   line-height: 0;
   animation: scrollNudge 2.2s ease-in-out infinite;
 }
@@ -190,7 +184,7 @@
   padding-top: 0;
 }
 
-/* ── Stats: caixas BRANCAS com texto preto ── */
+/* ── Stats: cartões brancos com borda suave ── */
 .home-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -198,12 +192,13 @@
 }
 
 .home-stat {
-  background: #fff;
-  color: var(--on-accent);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
   text-align: center;
   border-radius: var(--radius-lg);
   padding: 28px 20px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .home-stat-num {
@@ -211,7 +206,7 @@
   font-family: var(--font-display);
   font-size: 1.375rem;
   font-weight: 800;
-  color: var(--on-accent);
+  color: var(--primary-dark);
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
@@ -221,17 +216,15 @@
   margin-top: 6px;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: rgba(13, 21, 25, 0.6);
+  color: var(--text-secondary);
 }
 
-/* ── CTA Final: caixa PRETA com texto branco ── */
+/* ── CTA Final: bloco TEAL com texto branco ── */
 .home-final {
   text-align: center;
   border-radius: var(--radius-2xl);
-  background: var(--surface);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
+  background: var(--grad-dark);
+  border: none;
   padding: clamp(3.5rem, 7vw, 5rem) 1.5rem;
   box-shadow: var(--shadow-md);
 }
@@ -241,15 +234,25 @@
   font-size: clamp(1.75rem, 3.6vw, 2.5rem);
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: var(--text);
+  color: #fff;
   margin: 0 0 14px;
   text-wrap: balance;
 }
 
 .home-final-text {
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 1.0625rem;
   margin: 0 0 32px;
+}
+
+/* Dentro do bloco teal o CTA inverte: pílula branca com texto teal */
+.home-final .hero-pill-primary {
+  background: #fff;
+  color: var(--primary-dark);
+  box-shadow: var(--shadow-md);
+}
+.home-final .hero-pill-primary:hover {
+  background: #eef4f2;
 }
 
 /* ═══════════════ RESPONSIVE ═══════════════ */

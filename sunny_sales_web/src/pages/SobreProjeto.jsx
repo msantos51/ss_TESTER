@@ -8,10 +8,6 @@ import {
 } from 'react-icons/fi';
 import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
-import HeroImage from '../components/HeroImage';
-
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6';
 
 const steps = [
   (
@@ -39,33 +35,27 @@ export default function SobreProjeto() {
     <div className="info-page">
 
       {/* ── Hero (padrão partilhado das páginas internas) ── */}
-      <section className="info-hero info-hero--media">
-        <div className="info-hero-content">
-          <h1 className="info-hero-title">
-            Sobre o Projeto
-          </h1>
-          <p className="info-hero-lead">
-            O <strong>Sunny Sales</strong> conecta vendedores ambulantes de praia
-            a banhistas através de um{' '}
-            <strong>mapa interativo em tempo real</strong>, unindo tradição,
-            tecnologia e sustentabilidade nas praias portuguesas.
-          </p>
+      <section className="info-hero">
+        <h1 className="info-hero-title">
+          Sobre o Projeto
+        </h1>
+        <p className="info-hero-lead">
+          O <strong>Sunny Sales</strong> conecta vendedores ambulantes de praia
+          a banhistas através de um{' '}
+          <strong>mapa interativo em tempo real</strong>, unindo tradição,
+          tecnologia e sustentabilidade nas praias portuguesas.
+        </p>
 
-          <div className="info-badges">
-            <span className="info-badge">
-              <FiMapPin /> Praias portuguesas
-            </span>
-            <span className="info-badge">
-              <FiClock /> Localização em tempo real
-            </span>
-            <span className="info-badge">
-              <FiSmartphone /> Web &amp; Mobile
-            </span>
-          </div>
-        </div>
-
-        <div className="info-hero-media">
-          <HeroImage src={HERO_IMAGE} alt="Chapéu de sol numa praia portuguesa ao pôr do sol" />
+        <div className="info-badges">
+          <span className="info-badge">
+            <FiMapPin /> Praias portuguesas
+          </span>
+          <span className="info-badge">
+            <FiClock /> Localização em tempo real
+          </span>
+          <span className="info-badge">
+            <FiSmartphone /> Web &amp; Mobile
+          </span>
         </div>
       </section>
 
