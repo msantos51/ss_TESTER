@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import {
   FiMapPin,
   FiArrowRight,
-  FiChevronDown,
 } from 'react-icons/fi';
+import HomeMapPreview from '../components/HomeMapPreview';
 import './Home.css';
 
 // (em português) Página inicial / landing da Sunny Sales.
@@ -16,38 +16,9 @@ import './Home.css';
 export default function Home() {
   return (
     <div className="home">
-      {/* ══════════════ HERO ══════════════ */}
-      <section className="home-hero">
-        <div className="home-hero-inner">
-          <span className="home-hero-eyebrow">
-            Vendedores de praia em tempo real
-          </span>
-
-          <h1 className="home-hero-title">
-            Sunny Sales
-          </h1>
-
-          <p className="home-hero-lead">
-            Gelados, bebidas e bolas de Berlim a poucos passos da tua
-            toalha — descobre quem está a vender na tua praia, sem
-            instalar nada.
-          </p>
-
-          <div className="hero-actions">
-            <Link to="/map" className="hero-pill hero-pill-primary">
-              <FiMapPin size={18} />
-              Explorar Mapa
-            </Link>
-            <Link to="/como-funciona" className="hero-pill hero-pill-ghost">
-              Como funciona
-              <FiArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
-
-        <div className="home-hero-scroll" aria-hidden="true">
-          <FiChevronDown size={22} />
-        </div>
+      {/* ══════════════ HERO COM MAPA ══════════════ */}
+      <section className="home-hero home-hero-map">
+        <HomeMapPreview />
       </section>
 
       {/* ══════════════ STATS — caixas brancas ══════════════ */}
