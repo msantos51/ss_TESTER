@@ -6,10 +6,6 @@ import { BASE_URL } from '../config';
 import './InfoPage.css';
 import './FAQ.css';
 import './PlanosVendedores.css';
-import HeroImage from '../components/HeroImage';
-
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1519046904884-53103b34b206';
 
 const PLANS = [
   {
@@ -113,25 +109,19 @@ export default function PlanosVendedores() {
     <div className="info-page pv-page">
 
       {/* ── Hero (padrão partilhado das páginas internas) ── */}
-      <section className="info-hero info-hero--media">
-        <div className="info-hero-content">
-          <h1 className="info-hero-title">
-            O teu negócio no mapa
-          </h1>
-          <p className="info-hero-lead">
-            Junta-te à plataforma que coloca os vendedores de praia no mapa,
-            literalmente. <strong>Mais visibilidade, mais clientes, mais vendas.</strong>
-          </p>
+      <section className="info-hero">
+        <h1 className="info-hero-title">
+          O teu negócio no mapa
+        </h1>
+        <p className="info-hero-lead">
+          Junta-te à plataforma que coloca os vendedores de praia no mapa,
+          literalmente. <strong>Mais visibilidade, mais clientes, mais vendas.</strong>
+        </p>
 
-          <div className="info-badges">
-            <div className="info-badge"><FiZap size={14} /> Ativação imediata</div>
-            <div className="info-badge"><FiTrendingUp size={14} /> Sem taxas escondidas</div>
-            <div className="info-badge"><FiStar size={14} /> Cancela quando quiseres</div>
-          </div>
-        </div>
-
-        <div className="info-hero-media">
-          <HeroImage src={HERO_IMAGE} alt="Chapéus de sol e banhistas numa praia movimentada" />
+        <div className="info-badges">
+          <div className="info-badge"><FiZap size={14} /> Ativação imediata</div>
+          <div className="info-badge"><FiTrendingUp size={14} /> Sem taxas escondidas</div>
+          <div className="info-badge"><FiStar size={14} /> Cancela quando quiseres</div>
         </div>
       </section>
 

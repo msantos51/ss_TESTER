@@ -7,30 +7,20 @@ import { FaLeaf } from 'react-icons/fa';
 import { TbCurrencyEuro } from 'react-icons/tb';
 import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
-import HeroImage from '../components/HeroImage';
-
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1509233725247-49e657c54213';
 
 export default function HowItWorks() {
   return (
     <div className="info-page">
 
-      <div className="info-hero info-hero--media">
-        <div className="info-hero-content">
-          <h1 className="info-hero-title">
-            Como Funciona
-          </h1>
-          <p className="info-hero-lead">
-            A <strong>Sunny Sales</strong> liga vendedores ambulantes a clientes nas praias
-            através de um mapa em tempo real. Saiba como registar-se, gerir as suas rotas
-            e acompanhar a sua atividade.
-          </p>
-        </div>
-
-        <div className="info-hero-media">
-          <HeroImage src={HERO_IMAGE} alt="Praia ao entardecer com o mar calmo" />
-        </div>
+      <div className="info-hero">
+        <h1 className="info-hero-title">
+          Como Funciona
+        </h1>
+        <p className="info-hero-lead">
+          A <strong>Sunny Sales</strong> liga vendedores ambulantes a clientes nas praias
+          através de um mapa em tempo real. Saiba como registar-se, gerir as suas rotas
+          e acompanhar a sua atividade.
+        </p>
       </div>
 
       <div className="info-section">

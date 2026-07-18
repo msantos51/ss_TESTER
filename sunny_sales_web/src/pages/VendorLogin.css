@@ -82,7 +82,7 @@
 .auth-secondary-btn:hover:not(:disabled) {
   border-color: var(--primary);
   color: var(--primary-dark);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--primary-light);
   box-shadow: var(--shadow-sm);
   filter: none;
 }

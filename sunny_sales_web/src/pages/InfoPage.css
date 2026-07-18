@@ -68,49 +68,6 @@
   font-weight: 700;
 }
 
-/* ── Hero with side image (matches SobreProjeto) ───────── */
-.info-hero.info-hero--media {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  align-items: stretch;
-  padding: 0;
-  overflow: hidden;
-}
-
-.info-hero-content {
-  padding: 52px 48px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: relative;
-  z-index: 1;
-}
-
-.info-hero-media {
-  position: relative;
-  min-height: 320px;
-  /* Fundo neutro escuro enquanto a fotografia não carrega. */
-  background: var(--surface-alt);
-}
-
-.info-hero-media img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Transição suave (diagonal escura) entre o conteúdo e a fotografia */
-.info-hero-media::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(97deg, var(--surface) 0%, rgba(26, 33, 43, 0.55) 18%, transparent 45%);
-  pointer-events: none;
-}
-
 /* ── Badges row ────────────────────────────────────────── */
 .info-badges {
   display: flex;
@@ -444,7 +401,7 @@
   color: var(--text-secondary);
 }
 
-/* ── Closing banner ────────────────────────────────────── */
+/* ── Closing banner (bloco teal, texto branco) ─────────── */
 .info-banner {
   position: relative;
   display: flex;
@@ -514,13 +471,14 @@
   color: #fff;
 }
 
+/* Sobre o bloco teal o botão inverte: pílula branca com texto teal */
 .info-banner-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   margin-top: 16px;
-  background: var(--secondary);
-  color: var(--on-accent);
+  background: #fff;
+  color: var(--primary-dark);
   font-weight: 600;
   font-size: 0.92rem;
   padding: 12px 26px;
@@ -533,7 +491,7 @@
 }
 
 .info-banner-btn:hover {
-  background: var(--secondary-hover);
+  background: #eef4f2;
   box-shadow: var(--shadow-sm);
 }
 
@@ -572,14 +530,15 @@
   text-align: left;
 }
 
+/* Sobre o bloco teal o botão inverte: pílula branca com texto teal */
 .info-cta-btn {
   position: relative;
   z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--secondary);
-  color: var(--on-accent);
+  background: #fff;
+  color: var(--primary-dark);
   font-weight: 600;
   font-size: 0.95rem;
   padding: 13px 28px;
@@ -593,7 +552,7 @@
 }
 
 .info-cta-btn:hover {
-  background: var(--secondary-hover);
+  background: #eef4f2;
   box-shadow: var(--shadow-sm);
 }
 
@@ -636,25 +595,6 @@
   .info-hero {
     padding: 36px 28px;
   }
-
-  .info-hero.info-hero--media {
-    grid-template-columns: 1fr;
-    padding: 0;
-  }
-
-  .info-hero--media .info-hero-content {
-    order: 2;
-    padding: 36px 28px;
-  }
-
-  .info-hero-media {
-    order: 1;
-    min-height: 210px;
-  }
-
-  .info-hero-media::after {
-    background: linear-gradient(180deg, transparent 65%, rgba(26, 33, 43, 0.6));
-  }
 }
 
 @media (max-width: 480px) {
@@ -673,10 +613,6 @@
   .info-hero {
     padding: 28px 20px;
     border-radius: var(--radius-xl);
-  }
-
-  .info-hero--media .info-hero-content {
-    padding: 28px 20px;
   }
 
   .info-hero-icon {

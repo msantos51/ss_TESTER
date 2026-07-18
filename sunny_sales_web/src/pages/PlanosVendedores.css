@@ -105,7 +105,7 @@
   border-color: var(--border-strong);
 }
 
-/* Plano em destaque ("Mais Popular"): borda amarela de 2px, sombra mais
+/* Plano em destaque ("Mais Popular"): borda teal de 2px, sombra mais
    forte e ligeiro levantamento para se distinguir claramente dos outros. */
 .pv-plan-card--highlight {
   border: 2px solid var(--secondary);
@@ -356,12 +356,13 @@
   text-decoration: none;
   transition: background var(--transition);
 }
+/* Sobre o bloco teal o botão primário inverte: branco com texto teal */
 .pv-cta-btn--primary {
-  background: var(--accent);
-  color: var(--on-accent);
+  background: #fff;
+  color: var(--primary-dark);
 }
 .pv-cta-btn--primary:hover {
-  background: var(--accent-hover);
+  background: #eef4f2;
   transform: none;
   box-shadow: none;
 }
