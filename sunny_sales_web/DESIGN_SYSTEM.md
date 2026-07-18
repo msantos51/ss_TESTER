@@ -6,10 +6,10 @@ de fonte ou sombras fora desta lista.
 
 ## 0. Conceito
 
-Todo o site assenta sobre uma **fotografia de oceano turquesa** (vista aérea,
-`public/ocean-bg.webp`, gerada proceduralmente) fixa atrás do conteúdo, com um
-véu escuro por cima para garantir contraste — ao estilo das landings editoriais
-de vela/viagens. Sobre ela existem apenas três coisas:
+Todo o site assenta sobre uma **fotografia de água clara estilo Caraíbas**
+(vista aérea, `public/ocean-bg.webp`, gerada proceduralmente) fixa atrás do
+conteúdo, com um véu escuro leve por cima para garantir contraste — ao estilo
+das landings editoriais de vela/viagens. Sobre ela existem apenas três coisas:
 
 1. **Texto branco** diretamente sobre a imagem (títulos de página, hero);
 2. **Caixas pretas** (petróleo quase preto, translúcidas) com texto branco —
@@ -22,8 +22,8 @@ Não há cores decorativas: a paleta é branco/preto sobre o turquesa da fotogra
 
 | Token | Valor | Uso |
 |---|---|---|
-| (fundo global) | `body::before` com `ocean-bg.webp` + véu escuro | Fotografia fixa atrás de todo o site; véu em gradiente vertical (0.26–0.52). |
-| `--bg` / `--bg-deep` / `--bg-raised` | `#061a21` / `#04141a` / `#0b222b` | Tons de petróleo escuro: cor de reserva do body enquanto a foto carrega, painéis do mapa. |
+| (fundo global) | `body::before` com `ocean-bg.webp` + véu escuro leve | Fotografia fixa atrás de todo o site; véu em gradiente vertical (0.15–0.38). |
+| `--bg` / `--bg-deep` / `--bg-raised` | `#061a21` / `#04141a` / `#0b222b` | Tons de petróleo escuro: painéis do mapa e superfícies escuras. A cor de reserva do body enquanto a foto carrega é turquesa `#1c8593` (amostrada da foto com véu). |
 | `--surface` / `--surface-alt` | `rgba(6,18,23,0.88)` / `rgba(20,38,46,0.92)` | **Caixas pretas** translúcidas: cards e painéis; o alt para chips, ícones e hovers. |
 | `--accent` / `--primary` / `--secondary` / `--ink` | `#ffffff` | **Caixas brancas / ação primária** — CTAs sólidos, badges, item de menu ativo, destaques. Texto sobre estes fundos: **`--on-accent`**. |
 | `--on-accent` / `--ink-on-light` | `#0d1519` | Texto quase preto sobre superfícies brancas. |
@@ -93,7 +93,7 @@ grelha `1.05fr/0.95fr`, `min-height: 320px`, `object-fit: cover`, gradiente
 escuro suave à esquerda (transição para o card) e fonte Unsplash com
 `auto=format` (WebP/AVIF).
 
-A fotografia de fundo tem duas variantes (`ocean-bg.webp` 2400px ≈ 92 KB e
+A fotografia de fundo tem duas variantes (`ocean-bg.webp` 2400px ≈ 96 KB e
 `ocean-bg-mobile.webp` 1200px ≈ 41 KB, trocadas aos 768px) e é pré-carregada
 no `index.html` por ser o elemento LCP.
 
@@ -102,10 +102,12 @@ no `index.html` por ser o elemento LCP.
 - Foco visível: `outline: 2px solid var(--focus-ring)` (branco, +2px offset)
   em todos os elementos interativos.
 - Alvos de toque ≥44×44px em mobile.
-- Contraste mínimo AA: o véu escuro sobre a fotografia garante o contraste do
-  texto branco direto na imagem; dentro das caixas os tokens de texto já o
-  garantem — não usar cinzentos mais escuros do que `--text-muted` para texto
-  informativo, nem texto branco dentro de caixas brancas (usar `--on-accent`).
+- Contraste mínimo AA: o véu leve sobre a fotografia clara garante ≥3:1 (AA
+  para texto grande) ao texto branco direto na imagem, reforçado por
+  `text-shadow`; o corpo de texto vive nas caixas pretas, onde os tokens de
+  texto já garantem AA — não usar cinzentos mais escuros do que `--text-muted`
+  para texto informativo, nem texto branco dentro de caixas brancas (usar
+  `--on-accent`).
 - Ícones sem texto visível têm sempre `aria-label`; decorativos usam
   `aria-hidden="true"`.
 - `color-scheme: dark` ativo — controlos nativos (selects, scrollbars)

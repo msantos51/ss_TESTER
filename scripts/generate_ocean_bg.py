@@ -1,8 +1,9 @@
-"""Gera uma textura fotorrealista de oceano turquesa (vista aérea).
+"""Gera uma textura fotorrealista de água clara estilo Caraíbas (vista aérea).
 
 Técnica: fBm (soma de octavas de ruído suave) + domain warping para as
 ondulações, ruído "ridged" fino para o brilho do sol, ripples direcionais
-de vento, banda diagonal de luz e vinheta. Paleta amostrada do print.
+de vento, banda diagonal de luz e vinheta. Paleta clara de lagoa tropical:
+turquesa luminosa com baixios verde-água (areia sob a água) e canais teal.
 Renderiza com margem extra e recorta, para evitar artefactos nas bordas.
 
 Uso (a partir da raiz do repositório):
@@ -91,8 +92,8 @@ glint *= speckle
 # ── Composição tonal ────────────────────────────────────────
 t = 0.36 * waves + 0.36 * depth + 0.19 * ripple + 0.09 * fine
 t = (t - t.min()) / (t.max() - t.min())
-# Curva suave: escurece médios ligeiramente (água mais densa)
-t = t ** 1.18
+# Curva quase linear: água límpida, sem densidade extra nos médios
+t = t ** 1.02
 
 # Feixes diagonais de luz (topo-esquerda → fundo, como no print)
 d = (xx / RW) * 0.55 - (yy / RH) * 0.83
@@ -103,14 +104,14 @@ t = np.clip(t + band * 0.07 + band2 * 0.05, 0, 1)
 # Gradiente vertical: fundo ligeiramente mais escuro (contraste do rodapé)
 t = np.clip(t - (yy / RH) * 0.06, 0, 1)
 
-# ── Paleta teal (amostrada do print) ────────────────────────
+# ── Paleta Caraíbas (lagoa tropical clara) ──────────────────
 stops = np.array([
-    [8, 62, 76],      # profundo
-    [11, 82, 98],     # teal escuro
-    [15, 105, 122],   # teal médio
-    [22, 130, 147],   # turquesa
-    [38, 156, 170],   # turquesa clara
-    [82, 196, 205],   # zonas iluminadas
+    [13, 108, 130],   # canal mais fundo
+    [18, 134, 156],   # teal
+    [27, 160, 178],   # turquesa média
+    [50, 186, 197],   # turquesa caraíbas
+    [102, 216, 217],  # água rasa
+    [168, 238, 231],  # baixio iluminado (areia sob a água)
 ], dtype=np.float32)
 pos = np.array([0.0, 0.24, 0.48, 0.70, 0.88, 1.0], dtype=np.float32)
 
@@ -120,8 +121,8 @@ b = np.interp(t, pos, stops[:, 2])
 img = np.stack([r, g, b], axis=-1)
 
 # Brilhos de sol quase brancos, subtis
-foam = np.array([228, 248, 248], np.float32)
-img += glint[..., None] * (foam - img) * 0.42
+foam = np.array([240, 252, 250], np.float32)
+img += glint[..., None] * (foam - img) * 0.45
 
 # Reforço suave dos feixes de luz
 img += ((band * 14) + (band2 * 12))[..., None] * np.array([0.72, 1.0, 1.0], np.float32)
@@ -129,7 +130,7 @@ img += ((band * 14) + (band2 * 12))[..., None] * np.array([0.72, 1.0, 1.0], np.f
 # Vinheta subtil (cantos mais escuros → contraste para texto branco)
 cx, cy = RW / 2, RH / 2
 dist = np.sqrt(((xx - cx) / cx) ** 2 + ((yy - cy) / cy) ** 2)
-img *= (1.0 - 0.14 * np.clip(dist - 0.5, 0, None) ** 1.6)[..., None]
+img *= (1.0 - 0.11 * np.clip(dist - 0.5, 0, None) ** 1.6)[..., None]
 
 img = np.clip(img, 0, 255).astype(np.uint8)
 out = Image.fromarray(img, 'RGB').crop((PAD, PAD, PAD + W, PAD + H))
