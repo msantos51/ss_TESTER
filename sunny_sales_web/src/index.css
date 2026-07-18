@@ -26,9 +26,9 @@
    Sunny Sales — Design System "Oceano / Editorial"
 
    CONCEITO (inspirado em landings de vela/viagens):
-   · O site inteiro assenta sobre uma FOTOGRAFIA de oceano
-     turquesa (vista aérea), fixa, com um véu escuro por
-     cima para garantir contraste.
+   · O site inteiro assenta sobre uma FOTOGRAFIA de água
+     clara estilo Caraíbas (vista aérea), fixa, com um véu
+     escuro leve por cima para garantir contraste.
    · Texto diretamente sobre a imagem: sempre BRANCO.
    · Conteúdo em dois tipos de caixas:
        — pretas (petróleo quase preto) com texto branco →
@@ -44,8 +44,8 @@
      Texto sobre estes fundos: --on-accent (quase preto).
    · --surface / --surface-alt — caixas pretas translúcidas;
      texto --text (branco) e --text-secondary.
-   · --bg-* — tons de petróleo escuro (fundo de reserva
-     enquanto a imagem carrega; painéis do mapa).
+   · --bg-* — tons de petróleo escuro (painéis do mapa e
+     superfícies escuras).
    · --blue — links funcionais (turquesa clara).
 
    TIPOGRAFIA (escala única, aplicada em todo o site):
@@ -228,8 +228,9 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
-  /* Cor de reserva enquanto a fotografia carrega */
-  background-color: var(--bg-deep);
+  /* Cor de reserva enquanto a fotografia carrega — turquesa média,
+     amostrada da imagem já com o véu (evita flash escuro) */
+  background-color: #1c8593;
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
@@ -238,10 +239,11 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Fotografia de oceano fixa atrás de todo o site + véu escuro por cima
-   (garante contraste AA do texto branco em qualquer zona da imagem).
-   Pseudo-elemento fixo em vez de background-attachment: fixed, que o
-   iOS Safari não suporta. */
+/* Fotografia de água clara (Caraíbas) fixa atrás de todo o site + véu
+   escuro leve por cima: o texto branco grande sobre a foto mantém ≥3:1
+   (AA para texto grande, reforçado por text-shadow); o corpo de texto
+   vive nas caixas pretas. Pseudo-elemento fixo em vez de
+   background-attachment: fixed, que o iOS Safari não suporta. */
 body::before {
   content: '';
   position: fixed;
@@ -250,10 +252,10 @@ body::before {
   background:
     linear-gradient(
       180deg,
-      rgba(3, 14, 18, 0.44) 0%,
-      rgba(3, 14, 18, 0.26) 26%,
-      rgba(3, 14, 18, 0.3) 62%,
-      rgba(2, 11, 15, 0.52) 100%
+      rgba(3, 14, 18, 0.3) 0%,
+      rgba(3, 14, 18, 0.15) 26%,
+      rgba(3, 14, 18, 0.18) 62%,
+      rgba(2, 11, 15, 0.38) 100%
     ),
     url('/ocean-bg.webp') center / cover no-repeat;
 }
@@ -263,10 +265,10 @@ body::before {
     background:
       linear-gradient(
         180deg,
-        rgba(3, 14, 18, 0.5) 0%,
-        rgba(3, 14, 18, 0.34) 26%,
-        rgba(3, 14, 18, 0.38) 62%,
-        rgba(2, 11, 15, 0.58) 100%
+        rgba(3, 14, 18, 0.36) 0%,
+        rgba(3, 14, 18, 0.2) 26%,
+        rgba(3, 14, 18, 0.24) 62%,
+        rgba(2, 11, 15, 0.44) 100%
       ),
       url('/ocean-bg-mobile.webp') center / cover no-repeat;
   }
