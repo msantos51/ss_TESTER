@@ -606,7 +606,7 @@ export default function ModernMapLayout() {
             <MapZoomA11y />
             <MapBearingController targetBearingRef={targetBearingRef} />
             <TileLayer
-              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+              url="https://{s}.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png"
               attribution="&copy; <a href='https://base.org'>base</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
               subdomains="abcd"
               maxZoom={19}
