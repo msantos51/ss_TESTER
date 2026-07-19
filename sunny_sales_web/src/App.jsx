@@ -48,6 +48,7 @@ const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions'));
 const LegalNotice = lazy(() => import('./pages/LegalNotice'));
 const CookiesPolicy = lazy(() => import('./pages/CookiesPolicy'));
+const BeachVisualization = lazy(() => import('./pages/BeachVisualization'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Rotas sem botão de voltar global: página inicial (tem UI própria),
@@ -270,6 +271,7 @@ function AppLayout() {
           <Route path="/about" element={<About />} />
           <Route path="/sobre-projeto" element={<SobreProjeto />} />
           <Route path="/sustentabilidade" element={<Sustentabilidade />} />
+          <Route path="/beach-visuals" element={<BeachVisualization />} />
           <Route path="/settings" element={<AccountSettings />} />
           <Route path="/login" element={<VendorLogin />} />
           <Route path="/vendor-login" element={<VendorLogin />} />
