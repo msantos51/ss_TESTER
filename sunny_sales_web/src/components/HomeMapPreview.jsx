@@ -19,7 +19,7 @@ function getVendorPinHtml(color) {
   return `<div class="vendor-pin-marker" style="--pin-color: ${safeColor};"></div>`;
 }
 
-function MapContent({ vendors, onMapClick }) {
+function MapContent({ vendors }) {
   const map = useMap();
 
   useEffect(() => {
@@ -44,7 +44,7 @@ function MapContent({ vendors, onMapClick }) {
   return (
     <>
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png"
+        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         attribution="&copy; <a href='https://base.org'>base</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
         subdomains="abcd"
         maxZoom={19}

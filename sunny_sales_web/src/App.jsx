@@ -4,6 +4,7 @@ import {
   Route,
   Link,
   NavLink,
+  Navigate,
   useLocation,
 } from 'react-router-dom';
 import { FiUser, FiMenu, FiX } from 'react-icons/fi';
@@ -268,6 +269,9 @@ function AppLayout() {
         <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Home />} />
+          {/* O mapa completo vive na página inicial; /map continua a existir
+              como redirect para não deixar links antigos num beco sem saída. */}
+          <Route path="/map" element={<Navigate to="/" replace />} />
           <Route path="/about" element={<About />} />
           <Route path="/sobre-projeto" element={<SobreProjeto />} />
           <Route path="/sustentabilidade" element={<Sustentabilidade />} />
