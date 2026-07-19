@@ -49,7 +49,7 @@ export default function RouteDetail() {
               subdomains="abcd"
               maxZoom={19}
             />
-            <Polyline positions={polyline} color="var(--blue)" weight={4} />
+            <Polyline positions={polyline} color={route.pin_color || "var(--blue)"} weight={4} />
           </MapContainer>
         </div>
 
