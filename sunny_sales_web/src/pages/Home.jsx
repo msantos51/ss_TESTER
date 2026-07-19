@@ -10,6 +10,7 @@ import LocateButton from '../components/LocateButton';
 import LocateHint from '../components/LocateHint';
 import WelcomeCard from '../components/WelcomeCard';
 import WeatherCard from '../components/WeatherCard';
+import BeachMapVisuals from '../components/BeachMapVisuals';
 import {
   FiMapPin, FiTag, FiShoppingBag,
   FiSmartphone, FiCreditCard,
