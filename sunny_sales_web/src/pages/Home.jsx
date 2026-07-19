@@ -5,7 +5,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-rotate';
 import axios from 'axios';
-import { BASE_URL, mediaUrl } from '../config';
+import { BASE_URL, mediaUrl, TILE_LAYER } from '../config';
 import LocateButton from '../components/LocateButton';
 import LocateHint from '../components/LocateHint';
 import WelcomeCard from '../components/WelcomeCard';
@@ -589,10 +589,7 @@ export default function Home() {
               <MapZoomA11y />
               <MapBearingController targetBearingRef={targetBearingRef} />
               <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                attribution="&copy; <a href='https://base.org'>base</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
-                subdomains="abcd"
-                maxZoom={19}
+                {...TILE_LAYER}
                 eventHandlers={{ load: () => setTilesLoaded(true) }}
               />
               {!isVendorLogged && clientPos && (

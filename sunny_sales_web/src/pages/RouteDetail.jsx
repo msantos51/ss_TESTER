@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { MapContainer, TileLayer, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { FiMapPin, FiClock, FiNavigation, FiCalendar } from 'react-icons/fi';
+import { TILE_LAYER } from '../config';
 import './RouteDetail.css';
 
 export default function RouteDetail() {
@@ -43,12 +44,7 @@ export default function RouteDetail() {
 
         <div className="rd-map">
           <MapContainer center={initial} zoom={15} style={{ width: '100%', height: '100%' }}>
-            <TileLayer
-              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-              attribution="&copy; <a href='https://base.org'>base</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
-              subdomains="abcd"
-              maxZoom={19}
-            />
+            <TileLayer {...TILE_LAYER} />
             <Polyline positions={polyline} color={route.pin_color || "var(--blue)"} weight={4} />
           </MapContainer>
         </div>

@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
-import { BASE_URL } from '../config';
+import { BASE_URL, TILE_LAYER } from '../config';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowUpRight } from 'react-icons/fi';
 import './HomeMapPreview.css';
@@ -43,12 +43,7 @@ function MapContent({ vendors }) {
 
   return (
     <>
-      <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-        attribution="&copy; <a href='https://base.org'>base</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
-        subdomains="abcd"
-        maxZoom={19}
-      />
+      <TileLayer {...TILE_LAYER} />
       {vendors.map(v => {
         const icon = L.divIcon({
           html: getVendorPinHtml(v.pin_color || '#7B61FF'),
