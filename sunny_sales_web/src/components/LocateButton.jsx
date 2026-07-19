@@ -15,15 +15,22 @@ export default function LocateButton({ type = 'user', data = null, onLocationFou
     } else {
       setLocating(true);
       const onFound = (e) => {
+        map.off('locationerror', onError);
         setLocating(false);
         const { lat, lng } = e.latlng;
         if (onLocationFound) onLocationFound({ lat, lng });
         map.setView([lat, lng], 18, { animate: false });
       };
 
-      const onError = () => {
+      const onError = (e) => {
+        map.off('locationfound', onFound);
         setLocating(false);
-        alert('Não foi possível obter a sua localização.');
+        // code 1 = PERMISSION_DENIED (bloqueado pelo utilizador ou pelo navegador)
+        if (e && e.code === 1) {
+          alert('O acesso à localização está bloqueado. Permita a localização nas definições do navegador e tente novamente.');
+        } else {
+          alert('Não foi possível obter a sua localização. Tente novamente.');
+        }
       };
 
       map.once('locationfound', onFound);
