@@ -218,7 +218,7 @@ export default function HomePage() {
               >
                 <TileLayer
                   url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
-                  attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors"
+                  attribution="&copy; <a href='https://base.org'>base</a> contributors"
                 />
 
                 {/* User position marker */}
