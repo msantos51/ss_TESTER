@@ -14,9 +14,10 @@ export const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY || '';
 // Estilo do MapTiler usado nos mapas da aplicação.
 export const MAPTILER_STYLE = 'topo-v2';
 
-// Configuração partilhada da camada de tiles: com chave usa o estilo "Topo"
-// do MapTiler; sem chave mantém o estilo anterior (CARTO Voyager) para que o
-// mapa continue a funcionar. Usar como `<TileLayer {...TILE_LAYER} />`.
+// Configuração partilhada da camada de tiles (sempre Leaflet; só muda a
+// origem das imagens): com chave usa o estilo "Topo" do MapTiler; sem chave
+// usa o mapa topográfico da Esri, gratuito e sem registo, com cores
+// semelhantes. Usar como `<TileLayer {...TILE_LAYER} />`.
 export const TILE_LAYER = MAPTILER_KEY
   ? {
       url: `https://api.maptiler.com/maps/${MAPTILER_STYLE}/256/{z}/{x}/{y}{r}.png?key=${MAPTILER_KEY}`,
@@ -25,9 +26,8 @@ export const TILE_LAYER = MAPTILER_KEY
       maxZoom: 19,
     }
   : {
-      url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
       attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
+        'Tiles &copy; Esri &mdash; Esri, TomTom, Garmin, FAO, NOAA, USGS, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, and the GIS User Community',
       maxZoom: 19,
     };
