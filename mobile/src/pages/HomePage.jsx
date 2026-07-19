@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { BASE_URL } from '../config.js';
+import { BASE_URL, TILE_LAYER } from '../config.js';
 import AnimatedMarker from '../components/AnimatedMarker.jsx';
 
 function hexToRgba(hex, alpha) {
@@ -216,10 +216,7 @@ export default function HomePage() {
                 zoomControl={true}
                 ref={mapRef}
               >
-                <TileLayer
-                  url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                  attribution="&copy; <a href='https://base.org'>base</a> contributors"
-                />
+                <TileLayer {...TILE_LAYER} />
 
                 {/* User position marker */}
                 <Marker

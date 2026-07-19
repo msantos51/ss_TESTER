@@ -5,7 +5,7 @@ import { registerPlugin } from '@capacitor/core';
 import { App as CapacitorApp } from '@capacitor/app';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { BASE_URL, WEB_URL } from '../config.js';
+import { BASE_URL, WEB_URL, TILE_LAYER } from '../config.js';
 import ProfileScreen from './ProfileScreen.jsx';
 import PlansScreen from './PlansScreen.jsx';
 import AnimatedMarker from '../components/AnimatedMarker.jsx';
@@ -256,10 +256,7 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
         {mapError && <div className="alert alert-warning map-overlay-alert">{mapError}</div>}
         {position ? (
           <MapContainer center={position} zoom={16} className="map-container" zoomControl={false}>
-            <TileLayer
-              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-              attribution="&copy; <a href='https://base.org'>base</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
-            />
+            <TileLayer {...TILE_LAYER} />
             <AnimatedMarker position={position} icon={vendorIcon} />
             <FollowPosition position={position} />
           </MapContainer>
