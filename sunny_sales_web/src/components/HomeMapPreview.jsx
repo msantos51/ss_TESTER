@@ -27,10 +27,10 @@ function MapContent({ vendors, onMapClick }) {
       const group = new L.FeatureGroup(
         vendors.map(v => {
           const icon = L.divIcon({
-            html: getVendorPinHtml(v.brand_color || '#00A98F'),
+            html: getVendorPinHtml(v.pin_color || '#7B61FF'),
             className: 'vendor-marker-icon',
-            iconSize: [28, 28],
-            iconAnchor: [14, 14],
+            iconSize: [30, 37],
+            iconAnchor: [15, 36],
           });
           return L.marker([v.current_lat, v.current_lng], { icon });
         })
@@ -44,15 +44,17 @@ function MapContent({ vendors, onMapClick }) {
   return (
     <>
       <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; OpenStreetMap contributors'
+        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+        attribution="&copy; <a href='https://openstreetmap.org'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
+        subdomains="abcd"
+        maxZoom={19}
       />
       {vendors.map(v => {
         const icon = L.divIcon({
-          html: getVendorPinHtml(v.brand_color || '#00A98F'),
+          html: getVendorPinHtml(v.pin_color || '#7B61FF'),
           className: 'vendor-marker-icon',
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
+          iconSize: [30, 37],
+          iconAnchor: [15, 36],
         });
         return (
           <Marker
