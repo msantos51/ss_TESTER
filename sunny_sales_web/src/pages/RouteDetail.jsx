@@ -44,7 +44,7 @@ export default function RouteDetail() {
         <div className="rd-map">
           <MapContainer center={initial} zoom={15} style={{ width: '100%', height: '100%' }}>
             <TileLayer
-              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+              url="https://{s}.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png"
               attribution="&copy; <a href='https://base.org'>base</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
               subdomains="abcd"
               maxZoom={19}
