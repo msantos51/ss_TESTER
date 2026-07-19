@@ -51,6 +51,11 @@ async function checkLocationPermission() {
   }
 }
 
+// Mensagem quando o browser recusa mesmo o acesso à localização (permissão
+// negada para o site ou Serviços de Localização desligados no telemóvel).
+const LOCATION_DENIED_TEXT =
+  'Permissão de localização negada. Ativa-a nas definições do browser e, no iPhone, em Definições > Privacidade e Segurança > Serviços de Localização.';
+
 function getGreeting() {
   const h = new Date().getHours();
   if (h < 12) return 'Bom dia';
@@ -143,46 +148,21 @@ export default function VendorDashboard() {
     navigate('/vendor-login');
   };
 
-  const requestLocationPermission = () => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      () => {
-        setLocationPermission('granted');
-        localStorage.setItem('locationPermissionAsked', 'true');
-      },
-      () => {
-        setLocationPermission('denied');
-        localStorage.setItem('locationPermissionAsked', 'true');
-      }
-    );
-  };
+  // Desliga a partilha só do lado do browser (sem chamar o backend) — usado
+  // quando a localização falha e o interruptor não pode ficar ligado.
+  const disableSharingLocally = useCallback(() => {
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
+    }
+    localStorage.setItem('sharingLocation', 'false');
+    setSharing(false);
+  }, []);
 
-  const startSharing = useCallback(async () => {
+  // Abre a rota no backend e começa a enviar posições. Assume que a permissão
+  // de localização já foi concedida.
+  const beginSharing = useCallback(async () => {
     if (!vendor) return;
-    const expires = vendor.subscription_valid_until
-      ? new Date(vendor.subscription_valid_until)
-      : null;
-    if (!vendor.subscription_active || (expires && expires < new Date())) {
-      setNotice({
-        type: 'warning',
-        text: 'Precisas de uma subscrição ativa para partilhar a tua localização.',
-      });
-      return;
-    }
-
-    if (locationPermission === 'denied') {
-      setNotice({
-        type: 'warning',
-        text: 'Permissão de localização negada. Ativa-a nas definições do browser.',
-      });
-      return;
-    }
-
-    if (locationPermission === 'prompt') {
-      requestLocationPermission();
-      return;
-    }
-
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
@@ -211,7 +191,16 @@ export default function VendorDashboard() {
             console.error('Erro ao enviar localização:', err);
           }
         },
-        (err) => console.error('Erro localização:', err),
+        (err) => {
+          console.error('Erro localização:', err);
+          // Permissão retirada a meio da sessão: desliga o interruptor em vez
+          // de o deixar "Ativo" sem enviar posições.
+          if (err.code === err.PERMISSION_DENIED) {
+            disableSharingLocally();
+            setLocationPermission('denied');
+            setNotice({ type: 'warning', text: LOCATION_DENIED_TEXT });
+          }
+        },
         { enableHighAccuracy: true, maximumAge: 0 }
       );
       localStorage.setItem('sharingLocation', 'true');
@@ -231,7 +220,52 @@ export default function VendorDashboard() {
         });
       }
     }
-  }, [vendor, locationPermission]);
+  }, [vendor, disableSharingLocally]);
+
+  // Chamado pelo interruptor. O pedido de posição tem de acontecer aqui,
+  // dentro do toque do utilizador: é isso que leva o browser (sobretudo no
+  // iPhone/Safari) a mostrar o diálogo nativo de permissão — um pedido fora
+  // de um gesto do utilizador é recusado em silêncio, sem diálogo nenhum.
+  const startSharing = useCallback(() => {
+    if (!vendor) return;
+    const expires = vendor.subscription_valid_until
+      ? new Date(vendor.subscription_valid_until)
+      : null;
+    if (!vendor.subscription_active || (expires && expires < new Date())) {
+      setNotice({
+        type: 'warning',
+        text: 'Precisas de uma subscrição ativa para partilhar a tua localização.',
+      });
+      return;
+    }
+    if (!navigator.geolocation) {
+      setNotice({ type: 'error', text: 'Este browser não suporta geolocalização.' });
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        setLocationPermission('granted');
+        beginSharing();
+      },
+      (err) => {
+        console.error('Erro localização:', err);
+        disableSharingLocally();
+        if (err.code === err.PERMISSION_DENIED) {
+          setLocationPermission('denied');
+          setNotice({ type: 'warning', text: LOCATION_DENIED_TEXT });
+        } else {
+          setNotice({
+            type: 'error',
+            text: 'Não foi possível obter a tua localização. Verifica se o GPS está ligado e tenta novamente.',
+          });
+        }
+      },
+      // maximumAge: Infinity — serve qualquer posição em cache: aqui só
+      // interessa obter a permissão depressa, o rigor vem do watchPosition.
+      { enableHighAccuracy: true, timeout: 30000, maximumAge: Infinity }
+    );
+  }, [vendor, beginSharing, disableSharingLocally]);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -243,14 +277,25 @@ export default function VendorDashboard() {
     const share = localStorage.getItem('sharingLocation') === 'true';
     setSharing(share);
 
-    const checkPermission = async () => {
-      const permStatus = await checkLocationPermission();
-      setLocationPermission(permStatus);
-      if (permStatus === 'prompt') {
-        requestLocationPermission();
-      }
+    // Espelha o estado da permissão (para o aviso no painel) e mantém-no
+    // atualizado se o utilizador a alterar nas definições do browser. Não se
+    // pede aqui a localização: fora de um gesto do utilizador o browser
+    // recusa sem mostrar o diálogo, o que deixava a permissão marcada como
+    // "negada" sem o utilizador alguma vez ter respondido a um pedido.
+    let permStatus = null;
+    if (navigator.permissions?.query) {
+      navigator.permissions
+        .query({ name: 'geolocation' })
+        .then((status) => {
+          permStatus = status;
+          setLocationPermission(status.state);
+          status.onchange = () => setLocationPermission(status.state);
+        })
+        .catch(() => {});
+    }
+    return () => {
+      if (permStatus) permStatus.onchange = null;
     };
-    checkPermission();
   }, []);
 
   // Preenche os formulários de perfil com os dados atuais do vendedor
@@ -284,20 +329,34 @@ export default function VendorDashboard() {
       });
   }, [vendor?.id]);
 
+  // Retoma automática (ao reabrir o dashboard com a partilha ligada). Sem um
+  // gesto do utilizador o browser nunca mostra o diálogo de permissão, por
+  // isso só se retoma quando ela já está concedida; caso contrário o
+  // interruptor volta a "Desligada" à espera de um novo toque.
+  const resumeSharing = useCallback(async () => {
+    const permStatus = await checkLocationPermission();
+    if (permStatus === 'granted' || permStatus === null) {
+      startSharing();
+    } else {
+      disableSharingLocally();
+      if (permStatus === 'denied') setLocationPermission('denied');
+    }
+  }, [startSharing, disableSharingLocally]);
+
   useEffect(() => {
-    if (sharing && vendor && watchId === null) startSharing();
-  }, [sharing, vendor, startSharing]);
+    if (sharing && vendor && watchId === null) resumeSharing();
+  }, [sharing, vendor, resumeSharing]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden && sharing && watchId === null && vendor) {
-        startSharing();
+        resumeSharing();
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [sharing, vendor, startSharing]);
+  }, [sharing, vendor, resumeSharing]);
 
   const stopSharing = async () => {
     if (watchId !== null) {
@@ -750,7 +809,10 @@ export default function VendorDashboard() {
                 <div className="vd-cta-card warning">
                   <div className="vd-cta-text">
                     <span className="vd-cta-title">Permissão de localização negada</span>
-                    <span className="vd-cta-desc">Ativa-a nas definições do browser para poderes partilhar a tua localização</span>
+                    <span className="vd-cta-desc">
+                      Para partilhares a tua localização, ativa-a nas definições do browser — no
+                      iPhone, em Definições &gt; Privacidade e Segurança &gt; Serviços de Localização
+                    </span>
                   </div>
                 </div>
               )}
