@@ -104,6 +104,7 @@ class RouteOut(BaseModel):
     end_time: Optional[str]
     distance_m: float
     points: list[RoutePoint]
+    pin_color: Optional[str] = None
 
     # Configuração para permitir criação a partir de objetos ORM
     model_config = ConfigDict(from_attributes=True)

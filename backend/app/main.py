@@ -1241,6 +1241,7 @@ def list_routes(
                 "end_time": r.end_time.isoformat() if r.end_time else None,
                 "distance_m": r.distance_m,
                 "points": json.loads(r.points or "[]"),
+                "pin_color": r.vendor.pin_color,
             }
         )
     return result
