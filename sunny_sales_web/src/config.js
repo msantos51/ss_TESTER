@@ -12,27 +12,13 @@ export function mediaUrl(path) {
   return `${BASE_URL.replace(/\/$/, '')}/${path}`;
 }
 
-// (em português) Chave da API do MapTiler, definida em build pela variável
-// `VITE_MAPTILER_KEY` (obtém-se gratuitamente em https://cloud.maptiler.com/account/keys/).
-export const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY || '';
-
-// Estilo do MapTiler usado nos mapas da aplicação.
-export const MAPTILER_STYLE = 'topo-v2';
-
-// Configuração partilhada da camada de tiles (sempre Leaflet; só muda a
-// origem das imagens): com chave usa o estilo "Topo" do MapTiler; sem chave
-// usa o mapa topográfico da Esri, gratuito e sem registo, com cores
-// semelhantes. Usar como `<TileLayer {...TILE_LAYER} />`.
-export const TILE_LAYER = MAPTILER_KEY
-  ? {
-      url: `https://api.maptiler.com/maps/${MAPTILER_STYLE}/256/{z}/{x}/{y}{r}.png?key=${MAPTILER_KEY}`,
-      attribution:
-        '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
-      maxZoom: 19,
-    }
-  : {
-      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-      attribution:
-        'Tiles &copy; Esri &mdash; Esri, TomTom, Garmin, FAO, NOAA, USGS, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, and the GIS User Community',
-      maxZoom: 19,
-    };
+// (em português) Configuração partilhada da camada de tiles dos mapas
+// Leaflet: estilo Voyager da CARTO, gratuito e sem chave de API.
+// Usar como `<TileLayer {...TILE_LAYER} />`.
+export const TILE_LAYER = {
+  url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+  attribution:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19,
+};
