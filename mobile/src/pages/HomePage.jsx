@@ -217,7 +217,7 @@ export default function HomePage() {
                 ref={mapRef}
               >
                 <TileLayer
-                  url="https://{s}.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png"
+                  url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                   attribution="&copy; <a href='https://base.org'>base</a> contributors"
                 />
 

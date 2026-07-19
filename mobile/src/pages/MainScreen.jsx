@@ -257,7 +257,7 @@ export default function MainScreen({ auth, onLogout, onUserUpdate }) {
         {position ? (
           <MapContainer center={position} zoom={16} className="map-container" zoomControl={false}>
             <TileLayer
-              url="https://{s}.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png"
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
               attribution="&copy; <a href='https://base.org'>base</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>"
             />
             <AnimatedMarker position={position} icon={vendorIcon} />
