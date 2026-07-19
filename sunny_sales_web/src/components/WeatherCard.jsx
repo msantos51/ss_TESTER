@@ -118,7 +118,7 @@ export default function WeatherCard() {
               `&timezone=auto&forecast_days=1`
             ),
             fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
+              `https://nominatim.base.org/reverse?format=json&lat=${lat}&lon=${lon}`,
               { headers: { 'Accept-Language': 'pt' } }
             ),
           ]);
