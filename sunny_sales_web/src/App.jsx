@@ -6,7 +6,7 @@ import {
   NavLink,
   useLocation,
 } from 'react-router-dom';
-import { FiUser, FiMenu, FiX, FiMapPin } from 'react-icons/fi';
+import { FiUser, FiMenu, FiX } from 'react-icons/fi';
 import { FaInstagram } from 'react-icons/fa';
 import { lazy, Suspense, useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -36,7 +36,6 @@ const TermsScreen = lazy(() => import('./pages/TermsScreen'));
 const VendorDetailScreen = lazy(() => import('./pages/VendorDetailScreen'));
 const Invoices = lazy(() => import('./pages/Invoices'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
-const ModernMapLayout = lazy(() => import('./pages/ModernMapLayout'));
 const SobreProjeto = lazy(() => import('./pages/SobreProjeto'));
 const Sustentabilidade = lazy(() => import('./pages/Sustentabilidade'));
 const HowItWorks = lazy(() => import('./pages/HowItWorks'));
@@ -51,11 +50,10 @@ const LegalNotice = lazy(() => import('./pages/LegalNotice'));
 const CookiesPolicy = lazy(() => import('./pages/CookiesPolicy'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
-// Rotas sem botão de voltar global: página inicial, mapa (tem UI própria),
+// Rotas sem botão de voltar global: página inicial (tem UI própria),
 // dashboard (tem navegação interna) e páginas de autenticação.
 const HIDE_BACK_ROUTES = [
   '/',
-  '/map',
   '/dashboard',
   '/login',
   '/vendor-login',
@@ -246,10 +244,6 @@ function AppLayout() {
           <Link to={profileLink} className="profile-icon" aria-label="Perfil">
             <FiUser size={18} />
           </Link>
-          <Link to="/map" className="nav-cta">
-            <FiMapPin size={16} />
-            Explorar Mapa
-          </Link>
           <button
             className="menu-toggle"
             onClick={() => setMenuOpen((o) => !o)}
@@ -284,7 +278,6 @@ function AppLayout() {
           <Route path="/account" element={<ManageAccount />} />
           <Route path="/paid-weeks" element={<PaidWeeksScreen />} />
           <Route path="/invoices" element={<Invoices />} />
-          <Route path="/map" element={<ModernMapLayout />} />
           <Route path="/route-detail" element={<RouteDetail />} />
           <Route path="/routes" element={<RoutesScreen />} />
           <Route path="/products" element={<ProductsScreen />} />
