@@ -660,6 +660,7 @@ export default function ModernMapLayout() {
                   setIsAutoFollowing={setIsAutoFollowing}
                 />
                 <LocateButton
+                  currentPos={clientPos}
                   onLocationFound={(pos) => {
                     setClientPos(pos);
                     setIsAutoFollowing(true);
