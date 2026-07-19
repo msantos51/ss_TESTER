@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMap } from 'react-leaflet';
 
-export default function LocateButton({ type = 'user', data = null, onLocationFound, onClick, disabled = false }) {
+export default function LocateButton({ type = 'user', data = null, currentPos = null, onLocationFound, onClick, disabled = false }) {
   const map = useMap();
   const [locating, setLocating] = useState(false);
 
@@ -12,6 +12,13 @@ export default function LocateButton({ type = 'user', data = null, onLocationFou
       if (data && data.current_lat && data.current_lng) {
         map.setView([data.current_lat, data.current_lng], 18, { animate: false });
       }
+    } else if (currentPos && currentPos.lat != null && currentPos.lng != null) {
+      // Já temos a posição do watchPosition (o ponto azul no mapa): centra já,
+      // sem esperar por um novo fix de GPS — em telemóveis um pedido de alta
+      // precisão com maximumAge: 0 pode demorar vários segundos ou expirar,
+      // deixando o botão aparentemente morto.
+      if (onLocationFound) onLocationFound({ lat: currentPos.lat, lng: currentPos.lng });
+      map.setView([currentPos.lat, currentPos.lng], 18, { animate: false });
     } else {
       setLocating(true);
       const onFound = (e) => {

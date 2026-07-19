@@ -643,6 +643,7 @@ export default function Home() {
                     setIsAutoFollowing={setIsAutoFollowing}
                   />
                   <LocateButton
+                    currentPos={clientPos}
                     onLocationFound={(pos) => {
                       setClientPos(pos);
                       setIsAutoFollowing(true);
