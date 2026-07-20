@@ -249,6 +249,7 @@
 
 .map-wrapper {
   display: flex;
+  flex-direction: column;
   flex: 1;
   min-width: 0;
   min-height: 0;
@@ -277,6 +278,23 @@
   width: 100%;
   border-radius: 0;
   background: transparent;
+}
+
+/* ── Tagline: diz ao visitante qual é o objetivo do site ── */
+
+.map-tagline {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-align: center;
+  text-wrap: balance;
 }
 
 /* ── Skeleton de carregamento dos tiles ───────────────── */
@@ -1453,6 +1471,11 @@
 @media (max-width: 768px) {
   .modern-layout {
     flex-direction: column;
+  }
+
+  .map-tagline {
+    padding: 9px 12px;
+    font-size: 0.85rem;
   }
 
   .sidebar-left,
