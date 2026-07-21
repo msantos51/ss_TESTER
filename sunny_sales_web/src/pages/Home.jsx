@@ -577,12 +577,12 @@ export default function Home() {
         </div>}
 
         <div className="map-wrapper">
-          {!isVendorLogged && (
-            <h1 className="map-tagline">
-              Acompanhe os vendedores de praia em tempo real.
-            </h1>
-          )}
           <section className="map-area" aria-label="Mapa de vendedores">
+            {!isVendorLogged && (
+              <h1 className="map-tagline">
+                Encontra vendedores de praia perto de ti, em tempo real
+              </h1>
+            )}
             <MapContainer
               ref={mapRef}
               center={[38.7169, -9.1399]}
