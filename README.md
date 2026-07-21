@@ -77,7 +77,7 @@ ss_TESTER/
 | Backend | FastAPI, SQLAlchemy, PostgreSQL / SQLite, JWT, bcrypt, Stripe, WebSocket |
 | Web frontend | React 19, Vite, React Router, Leaflet + react-leaflet, Recharts, Axios |
 | Mobile | Capacitor 7 (Android), React 18, Vite, Leaflet, @capacitor/geolocation |
-| Mapas | Leaflet com estilo personalizado MapTiler (web) e tiles CARTO (mobile), leaflet-rotate (bússola), Haversine (distâncias) |
+| Mapas | Leaflet com tiles CARTO, leaflet-rotate (bússola), Haversine (distâncias) |
 | Pagamentos | Stripe Checkout + Webhooks, semanas pagas com recibos |
 | Autenticação | JWT Bearer tokens, gestão de sessões multi-dispositivo |
 | Tempo real | WebSocket `/ws/locations` para atualizações de posição |
