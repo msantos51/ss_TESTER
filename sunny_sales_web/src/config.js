@@ -13,18 +13,12 @@ export function mediaUrl(path) {
 }
 
 // (em português) Configuração partilhada da camada de tiles dos mapas
-// Leaflet: estilo personalizado criado no MapTiler (raster tiles 256px,
-// com suporte retina via `{r}`). A chave e o ID do mapa podem ser
-// substituídos pelas variáveis de ambiente `VITE_MAPTILER_KEY` e
-// `VITE_MAPTILER_MAP_ID`. Usar como `<TileLayer {...TILE_LAYER} />`.
-const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY || 'Ru4jRsFJoXg3TmEsFaOC';
-const MAPTILER_MAP_ID =
-  import.meta.env.VITE_MAPTILER_MAP_ID || '019f805d-3125-7863-9a77-ab58ad966b58';
-
+// Leaflet: estilo Voyager da CARTO, gratuito e sem chave de API.
+// Usar como `<TileLayer {...TILE_LAYER} />`.
 export const TILE_LAYER = {
-  url: `https://api.maptiler.com/maps/${MAPTILER_MAP_ID}/256/{z}/{x}/{y}{r}.png?key=${MAPTILER_KEY}`,
+  url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
   attribution:
-    '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: 'abcd',
   maxZoom: 19,
-  crossOrigin: true,
 };
