@@ -48,6 +48,11 @@ def get_db():
 def ensure_latest_schema():
     inspector = inspect(engine)
     tables = inspector.get_table_names()
+    if "paid_weeks" in tables:
+        pw_columns = {c["name"] for c in inspector.get_columns("paid_weeks")}
+        if "stripe_session_id" not in pw_columns:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE paid_weeks ADD COLUMN stripe_session_id TEXT"))
     if "vendors" in tables:
         columns = {c["name"] for c in inspector.get_columns("vendors")}
         migrations = [

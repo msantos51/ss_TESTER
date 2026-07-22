@@ -11,3 +11,4 @@ stripe
 supabase
 pytest
 slowapi>=0.1.9
+sentry-sdk

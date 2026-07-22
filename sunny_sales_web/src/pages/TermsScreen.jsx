@@ -80,8 +80,8 @@ export default function TermsScreen() {
         <h3 className="terms-section-title">10. Contacto</h3>
         <p className="terms-text">
           Para qualquer dúvida ou questão relacionada com estes termos, o utilizador pode contactar a equipa de suporte através do email:{' '}
-          <a href="mailto:suporte@sunnysales.com" className="info-link">
-            suporte@sunnysales.com
+          <a href="mailto:sunnysales.geral@gmail.com" className="info-link">
+            sunnysales.geral@gmail.com
           </a>
         </p>
       </div>

@@ -227,9 +227,7 @@ export default function TermsAndConditions() {
           <p>
             <strong>Sunny Sales</strong>
             <br />
-            Email: contacto@sunnysales.com
-            <br />
-            Website: www.sunnysales.com
+            Email: sunnysales.geral@gmail.com
           </p>
         </section>
       </div>

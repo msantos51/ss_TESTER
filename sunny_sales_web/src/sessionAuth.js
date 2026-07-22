@@ -28,8 +28,8 @@ axios.interceptors.response.use(
       localStorage.removeItem('user');
       sessionStorage.setItem(SESSION_ENDED_MESSAGE_KEY, friendlyMessage);
       err.response.data.detail = friendlyMessage;
-      if (!window.location.hash.startsWith('#/vendor-login')) {
-        window.location.hash = '#/vendor-login';
+      if (window.location.pathname !== '/vendor-login') {
+        window.location.assign('/vendor-login');
       }
     }
     return Promise.reject(err);

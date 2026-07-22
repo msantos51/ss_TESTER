@@ -6,9 +6,10 @@ if [ -d "sunny_sales_web" ]; then
   echo "A compilar o frontend..."
   cd sunny_sales_web
   npm install --prefer-offline --no-audit --no-fund
-  # Usar VITE_BASE_URL para configurar a URL do backend em produção
-  # Em Railway, o backend está em https://sstester-production.up.railway.app
-  export VITE_BASE_URL="${VITE_BASE_URL:-https://sstester-production.up.railway.app}"
+  # Frontend e backend são servidos na MESMA origem, por isso o frontend usa
+  # automaticamente window.location.origin (ver config.js) e funciona em
+  # qualquer domínio sem reconfiguração. Só define VITE_BASE_URL se algum dia
+  # separares o frontend do backend em domínios diferentes.
   npm run build
   cd ..
   echo "Frontend compilado com sucesso."

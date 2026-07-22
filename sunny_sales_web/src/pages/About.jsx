@@ -17,11 +17,11 @@ export default function About() {
         </li>
         <li
           className="page-list-item"
-          onClick={() => { window.location.href = 'mailto:suporte@sunnysales.com'; }}
+          onClick={() => { window.location.href = 'mailto:sunnysales.geral@gmail.com'; }}
         >
           <div className="page-list-item-main">
             <span className="page-list-item-title">Contactar Suporte</span>
-            <span className="page-list-item-desc">suporte@sunnysales.com</span>
+            <span className="page-list-item-desc">sunnysales.geral@gmail.com</span>
           </div>
           <span className="page-chevron">›</span>
         </li>

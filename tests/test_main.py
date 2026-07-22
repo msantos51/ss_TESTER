@@ -597,6 +597,146 @@ def test_stripe_webhook_applies_plan_duration(client):
         assert vendor["subscription_active"] is True
         assert minimum_valid_until <= valid_until <= maximum_valid_until
 
+def test_create_checkout_session_uses_one_time_payment(client):
+    """O checkout deve ser criado em modo de PAGAMENTO ÚNICO (sem renovação)."""
+    from backend.app import main
+
+    captured = {}
+
+    def fake_create(**kwargs):
+        captured.update(kwargs)
+        return type("S", (), {"url": "https://checkout.stripe.test/session_abc"})()
+
+    main.stripe.checkout.Session.create = fake_create
+
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+
+    resp = client.post(
+        f"/vendors/{vendor_id}/create-checkout-session",
+        params={"plan": "mensal"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["checkout_url"] == "https://checkout.stripe.test/session_abc"
+    # Garantir que NÃO é uma subscrição recorrente
+    assert captured["mode"] == "payment"
+    # O montante do plano mensal é 24,99 € = 2499 cêntimos
+    assert captured["line_items"][0]["price_data"]["unit_amount"] == 2499
+    assert captured["line_items"][0]["price_data"]["currency"] == "eur"
+    assert captured["metadata"]["plan"] == "mensal"
+
+
+def test_create_checkout_session_rejects_invalid_plan(client):
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+
+    resp = client.post(
+        f"/vendors/{vendor_id}/create-checkout-session",
+        params={"plan": "anual"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Invalid plan"
+
+
+def test_stripe_webhook_is_idempotent(client):
+    """Um webhook reenviado com o mesmo id de sessão não credita duas vezes."""
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+
+    event = {
+        "type": "checkout.session.completed",
+        "data": {
+            "object": {
+                "id": "cs_test_dup_1",
+                "metadata": {"vendor_id": vendor_id, "plan": "mensal"},
+                "payment_status": "paid",
+            }
+        },
+    }
+
+    first = client.post("/stripe/webhook", json=event, headers={"stripe-signature": "sig"})
+    assert first.status_code == 200
+    second = client.post("/stripe/webhook", json=event, headers={"stripe-signature": "sig"})
+    assert second.status_code == 200
+    assert second.json()["status"] == "already_processed"
+
+    # Apesar dos dois envios, só existe UM período pago.
+    resp = client.get(
+        f"/vendors/{vendor_id}/paid-weeks",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+    assert len(resp.json()) == 1
+
+
+def test_stripe_webhook_receipt_from_payment_intent(client):
+    """Em modo pagamento único o recibo vem da cobrança do payment_intent."""
+    from backend.app import main
+
+    main.stripe.PaymentIntent.retrieve = lambda pi_id, expand=None: {
+        "latest_charge": {"receipt_url": "https://receipt.stripe.test/r1"}
+    }
+
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+
+    event = {
+        "type": "checkout.session.completed",
+        "data": {
+            "object": {
+                "id": "cs_test_pi_1",
+                "metadata": {"vendor_id": vendor_id, "plan": "semanal"},
+                "payment_intent": "pi_test_1",
+                "payment_status": "paid",
+            }
+        },
+    }
+    resp = client.post("/stripe/webhook", json=event, headers={"stripe-signature": "sig"})
+    assert resp.status_code == 200
+
+    resp = client.get(
+        f"/vendors/{vendor_id}/paid-weeks",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+    weeks = resp.json()
+    assert len(weeks) == 1
+    assert weeks[0]["receipt_url"] == "https://receipt.stripe.test/r1"
+
+
+def test_websocket_open_to_anonymous_visitors(client):
+    """O canal de tempo real do mapa deve aceitar banhistas anónimos (sem token)."""
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = activate_subscription(client, vendor_id)
+
+    client.post(
+        f"/vendors/{vendor_id}/routes/start",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    # Ligação SEM token — como um banhista qualquer no site.
+    with client.websocket_connect("/ws/locations") as websocket:
+        resp = client.put(
+            f"/vendors/{vendor_id}/location",
+            json={"lat": 6.6, "lng": -8.2},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert resp.status_code == 200
+        data = websocket.receive_json()
+        assert data == {"vendor_id": vendor_id, "lat": 6.6, "lng": -8.2}
+
+
 def test_subscription_expires_when_validity_passes(client):
     """Valida que uma subscrição vencida é desativada antes de devolver o perfil."""
 

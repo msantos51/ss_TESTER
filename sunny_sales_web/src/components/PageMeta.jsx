@@ -1,14 +1,14 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-// (em português) Meta tags por rota (title + description + Open Graph).
+// (em português) Meta tags por rota (title + description + Open Graph + URL
+// canónico).
 //
-// Nota SEO: com HashRouter os crawlers veem sempre o mesmo URL base, pelo
-// que estas tags melhoram sobretudo o título do separador, o histórico, os
-// favoritos e as partilhas feitas a partir do browser (os scrapers que
-// executam JS, como o do Google, leem os valores atualizados). A migração
-// para BrowserRouter (o backend já faz fallback para index.html) daria a
-// cada página um URL real — ver DESIGN_SYSTEM.md/relatório.
+// Nota SEO: a app usa BrowserRouter, pelo que cada página tem um URL real
+// (ex.: /planos, /contacto) e o backend faz fallback para index.html em
+// qualquer caminho. Além do título/descrição por página, definimos aqui o
+// <link rel="canonical"> e o og:url para que cada rota seja indexada e
+// partilhada com o seu próprio endereço.
 const BASE_TITLE = 'Sunny Sales';
 
 const META = {
@@ -79,6 +79,18 @@ function setMeta(selector, attr, value) {
   if (el) el.setAttribute(attr, value);
 }
 
+// Cria o elemento se ainda não existir (ex.: canonical/og:url não estão no
+// index.html) e define o atributo indicado.
+function upsertHead(tag, matchAttr, matchValue, valueAttr, value) {
+  let el = document.head.querySelector(`${tag}[${matchAttr}="${matchValue}"]`);
+  if (!el) {
+    el = document.createElement(tag);
+    el.setAttribute(matchAttr, matchValue);
+    document.head.appendChild(el);
+  }
+  el.setAttribute(valueAttr, value);
+}
+
 export default function PageMeta() {
   const { pathname } = useLocation();
 
@@ -93,6 +105,13 @@ export default function PageMeta() {
     setMeta('meta[property="og:description"]', 'content', description);
     setMeta('meta[name="twitter:title"]', 'content', title);
     setMeta('meta[name="twitter:description"]', 'content', description);
+
+    // URL canónico e og:url por página (usa a origem atual em runtime).
+    if (typeof window !== 'undefined') {
+      const canonical = window.location.origin + pathname;
+      upsertHead('link', 'rel', 'canonical', 'href', canonical);
+      upsertHead('meta', 'property', 'og:url', 'content', canonical);
+    }
   }, [pathname]);
 
   return null;

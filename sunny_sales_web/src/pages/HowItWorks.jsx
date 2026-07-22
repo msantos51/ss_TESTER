@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   FiCompass, FiGrid, FiZap, FiMapPin, FiBarChart2,
   FiSmartphone, FiHeadphones,
@@ -123,9 +124,9 @@ export default function HowItWorks() {
         icon={FiZap}
         title="Comece Agora"
         action={
-          <a href="#/vendor-register" className="info-banner-btn">
+          <Link to="/vendor-register" className="info-banner-btn">
             Registar como Vendedor
-          </a>
+          </Link>
         }
       >
         Registe-se como vendedor e comece a usar a Sunny Sales no seu dia a dia
