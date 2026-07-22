@@ -116,6 +116,10 @@ class PaidWeek(Base):
     start_date = Column(DateTime, default=utcnow)
     end_date = Column(DateTime)
     receipt_url = Column(String, nullable=True)
+    # Identificador da sessão de checkout Stripe que originou este pagamento.
+    # Usado para garantir idempotência: um webhook reenviado pelo Stripe não
+    # pode creditar o mesmo período duas vezes.
+    stripe_session_id = Column(String, nullable=True, unique=True, index=True)
 
     vendor = relationship("Vendor")
 

@@ -311,39 +311,84 @@ export default function Home() {
       }
     };
     fetchVendors();
-    interval = setInterval(fetchVendors, 1000);
+    // As atualizações de posição chegam em tempo real pelo WebSocket. Este
+    // fetch periódico é apenas uma rede de segurança para descobrir vendedores
+    // que entram/saem e para ressincronizar — daí o intervalo longo (15s) em
+    // vez do polling agressivo de 1s que sobrecarregava o servidor.
+    interval = setInterval(fetchVendors, 15000);
     return () => {
       if (interval) clearInterval(interval);
     };
   }, [isVendorLogged]);
 
+  // Canal em tempo real (WebSocket): recebe as atualizações de posição dos
+  // vendedores sem necessidade de polling constante. Está aberto a qualquer
+  // visitante (os dados difundidos são públicos, os mesmos de GET /vendors/) e
+  // reconecta-se automaticamente se a ligação cair.
   useEffect(() => {
-    const token = localStorage.getItem('auth_token');
-    if (!token) return;
+    let ws;
+    let reconnectTimer;
+    let closedByUnmount = false;
 
-    const wsUrl = BASE_URL.replace(/^http/, 'ws') + `/ws/locations?token=${encodeURIComponent(token)}`;
-    const ws = new WebSocket(wsUrl);
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      setVendors((prev) => {
-        if (data.remove) {
-          return prev.map((v) =>
-            v.id === data.vendor_id
-              ? { ...v, current_lat: null, current_lng: null }
-              : v
-          );
-        }
-        return prev.map((v) =>
+    const applyUpdate = (event) => {
+      let data;
+      try {
+        data = JSON.parse(event.data);
+      } catch {
+        return;
+      }
+      setVendors((prev) =>
+        prev.map((v) =>
           v.id === data.vendor_id
-            ? { ...v, current_lat: data.lat, current_lng: data.lng }
+            ? {
+                ...v,
+                current_lat: data.remove ? null : data.lat,
+                current_lng: data.remove ? null : data.lng,
+              }
             : v
-        );
-      });
+        )
+      );
     };
 
+    const scheduleReconnect = () => {
+      if (closedByUnmount) return;
+      clearTimeout(reconnectTimer);
+      reconnectTimer = setTimeout(connect, 3000);
+    };
+
+    function connect() {
+      if (closedByUnmount) return;
+      const wsUrl = BASE_URL.replace(/^http/, 'ws') + '/ws/locations';
+      try {
+        ws = new WebSocket(wsUrl);
+      } catch {
+        scheduleReconnect();
+        return;
+      }
+      ws.onmessage = applyUpdate;
+      ws.onclose = scheduleReconnect;
+      ws.onerror = () => {
+        try {
+          ws.close();
+        } catch {
+          /* noop */
+        }
+      };
+    }
+
+    connect();
+
     return () => {
-      ws.close();
+      closedByUnmount = true;
+      clearTimeout(reconnectTimer);
+      if (ws) {
+        ws.onclose = null;
+        try {
+          ws.close();
+        } catch {
+          /* noop */
+        }
+      }
     };
   }, []);
 

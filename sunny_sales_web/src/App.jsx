@@ -1,5 +1,5 @@
 import {
-  HashRouter as Router,
+  BrowserRouter as Router,
   Routes,
   Route,
   Link,
@@ -158,8 +158,9 @@ function AppLayout() {
   // Na página inicial o header fica transparente enquanto está no topo.
   const navTransparent = location.pathname === '/' && !scrolled && !menuOpen;
 
-  // Salta o foco diretamente para o conteúdo (o href="#conteudo" normal
-  // não funciona com HashRouter, que interpretaria o hash como rota).
+  // Salta o foco diretamente para o conteúdo. Faz-se em JS (preventDefault +
+  // scroll manual) para não deixar o "#conteudo" no URL nem interferir com o
+  // router.
   const skipToContent = (e) => {
     e.preventDefault();
     const el = document.getElementById('conteudo');

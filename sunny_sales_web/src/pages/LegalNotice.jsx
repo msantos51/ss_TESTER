@@ -10,21 +10,22 @@ export default function LegalNotice() {
         <section>
           <h2>1. Identificação do Proprietário</h2>
           <h3>Entidade Proprietária</h3>
+          {/* A PREENCHER antes do lançamento: denominação social, NIF/NIPC,
+             morada da sede e, se aplicável, capital social e registo comercial.
+             Estes elementos são obrigatórios (Decreto-Lei n.º 7/2004). */}
           <p>
             <strong>Sunny Sales</strong>
             <br />
-            Empresa de Tecnologia e Serviços
+            Denominação social: [A preencher]
             <br />
-            Portugal
+            NIF/NIPC: [A preencher]
+            <br />
+            Sede: [A preencher], Portugal
           </p>
 
           <h3>Contactos</h3>
           <p>
-            <strong>Email:</strong> contacto@sunnysales.com
-            <br />
-            <strong>Website:</strong> www.sunnysales.com
-            <br />
-            <strong>Telefone:</strong> Disponível no website
+            <strong>Email:</strong> sunnysales.geral@gmail.com
           </p>
         </section>
 
@@ -188,9 +189,7 @@ export default function LegalNotice() {
           <p>
             <strong>Sunny Sales</strong>
             <br />
-            Email: contacto@sunnysales.com
-            <br />
-            Website: www.sunnysales.com
+            Email: sunnysales.geral@gmail.com
           </p>
         </section>
 

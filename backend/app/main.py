@@ -149,6 +149,27 @@ def _delete_file(path_or_url: str) -> None:
 logging.basicConfig(level=logging.INFO)
 security_logger = logging.getLogger("security")
 
+# --------------------------
+# Observabilidade (Sentry) — opcional e desligado por omissão.
+# Só é inicializado se a variável de ambiente SENTRY_DSN estiver definida, pelo
+# que não tem qualquer efeito (nem custo) em desenvolvimento ou nos testes. O
+# import é protegido para que a aplicação arranque mesmo sem o pacote instalado.
+# --------------------------
+SENTRY_DSN = os.getenv("SENTRY_DSN")
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            environment=os.getenv("SENTRY_ENVIRONMENT", "production"),
+            traces_sample_rate=float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", "0.0")),
+            send_default_pii=False,
+        )
+        security_logger.info("Sentry inicializado.")
+    except Exception as exc:  # pragma: no cover - depende de ambiente externo
+        security_logger.warning(f"Sentry não inicializado: {exc}")
+
 # Rate limiting
 limiter = Limiter(key_func=get_remote_address)
 
@@ -177,7 +198,7 @@ else:
     origins = [
         "http://localhost:3000",
         "http://localhost:5173",
-        "https://laudable-learning-production-a293.up.railway.app",
+        "https://sstester-production.up.railway.app",
     ]
 
 app.add_middleware(
@@ -213,7 +234,7 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' fonts.gstatic.com; connect-src 'self' https:"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' fonts.gstatic.com; connect-src 'self' https: wss:"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "geolocation=(self), microphone=(), camera=()"
     return response
@@ -283,7 +304,7 @@ _init_db()
 # Contexto para hash de password
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-BASE_APP_URL = os.getenv("BASE_APP_URL", "https://laudable-learning-production-a293.up.railway.app")
+BASE_APP_URL = os.getenv("BASE_APP_URL", "https://sstester-production.up.railway.app")
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 RESEND_FROM = os.getenv("RESEND_FROM", "Sunny Sales <onboarding@resend.dev>")
@@ -314,22 +335,37 @@ def send_email(to: str, subject: str, body: str, html: str | None = None) -> boo
 # Configuração do Stripe
 stripe.api_key = os.getenv("STRIPE_API_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
-SUCCESS_URL = os.getenv("SUCCESS_URL", "https://example.com/success")
-CANCEL_URL = os.getenv("CANCEL_URL", "https://example.com/cancel")
+# Destinos após o checkout. Apontam por omissão para páginas reais da app
+# (o vendedor volta ao painel em caso de sucesso, ou aos planos se cancelar).
+SUCCESS_URL = os.getenv("SUCCESS_URL", f"{BASE_APP_URL}/dashboard")
+CANCEL_URL = os.getenv("CANCEL_URL", f"{BASE_APP_URL}/planos")
 
-# Price IDs dos planos de subscrição (Stripe)
-STRIPE_PLAN_PRICE_IDS = {
-    "semanal": os.getenv("STRIPE_PRICE_ID_SEMANAL", "price_1TjhC7IUkNjcmfnZf8Kzjsam"),
-    "quinzenal": os.getenv("STRIPE_PRICE_ID_QUINZENAL", "price_1TjhBKIUkNjcmfnZF5tlmASF"),
-    "mensal": os.getenv("STRIPE_PRICE_ID_MENSAL", "price_1TjhCMIUkNjcmfnZECNOhR4y"),
+# --------------------------
+# Planos de subscrição — fonte única de verdade.
+# --------------------------
+# Cada plano é vendido como PAGAMENTO ÚNICO (mode="payment" no Stripe): o
+# vendedor compra um bloco pré-pago de visibilidade e NÃO há renovação
+# automática (evita cobranças-surpresa e chargebacks). `days` = duração do
+# bloco; `amount_cents` = preço em cêntimos de euro. Os montantes podem ser
+# ajustados por variáveis de ambiente sem alterar o código nem tocar no Stripe.
+def _plan_amount(env_name: str, default_cents: int) -> int:
+    raw = os.getenv(env_name)
+    if not raw:
+        return default_cents
+    try:
+        return int(round(float(raw) * 100))
+    except (TypeError, ValueError):
+        return default_cents
+
+
+PLAN_CONFIG = {
+    "semanal":   {"days": 7,  "amount_cents": _plan_amount("PLAN_PRICE_SEMANAL_EUR", 999),   "label": "Plano Semanal"},
+    "quinzenal": {"days": 15, "amount_cents": _plan_amount("PLAN_PRICE_QUINZENAL_EUR", 1699), "label": "Plano Quinzenal"},
+    "mensal":    {"days": 30, "amount_cents": _plan_amount("PLAN_PRICE_MENSAL_EUR", 2499),   "label": "Plano Mensal"},
 }
 
-# Duração real de cada plano vendido no front-end e no Stripe.
-SUBSCRIPTION_PLAN_DURATIONS_DAYS = {
-    "semanal": 7,
-    "quinzenal": 15,
-    "mensal": 30,
-}
+# Mantido por compatibilidade com o resto do código (cálculo de validade).
+SUBSCRIPTION_PLAN_DURATIONS_DAYS = {plan: cfg["days"] for plan, cfg in PLAN_CONFIG.items()}
 
 
 def validate_password(password: str):
@@ -1585,15 +1621,27 @@ def create_checkout_session(
         raise HTTPException(status_code=404, detail="Vendor not found")
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
-    price_id = STRIPE_PLAN_PRICE_IDS.get(plan)
-    if not price_id:
+    plan_cfg = PLAN_CONFIG.get(plan)
+    if not plan_cfg:
         raise HTTPException(status_code=400, detail="Invalid plan")
     try:
+        # Pagamento único (sem renovação automática). O preço é definido em
+        # linha (price_data), pelo que não depende de price IDs pré-criados.
         session = stripe.checkout.Session.create(
-            mode="subscription",
-            line_items=[{"price": price_id, "quantity": 1}],
+            mode="payment",
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "eur",
+                        "product_data": {"name": f"Sunny Sales — {plan_cfg['label']}"},
+                        "unit_amount": plan_cfg["amount_cents"],
+                    },
+                    "quantity": 1,
+                }
+            ],
             success_url=SUCCESS_URL,
             cancel_url=CANCEL_URL,
+            customer_email=vendor.email,
             metadata={"vendor_id": vendor_id, "plan": plan},
             client_reference_id=str(vendor_id),
         )
@@ -1607,39 +1655,24 @@ def create_checkout_session(
 # WebSocket para localização em tempo real
 # --------------------------
 @app.websocket("/ws/locations")
-async def websocket_locations(websocket: WebSocket, token: str = None, db: Session = Depends(get_db)):
+async def websocket_locations(websocket: WebSocket, token: str = None):
+    # As mensagens difundidas contêm apenas dados públicos (id do vendedor e
+    # coordenadas), os mesmos já expostos por GET /vendors/. A ligação é, por
+    # isso, aberta a qualquer visitante — inclusive banhistas anónimos, que são
+    # precisamente quem precisa das atualizações em tempo real do mapa. É este
+    # canal que substitui o polling constante. O parâmetro `token` é aceite por
+    # compatibilidade, mas não é exigido.
+    await manager.connect(websocket)
     try:
-        if not token:
-            await websocket.close(code=4001, reason="Token required")
-            return
-
-        payload = decode_token(token)
-        vendor_id = payload.get("sub")
-        vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
-
-        if not vendor:
-            await websocket.close(code=4001, reason="Vendor not found")
-            return
-
-        session = (
-            db.query(models.VendorSession)
-            .filter(models.VendorSession.vendor_id == vendor.id, models.VendorSession.token == token)
-            .first()
-        )
-        if not session:
-            await websocket.close(code=4001, reason="Session invalidated")
-            return
-
-        await manager.connect(websocket)
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+    except Exception:
+        manager.disconnect(websocket)
         try:
-            while True:
-                await websocket.receive_text()
-        except WebSocketDisconnect:
-            manager.disconnect(websocket)
-    except Exception as e:
-        try:
-            await websocket.close(code=4000, reason=str(e)[:120])
-        except:
+            await websocket.close()
+        except Exception:
             pass
 
 @app.post("/vendors/{vendor_id}/stories", response_model=schemas.StoryOut)
@@ -1814,6 +1847,37 @@ def delete_product(
     return {"ok": True}
 
 
+def _extract_receipt_url(session: dict) -> str | None:
+    """Obtém o URL do recibo a partir de uma sessão de checkout Stripe.
+
+    Suporta os dois modos:
+    - ``payment`` (atual): o recibo vem da cobrança associada ao payment_intent;
+    - ``subscription``/faturas (compat): o recibo é a fatura alojada.
+    Devolve ``None`` se não for possível obter (nunca levanta exceção).
+    """
+    invoice_id = session.get("invoice")
+    if invoice_id:
+        try:
+            invoice = stripe.Invoice.retrieve(invoice_id)
+            return invoice.get("hosted_invoice_url") or invoice.get("invoice_pdf")
+        except Exception as exc:
+            security_logger.warning(f"Error retrieving invoice: {exc}")
+            return None
+
+    payment_intent_id = session.get("payment_intent")
+    if payment_intent_id:
+        try:
+            pi = stripe.PaymentIntent.retrieve(payment_intent_id, expand=["latest_charge"])
+            charge = pi.get("latest_charge")
+            if isinstance(charge, dict):
+                return charge.get("receipt_url")
+        except Exception as exc:
+            security_logger.warning(f"Error retrieving payment intent receipt: {exc}")
+            return None
+
+    return None
+
+
 # --------------------------
 # Webhook do Stripe
 # --------------------------
@@ -1844,6 +1908,19 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         if session.get("payment_status") != "paid":
             return {"status": "ignored"}
 
+        # Idempotência: o Stripe pode reenviar o mesmo evento. Se já creditámos
+        # esta sessão de checkout, não voltamos a creditar o período.
+        session_id = session.get("id")
+        if session_id:
+            already = (
+                db.query(models.PaidWeek)
+                .filter(models.PaidWeek.stripe_session_id == session_id)
+                .first()
+            )
+            if already:
+                security_logger.info(f"Webhook duplicado ignorado para a sessão {session_id}")
+                return {"status": "already_processed"}
+
         metadata = session.get("metadata", {}) or {}
         try:
             vendor_id = int(session.get("client_reference_id") or metadata.get("vendor_id") or 0)
@@ -1860,16 +1937,8 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         if vendor:
             try:
                 paid = apply_subscription_payment(vendor, plan, db)
-                receipt_url = None
-                invoice_id = session.get("invoice")
-                if invoice_id:
-                    try:
-                        invoice = stripe.Invoice.retrieve(invoice_id)
-                        receipt_url = invoice.get("hosted_invoice_url") or invoice.get("invoice_pdf")
-                    except Exception as exc:
-                        security_logger.warning(f"Error retrieving invoice: {exc}")
-                        receipt_url = None
-                paid.receipt_url = receipt_url
+                paid.stripe_session_id = session_id
+                paid.receipt_url = _extract_receipt_url(session)
                 db.commit()
                 security_logger.info(f"Subscription activated for vendor {vendor_id}")
             except Exception as exc:

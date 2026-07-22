@@ -96,8 +96,14 @@ export default function PrivacyPolicy() {
           </p>
           <ul>
             <li>
-              <strong>Fornecedores de Serviços:</strong> Partilhamos com fornecedores
-              que processam pagamentos, hosting, email e análise.
+              <strong>Subcontratantes (fornecedores de serviços):</strong> Recorremos
+              a fornecedores que atuam por nossa conta e apenas segundo as nossas
+              instruções, nomeadamente: <strong>Stripe</strong> (processamento de
+              pagamentos), <strong>Supabase</strong> (alojamento de ficheiros/base de
+              dados), <strong>Resend</strong> (envio de emails transacionais) e a nossa
+              plataforma de alojamento (hosting). Alguns destes fornecedores podem
+              tratar dados fora do Espaço Económico Europeu, ao abrigo das garantias
+              adequadas previstas no RGPD.
             </li>
             <li>
               <strong>Requisitos Legais:</strong> Se obrigado por lei, ordem judicial
@@ -119,9 +125,29 @@ export default function PrivacyPolicy() {
           <p>
             Retemos as suas informações pessoais apenas pelo período necessário para
             cumprir os fins descritos nesta Política de Privacidade ou conforme
-            exigido por lei. Após esse período, os dados serão eliminados de forma
-            segura.
+            exigido por lei. A título indicativo:
           </p>
+          <ul>
+            <li>
+              <strong>Dados da conta de vendedor:</strong> enquanto a conta estiver
+              ativa e, após o encerramento, pelo prazo necessário ao cumprimento de
+              obrigações legais.
+            </li>
+            <li>
+              <strong>Dados de faturação e pagamentos:</strong> pelo prazo exigido
+              pela legislação fiscal aplicável em Portugal.
+            </li>
+            <li>
+              <strong>Dados de localização (trajetos):</strong> conservados para
+              apresentar o histórico e as estatísticas ao vendedor; podem ser
+              eliminados a pedido.
+            </li>
+            <li>
+              <strong>Stories:</strong> conteúdo efémero, eliminado automaticamente
+              pouco depois da publicação.
+            </li>
+          </ul>
+          <p>Após os prazos aplicáveis, os dados são eliminados de forma segura.</p>
         </section>
 
         <section>
@@ -184,17 +210,24 @@ export default function PrivacyPolicy() {
         </section>
 
         <section>
-          <h2>9. Contacto</h2>
+          <h2>9. Responsável pelo Tratamento e Contacto</h2>
           <p>
-            Se tiver dúvidas sobre esta Política de Privacidade ou sobre o tratamento
-            dos seus dados pessoais, por favor contacte-nos:
+            O responsável pelo tratamento dos seus dados pessoais é:
           </p>
           <p>
             <strong>Sunny Sales</strong>
             <br />
-            Email: contacto@sunnysales.com
+            {/* A PREENCHER antes do lançamento: denominação social completa, NIF
+               e morada da entidade legal (obrigatório por lei). */}
+            Denominação social: [A preencher]
             <br />
-            Website: www.sunnysales.com
+            NIF: [A preencher] — Morada: [A preencher]
+            <br />
+            Email: sunnysales.geral@gmail.com
+          </p>
+          <p>
+            Para exercer os seus direitos ou esclarecer qualquer questão sobre esta
+            Política, contacte-nos pelo email indicado.
           </p>
         </section>
 
@@ -202,8 +235,9 @@ export default function PrivacyPolicy() {
           <h2>10. Autoridade de Proteção de Dados</h2>
           <p>
             Se considerar que os seus direitos foram violados, tem o direito de
-            apresentar uma reclamação junto da Autoridade Nacional de Proteção de
-            Dados (ANPD) de Portugal.
+            apresentar uma reclamação junto da <strong>Comissão Nacional de
+            Proteção de Dados (CNPD)</strong>, a autoridade de controlo em
+            Portugal (www.cnpd.pt).
           </p>
         </section>
 
