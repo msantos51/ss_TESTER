@@ -9,7 +9,7 @@ const FileIcon = ({ size = 14 }) => (
   </svg>
 );
 
-const DownloadIcon = ({ size = 14 }) => (
+const ReceiptIcon = ({ size = 14 }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
     <polyline points="7 10 12 15 17 10" />
@@ -19,29 +19,31 @@ const DownloadIcon = ({ size = 14 }) => (
 
 export default function InvoicesScreen({ auth, onClose }) {
   const { token, vendorId } = auth;
-  const [invoices, setInvoices] = useState([]);
+  const [weeks, setWeeks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchInvoices = async () => {
+    const fetchPaidWeeks = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/vendors/${vendorId}/invoices`, {
+        // (em português) O modelo de faturação do projeto são as "semanas pagas"
+        // (/vendors/{id}/paid-weeks), cada uma com o respetivo recibo do Stripe.
+        const response = await fetch(`${BASE_URL}/vendors/${vendorId}/paid-weeks`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
         if (!response.ok) throw new Error('Não foi possível carregar faturas');
         const data = await response.json();
-        setInvoices(Array.isArray(data) ? data : data.invoices || []);
+        setWeeks(Array.isArray(data) ? data : []);
       } catch (err) {
         setError(err.message);
-        setInvoices([]);
+        setWeeks([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchInvoices();
+    fetchPaidWeeks();
   }, [vendorId, token]);
 
   const formatDate = (dateString) => {
@@ -52,8 +54,7 @@ export default function InvoicesScreen({ auth, onClose }) {
     });
   };
 
-  const handleDownload = (invoiceId) => {
-    const url = `${BASE_URL}/vendors/${vendorId}/invoices/${invoiceId}/download`;
+  const openReceipt = (url) => {
     window.open(url, '_system');
   };
 
@@ -77,7 +78,7 @@ export default function InvoicesScreen({ auth, onClose }) {
             <span className="loading-dots"><span /><span /><span /></span>
             <p>A carregar faturas…</p>
           </div>
-        ) : invoices.length === 0 ? (
+        ) : weeks.length === 0 ? (
           <div className="invoices-empty">
             <div className="invoices-empty-icon"><FileIcon size={40} /></div>
             <h3>Nenhuma fatura registada</h3>
@@ -85,30 +86,24 @@ export default function InvoicesScreen({ auth, onClose }) {
           </div>
         ) : (
           <div className="invoices-list">
-            {invoices.map((invoice) => (
-              <div key={invoice.id} className="invoice-item">
+            {weeks.map((week) => (
+              <div key={week.id} className="invoice-item">
                 <div className="invoice-item-icon">
                   <FileIcon size={20} />
                 </div>
                 <div className="invoice-item-content">
-                  <div className="invoice-item-number">Fatura #{invoice.number || invoice.id}</div>
-                  <div className="invoice-item-date">
-                    {formatDate(invoice.date || invoice.created_at)}
+                  <div className="invoice-item-number">
+                    {formatDate(week.start_date)} – {formatDate(week.end_date)}
                   </div>
-                  {invoice.description && (
-                    <div className="invoice-item-desc">{invoice.description}</div>
-                  )}
+                  <div className="invoice-item-date">Semana de subscrição paga</div>
                 </div>
-                <div className="invoice-item-amount">
-                  €{parseFloat(invoice.amount || invoice.total).toFixed(2).replace('.', ',')}
-                </div>
-                {invoice.download_url && (
+                {week.receipt_url && (
                   <button
                     className="btn-icon invoice-download-btn"
-                    onClick={() => handleDownload(invoice.id)}
-                    title="Descarregar fatura"
+                    onClick={() => openReceipt(week.receipt_url)}
+                    title="Ver recibo"
                   >
-                    <DownloadIcon size={18} />
+                    <ReceiptIcon size={18} />
                   </button>
                 )}
               </div>

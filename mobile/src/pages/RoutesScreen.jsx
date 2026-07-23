@@ -81,27 +81,39 @@ export default function RoutesScreen({ auth, onClose }) {
           </div>
         ) : (
           <div className="routes-list">
-            {routes.map((route, idx) => (
-              <div key={idx} className="route-item">
-                <div className="route-item-icon">
-                  <MapPinIcon size={18} />
-                </div>
-                <div className="route-item-content">
-                  <div className="route-item-date">
-                    <ClockIcon size={12} />
-                    {formatDate(route.start_time || route.created_at)}
+            {routes.map((route) => {
+              const start = route.start_time ? new Date(route.start_time) : null;
+              const end = route.end_time ? new Date(route.end_time) : null;
+              const durationMin = start && end
+                ? Math.max(0, Math.round((end - start) / 60000))
+                : null;
+              const km = typeof route.distance_m === 'number'
+                ? (route.distance_m / 1000).toFixed(2)
+                : null;
+              return (
+                <div key={route.id} className="route-item">
+                  <div className="route-item-icon">
+                    <MapPinIcon size={18} />
                   </div>
-                  <div className="route-item-duration">
-                    {route.duration && `Duração: ${route.duration}`}
-                  </div>
-                  {route.distance && (
-                    <div className="route-item-distance">
-                      Distância: {route.distance}
+                  <div className="route-item-content">
+                    <div className="route-item-date">
+                      <ClockIcon size={12} />
+                      {formatDate(route.start_time)}
                     </div>
-                  )}
+                    {durationMin !== null && (
+                      <div className="route-item-duration">
+                        Duração: {durationMin} min
+                      </div>
+                    )}
+                    {km !== null && (
+                      <div className="route-item-distance">
+                        Distância: {km} km
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
