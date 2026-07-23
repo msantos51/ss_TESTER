@@ -4,7 +4,8 @@ import { Geolocation } from '@capacitor/geolocation';
 import { registerPlugin } from '@capacitor/core';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { BASE_URL, WEB_URL, TILE_LAYER } from '../config.js';
+import { BASE_URL, TILE_LAYER } from '../config.js';
+import { terminateCurrentSession } from '../sessionApi.js';
 import AnimatedMarker from '../components/AnimatedMarker.jsx';
 import useDeviceHeading from '../hooks/useDeviceHeading.js';
 
@@ -187,9 +188,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate }) {
 
   const handleLogout = async () => {
     if (sharing) await stopSharing();
-    try {
-      await fetch(`${BASE_URL}/logout`, { method: 'POST', headers: authHeader });
-    } catch {}
+    await terminateCurrentSession(token);
     onLogout();
   };
 

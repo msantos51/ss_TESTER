@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import {
-  FiUser, FiSend, FiCheckSquare, FiCalendar,
+  FiUser, FiSend, FiCheckSquare,
   FiFileText, FiMail, FiLogOut, FiShoppingBag,
   FiChevronRight, FiExternalLink, FiMap
 } from 'react-icons/fi';
-import { BASE_URL, WEB_URL, mediaUrl } from '../config.js';
+import { WEB_URL, mediaUrl } from '../config.js';
+import { terminateCurrentSession } from '../sessionApi.js';
 import ProfileScreen from './ProfileScreen.jsx';
 import PlansScreen from './PlansScreen.jsx';
 import RoutesScreen from './RoutesScreen.jsx';
@@ -25,13 +26,7 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
     : null;
 
   const handleLogout = async () => {
-    const token = localStorage.getItem('token');
-    try {
-      await fetch(`${BASE_URL}/logout`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-    } catch {}
+    await terminateCurrentSession(auth.token);
     onLogout();
   };
 
@@ -65,8 +60,7 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
           valueClass: subscriptionActive ? 'on' : 'off',
           onClick: () => setShowPlans(true),
         },
-        { icon: <FiCalendar />, label: 'Semanas pagas', external: true, onClick: () => openWebsite('/paid-weeks') },
-        { icon: <FiFileText />, label: 'Faturas', desc: 'Consultar faturas e recibos', onClick: () => setShowInvoices(true) },
+        { icon: <FiFileText />, label: 'Faturas', desc: 'Semanas pagas e recibos', onClick: () => setShowInvoices(true) },
       ],
     },
     {

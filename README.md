@@ -39,7 +39,7 @@ O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma a
 | Sessões ativas | Ver e terminar sessões em outros dispositivos |
 | Subscrição e faturação | Integração com Stripe; histórico de semanas pagas com links de recibo |
 | Stories | Publicar fotos/vídeos efémeros visíveis no perfil |
-| App móvel | App React Native/Expo (mais leve; partilha de localização e gestão de conta) |
+| App móvel | App Android (Capacitor + React) para vendedores: partilha de localização em tempo real (serviço nativo), gestão de conta, produtos, subscrição e faturas |
 
 ---
 
