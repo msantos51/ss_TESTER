@@ -201,6 +201,17 @@ else:
         "https://sstester-production.up.railway.app",
     ]
 
+# (em português) Origens da app móvel (Capacitor).
+# No Android, com androidScheme 'https', a WebView serve a app a partir de
+# https://localhost; no iOS a origem é capacitor://localhost. Sem estas
+# origens na lista de CORS, o browser bloqueia as respostas do backend e o
+# fetch falha com "Failed to fetch" no ecrã inicial. São sempre adicionadas
+# (mesmo quando ALLOWED_ORIGINS está definido) para a app móvel funcionar em
+# qualquer configuração de deploy.
+for _mobile_origin in ("https://localhost", "capacitor://localhost", "http://localhost"):
+    if _mobile_origin not in origins:
+        origins.append(_mobile_origin)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
