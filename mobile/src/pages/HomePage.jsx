@@ -52,7 +52,7 @@ export default function HomePage() {
     const loadVendors = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${BASE_URL}/vendors/public`);
+        const response = await fetch(`${BASE_URL}/vendors`);
         if (!response.ok) throw new Error('Erro ao carregar vendedores');
         const data = await response.json();
         setVendors(data);
@@ -232,10 +232,10 @@ export default function HomePage() {
 
                 {/* Vendor markers */}
                 {filteredVendors.map((vendor) => (
-                  vendor.lat && vendor.lng && (
+                  vendor.current_lat && vendor.current_lng && (
                     <Marker
                       key={vendor.id}
-                      position={[vendor.lat, vendor.lng]}
+                      position={[vendor.current_lat, vendor.current_lng]}
                       icon={L.divIcon({
                         className: '',
                         html: getVendorLocationHtml(vendor.pin_color),
@@ -249,7 +249,7 @@ export default function HomePage() {
                       <Popup>
                         <div className="vendor-popup">
                           <h4>{vendor.name}</h4>
-                          <p>{vendor.business_type || 'Vendedor'}</p>
+                          <p>{vendor.product || 'Vendedor'}</p>
                         </div>
                       </Popup>
                     </Marker>
@@ -307,7 +307,7 @@ export default function HomePage() {
                   </div>
                   <div className="vendor-info">
                     <h4>{vendor.name}</h4>
-                    <p className="vendor-type">{vendor.business_type || 'Vendedor'}</p>
+                    <p className="vendor-type">{vendor.product || 'Vendedor'}</p>
                     <p className="vendor-status">
                       <span className="status-dot online" />
                       Online agora
