@@ -768,3 +768,37 @@ def test_subscription_expires_when_validity_passes(client):
     assert resp.status_code == 403
     assert resp.json()["detail"] == "Subscription inactive"
 
+
+def test_cors_allows_capacitor_mobile_origin(client):
+    """A app móvel (Capacitor) faz fetch a partir da origem https://localhost.
+
+    Sem essa origem na lista de CORS, a WebView do Android bloqueia a resposta
+    e o ecrã inicial mostra "Failed to fetch". Este teste garante que a origem
+    da app móvel é aceite tanto num pedido simples como no preflight.
+    """
+    # Pedido simples (GET) — cenário exato do ecrã inicial a carregar /vendors.
+    resp = client.get("/vendors/", headers={"Origin": "https://localhost"})
+    assert resp.status_code == 200
+    assert resp.headers.get("access-control-allow-origin") == "https://localhost"
+
+    # Preflight (OPTIONS) para um pedido autenticado a partir da app móvel.
+    resp = client.options(
+        "/vendors/",
+        headers={
+            "Origin": "https://localhost",
+            "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "authorization",
+        },
+    )
+    assert resp.status_code == 200
+    assert resp.headers.get("access-control-allow-origin") == "https://localhost"
+
+
+def test_cors_rejects_unknown_origin(client):
+    """Origens não autorizadas continuam sem receber cabeçalhos de CORS."""
+    resp = client.get(
+        "/vendors/", headers={"Origin": "https://malicious.example.com"}
+    )
+    assert resp.status_code == 200
+    assert "access-control-allow-origin" not in resp.headers
+
