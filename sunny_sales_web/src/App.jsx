@@ -155,6 +155,10 @@ function AppLayout() {
   }, [menuOpen]);
 
   const profileLink = isLoggedIn ? '/dashboard' : '/vendor-login';
+  // Na página inicial o mapa é o conteúdo. Em telemóvel o cromo fixo (navbar +
+  // rodapé) custava 114px de altura sobre um mapa que é a única coisa que o
+  // visitante veio ver — ver `.wrapper--map` em index.css.
+  const isMapRoute = location.pathname === '/';
   // Na página inicial o header fica transparente enquanto está no topo.
   const navTransparent = location.pathname === '/' && !scrolled && !menuOpen;
 
@@ -171,7 +175,7 @@ function AppLayout() {
   };
 
   return (
-    <div className="wrapper">
+    <div className={`wrapper${isMapRoute ? ' wrapper--map' : ''}`}>
       <a href="#conteudo" className="skip-link" onClick={skipToContent}>
         Saltar para o conteúdo
       </a>

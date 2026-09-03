@@ -26,12 +26,15 @@ marca (teal), inspirada nos UI de viagem de referência.
 | (fundo global) | `#ffffff` | Fundo branco em todo o site (body). |
 | `--bg` / `--bg-deep` / `--bg-raised` | `#ffffff` / `#f1f5f4` / `#ffffff` | Fundo de página e tint claro para zonas de apoio. |
 | `--surface` / `--surface-alt` | `#ffffff` / `#f2f6f5` | **Cartões brancos** (com `--border` + sombra) e cinzento claro para chips, ícones e hovers. |
-| `--accent` / `--primary` / `--secondary` / `--ink` | `#2b7c6d` | **Teal da marca** — CTAs sólidos, badges, item de menu ativo, blocos de destaque. Texto sobre estes fundos: **`--on-accent`**. |
+| `--accent` / `--primary` / `--secondary` / `--ink` | `#0F5F6E` | **Teal da marca** — CTAs sólidos, badges, item de menu ativo, blocos de destaque. Texto sobre estes fundos: **`--on-accent`** (7,29:1). |
 | `--on-accent` | `#ffffff` | Texto branco sobre superfícies teal. |
-| `--accent-hover` / `--primary-hover` | `#236457` | Hover (tom mais escuro) dos botões teal. |
-| `--primary-dark` | `#1e5a4f` | Teal escuro: texto/números de destaque sobre branco e botões brancos sobre blocos teal. |
-| `--primary-light` / `--primary-light-solid` | `rgba(43,124,109,0.1)` / `#e6f1ee` | Tints claros de teal para fundos de chips/ícones/hovers. |
-| `--grad-dark` | gradiente `#2b7c6d → #1e5a4f` | **Blocos teal de destaque** (banners/CTAs finais) com texto branco. |
+| `--accent-hover` / `--primary-hover` / `--primary-dark` | `#0B4A56` | Hover (tom mais escuro) dos botões teal. |
+| `--primary-light` / `--primary-light-solid` | `rgba(15,95,110,0.1)` / `#dceef1` | Tints claros de teal para fundos de chips/ícones/hovers. |
+| `--coral` / `--coral-hover` | `#C9371B` / `#A82C14` | **Só o que é acionável** (5,19:1 com branco): o botão de localização do mapa e o botão de filtros quando há um filtro ativo. Em mais nenhum sítio. |
+| `--forest` | `#1D5C3A` | **Presença de vendedores** (7,94:1): cor por omissão dos pins do mapa. |
+| `--gold` / `--amber` | `#E8B21F` | Informação, nunca ação. **Sempre como fundo**, com `--text` por cima (8,95:1). Nunca com texto branco — daria 1,61:1. |
+| `--gold-strong` / `--amber-strong` | `#7A5B06` | A variante para usar como **texto** dourado sobre branco. |
+| `--grad-dark` | gradiente `#0F5F6E → #0B4A56` | **Blocos teal de destaque** (banners/CTAs finais) com texto branco. |
 | `--text` | `#1b2c33` | Títulos e texto principal sobre branco. |
 | `--text-secondary` | `#475a62` | Parágrafos de apoio. |
 | `--text-muted` | `#64787f` | Legendas e metadados. |
@@ -39,8 +42,9 @@ marca (teal), inspirada nos UI de viagem de referência.
 | `--blue` / `--teal` / `--sky` | `#1d6a5c` | Apenas funcional: links utilitários e "a tua posição" no mapa (AA sobre branco). |
 | `--success` / `--warning` / `--error` | `#15803d` / `#b45309` / `#b91c1c` | Apenas estados funcionais (validação, avisos), com fundos rgba translúcidos; todos AA sobre branco. |
 
-**Regra de ouro:** teal = "faz isto agora" (nunca dois CTAs teal sólidos lado a
-lado); cartão branco = conteúdo; dentro de um bloco teal o botão inverte para
+**Regra de ouro:** coral = "faz isto agora" (e há no máximo um coral visível
+de cada vez); teal = estrutura, superfícies e estados ativos; verde floresta =
+"há aqui um vendedor"; dourado = informação, nunca ação. Cartão branco = conteúdo; dentro de um bloco teal o botão inverte para
 **pílula branca com texto teal**. Header e rodapé são barras brancas
 translúcidas com blur; na Home o header começa transparente sobre o hero e
 ganha fundo ao rolar.
@@ -100,12 +104,18 @@ apenas com texto e badges; o único `<img>` do layout é o logótipo da navbar
 
 - Foco visível: `outline: 2px solid var(--focus-ring)` (teal escuro `#1d6a5c`,
   +2px offset) em todos os elementos interativos.
-- Alvos de toque ≥44×44px em mobile.
-- Contraste mínimo AA: `--text`, `--text-secondary` e `--text-muted` garantem
-  AA sobre branco; o teal `--accent` (#2b7c6d) garante ≥4.5:1 com texto branco
-  nos botões e blocos; não usar cinzentos mais claros do que `--text-muted`
-  para texto informativo, nem texto teal dentro de blocos teal (usar
-  `--on-accent`).
+- Alvos de toque ≥48×48px em mobile (≥44px é o mínimo legal, não o alvo).
+- Contraste: o site é usado num telemóvel ao sol, onde o mínimo AA não chega.
+  `--text`, `--text-secondary` e `--text-muted` garantem AA sobre branco; o
+  teal `--accent` (#0F5F6E) dá **7,29:1** com texto branco, o verde floresta
+  **7,94:1** e o coral **5,19:1**. Não usar cinzentos mais claros do que
+  `--text-muted` para texto informativo, nem texto teal dentro de blocos teal
+  (usar `--on-accent`).
+- Cores dos pins do mapa: a lista fechada em `PinColorPicker.jsx` é a única
+  fonte válida. Todas dão ≥6:1 contra os tiles do mapa (`#e9eaec`) — o fundo
+  real contra o qual um pin é lido. Não adicionar cores sem verificar isso.
+- Alvos de toque no mapa: ≥48px; o botão de localização é de 64px por ser a
+  única ação da página e ter de ser acertado com o polegar, de pé, com uma mão.
 - Ícones sem texto visível têm sempre `aria-label`; decorativos usam
   `aria-hidden="true"`.
 - `color-scheme: light` ativo — controlos nativos (selects, scrollbars)

@@ -15,7 +15,7 @@ export default function ManageAccount() {
   const [email, setEmail] = useState('');
   const [nif, setNif] = useState('');
   const [phone, setPhone] = useState('');
-  const [pinColor, setPinColor] = useState('#7B61FF');
+  const [pinColor, setPinColor] = useState('#1D5C3A');
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [cropSrc, setCropSrc] = useState(null);
@@ -36,7 +36,7 @@ export default function ManageAccount() {
       setEmail(v.email || '');
       setNif(v.nif || '');
       setPhone(v.phone || '');
-      setPinColor(v.pin_color || '#7B61FF');
+      setPinColor(v.pin_color || '#1D5C3A');
     }
   }, []);
 
@@ -75,7 +75,7 @@ export default function ManageAccount() {
         data.append('new_password', password);
         data.append('old_password', oldPassword);
       }
-      if (pinColor !== (vendor.pin_color || '#7B61FF')) data.append('pin_color', pinColor);
+      if (pinColor !== (vendor.pin_color || '#1D5C3A')) data.append('pin_color', pinColor);
       if (photo) data.append('profile_photo', new File([photo], 'profile.jpg', { type: 'image/jpeg' }));
 
       const token = localStorage.getItem('token');

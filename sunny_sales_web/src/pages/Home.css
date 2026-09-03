@@ -280,30 +280,58 @@
   background: transparent;
 }
 
-/* ── Tagline: diz ao visitante qual é o objetivo do site ── */
+/* ── Tagline ──────────────────────────────────────────
+   Continua a ser o <h1> da página — para SEO e para os leitores de ecrã —
+   mas deixa de ser desenhada sobre o mapa. O visitante que chega por QR code
+   está de pé ao sol com menos de 30 segundos: o mapa explica-se sozinho e um
+   banner de texto por cima dele só atrasa a leitura (e colidia com o botão
+   de filtros no canto superior direito). */
 
 .map-tagline {
   position: absolute;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 500;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Faixa de estado do mapa ──────────────────────────
+   Carregamento e estado vazio partilham forma e posição: são vistos muitas
+   vezes e o utilizador não deve ter de reaprender onde olhar. Ancorada acima
+   do botão de localização, em texto branco sobre petróleo (15,8:1) — a
+   pílula branca com texto cinzento que aqui estava era um borrão claro sobre
+   fundo claro num ecrã ao sol. */
+
+.map-status {
+  position: absolute;
+  bottom: 96px;
+  left: 16px;
+  right: 16px;
+  z-index: 600;
   margin: 0;
-  width: max-content;
-  max-width: min(560px, calc(100% - 88px));
-  padding: 13px 28px;
-  background: #f4c64a;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 6px 20px rgba(20, 45, 52, 0.18);
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
-  color: var(--text);
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: rgba(16, 26, 30, 0.92);
+  color: #fbfcfc;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.35;
   text-align: center;
   text-wrap: balance;
+  box-shadow: 0 6px 22px rgba(16, 26, 30, 0.4);
   pointer-events: none;
+}
+
+@media (min-width: 769px) {
+  /* Em desktop a lista lateral já mostra o mesmo estado; a faixa só estaria a
+     duplicar a informação por cima do mapa. */
+  .map-status {
+    display: none;
+  }
 }
 
 /* ── Skeleton de carregamento dos tiles ───────────────── */
@@ -316,10 +344,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e9eaec;
+  background-color: #d8dede;
   background-image:
-    linear-gradient(to right, rgba(15, 15, 15, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 15, 15, 0.035) 1px, transparent 1px);
+    linear-gradient(to right, rgba(15, 15, 15, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 15, 15, 0.05) 1px, transparent 1px);
   background-size: 44px 44px;
   opacity: 1;
   transition: opacity 0.5s var(--ease-out);
@@ -344,6 +372,10 @@
 }
 
 .map-skeleton-card {
+  display: none;
+}
+
+.map-skeleton-card--unused {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -690,9 +722,9 @@
 @media (pointer: coarse), (max-width: 768px) {
   .map-container .leaflet-control-zoom-in,
   .map-container .leaflet-control-zoom-out {
-    width: 44px !important;
-    height: 44px !important;
-    line-height: 44px !important;
+    width: 48px !important;
+    height: 48px !important;
+    line-height: 48px !important;
   }
 }
 
@@ -704,44 +736,47 @@
 
 /* ── Filter FAB ───────────────────────────────────────── */
 
+/* Metade inferior do ecrã e lado oposto ao botão de localização: o polegar
+   de quem segura o telemóvel com uma mão não chega ao canto superior direito,
+   que é onde este botão estava. Fica a coral só quando há um filtro ativo —
+   ou seja, quando pode estar a esconder vendedores, que é a única altura em
+   que é urgente. */
 .filter-fab {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  bottom: 24px;
+  left: 16px;
   z-index: 900;
   display: none;
   align-items: center;
-  gap: 7px;
-  padding: 10px 16px;
+  gap: 8px;
+  min-height: 56px;
+  padding: 0 22px;
   background: var(--surface);
-  border: 1px solid var(--border-strong);
+  border: 2px solid var(--text);
   border-radius: var(--radius-full);
   color: var(--text);
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 14px rgba(16, 26, 30, 0.28);
   transition: background var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition);
-  min-height: auto;
   -webkit-tap-highlight-color: transparent;
 }
 
 .filter-fab:hover {
-  background: var(--primary-light-solid);
-  border-color: var(--primary);
-  color: var(--primary);
-  box-shadow: var(--shadow-warm);
+  background: var(--surface-alt);
+  box-shadow: 0 6px 18px rgba(16, 26, 30, 0.32);
 }
 
 .filter-fab.has-filters {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--coral);
+  border-color: var(--coral);
   color: var(--on-accent);
 }
 
 .filter-fab.has-filters:hover {
-  background: var(--primary-hover);
-  border-color: var(--primary-hover);
+  background: var(--coral-hover);
+  border-color: var(--coral-hover);
   color: var(--on-accent);
 }
 
@@ -1218,14 +1253,18 @@
 
 /* ── Locate buttons ───────────────────────────────────── */
 
+/* A única ação real desta página, por isso é a única a coral. O anel branco
+   garante a separação do fundo seja qual for o tile por baixo — ao sol, o que
+   falha primeiro é a diferença de luminância contra o mapa, não o rácio da
+   cor contra o branco. */
 .locate-btn,
 .vendor-locate-btn {
   position: absolute;
   bottom: 20px;
   right: 14px;
-  width: 48px;
-  height: 48px;
-  background: var(--secondary);
+  width: 64px;
+  height: 64px;
+  background: var(--coral);
   border: none;
   border-radius: var(--radius-full);
   cursor: pointer;
@@ -1239,26 +1278,28 @@
   min-height: auto;
   padding: 0;
   color: var(--on-accent);
+  box-shadow: 0 0 0 3px #fff, 0 4px 14px rgba(16, 26, 30, 0.45);
 }
 
 .locate-btn .locate-icon,
 .vendor-locate-btn .locate-icon {
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
+  stroke-width: 2.6;
 }
 
 .locate-btn:hover,
 .vendor-locate-btn:hover {
-  background: var(--secondary-hover);
-  box-shadow: var(--shadow-lg);
+  background: var(--coral-hover);
+  box-shadow: 0 0 0 3px #fff, 0 6px 18px rgba(16, 26, 30, 0.5);
   transform: none;
 }
 
 .locate-btn:active,
 .vendor-locate-btn:active {
   transform: none;
-  opacity: 0.9;
-  box-shadow: var(--shadow-sm);
+  background: var(--coral-hover);
+  box-shadow: 0 0 0 3px #fff, 0 2px 8px rgba(16, 26, 30, 0.4);
 }
 
 .compass-btn {
@@ -1290,89 +1331,6 @@
   transform: scale(1.06);
 }
 
-/* ── Compass permission modal ─────────────────────────── */
-
-.compass-modal-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1400;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  animation: overlayFadeIn 0.2s ease;
-}
-
-.compass-modal {
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  padding: 28px 24px 24px;
-  max-width: 320px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  box-shadow: var(--shadow-lg);
-  animation: sheetSlideUp 0.26s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.compass-modal-icon {
-  font-size: 2.4rem;
-  margin-bottom: 12px;
-  line-height: 1;
-}
-
-.compass-modal-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 10px;
-}
-
-.compass-modal-desc {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-  margin: 0 0 20px;
-}
-
-.compass-allow-btn {
-  width: 100%;
-  padding: 13px 0;
-  background: var(--primary);
-  color: var(--on-accent);
-  border: none;
-  border-radius: var(--radius-lg);
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  margin-bottom: 10px;
-  transition: background var(--transition), transform var(--transition);
-  min-height: auto;
-}
-
-.compass-allow-btn:hover {
-  background: var(--primary-hover);
-  transform: scale(1.02);
-}
-
-.compass-skip-btn {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 6px 0;
-  min-height: auto;
-}
-
-.compass-skip-btn:hover {
-  color: var(--text);
-}
-
 /* ── Client / user location pin ───────────────────────── */
 
 .client-pin,
@@ -1383,8 +1341,8 @@
 
 .vendor-pin-marker {
   position: relative;
-  width: 30px;
-  height: 37px;
+  width: 40px;
+  height: 48px;
   box-sizing: border-box;
 }
 
@@ -1393,20 +1351,22 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   box-sizing: border-box;
-  border: 9px solid var(--pin-color, #7B61FF);
+  border: 11px solid var(--pin-color, #1D5C3A);
   border-radius: 50% 50% 0;
   background: #fff;
   transform: rotate(45deg);
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35));
+  outline: 2px solid #fff;
+  outline-offset: -1px;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45));
 }
 
 .vendor-pin-marker::before {
   content: '';
   position: absolute;
-  top: 36px;
+  top: 47px;
   left: 0;
   right: 0;
   margin: auto;
@@ -1435,13 +1395,15 @@
   pointer-events: none;
 }
 
+/* A cor mantém-se: #1078a0 dá 4,98:1 e já passava AA. Cresce apenas para não
+   se perder ao lado dos pins de vendedor, agora de 40px. */
 .user-location-dot {
   position: relative;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  background: var(--blue, #1d6a5c);
-  border: 2.5px solid white;
+  background: var(--blue, #1078a0);
+  border: 3px solid white;
   box-shadow: 0 2px 8px rgba(43, 124, 109, 0.45);
   display: flex;
   align-items: center;
@@ -1480,13 +1442,6 @@
 @media (max-width: 768px) {
   .modern-layout {
     flex-direction: column;
-  }
-
-  .map-tagline {
-    top: 12px;
-    max-width: calc(100% - 28px);
-    padding: 10px 18px;
-    font-size: 0.9rem;
   }
 
   .sidebar-left,
