@@ -27,7 +27,7 @@ function MapContent({ vendors }) {
       const group = new L.FeatureGroup(
         vendors.map(v => {
           const icon = L.divIcon({
-            html: getVendorPinHtml(v.pin_color || '#7B61FF'),
+            html: getVendorPinHtml(v.pin_color || '#1D5C3A'),
             className: 'vendor-marker-icon',
             iconSize: [30, 37],
             iconAnchor: [15, 36],
@@ -46,7 +46,7 @@ function MapContent({ vendors }) {
       <TileLayer {...TILE_LAYER} />
       {vendors.map(v => {
         const icon = L.divIcon({
-          html: getVendorPinHtml(v.pin_color || '#7B61FF'),
+          html: getVendorPinHtml(v.pin_color || '#1D5C3A'),
           className: 'vendor-marker-icon',
           iconSize: [30, 37],
           iconAnchor: [15, 36],

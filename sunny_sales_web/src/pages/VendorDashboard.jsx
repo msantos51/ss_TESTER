@@ -107,7 +107,7 @@ const SECTION_TITLES = {
 export default function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [sharing, setSharing] = useState(false);
-  const [pinColor, setPinColor] = useState('#7B61FF');
+  const [pinColor, setPinColor] = useState('#1D5C3A');
   const [locationPermission, setLocationPermission] = useState(null);
   const [routes, setRoutes] = useState(null); // null = a carregar
   const [notice, setNotice] = useState(null);
@@ -126,7 +126,7 @@ export default function VendorDashboard() {
   const [editPhoto, setEditPhoto] = useState(null);
   const [editPhotoPreview, setEditPhotoPreview] = useState(null);
   const [editCropSrc, setEditCropSrc] = useState(null);
-  const [editPinColor, setEditPinColor] = useState('#7B61FF');
+  const [editPinColor, setEditPinColor] = useState('#1D5C3A');
   const [editPaymentMethods, setEditPaymentMethods] = useState([]);
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState('');
@@ -272,7 +272,7 @@ export default function VendorDashboard() {
     if (stored) {
       const v = JSON.parse(stored);
       setVendor(v);
-      setPinColor(v.pin_color || '#7B61FF');
+      setPinColor(v.pin_color || '#1D5C3A');
     }
     const share = localStorage.getItem('sharingLocation') === 'true';
     setSharing(share);
@@ -306,7 +306,7 @@ export default function VendorDashboard() {
     setEditNif(vendor.nif || '');
     setEditPhone(vendor.phone || '');
     setEditProduct(vendor.product || '');
-    setEditPinColor(vendor.pin_color || '#7B61FF');
+    setEditPinColor(vendor.pin_color || '#1D5C3A');
     setEditPaymentMethods(
       vendor.payment_methods
         ? vendor.payment_methods.split(',').map((m) => m.trim()).filter((m) => m in PAYMENT_ICONS)
@@ -469,7 +469,7 @@ export default function VendorDashboard() {
     try {
       const token = localStorage.getItem('token');
       const data = new FormData();
-      if (editPinColor !== (vendor.pin_color || '#7B61FF')) data.append('pin_color', editPinColor);
+      if (editPinColor !== (vendor.pin_color || '#1D5C3A')) data.append('pin_color', editPinColor);
       if (editPhoto) {
         const file = new File([editPhoto], 'profile.jpg', { type: 'image/jpeg' });
         data.append('profile_photo', file);
@@ -485,7 +485,7 @@ export default function VendorDashboard() {
       const updated = res.data;
       localStorage.setItem('user', JSON.stringify(updated));
       setVendor(updated);
-      setPinColor(updated.pin_color || '#7B61FF');
+      setPinColor(updated.pin_color || '#1D5C3A');
       setEditSuccess('Aparência atualizada com sucesso!');
       setTimeout(() => {
         setEditPhoto(null);

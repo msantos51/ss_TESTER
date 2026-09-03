@@ -35,7 +35,7 @@
   width: 40px;
   height: 40px;
   box-sizing: border-box;
-  border: 10px solid var(--pin-color, #7B61FF);
+  border: 10px solid var(--pin-color, #1D5C3A);
   border-radius: 50% 50% 0;
   background: #fff;
   transform: rotate(45deg);

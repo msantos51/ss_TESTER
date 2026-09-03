@@ -64,52 +64,69 @@
    ════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Acento = teal (verde-água da marca) ── */
-  --accent: #199fb1;
-  --accent-hover: #1485a0;
-  --accent-soft: rgba(25, 159, 177, 0.12);
+  /* ── Acento = teal (verde-água da marca) ──
+     #0F5F6E dá 7,29:1 com texto branco. O anterior #199fb1 dava 3,16:1, o que
+     reprova WCAG AA (4,5:1) e ficava a rasar o mínimo de 3:1 para componentes
+     de interface — invisível num ecrã ao sol, que é o contexto de uso real. */
+  --accent: #0F5F6E;
+  --accent-hover: #0B4A56;
+  --accent-soft: rgba(15, 95, 110, 0.12);
   /* Ícones/realces "de acento" sobre fundo claro */
-  --accent-text: #199fb1;
+  --accent-text: #0F5F6E;
   /* Texto sobre superfícies teal (botões, badges, blocos) */
   --on-accent: #ffffff;
 
   /* ── Cor primária (alias do acento, compatibilidade) ── */
-  --primary: #199fb1;
-  --primary-hover: #1485a0;
-  --primary-dark: #10708f;
-  --primary-bright: #22b3c9;
-  --primary-light: rgba(25, 159, 177, 0.1);
-  --primary-light-solid: #e0f4f7;
+  --primary: #0F5F6E;
+  --primary-hover: #0B4A56;
+  --primary-dark: #0B4A56;
+  --primary-bright: #17869B;
+  --primary-light: rgba(15, 95, 110, 0.1);
+  --primary-light-solid: #dceef1;
 
   /* ── Ação primária (CTAs sólidos) ── */
-  --secondary: #199fb1;
-  --secondary-hover: #1485a0;
-  --secondary-light: rgba(25, 159, 177, 0.12);
+  --secondary: #0F5F6E;
+  --secondary-hover: #0B4A56;
+  --secondary-light: rgba(15, 95, 110, 0.12);
 
-  /* Tons legados de amarelo — remapeados para teal */
-  --gold: #199fb1;
-  --gold-strong: #10708f;
-  --amber: #199fb1;
-  --amber-strong: #10708f;
-  --coral: #199fb1;
+  /* ── Coral: reservado ao que é acionável ──
+     5,19:1 com texto branco. Regra: só o botão de localização do mapa e o
+     botão de filtros quando há um filtro ativo. Em mais nenhum sítio — se o
+     coral aparecer em dois sítios ao mesmo tempo, deixa de significar algo. */
+  --coral: #C9371B;
+  --coral-hover: #A82C14;
 
-  /* ── Aliases de azul/teal (links funcionais, mapa) ── */
+  /* ── Verde floresta: presença de vendedores ──
+     7,94:1 com texto branco. Cor por omissão dos pins no mapa. */
+  --forest: #1D5C3A;
+  --forest-light: rgba(29, 92, 58, 0.12);
+
+  /* ── Amarelo dourado: informação, nunca ação ──
+     Usar sempre como FUNDO com texto --text por cima (8,95:1). Nunca com
+     texto branco: #E8B21F sobre branco dá 1,61:1. */
+  --gold: #E8B21F;
+  --gold-strong: #7A5B06;
+  --amber: #E8B21F;
+  --amber-strong: #7A5B06;
+
+  /* ── Aliases de azul/teal (links funcionais, mapa) ──
+     --blue é a posição do utilizador no mapa: 4,98:1, já passava AA. Mantém-se. */
   --blue: #1078a0;
   --blue-hover: #0d5d8a;
-  --teal: #1078a0;
-  --teal-strong: #0d5d8a;
-  --teal-light: rgba(25, 159, 177, 0.12);
+  --teal: #0F5F6E;
+  --teal-strong: #0B4A56;
+  --teal-light: rgba(15, 95, 110, 0.12);
   --sky: #1078a0;
 
   /* ── "Ink" (botões sólidos de navegação → teal) ── */
-  --ink: #199fb1;
-  --ink-hover: #1485a0;
+  --ink: #0F5F6E;
+  --ink-hover: #0B4A56;
   /* Texto escuro para fundos claros */
   --ink-on-light: #1b2c33;
   /* ── Painéis institucionais (agora teal escuro) ── */
-  --navy: #10708f;
-  --navy-light: #1485a0;
-  --navy-border: rgba(25, 159, 177, 0.2);
+  --navy: #0B4A56;
+  --navy-light: #0F5F6E;
+  --navy-border: rgba(15, 95, 110, 0.2);
 
   /* ── Superfícies: fundo branco e cartões claros ── */
   --bg-deep: #f1f5f4;
@@ -141,12 +158,12 @@
   --danger: #b91c1c;
 
   /* ── Gradientes legados — achatados para teal ── */
-  --grad-sun: linear-gradient(135deg, #199fb1, #199fb1);
-  --grad-gold: linear-gradient(135deg, #199fb1, #199fb1);
-  --grad-sea: linear-gradient(135deg, #199fb1, #10708f);
-  --grad-dusk: linear-gradient(135deg, #199fb1, #199fb1);
+  --grad-sun: linear-gradient(135deg, #0F5F6E, #0F5F6E);
+  --grad-gold: linear-gradient(135deg, #0F5F6E, #0F5F6E);
+  --grad-sea: linear-gradient(135deg, #0F5F6E, #0B4A56);
+  --grad-dusk: linear-gradient(135deg, #0F5F6E, #0F5F6E);
   /* Blocos de destaque: gradiente teal (texto branco por cima) */
-  --grad-dark: linear-gradient(155deg, #199fb1 0%, #10708f 100%);
+  --grad-dark: linear-gradient(155deg, #0F5F6E 0%, #0B4A56 100%);
 
   /* ── Sombras (suaves, tema claro) ── */
   --shadow-xs: 0 1px 2px rgba(20, 45, 52, 0.06);

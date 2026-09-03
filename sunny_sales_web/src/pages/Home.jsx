@@ -680,8 +680,8 @@ export default function Home() {
                   icon={L.divIcon({
                     className: 'client-pin',
                     html: getClientPinHtml(heading),
-                    iconSize: [50, 50],
-                    iconAnchor: [25, 25],
+                    iconSize: [54, 54],
+                    iconAnchor: [27, 27],
                   })}
                 >
                   <Popup>Você está aqui</Popup>
@@ -689,7 +689,7 @@ export default function Home() {
               )}
               {filteredVendors.map((v) => {
                 const isOwn = loggedVendor && Number(v.id) === Number(loggedVendor.id);
-                const pinColor = v.pin_color || '#7B61FF';
+                const pinColor = v.pin_color || '#1D5C3A';
                 return (
                   <AnimatedVendorMarker
                     key={v.id}
@@ -704,8 +704,8 @@ export default function Home() {
                       : L.divIcon({
                           className: 'vendor-pin',
                           html: getVendorPinHtml(pinColor),
-                          iconSize: [30, 37],
-                          iconAnchor: [15, 36],
+                          iconSize: [40, 48],
+                          iconAnchor: [20, 47],
                         })}
                     eventHandlers={{
                       click: () => focusVendor(v),
