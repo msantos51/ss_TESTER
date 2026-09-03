@@ -280,30 +280,23 @@
   background: transparent;
 }
 
-/* ── Tagline: diz ao visitante qual é o objetivo do site ── */
+/* ── Tagline ──────────────────────────────────────────
+   Continua a ser o <h1> da página — para SEO e para os leitores de ecrã —
+   mas deixa de ser desenhada sobre o mapa. O visitante que chega por QR code
+   está de pé ao sol com menos de 30 segundos: o mapa explica-se sozinho e um
+   banner de texto por cima dele só atrasa a leitura (e colidia com o botão
+   de filtros no canto superior direito). */
 
 .map-tagline {
   position: absolute;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 500;
-  margin: 0;
-  width: max-content;
-  max-width: min(560px, calc(100% - 88px));
-  padding: 13px 28px;
-  background: #f4c64a;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 6px 20px rgba(20, 45, 52, 0.18);
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
-  color: var(--text);
-  text-align: center;
-  text-wrap: balance;
-  pointer-events: none;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ── Skeleton de carregamento dos tiles ───────────────── */
@@ -1290,89 +1283,6 @@
   transform: scale(1.06);
 }
 
-/* ── Compass permission modal ─────────────────────────── */
-
-.compass-modal-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1400;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  animation: overlayFadeIn 0.2s ease;
-}
-
-.compass-modal {
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  padding: 28px 24px 24px;
-  max-width: 320px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  box-shadow: var(--shadow-lg);
-  animation: sheetSlideUp 0.26s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.compass-modal-icon {
-  font-size: 2.4rem;
-  margin-bottom: 12px;
-  line-height: 1;
-}
-
-.compass-modal-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 10px;
-}
-
-.compass-modal-desc {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-  margin: 0 0 20px;
-}
-
-.compass-allow-btn {
-  width: 100%;
-  padding: 13px 0;
-  background: var(--primary);
-  color: var(--on-accent);
-  border: none;
-  border-radius: var(--radius-lg);
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  margin-bottom: 10px;
-  transition: background var(--transition), transform var(--transition);
-  min-height: auto;
-}
-
-.compass-allow-btn:hover {
-  background: var(--primary-hover);
-  transform: scale(1.02);
-}
-
-.compass-skip-btn {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 6px 0;
-  min-height: auto;
-}
-
-.compass-skip-btn:hover {
-  color: var(--text);
-}
-
 /* ── Client / user location pin ───────────────────────── */
 
 .client-pin,
@@ -1480,13 +1390,6 @@
 @media (max-width: 768px) {
   .modern-layout {
     flex-direction: column;
-  }
-
-  .map-tagline {
-    top: 12px;
-    max-width: calc(100% - 28px);
-    padding: 10px 18px;
-    font-size: 0.9rem;
   }
 
   .sidebar-left,

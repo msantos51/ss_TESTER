@@ -551,6 +551,39 @@ body {
   background: transparent;
 }
 
+/* ── Rota do mapa em telemóvel ────────────────────────
+   A página inicial é o mapa. Em ecrãs pequenos, a navbar (64px) e o rodapé
+   fixo (50px) custavam 114px — ~16% do ecrã — de cromo por cima da única
+   coisa que o visitante que chega por QR code veio ver. Aqui o rodapé sai do
+   fluxo e a navbar encolhe para 52px translúcidos. Em desktop nada muda. */
+
+@media (max-width: 768px) {
+  .wrapper--map {
+    --navbar-h: 52px;
+    --navbar-h-scrolled: 52px;
+    --footer-h: 0px;
+  }
+
+  .wrapper--map .navbar {
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .wrapper--map .footer-wrapper {
+    display: none;
+  }
+
+  .wrapper--map .container {
+    padding-top: var(--navbar-h);
+    padding-bottom: 0;
+  }
+
+  .wrapper--map .modern-layout {
+    height: calc(100svh - var(--navbar-h));
+  }
+}
+
 /* ── Buttons ─────────────────────────────────────────── */
 
 button {

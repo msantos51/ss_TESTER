@@ -7,8 +7,6 @@ import 'leaflet-rotate';
 import axios from 'axios';
 import { BASE_URL, mediaUrl, TILE_LAYER } from '../config';
 import LocateButton from '../components/LocateButton';
-import LocateHint from '../components/LocateHint';
-import WelcomeCard from '../components/WelcomeCard';
 import WeatherCard from '../components/WeatherCard';
 import BeachMapVisuals from '../components/BeachMapVisuals';
 import {
@@ -24,6 +22,32 @@ const PAYMENT_ICONS = {
   'Numerário':   TbCurrencyEuro,
   'Cartão':      FiCreditCard,
 };
+
+// (em português) Última posição conhecida desta sessão. Permite abrir o mapa
+// já na praia do utilizador em vez de Lisboa, sem esperar pelo primeiro fix
+// de GPS — que em 4G congestionada pode demorar vários segundos.
+const LAST_POS_KEY = 'last_pos';
+const FALLBACK_CENTER = [38.7169, -9.1399];
+
+function readLastPos() {
+  try {
+    const raw = sessionStorage.getItem(LAST_POS_KEY);
+    if (!raw) return null;
+    const { lat, lng } = JSON.parse(raw);
+    if (typeof lat !== 'number' || typeof lng !== 'number') return null;
+    return { lat, lng };
+  } catch {
+    return null;
+  }
+}
+
+function writeLastPos(lat, lng) {
+  try {
+    sessionStorage.setItem(LAST_POS_KEY, JSON.stringify({ lat, lng }));
+  } catch {
+    /* sessionStorage indisponível (modo privado): não é crítico */
+  }
+}
 
 const DISTANCE_OPTIONS = [
   { label: 'Todos', value: null },
@@ -207,6 +231,31 @@ function VendorAutoFollow({ vendor, isAutoFollowing, setIsAutoFollowing }) {
   return null;
 }
 
+// (em português) Sem posição guardada e sem fix de GPS, o mapa abria em
+// Lisboa. Assim que a lista de vendedores chega, enquadra os que estão ativos
+// — é a melhor aproximação disponível do sítio onde o utilizador está, e é
+// abandonada mal o GPS responda ou o utilizador arraste o mapa.
+function VendorsFallbackView({ vendors, clientPos, enabled }) {
+  const map = useMap();
+  const doneRef = useRef(false);
+
+  useEffect(() => {
+    if (!enabled || doneRef.current || clientPos) return;
+    if (!vendors.length) return;
+    doneRef.current = true;
+    if (vendors.length === 1) {
+      map.setView([vendors[0].current_lat, vendors[0].current_lng], 15, { animate: false });
+      return;
+    }
+    const bounds = L.latLngBounds(
+      vendors.map((v) => [v.current_lat, v.current_lng])
+    );
+    map.fitBounds(bounds, { padding: [56, 56], maxZoom: 16, animate: false });
+  }, [enabled, vendors, clientPos, map]);
+
+  return null;
+}
+
 export default function Home() {
   const [vendors, setVendors] = useState([]);
   const PRODUCTS = ['Bolas de Berlim', 'Gelados', 'Acessórios de Praia'];
@@ -225,21 +274,24 @@ export default function Home() {
   const absEventFiredRef = useRef(false);
   const gpsMovingRef = useRef(false);
   const [compassReady, setCompassReady] = useState(false);
-  const [showCompassModal, setShowCompassModal] = useState(false);
-  const [showLocateHint, setShowLocateHint] = useState(false);
   const isVendorLogged = !!localStorage.getItem('user');
 
   const mapRef = useRef(null);
   const [isAutoFollowing, setIsAutoFollowing] = useState(true);
 
-  const [showWelcome, setShowWelcome] = useState(
-    () => !localStorage.getItem('welcomeSeen')
-  );
-
-  const dismissWelcome = () => {
-    localStorage.setItem('welcomeSeen', '1');
-    setShowWelcome(false);
-  };
+  // Abre onde o utilizador estava, não em Lisboa. Só é lido uma vez, no
+  // primeiro render, porque o Leaflet ignora alterações posteriores a `center`.
+  const initialViewRef = useRef(null);
+  if (initialViewRef.current === null) {
+    const last = readLastPos();
+    initialViewRef.current = last
+      ? { center: [last.lat, last.lng], zoom: 16 }
+      : { center: FALLBACK_CENTER, zoom: 13 };
+  }
+  const initialView = initialViewRef.current;
+  const hadLastPos = useRef(
+    initialViewRef.current.center !== FALLBACK_CENTER
+  ).current;
 
   const toggleProduct = (p) => {
     setSelectedProducts((prev) =>
@@ -257,7 +309,9 @@ export default function Home() {
 
   useEffect(() => {
     if (tilesLoaded) return undefined;
-    const t = setTimeout(() => setTilesLoaded(true), 6000);
+    // Em 4G congestionada é melhor mostrar o mapa parcialmente carregado do
+    // que um retângulo cinzento: a sessão típica dura menos de 30 segundos.
+    const t = setTimeout(() => setTilesLoaded(true), 2500);
     return () => clearTimeout(t);
   }, [tilesLoaded]);
 
@@ -284,16 +338,6 @@ export default function Home() {
     setMaxDistance(pendingDistance);
     setShowFilterSheet(false);
   };
-
-  useEffect(() => {
-    if (!isVendorLogged) {
-      const seen = localStorage.getItem('locate_hint_seen');
-      if (!seen) {
-        setShowLocateHint(true);
-        localStorage.setItem('locate_hint_seen', 'true');
-      }
-    }
-  }, [isVendorLogged]);
 
   useEffect(() => {
     let interval;
@@ -397,6 +441,7 @@ export default function Home() {
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
         setClientPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        writeLastPos(pos.coords.latitude, pos.coords.longitude);
         const gpsH = pos.coords.heading;
         if (gpsH != null && !isNaN(gpsH) && pos.coords.speed != null && pos.coords.speed > 0.3) {
           gpsMovingRef.current = true;
@@ -414,47 +459,34 @@ export default function Home() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
+  // (em português) Nos navegadores que não exigem permissão explícita a bússola
+  // fica disponível de imediato. Onde é exigida (iOS/Safari), o pedido não é
+  // feito no arranque: a rotação do mapa é um extra e não deve estar à frente
+  // do mapa. É pedido no primeiro toque no botão de localização, que já é um
+  // gesto do utilizador — precisamente o que o iOS exige para conceder.
   useEffect(() => {
     if (
       typeof DeviceOrientationEvent === 'undefined' ||
       typeof DeviceOrientationEvent.requestPermission !== 'function'
     ) {
       setCompassReady(true);
-      return;
     }
-
-    DeviceOrientationEvent.requestPermission()
-      .then((result) => {
-        if (result === 'granted') {
-          setCompassReady(true);
-        } else {
-          const dismissed = localStorage.getItem('compass_modal_dismissed');
-          if (!dismissed) setShowCompassModal(true);
-        }
-      })
-      .catch(() => {
-        const dismissed = localStorage.getItem('compass_modal_dismissed');
-        if (!dismissed) setShowCompassModal(true);
-      });
   }, []);
 
   const requestCompassPermission = async () => {
+    if (
+      compassReady ||
+      typeof DeviceOrientationEvent === 'undefined' ||
+      typeof DeviceOrientationEvent.requestPermission !== 'function'
+    ) {
+      return;
+    }
     try {
       const result = await DeviceOrientationEvent.requestPermission();
-      if (result === 'granted') {
-        setCompassReady(true);
-      }
+      if (result === 'granted') setCompassReady(true);
     } catch (e) {
       console.error('Erro ao pedir permissão da bússola:', e);
-    } finally {
-      setShowCompassModal(false);
-      localStorage.setItem('compass_modal_dismissed', 'true');
     }
-  };
-
-  const dismissCompassModal = () => {
-    setShowCompassModal(false);
-    localStorage.setItem('compass_modal_dismissed', 'true');
   };
 
   useEffect(() => {
@@ -630,8 +662,8 @@ export default function Home() {
             )}
             <MapContainer
               ref={mapRef}
-              center={[38.7169, -9.1399]}
-              zoom={13}
+              center={initialView.center}
+              zoom={initialView.zoom}
               className="map-container"
               rotate={true}
               bearing={0}
@@ -689,17 +721,20 @@ export default function Home() {
                     isAutoFollowing={isAutoFollowing}
                     setIsAutoFollowing={setIsAutoFollowing}
                   />
+                  <VendorsFallbackView
+                    vendors={filteredVendors}
+                    clientPos={clientPos}
+                    enabled={!hadLastPos}
+                  />
                   <LocateButton
                     currentPos={clientPos}
                     onLocationFound={(pos) => {
                       setClientPos(pos);
+                      writeLastPos(pos.lat, pos.lng);
                       setIsAutoFollowing(true);
                     }}
-                    onClick={() => setShowLocateHint(false)}
+                    onClick={requestCompassPermission}
                   />
-                  {showLocateHint && (
-                    <LocateHint onClose={() => setShowLocateHint(false)} />
-                  )}
                 </>
               )}
 
@@ -731,24 +766,6 @@ export default function Home() {
                 A carregar o mapa…
               </div>
             </div>
-
-            {showCompassModal && (
-              <div className="compass-modal-overlay" onClick={dismissCompassModal}>
-                <div className="compass-modal" onClick={(e) => e.stopPropagation()}>
-                  <div className="compass-modal-icon">🧭</div>
-                  <h3 className="compass-modal-title">Orientação Automática</h3>
-                  <p className="compass-modal-desc">
-                    Para o mapa rodar conforme a direção que estás a olhar, precisa de acesso à bússola do dispositivo.
-                  </p>
-                  <button className="compass-allow-btn" onClick={requestCompassPermission}>
-                    Permitir Bússola
-                  </button>
-                  <button className="compass-skip-btn" onClick={dismissCompassModal}>
-                    Agora não
-                  </button>
-                </div>
-              </div>
-            )}
 
             {selected && (
               <div className="vendor-card">
@@ -994,7 +1011,6 @@ export default function Home() {
           </div>
         </div>}
 
-        {showWelcome && <WelcomeCard onClose={dismissWelcome} />}
       </div>
     </div>
   );
