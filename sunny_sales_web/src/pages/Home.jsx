@@ -29,6 +29,25 @@ const PAYMENT_ICONS = {
 const LAST_POS_KEY = 'last_pos';
 const FALLBACK_CENTER = [38.7169, -9.1399];
 
+// (em português) Abaixo de 768px o cartão de meteorologia não é desenhado.
+// Esconder por CSS não chegava: o componente continuaria montado e a fazer os
+// seus dois pedidos de rede no arranque, que é exatamente o que se quer
+// evitar numa 4G congestionada de verão.
+function useIsNarrow() {
+  const query = '(max-width: 768px)';
+  const [narrow, setNarrow] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(query).matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const onChange = (e) => setNarrow(e.matches);
+    mq.addEventListener('change', onChange);
+    setNarrow(mq.matches);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+  return narrow;
+}
+
 function readLastPos() {
   try {
     const raw = sessionStorage.getItem(LAST_POS_KEY);
@@ -277,6 +296,7 @@ export default function Home() {
   const isVendorLogged = !!localStorage.getItem('user');
 
   const mapRef = useRef(null);
+  const isNarrow = useIsNarrow();
   const [isAutoFollowing, setIsAutoFollowing] = useState(true);
 
   // Abre onde o utilizador estava, não em Lisboa. Só é lido uma vez, no
@@ -835,9 +855,28 @@ export default function Home() {
               </div>
             )}
 
-            <div className="weather-overlay">
-              <WeatherCard />
-            </div>
+            {/* Faixa de estado do mapa. O estado vazio existia apenas dentro
+                da .sidebar-right, que tem display:none abaixo de 768px — ou
+                seja, num telemóvel o utilizador numa praia sem vendedores via
+                um mapa vazio sem saber se era o resultado ou uma falha de
+                carregamento. As duas faixas ocupam o mesmo espaço e têm a
+                mesma forma; o que as distingue é o texto e o shimmer. */}
+            {!isVendorLogged && !tilesLoaded && (
+              <p className="map-status map-status--loading" role="status">
+                A procurar vendedores…
+              </p>
+            )}
+            {!isVendorLogged && tilesLoaded && filteredVendors.length === 0 && (
+              <p className="map-status" role="status">
+                Nenhum vendedor por perto agora.
+              </p>
+            )}
+
+            {!isNarrow && (
+              <div className="weather-overlay">
+                <WeatherCard />
+              </div>
+            )}
 
             {!isVendorLogged && (
               <button

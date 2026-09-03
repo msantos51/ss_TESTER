@@ -299,6 +299,41 @@
   border: 0;
 }
 
+/* ── Faixa de estado do mapa ──────────────────────────
+   Carregamento e estado vazio partilham forma e posição: são vistos muitas
+   vezes e o utilizador não deve ter de reaprender onde olhar. Ancorada acima
+   do botão de localização, em texto branco sobre petróleo (15,8:1) — a
+   pílula branca com texto cinzento que aqui estava era um borrão claro sobre
+   fundo claro num ecrã ao sol. */
+
+.map-status {
+  position: absolute;
+  bottom: 96px;
+  left: 16px;
+  right: 16px;
+  z-index: 600;
+  margin: 0;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: rgba(16, 26, 30, 0.92);
+  color: #fbfcfc;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: balance;
+  box-shadow: 0 6px 22px rgba(16, 26, 30, 0.4);
+  pointer-events: none;
+}
+
+@media (min-width: 769px) {
+  /* Em desktop a lista lateral já mostra o mesmo estado; a faixa só estaria a
+     duplicar a informação por cima do mapa. */
+  .map-status {
+    display: none;
+  }
+}
+
 /* ── Skeleton de carregamento dos tiles ───────────────── */
 
 .map-skeleton {
@@ -309,10 +344,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e9eaec;
+  background-color: #d8dede;
   background-image:
-    linear-gradient(to right, rgba(15, 15, 15, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 15, 15, 0.035) 1px, transparent 1px);
+    linear-gradient(to right, rgba(15, 15, 15, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 15, 15, 0.05) 1px, transparent 1px);
   background-size: 44px 44px;
   opacity: 1;
   transition: opacity 0.5s var(--ease-out);
@@ -337,6 +372,10 @@
 }
 
 .map-skeleton-card {
+  display: none;
+}
+
+.map-skeleton-card--unused {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -683,9 +722,9 @@
 @media (pointer: coarse), (max-width: 768px) {
   .map-container .leaflet-control-zoom-in,
   .map-container .leaflet-control-zoom-out {
-    width: 44px !important;
-    height: 44px !important;
-    line-height: 44px !important;
+    width: 48px !important;
+    height: 48px !important;
+    line-height: 48px !important;
   }
 }
 
@@ -697,44 +736,47 @@
 
 /* ── Filter FAB ───────────────────────────────────────── */
 
+/* Metade inferior do ecrã e lado oposto ao botão de localização: o polegar
+   de quem segura o telemóvel com uma mão não chega ao canto superior direito,
+   que é onde este botão estava. Fica a coral só quando há um filtro ativo —
+   ou seja, quando pode estar a esconder vendedores, que é a única altura em
+   que é urgente. */
 .filter-fab {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  bottom: 24px;
+  left: 16px;
   z-index: 900;
   display: none;
   align-items: center;
-  gap: 7px;
-  padding: 10px 16px;
+  gap: 8px;
+  min-height: 56px;
+  padding: 0 22px;
   background: var(--surface);
-  border: 1px solid var(--border-strong);
+  border: 2px solid var(--text);
   border-radius: var(--radius-full);
   color: var(--text);
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 14px rgba(16, 26, 30, 0.28);
   transition: background var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition);
-  min-height: auto;
   -webkit-tap-highlight-color: transparent;
 }
 
 .filter-fab:hover {
-  background: var(--primary-light-solid);
-  border-color: var(--primary);
-  color: var(--primary);
-  box-shadow: var(--shadow-warm);
+  background: var(--surface-alt);
+  box-shadow: 0 6px 18px rgba(16, 26, 30, 0.32);
 }
 
 .filter-fab.has-filters {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--coral);
+  border-color: var(--coral);
   color: var(--on-accent);
 }
 
 .filter-fab.has-filters:hover {
-  background: var(--primary-hover);
-  border-color: var(--primary-hover);
+  background: var(--coral-hover);
+  border-color: var(--coral-hover);
   color: var(--on-accent);
 }
 

@@ -592,8 +592,7 @@ body {
   }
 
   .wrapper--map .container {
-    padding-top: var(--navbar-h);
-    padding-bottom: 0;
+    padding: var(--navbar-h) 0 0;
   }
 
   .wrapper--map .modern-layout {
