@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import { useMap } from 'react-leaflet';
 
-export default function LocateButton({ type = 'user', data = null, currentPos = null, onLocationFound, onClick, disabled = false }) {
+export default function LocateButton({ currentPos = null, onLocationFound, onClick, disabled = false }) {
   const map = useMap();
   const [locating, setLocating] = useState(false);
 
   const handleLocate = () => {
     if (onClick) onClick();
 
-    if (type === 'vendor') {
-      if (data && data.current_lat && data.current_lng) {
-        map.setView([data.current_lat, data.current_lng], 18, { animate: false });
-      }
-    } else if (currentPos && currentPos.lat != null && currentPos.lng != null) {
+    if (currentPos && currentPos.lat != null && currentPos.lng != null) {
       // Já temos a posição do watchPosition (o ponto azul no mapa): centra já,
       // sem esperar por um novo fix de GPS — em telemóveis um pedido de alta
       // precisão com maximumAge: 0 pode demorar vários segundos ou expirar,
@@ -46,15 +42,12 @@ export default function LocateButton({ type = 'user', data = null, currentPos = 
     }
   };
 
-  const ariaLabel = type === 'vendor' ? 'Localizar vendedor' : 'Localizar-me';
-  const isDisabled = disabled || (type === 'vendor' && !data);
-
   return (
     <button
-      className={`locate-btn ${type === 'vendor' ? 'vendor-locate-btn' : ''}`}
+      className="locate-btn"
       onClick={handleLocate}
-      aria-label={ariaLabel}
-      disabled={isDisabled}
+      aria-label="Localizar-me"
+      disabled={disabled}
     >
       {locating ? (
         <span className="loader" />

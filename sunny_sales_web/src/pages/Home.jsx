@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -8,7 +7,6 @@ import axios from 'axios';
 import { BASE_URL, mediaUrl, TILE_LAYER } from '../config';
 import LocateButton from '../components/LocateButton';
 import WeatherCard from '../components/WeatherCard';
-import BeachMapVisuals from '../components/BeachMapVisuals';
 import {
   FiMapPin, FiTag, FiShoppingBag,
   FiSmartphone, FiCreditCard,
@@ -224,32 +222,6 @@ function ClientAutoFollow({ clientPos, isAutoFollowing, setIsAutoFollowing }) {
   return null;
 }
 
-function VendorAutoFollow({ vendor, isAutoFollowing, setIsAutoFollowing }) {
-  const map = useMap();
-
-  useEffect(() => {
-    const onUserInteraction = (e) => {
-      if (e.target.closest('button, a, .leaflet-control')) return;
-      setIsAutoFollowing(false);
-    };
-    const container = map.getContainer();
-    container.addEventListener('mousedown', onUserInteraction);
-    container.addEventListener('touchstart', onUserInteraction, { passive: true });
-    return () => {
-      container.removeEventListener('mousedown', onUserInteraction);
-      container.removeEventListener('touchstart', onUserInteraction);
-    };
-  }, [map, setIsAutoFollowing]);
-
-  useEffect(() => {
-    if (isAutoFollowing && vendor?.current_lat && vendor?.current_lng) {
-      map.setView([vendor.current_lat, vendor.current_lng], map.getZoom(), { animate: false });
-    }
-  }, [vendor?.current_lat, vendor?.current_lng, isAutoFollowing, map]);
-
-  return null;
-}
-
 // (em português) Sem posição guardada e sem fix de GPS, o mapa abria em
 // Lisboa. Assim que a lista de vendedores chega, enquadra os que estão ativos
 // — é a melhor aproximação disponível do sítio onde o utilizador está, e é
@@ -293,7 +265,6 @@ export default function Home() {
   const absEventFiredRef = useRef(false);
   const gpsMovingRef = useRef(false);
   const [compassReady, setCompassReady] = useState(false);
-  const isVendorLogged = !!localStorage.getItem('user');
 
   const mapRef = useRef(null);
   const isNarrow = useIsNarrow();
@@ -363,12 +334,7 @@ export default function Home() {
     let interval;
     const fetchVendors = async () => {
       try {
-        const headers = {};
-        if (isVendorLogged) {
-          const token = localStorage.getItem('token');
-          if (token) headers.Authorization = `Bearer ${token}`;
-        }
-        const res = await axios.get(`${BASE_URL}/vendors/`, { headers });
+        const res = await axios.get(`${BASE_URL}/vendors/`);
         setVendors(res.data);
       } catch (err) {
         console.error('Erro ao carregar vendedores:', err);
@@ -383,7 +349,7 @@ export default function Home() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isVendorLogged]);
+  }, []);
 
   // Canal em tempo real (WebSocket): recebe as atualizações de posição dos
   // vendedores sem necessidade de polling constante. Está aberto a qualquer
@@ -565,45 +531,23 @@ export default function Home() {
     ? vendors.filter((v) => v.current_lat && v.current_lng)
     : [];
 
-  let loggedVendor = null;
-  let loggedVendorData = null;
-  if (isVendorLogged) {
-    try {
-      const stored = localStorage.getItem('user');
-      if (stored) {
-        loggedVendorData = JSON.parse(stored);
-        const { id } = loggedVendorData;
-        const vendorId = Number(id);
-        loggedVendor =
-          activeVendors.find((v) => Number(v.id) === vendorId) || null;
-      }
-    } catch (e) {
-      console.error('Erro ao ler vendedor logado:', e);
-    }
-  }
-
-  const nearbyVendorsCount = (!isVendorLogged && clientPos)
+  const nearbyVendorsCount = clientPos
     ? activeVendors.filter((v) =>
         haversineDistance(clientPos.lat, clientPos.lng, v.current_lat, v.current_lng) <= 100
       ).length
     : null;
 
-  let filteredVendors = [];
-  if (isVendorLogged) {
-    filteredVendors = loggedVendor ? [loggedVendor] : [];
-  } else {
-    filteredVendors = activeVendors.filter((v) => {
-      if (selectedProducts.length > 0 && !selectedProducts.includes(v.product)) return false;
-      if (maxDistance !== null && clientPos) {
-        const dist = haversineDistance(
-          clientPos.lat, clientPos.lng,
-          v.current_lat, v.current_lng
-        );
-        if (dist > maxDistance) return false;
-      }
-      return true;
-    });
-  }
+  const filteredVendors = activeVendors.filter((v) => {
+    if (selectedProducts.length > 0 && !selectedProducts.includes(v.product)) return false;
+    if (maxDistance !== null && clientPos) {
+      const dist = haversineDistance(
+        clientPos.lat, clientPos.lng,
+        v.current_lat, v.current_lng
+      );
+      if (dist > maxDistance) return false;
+    }
+    return true;
+  });
 
   const focusVendor = (v) => {
     setSelected(v);
@@ -622,7 +566,7 @@ export default function Home() {
   return (
     <div className="home">
       <div className="modern-layout">
-        {!isVendorLogged && <div className="sidebar-left">
+        <div className="sidebar-left">
           <div className="sidebar-filters">
             <div className="filter-header">
               <h3 className="filter-title">Filtros</h3>
@@ -671,15 +615,13 @@ export default function Home() {
               )}
             </div>
           </div>
-        </div>}
+        </div>
 
         <div className="map-wrapper">
           <section className="map-area" aria-label="Mapa de vendedores">
-            {!isVendorLogged && (
-              <h1 className="map-tagline">
-                Encontra vendedores de praia perto de ti, em tempo real
-              </h1>
-            )}
+            <h1 className="map-tagline">
+              Encontra vendedores de praia perto de ti, em tempo real
+            </h1>
             <MapContainer
               ref={mapRef}
               center={initialView.center}
@@ -694,7 +636,7 @@ export default function Home() {
                 {...TILE_LAYER}
                 eventHandlers={{ load: () => setTilesLoaded(true) }}
               />
-              {!isVendorLogged && clientPos && (
+              {clientPos && (
                 <Marker
                   position={[clientPos.lat, clientPos.lng]}
                   icon={L.divIcon({
@@ -708,25 +650,17 @@ export default function Home() {
                 </Marker>
               )}
               {filteredVendors.map((v) => {
-                const isOwn = loggedVendor && Number(v.id) === Number(loggedVendor.id);
                 const pinColor = v.pin_color || '#1D5C3A';
                 return (
                   <AnimatedVendorMarker
                     key={v.id}
                     position={[v.current_lat, v.current_lng]}
-                    icon={isOwn
-                      ? L.divIcon({
-                          className: 'client-pin',
-                          html: getClientPinHtml(heading, pinColor),
-                          iconSize: [50, 50],
-                          iconAnchor: [25, 25],
-                        })
-                      : L.divIcon({
-                          className: 'vendor-pin',
-                          html: getVendorPinHtml(pinColor),
-                          iconSize: [40, 48],
-                          iconAnchor: [20, 47],
-                        })}
+                    icon={L.divIcon({
+                      className: 'vendor-pin',
+                      html: getVendorPinHtml(pinColor),
+                      iconSize: [40, 48],
+                      iconAnchor: [20, 47],
+                    })}
                     eventHandlers={{
                       click: () => focusVendor(v),
                     }}
@@ -734,45 +668,25 @@ export default function Home() {
                 );
               })}
 
-              {!isVendorLogged && (
-                <>
-                  <ClientAutoFollow
-                    clientPos={clientPos}
-                    isAutoFollowing={isAutoFollowing}
-                    setIsAutoFollowing={setIsAutoFollowing}
-                  />
-                  <VendorsFallbackView
-                    vendors={filteredVendors}
-                    clientPos={clientPos}
-                    enabled={!hadLastPos}
-                  />
-                  <LocateButton
-                    currentPos={clientPos}
-                    onLocationFound={(pos) => {
-                      setClientPos(pos);
-                      writeLastPos(pos.lat, pos.lng);
-                      setIsAutoFollowing(true);
-                    }}
-                    onClick={requestCompassPermission}
-                  />
-                </>
-              )}
-
-              {loggedVendor && (
-                <VendorAutoFollow
-                  vendor={loggedVendor}
-                  isAutoFollowing={isAutoFollowing}
-                  setIsAutoFollowing={setIsAutoFollowing}
-                />
-              )}
-
-              {isVendorLogged && loggedVendorData && (
-                <LocateButton
-                  type="vendor"
-                  data={loggedVendor}
-                  onClick={() => setIsAutoFollowing(true)}
-                />
-              )}
+              <ClientAutoFollow
+                clientPos={clientPos}
+                isAutoFollowing={isAutoFollowing}
+                setIsAutoFollowing={setIsAutoFollowing}
+              />
+              <VendorsFallbackView
+                vendors={filteredVendors}
+                clientPos={clientPos}
+                enabled={!hadLastPos}
+              />
+              <LocateButton
+                currentPos={clientPos}
+                onLocationFound={(pos) => {
+                  setClientPos(pos);
+                  writeLastPos(pos.lat, pos.lng);
+                  setIsAutoFollowing(true);
+                }}
+                onClick={requestCompassPermission}
+              />
             </MapContainer>
 
             <div
@@ -861,12 +775,12 @@ export default function Home() {
                 um mapa vazio sem saber se era o resultado ou uma falha de
                 carregamento. As duas faixas ocupam o mesmo espaço e têm a
                 mesma forma; o que as distingue é o texto e o shimmer. */}
-            {!isVendorLogged && !tilesLoaded && (
+            {!tilesLoaded && (
               <p className="map-status map-status--loading" role="status">
                 A procurar vendedores…
               </p>
             )}
-            {!isVendorLogged && tilesLoaded && filteredVendors.length === 0 && (
+            {tilesLoaded && filteredVendors.length === 0 && (
               <p className="map-status" role="status">
                 Nenhum vendedor por perto agora.
               </p>
@@ -878,20 +792,18 @@ export default function Home() {
               </div>
             )}
 
-            {!isVendorLogged && (
-              <button
-                type="button"
-                className={`filter-fab${activeFilterCount > 0 ? ' has-filters' : ''}`}
-                onClick={openFilterSheet}
-                aria-label="Abrir filtros"
-              >
-                <FiSliders size={16} />
-                Filtros
-                {activeFilterCount > 0 && <span>({activeFilterCount})</span>}
-              </button>
-            )}
+            <button
+              type="button"
+              className={`filter-fab${activeFilterCount > 0 ? ' has-filters' : ''}`}
+              onClick={openFilterSheet}
+              aria-label="Abrir filtros"
+            >
+              <FiSliders size={16} />
+              Filtros
+              {activeFilterCount > 0 && <span>({activeFilterCount})</span>}
+            </button>
 
-            {!isVendorLogged && showFilterSheet && (
+            {showFilterSheet && (
               <div className="filter-overlay" onClick={closeFilterSheet}>
                 <div className="filter-sheet" onClick={(e) => e.stopPropagation()}>
                   <div className="filter-sheet-handle" />
@@ -978,7 +890,7 @@ export default function Home() {
           </section>
         </div>
 
-        {!isVendorLogged && <div className="sidebar-right">
+        <div className="sidebar-right">
           <div className="vendors-panel">
             <div className="vendors-header">
               <h3 className="vendors-title">Vendedores perto de ti</h3>
@@ -1048,7 +960,7 @@ export default function Home() {
               )}
             </div>
           </div>
-        </div>}
+        </div>
 
       </div>
     </div>

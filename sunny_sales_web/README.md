@@ -2,6 +2,21 @@
 
 Aplicação web em React utilizando Vite.
 
+## Âmbito do site
+
+O site é dedicado **exclusivamente ao banhista** e tem apenas estas páginas:
+
+- `/` — página inicial com o mapa de vendedores em tempo real
+- `/sustentabilidade` — Praia Sustentável
+- `/sobre-projeto` — Sobre o Projeto
+- `/faqs` — perguntas frequentes dos banhistas
+- `/contacto` — formulário de contacto
+- páginas legais no rodapé (privacidade, termos, aviso legal, cookies)
+
+Não existe início de sessão, criação de conta, nem qualquer área de vendedor
+na web — a gestão de vendedores vive na aplicação móvel. Ao adicionar páginas
+novas, mantém este âmbito.
+
 ## Desenvolvimento
 
 ```bash

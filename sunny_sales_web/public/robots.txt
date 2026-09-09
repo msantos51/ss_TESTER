@@ -1,20 +1,8 @@
 User-agent: *
 Allow: /
 
-# Áreas privadas da aplicação (painel do vendedor) — não indexar.
-Disallow: /dashboard
-Disallow: /account
-Disallow: /settings
-Disallow: /invoices
-Disallow: /paid-weeks
-Disallow: /routes
-Disallow: /route-detail
-Disallow: /stats
-Disallow: /products
-Disallow: /sessions
-Disallow: /vendor-login
-Disallow: /vendor-register
-Disallow: /forgot-password
+# O site é dedicado ao banhista e não tem áreas privadas nem autenticação:
+# todas as páginas podem ser indexadas.
 
 # Atualiza o domínio abaixo quando tiveres o domínio definitivo do site.
 Sitemap: https://sstester-production.up.railway.app/sitemap.xml
