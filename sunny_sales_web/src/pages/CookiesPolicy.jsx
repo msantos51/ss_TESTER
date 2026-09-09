@@ -22,16 +22,17 @@ export default function CookiesPolicy() {
         <section>
           <h2>2. O que a Sunny Sales Utiliza</h2>
           <p>
-            A plataforma foi construída para recolher o mínimo indispensável. Aquilo
-            que guardamos no seu dispositivo é <strong>estritamente necessário</strong>
-            ao funcionamento do serviço:
+            Este site é dedicado ao banhista e não tem contas nem início de sessão,
+            pelo que não guardamos quaisquer dados de autenticação no seu navegador.
+            Aquilo que guardamos no seu dispositivo é
+            <strong> estritamente necessário</strong> ao funcionamento do mapa:
           </p>
           <ul>
             <li>
-              <strong>Autenticação (vendedores):</strong> guardamos no armazenamento
-              local do navegador o token de sessão e os dados básicos da conta, para
-              o manter com sessão iniciada. Sem isto, não seria possível aceder ao
-              painel do vendedor.
+              <strong>Última posição do mapa:</strong> guardamos no armazenamento de
+              sessão do navegador as coordenadas onde consultou o mapa pela última
+              vez, para o abrir na sua praia em vez do centro do país. É apagada
+              quando fecha o separador.
             </li>
             <li>
               <strong>Preferências da interface:</strong> pequenas marcas para
@@ -67,11 +68,9 @@ export default function CookiesPolicy() {
         <section>
           <h2>4. Cookies de Terceiros (Pagamentos)</h2>
           <p>
-            Quando efetua um pagamento, o processo decorre nas páginas seguras do
-            <strong> Stripe</strong>, o nosso processador de pagamentos. O Stripe pode
-            colocar os seus próprios cookies para prevenção de fraude e segurança da
-            transação, geridos segundo a política de privacidade do Stripe
-            (stripe.com/privacy). A Sunny Sales não tem acesso aos dados do seu cartão.
+            Este site não processa pagamentos: a compra é feita diretamente ao
+            vendedor, na praia, pelos meios que ele disponibilizar. Não são
+            colocados no seu navegador cookies de processadores de pagamento.
           </p>
         </section>
 
@@ -89,9 +88,8 @@ export default function CookiesPolicy() {
           <h2>6. Como Gerir e Eliminar</h2>
           <p>
             Pode limpar o armazenamento local e os cookies a qualquer momento nas
-            definições do seu navegador (secção de privacidade/dados de sites). Ao
-            fazê-lo, a sua sessão de vendedor terminará e terá de iniciar sessão
-            novamente.
+            definições do seu navegador (secção de privacidade/dados de sites). Como
+            não guardamos dados de conta, não perde qualquer acesso ao fazê-lo.
           </p>
           <ul>
             <li><strong>Chrome:</strong> Definições → Privacidade e segurança → Cookies e dados de sites</li>

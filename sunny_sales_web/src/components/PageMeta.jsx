@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 // canónico).
 //
 // Nota SEO: a app usa BrowserRouter, pelo que cada página tem um URL real
-// (ex.: /planos, /contacto) e o backend faz fallback para index.html em
+// (ex.: /faqs, /contacto) e o backend faz fallback para index.html em
 // qualquer caminho. Além do título/descrição por página, definimos aqui o
 // <link rel="canonical"> e o og:url para que cada rota seja indexada e
 // partilhada com o seu próprio endereço.
@@ -27,20 +27,10 @@ const META = {
     description:
       'Boas práticas para praias mais limpas: menos plástico, menos beatas e um comércio de praia mais consciente.',
   },
-  '/planos': {
-    title: 'Planos para Vendedores · Sunny Sales',
-    description:
-      'Planos semanal, quinzenal e mensal para vendedores de praia. Ativação imediata, sem taxas escondidas, cancela quando quiseres.',
-  },
-  '/como-funciona': {
-    title: 'Como Funciona · Sunny Sales',
-    description:
-      'Regista-te como vendedor, ativa a localização e aparece no mapa para os banhistas mais próximos. Vê como funciona passo a passo.',
-  },
   '/faqs': {
     title: 'Perguntas Frequentes · Sunny Sales',
     description:
-      'Respostas às perguntas mais comuns de banhistas e vendedores sobre o Sunny Sales.',
+      'Respostas às perguntas mais comuns dos banhistas sobre o Sunny Sales.',
   },
   '/contacto': {
     title: 'Contacto · Sunny Sales',
@@ -51,10 +41,6 @@ const META = {
     title: 'Mapa de Vendedores · Sunny Sales',
     description:
       'Vê em tempo real os vendedores de praia perto de ti e filtra por produto e distância.',
-  },
-  '/dashboard': {
-    title: 'Painel do Vendedor · Sunny Sales',
-    description: 'Gere a tua presença no mapa e acompanha a tua atividade.',
   },
   '/privacy-policy': {
     title: 'Política de Privacidade · Sunny Sales',

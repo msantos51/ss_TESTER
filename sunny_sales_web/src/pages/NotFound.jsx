@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiHome, FiMapPin } from 'react-icons/fi';
+import { FiHome, FiHelpCircle } from 'react-icons/fi';
 import './NotFound.css';
 
 // (em português) Página apresentada quando a rota não existe.
@@ -16,9 +16,9 @@ export default function NotFound() {
           <FiHome size={16} />
           Voltar ao início
         </Link>
-        <Link to="/map" className="notfound-btn notfound-btn-ghost">
-          <FiMapPin size={16} />
-          Explorar mapa
+        <Link to="/faqs" className="notfound-btn notfound-btn-ghost">
+          <FiHelpCircle size={16} />
+          Perguntas frequentes
         </Link>
       </div>
     </div>

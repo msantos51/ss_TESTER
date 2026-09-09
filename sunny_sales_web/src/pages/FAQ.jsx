@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { FiUsers, FiShoppingBag } from 'react-icons/fi';
 import './InfoPage.css';
 import './FAQ.css';
 
+// (em português) O site é dedicado ao banhista: estas são as únicas perguntas
+// frequentes apresentadas.
 const FAQS_BANHISTAS = [
   {
     q: 'Como encontro vendedores na praia?',
@@ -14,7 +14,7 @@ const FAQS_BANHISTAS = [
   },
   {
     q: 'Preciso de criar conta para usar o mapa?',
-    a: 'Não. Qualquer banhista pode consultar o mapa e ver os vendedores sem precisar de criar conta.',
+    a: 'Não. O Sunny Sales não tem contas nem início de sessão: qualquer banhista pode consultar o mapa livremente.',
   },
   {
     q: 'Como pago aos vendedores?',
@@ -24,28 +24,13 @@ const FAQS_BANHISTAS = [
     q: 'A localização dos vendedores é em tempo real?',
     a: 'Sim. A posição de cada vendedor é atualizada automaticamente enquanto este estiver ativo na aplicação.',
   },
-];
-
-const FAQS_VENDEDORES = [
   {
-    q: 'Como me torno vendedor na plataforma?',
-    a: 'Cria uma conta de vendedor, preenche o teu perfil e escolhe um plano de subscrição para ficares visível no mapa.',
+    q: 'O site guarda a minha localização?',
+    a: 'Não. A tua localização é usada apenas no teu dispositivo para centrar o mapa e calcular distâncias; não é enviada nem guardada nos nossos servidores.',
   },
   {
-    q: 'Quais são os planos disponíveis?',
-    a: 'Temos planos semanal, quinzenal e mensal. Podes consultar todos os detalhes e preços na página de Planos.',
-  },
-  {
-    q: 'Posso cancelar a subscrição quando quiser?',
-    a: 'Sim. Podes cancelar a qualquer momento e o teu acesso mantém-se ativo até ao fim do período já pago.',
-  },
-  {
-    q: 'Como ativo a minha localização no mapa?',
-    a: 'Após iniciares sessão, ativa a partilha de localização no teu painel de vendedor para apareceres automaticamente para os banhistas próximos.',
-  },
-  {
-    q: 'Posso ver estatísticas sobre os meus clientes?',
-    a: 'Sim. Todos os planos incluem acesso a estatísticas avançadas sobre a tua atividade e visibilidade na plataforma.',
+    q: 'Como posso ajudar a manter a praia limpa?',
+    a: 'Visita a página Praia Sustentável para veres os gestos simples que fazem a diferença: cinzeiros portáteis, garrafas reutilizáveis e levar sempre o lixo contigo.',
   },
 ];
 
@@ -63,8 +48,6 @@ function FaqGroup({ items }) {
 }
 
 export default function FAQ() {
-  const [tab, setTab] = useState('banhistas');
-
   return (
     <div className="info-page faq-page">
 
@@ -73,35 +56,11 @@ export default function FAQ() {
           Perguntas Frequentes
         </h1>
         <p className="info-hero-lead">
-          Encontra respostas às perguntas mais comuns sobre o Sunny Sales, separadas para
-          banhistas e para vendedores.
+          Encontra respostas às perguntas mais comuns dos banhistas sobre o Sunny Sales.
         </p>
       </div>
 
-      <div className="faq-tabs" role="group" aria-label="Escolher grupo de perguntas">
-        <button
-          className={`faq-tab${tab === 'banhistas' ? ' active' : ''}`}
-          onClick={() => setTab('banhistas')}
-          aria-pressed={tab === 'banhistas'}
-        >
-          <FiUsers size={16} aria-hidden="true" />
-          Banhistas
-        </button>
-        <button
-          className={`faq-tab${tab === 'vendedores' ? ' active' : ''}`}
-          onClick={() => setTab('vendedores')}
-          aria-pressed={tab === 'vendedores'}
-        >
-          <FiShoppingBag size={16} aria-hidden="true" />
-          Vendedores
-        </button>
-      </div>
-
-      {tab === 'banhistas' ? (
-        <FaqGroup items={FAQS_BANHISTAS} />
-      ) : (
-        <FaqGroup items={FAQS_VENDEDORES} />
-      )}
+      <FaqGroup items={FAQS_BANHISTAS} />
     </div>
   );
 }
