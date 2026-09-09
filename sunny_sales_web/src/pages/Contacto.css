@@ -3,10 +3,10 @@
   position: relative;
   overflow: hidden;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 30px 26px;
-  box-shadow: var(--shadow-md);
+  border: none;
+  border-radius: var(--radius-2xl);
+  padding: 34px 32px;
+  box-shadow: var(--shadow-sm);
   margin-bottom: 2rem;
 }
 .contacto-form-wrap::before {
@@ -34,39 +34,46 @@
 }
 
 .contacto-label {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text);
   display: flex;
   align-items: center;
-  gap: 5px;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  gap: 6px;
+  letter-spacing: -0.01em;
+}
+
+.contacto-label svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 /* ── Inputs ────────────────────────────────────────────── */
 .contacto-input {
   width: 100%;
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  min-height: 50px;
+  padding: 13px 16px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-control);
   background: var(--surface-alt);
   color: var(--text);
   font-family: inherit;
-  font-size: 0.9rem;
-  transition: border-color 0.18s, box-shadow 0.18s;
+  font-size: 0.925rem;
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
   outline: none;
   box-sizing: border-box;
 }
 
+.contacto-input::placeholder { color: var(--text-muted); }
+
 .contacto-input:hover:not(:focus) {
-  border-color: var(--text-muted);
+  background: var(--surface-hover);
 }
 
 .contacto-input:focus {
-  border-color: var(--primary);
+  border-color: var(--accent);
   background: var(--surface);
-  box-shadow: 0 0 0 3px rgba(43, 124, 109, 0.14);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .contacto-select {
@@ -114,18 +121,19 @@
 }
 
 /* ── Submit button ─────────────────────────────────────── */
-/* Submeter o formulário é a ação primária da página → acento
-   vermelho-alaranjado (ver DESIGN_SYSTEM.md · paleta). */
+/* Enviar é a ação principal desta página → botão preto
+   (ver DESIGN_SYSTEM.md · --ink) */
 .contacto-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--secondary);
-  color: var(--on-accent);
+  background: var(--ink);
+  color: #fff;
   font-weight: 600;
   font-size: 0.95rem;
-  padding: 12px 28px;
+  min-height: 50px;
+  padding: 13px 30px;
   border: none;
   border-radius: var(--radius-btn);
   cursor: pointer;
@@ -134,7 +142,7 @@
 }
 
 .contacto-btn:hover:not(:disabled) {
-  background: var(--secondary-hover);
+  background: var(--ink-hover);
   transform: none;
   box-shadow: none;
   filter: none;
@@ -177,7 +185,10 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 48px 24px;
+  background: var(--surface);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  padding: 64px 24px;
   gap: 16px;
   animation: scaleIn 0.35s var(--ease-out);
 }
@@ -189,8 +200,10 @@
 }
 
 .contacto-success-title {
-  font-size: 1.5rem;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
   font-weight: 700;
+  letter-spacing: -0.03em;
   color: var(--text);
   margin: 0;
 }
@@ -210,7 +223,7 @@
   }
 
   .contacto-form-wrap {
-    padding: 20px 16px;
+    padding: 22px 18px;
   }
 
   .contacto-btn-submit {
