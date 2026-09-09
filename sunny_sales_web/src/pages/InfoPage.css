@@ -1,7 +1,7 @@
 .info-page {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 0 1rem 3rem;
+  padding: 0 0.5rem 3rem;
   color: var(--text);
   font-family: 'Inter', system-ui, sans-serif;
   animation: fadeIn 0.45s var(--ease-out);
@@ -10,10 +10,10 @@
 /* ── Hero ──────────────────────────────────────────────── */
 .info-hero {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-2xl);
-  padding: 52px 48px;
-  margin-bottom: 2.5rem;
+  padding: 56px 52px;
+  margin-bottom: 2rem;
   color: var(--text);
   text-align: left;
   position: relative;
@@ -85,9 +85,9 @@
 
 .info-badge {
   background: var(--surface-alt);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-full);
-  padding: 8px 16px;
+  padding: 9px 16px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -95,12 +95,11 @@
   color: var(--text-secondary);
   font-weight: 500;
   white-space: nowrap;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition: background var(--transition);
 }
 
 .info-badge:hover {
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-xs);
+  background: var(--surface-hover);
 }
 
 .info-badge svg {
@@ -146,13 +145,12 @@
 .info-card {
   position: relative;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 26px 22px;
-  box-shadow: var(--shadow-xs);
+  border: none;
+  border-radius: var(--radius-panel);
+  padding: 28px 24px;
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
-  transition: transform var(--transition), box-shadow var(--transition),
-    border-color var(--transition);
+  transition: transform var(--transition), box-shadow var(--transition);
 }
 
 .info-card::before {
@@ -162,21 +160,20 @@
 .info-card:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-md);
-  border-color: var(--border-strong);
 }
 
 .info-card-icon {
   font-size: 1.4rem;
   color: var(--primary);
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 46px;
   height: 46px;
-  background: var(--primary-light-solid);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  background: var(--accent-soft);
+  border: none;
+  border-radius: var(--radius-control);
   flex-shrink: 0;
 }
 
@@ -245,10 +242,10 @@
   justify-content: center;
   width: 46px;
   height: 46px;
-  border-radius: var(--radius-lg);
-  background: var(--primary-light-solid);
+  border-radius: var(--radius-control);
+  background: var(--accent-soft);
   color: var(--primary);
-  border: 1px solid var(--border);
+  border: none;
   flex-shrink: 0;
 }
 
@@ -298,19 +295,19 @@
 .info-list li {
   font-size: 0.9rem;
   color: var(--text-secondary);
-  padding: 12px 16px 12px 44px;
-  border-radius: var(--radius-md);
+  padding: 14px 18px 14px 44px;
+  border-radius: var(--radius-lg);
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: none;
   position: relative;
   line-height: 1.5;
   text-align: left;
   box-shadow: var(--shadow-xs);
-  transition: border-color var(--transition);
+  transition: box-shadow var(--transition);
 }
 
 .info-list li:hover {
-  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
 }
 
 .info-list li::before {
@@ -353,11 +350,11 @@
 }
 
 .info-timeline-number {
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   border-radius: 50%;
-  background: var(--primary);
+  background: var(--accent);
   color: var(--on-accent);
   display: flex;
   align-items: center;
@@ -367,29 +364,28 @@
   font-size: 1rem;
   z-index: 1;
   flex-shrink: 0;
-  border: 2px solid var(--bg);
+  border: 3px solid var(--canvas);
   box-shadow: var(--shadow-xs);
 }
 
 .info-timeline-body {
   flex: 1;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-lg);
-  padding: 14px 18px;
+  padding: 16px 20px;
   box-shadow: var(--shadow-xs);
   font-size: 0.9rem;
   color: var(--text-secondary);
   line-height: 1.55;
-  min-height: 40px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   text-align: left;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition: box-shadow var(--transition);
 }
 
 .info-timeline li:hover .info-timeline-body {
-  border-color: var(--border-strong);
   box-shadow: var(--shadow-sm);
 }
 
@@ -408,8 +404,8 @@
   align-items: center;
   gap: 22px;
   background: var(--grad-dark);
-  border-radius: var(--radius-xl);
-  padding: 32px 36px;
+  border-radius: var(--radius-2xl);
+  padding: 36px 40px;
   color: #fff;
   overflow: hidden;
   margin-top: 1.5rem;
@@ -426,12 +422,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  border-radius: var(--radius-control);
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
   color: #fff;
   flex-shrink: 0;
   z-index: 1;
@@ -500,8 +496,8 @@
   position: relative;
   overflow: hidden;
   background: var(--grad-dark);
-  border-radius: var(--radius-xl);
-  padding: 34px 30px;
+  border-radius: var(--radius-2xl);
+  padding: 36px 32px;
   text-align: center;
   color: white;
   margin-top: 1.5rem;
@@ -561,10 +557,11 @@
   text-align: left;
   font-size: 0.95rem;
   color: var(--text-secondary);
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
+  background: var(--surface);
+  border: none;
   border-radius: var(--radius-lg);
-  padding: 18px 24px;
+  box-shadow: var(--shadow-xs);
+  padding: 20px 24px;
   margin-top: 1rem;
   line-height: 1.65;
 }
@@ -593,7 +590,7 @@
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 780px) {
   .info-hero {
-    padding: 36px 28px;
+    padding: 38px 28px;
   }
 }
 
@@ -664,29 +661,29 @@
   gap: 16px;
   align-items: flex-start;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 18px;
   font-size: 0.9rem;
   color: var(--text-secondary);
   line-height: 1.55;
   box-shadow: var(--shadow-xs);
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition: box-shadow var(--transition), transform var(--transition);
 }
 
 .sustainability-item:hover {
-  border-color: var(--border-strong);
   box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
 }
 
 .sustainability-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 40px;
+  min-width: 42px;
+  height: 42px;
   background: rgba(20, 122, 61, 0.1);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-control);
   flex-shrink: 0;
   color: var(--success);
 }
@@ -705,9 +702,9 @@
 /* ── Sustainability CTA ────────────────────────────────── */
 .sustainability-cta {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px 28px;
+  border: none;
+  border-radius: var(--radius-panel);
+  padding: 26px 30px;
   text-align: left;
   color: var(--text-secondary);
   display: flex;

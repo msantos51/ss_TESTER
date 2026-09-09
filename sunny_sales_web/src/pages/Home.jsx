@@ -10,7 +10,7 @@ import WeatherCard from '../components/WeatherCard';
 import {
   FiMapPin, FiTag, FiShoppingBag,
   FiSmartphone, FiCreditCard,
-  FiSliders, FiCheck, FiX,
+  FiSliders, FiCheck, FiX, FiMap, FiList,
 } from 'react-icons/fi';
 import { TbCurrencyEuro } from 'react-icons/tb';
 import './Home.css';
@@ -143,9 +143,12 @@ function escapeHtml(str) {
   }[c]));
 }
 
+// A gota deixa de ser um anel grosso e passa a ser sólida com um miolo
+// branco — a mesma leitura à distância, menos ruído quando há muitos pins
+// juntos, e a cor do vendedor ocupa mais área (é o que se procura no mapa).
 function getVendorPinHtml(color) {
   const safeColor = escapeHtml(color);
-  return `<div class="vendor-pin-marker" style="--pin-color: ${safeColor};"></div>`;
+  return `<div class="vendor-pin-marker" style="--pin-color: ${safeColor};"><span class="vendor-pin-core"></span></div>`;
 }
 
 function MapZoomA11y() {
@@ -269,6 +272,15 @@ export default function Home() {
   const mapRef = useRef(null);
   const isNarrow = useIsNarrow();
   const [isAutoFollowing, setIsAutoFollowing] = useState(true);
+
+  // (em português) Mapa ou lista. Em desktop a lista é uma coluna à direita e
+  // está aberta por omissão; em telemóvel é um painel que cobre o mapa, por
+  // isso arranca fechado — quem chega por QR code veio ver o mapa.
+  const [viewMode, setViewMode] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
+      ? 'map'
+      : 'list'
+  );
 
   // Abre onde o utilizador estava, não em Lisboa. Só é lido uma vez, no
   // primeiro render, porque o Leaflet ignora alterações posteriores a `center`.
@@ -554,7 +566,28 @@ export default function Home() {
     if (mapRef.current) {
       mapRef.current.flyTo([v.current_lat, v.current_lng], 18, { animate: true, duration: 0.5 });
     }
+    // Em telemóvel a lista cobre o mapa: escolher um vendedor volta ao mapa.
+    if (isNarrow) setViewMode('map');
   };
+
+  // Ação principal do painel de pesquisa: enquadra no mapa exatamente o que os
+  // filtros deixaram de fora — sem isto, escolher "5 km" não mostra nada de
+  // novo se os vendedores estiverem fora do enquadramento atual.
+  const showFilteredOnMap = () => {
+    const map = mapRef.current;
+    if (!map || filteredVendors.length === 0) return;
+    setIsAutoFollowing(false);
+    if (filteredVendors.length === 1) {
+      const v = filteredVendors[0];
+      map.flyTo([v.current_lat, v.current_lng], 17, { animate: true, duration: 0.6 });
+      return;
+    }
+    const points = filteredVendors.map((v) => [v.current_lat, v.current_lng]);
+    if (clientPos) points.push([clientPos.lat, clientPos.lng]);
+    map.fitBounds(L.latLngBounds(points), { padding: [64, 64], maxZoom: 16 });
+  };
+
+  const distanceLabel = DISTANCE_OPTIONS.find((o) => o.value === maxDistance)?.label;
 
   useEffect(() => {
     if (!selected) { setVendorProducts([]); return; }
@@ -565,57 +598,116 @@ export default function Home() {
 
   return (
     <div className="home">
-      <div className="modern-layout">
-        <div className="sidebar-left">
-          <div className="sidebar-filters">
-            <div className="filter-header">
-              <h3 className="filter-title">Filtros</h3>
-              <button className="filter-clear-btn" onClick={resetFilters}>
-                Limpar
-              </button>
-            </div>
+      <div className={`modern-layout modern-layout--${viewMode}`}>
+        <aside className="sidebar-left" aria-label="Filtros de pesquisa">
+          <div className="search-panel">
+            <header className="search-panel-head">
+              <h2 className="search-panel-title">Procurar vendedores</h2>
+              <p className="search-panel-count">
+                {filteredVendors.length}{' '}
+                {filteredVendors.length === 1
+                  ? 'vendedor encontrado'
+                  : 'vendedores encontrados'}
+              </p>
+            </header>
 
-            <div className="filter-section">
-              <h4 className="filter-category-title">Tipo de Produto</h4>
-              {PRODUCTS.map((p) => {
-                const active = selectedProducts.includes(p);
-                return (
-                  <label key={p} className="filter-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={active}
-                      onChange={() => toggleProduct(p)}
-                    />
-                    <span className="checkbox-label">{p}</span>
-                  </label>
-                );
-              })}
-            </div>
-
-            <div className="filter-divider" />
-
-            <div className="filter-section">
-              <h4 className="filter-category-title">
-                <FiMapPin size={14} style={{ marginRight: 6 }} />
+            {/* Distância: segmento único, como as abas de modo de um motor de
+                pesquisa — cinco escolhas curtas cabem numa linha e evitam a
+                lista de rádios, que ocupava meio painel. */}
+            <div className="filter-block">
+              <h3 className="filter-label">
+                <FiMapPin size={13} aria-hidden="true" />
                 Distância
-              </h4>
-              {DISTANCE_OPTIONS.map((opt) => (
-                <label key={opt.label} className="filter-radio">
-                  <input
-                    type="radio"
-                    name="distance"
-                    checked={maxDistance === opt.value}
-                    onChange={() => setMaxDistance(opt.value)}
-                  />
-                  <span className="radio-label">{opt.label}</span>
-                </label>
-              ))}
+              </h3>
+              <div className="segmented" role="group" aria-label="Distância máxima">
+                {DISTANCE_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.label}
+                    type="button"
+                    className={`segmented-opt${maxDistance === opt.value ? ' active' : ''}`}
+                    aria-pressed={maxDistance === opt.value}
+                    onClick={() => setMaxDistance(opt.value)}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
               {maxDistance !== null && !clientPos && (
-                <p className="filter-hint">Ative a localização para filtrar</p>
+                <p className="filter-hint">Ativa a localização para filtrar por distância.</p>
               )}
             </div>
+
+            <div className="filter-block">
+              <h3 className="filter-label">Tipo de produto</h3>
+              <div className="option-list">
+                {PRODUCTS.map((p) => {
+                  const active = selectedProducts.includes(p);
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      className={`option-card${active ? ' active' : ''}`}
+                      aria-pressed={active}
+                      onClick={() => toggleProduct(p)}
+                    >
+                      <span className="option-card-mark" aria-hidden="true">
+                        {active && <FiCheck size={12} />}
+                      </span>
+                      <span className="option-card-label">{p}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {activeFilterCount > 0 && (
+              <div className="filter-chips" aria-label="Filtros ativos">
+                {selectedProducts.map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    className="filter-chip"
+                    onClick={() => toggleProduct(p)}
+                    aria-label={`Remover filtro ${p}`}
+                  >
+                    {p}
+                    <FiX size={13} aria-hidden="true" />
+                  </button>
+                ))}
+                {maxDistance !== null && (
+                  <button
+                    type="button"
+                    className="filter-chip"
+                    onClick={() => setMaxDistance(null)}
+                    aria-label="Remover filtro de distância"
+                  >
+                    Até {distanceLabel}
+                    <FiX size={13} aria-hidden="true" />
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div className="search-panel-actions">
+              <button
+                type="button"
+                className="panel-btn panel-btn-ghost"
+                onClick={resetFilters}
+                disabled={activeFilterCount === 0}
+              >
+                Limpar
+              </button>
+              <button
+                type="button"
+                className="panel-btn panel-btn-primary"
+                onClick={showFilteredOnMap}
+                disabled={filteredVendors.length === 0}
+              >
+                Ver no mapa
+              </button>
+            </div>
           </div>
-        </div>
+        </aside>
 
         <div className="map-wrapper">
           <section className="map-area" aria-label="Mapa de vendedores">
@@ -688,6 +780,30 @@ export default function Home() {
                 onClick={requestCompassPermission}
               />
             </MapContainer>
+
+            {/* Alternador de vista, ancorado ao canto do mapa. Em desktop
+                abre/fecha a coluna de vendedores; em telemóvel é a única
+                forma de chegar à lista, que de outro modo não existia. */}
+            <div className="map-toolbar" role="group" aria-label="Modo de visualização">
+              <button
+                type="button"
+                className={`map-toolbar-btn${viewMode === 'map' ? ' active' : ''}`}
+                aria-pressed={viewMode === 'map'}
+                onClick={() => setViewMode('map')}
+              >
+                <FiMap size={16} aria-hidden="true" />
+                <span className="map-toolbar-label">Mapa</span>
+              </button>
+              <button
+                type="button"
+                className={`map-toolbar-btn${viewMode === 'list' ? ' active' : ''}`}
+                aria-pressed={viewMode === 'list'}
+                onClick={() => setViewMode('list')}
+              >
+                <FiList size={16} aria-hidden="true" />
+                <span className="map-toolbar-label">Lista</span>
+              </button>
+            </div>
 
             <div
               className={`map-skeleton${tilesLoaded ? ' map-skeleton--hidden' : ''}`}
@@ -890,13 +1006,23 @@ export default function Home() {
           </section>
         </div>
 
-        <div className="sidebar-right">
+        <aside className="sidebar-right" aria-label="Vendedores perto de ti">
           <div className="vendors-panel">
             <div className="vendors-header">
-              <h3 className="vendors-title">Vendedores perto de ti</h3>
-              {nearbyVendorsCount !== null && (
-                <span className="vendors-count">{nearbyVendorsCount} por perto</span>
-              )}
+              <div className="vendors-header-text">
+                <h3 className="vendors-title">Vendedores perto de ti</h3>
+                {nearbyVendorsCount !== null && (
+                  <span className="vendors-count">{nearbyVendorsCount} por perto</span>
+                )}
+              </div>
+              <button
+                type="button"
+                className="vendors-close"
+                onClick={() => setViewMode('map')}
+                aria-label="Fechar lista de vendedores"
+              >
+                <FiX size={18} />
+              </button>
             </div>
 
             <div className="vendors-list">
@@ -960,7 +1086,7 @@ export default function Home() {
               )}
             </div>
           </div>
-        </div>
+        </aside>
 
       </div>
     </div>

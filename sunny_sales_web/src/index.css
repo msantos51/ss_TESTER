@@ -23,44 +23,47 @@
 }
 
 /* ════════════════════════════════════════════════════════
-   Sunny Sales — Design System "Areia Branca / Teal"
+   Sunny Sales — Design System "Canvas / Painéis"
 
-   CONCEITO (inspirado em UI kits de viagens minimalistas):
-   · Fundo BRANCO em todo o site — limpo, simples e
-     profissional, sem fotografias nem texturas.
-   · Conteúdo em cartões brancos com borda subtil e sombra
-     suave (--surface); chips e hovers num cinzento-verde
-     muito claro (--surface-alt).
-   · UMA cor de marca: verde-água (teal) --accent, usada em
-     CTAs sólidos, estados ativos e blocos de destaque.
-     Texto sobre teal: sempre BRANCO (--on-accent).
-   · Texto principal em petróleo escuro (--text); apoio em
-     cinzento-azulado (--text-secondary / --text-muted).
+   CONCEITO (UI de mapa moderna, ao estilo dos produtos de
+   pesquisa geográfica atuais):
+   · A página é uma TELA cinzenta muito clara (--canvas).
+     Sobre ela flutuam PAINÉIS brancos arredondados
+     (--radius-panel) com sombra difusa e sem contornos
+     duros — a profundidade vem da sombra, não da borda.
+   · O mapa é ele próprio um painel arredondado; todos os
+     controlos (zoom, localizar, vista) flutuam por cima
+     em pastilhas brancas.
+   · Controlos de escolha: segmentos e pastilhas. O estado
+     selecionado é preenchido a TEAL com texto branco; o
+     não selecionado é cinzento muito claro sem borda.
+   · A ação principal de cada ecrã é um botão PRETO
+     (--ink) de canto arredondado — âncora visual única.
 
    PALETA (regras de uso):
-   · --accent / --primary / --secondary / --ink = TEAL
-     #2b7c6d (AA com texto branco). Hover ligeiramente mais
-     escuro; tints claros para fundos de chips/ícones.
-   · --surface = branco (cards); --surface-alt = cinzento
-     claro (chips, hovers); fundo global branco puro.
-   · --grad-dark = bloco teal de destaque (banners/CTAs
-     finais) com texto branco.
-   · --blue — links funcionais (teal escuro, AA sobre branco).
+   · --accent / --primary = TEAL #0F5F6E (7,3:1 com branco).
+     Estados ativos, seleções, ícones de marca.
+   · --ink = quase-preto #14181F. Só a ação principal.
+   · --canvas = tela cinzenta; --surface = painéis brancos;
+     --surface-alt = preenchimento de chips e segmentos.
+   · --coral = única ação urgente do mapa (localizar-me).
+   · --forest = presença de vendedores (pins).
+   · --gold = informação, nunca ação (sempre como fundo).
 
    TIPOGRAFIA (escala única, aplicada em todo o site):
-   · --fs-display  56→120px Hero da Home (peso 800, CAIXA ALTA)
-   · --fs-h1       32→44px  Título hero das páginas internas
-   · --fs-h2       28→32px  Títulos de secção
-   · --fs-h3       20→24px  Subtítulos / cabeçalhos de card
-   · --fs-lead     17→20px  Parágrafo de apoio sob títulos
-   · --fs-body     16px     Corpo
-   · --fs-body-sm  15px     Corpo compacto (cards, listas)
-   · --fs-caption  13px     Legendas, labels, eyebrows
-   · Menu de navegação: uppercase com tracking 0.08em.
+   · --fs-display  48→64px Hero da Home
+   · --fs-h1       32→44px Título hero das páginas internas
+   · --fs-h2       28→32px Títulos de secção
+   · --fs-h3       20→24px Subtítulos / cabeçalhos de painel
+   · --fs-lead     17→20px Parágrafo de apoio sob títulos
+   · --fs-body     16px    Corpo
+   · --fs-body-sm  15px    Corpo compacto (cards, listas)
+   · --fs-caption  13px    Legendas, labels, contadores
+   · Navegação: caixa normal, peso 500, sem tracking largo —
+     o destaque do item ativo é a pastilha, não o sublinhado.
 
-   BOTÕES: formato pílula (--radius-btn). Primário sólido
-   TEAL com texto branco; secundário outline cinzento sobre
-   branco; hover com tom ligeiramente mais escuro.
+   FORMA: painéis 20–24px, controlos 12–14px, chips e
+   botões em pílula. Sem bordas de 1px onde a sombra chega.
    ════════════════════════════════════════════════════════ */
 
 :root {
@@ -118,9 +121,12 @@
   --teal-light: rgba(15, 95, 110, 0.12);
   --sky: #1078a0;
 
-  /* ── "Ink" (botões sólidos de navegação → teal) ── */
-  --ink: #0F5F6E;
-  --ink-hover: #0B4A56;
+  /* ── "Ink" — quase-preto da ação principal ──
+     Um único botão preto por ecrã (o "Ver no mapa" da Home,
+     o "Voltar ao início" do 404). Tudo o resto é teal ou
+     cinzento: se houver dois pretos, deixa de haver âncora. */
+  --ink: #14181f;
+  --ink-hover: #000000;
   /* Texto escuro para fundos claros */
   --ink-on-light: #1b2c33;
   /* ── Painéis institucionais (agora teal escuro) ── */
@@ -128,22 +134,28 @@
   --navy-light: #0F5F6E;
   --navy-border: rgba(15, 95, 110, 0.2);
 
-  /* ── Superfícies: fundo branco e cartões claros ── */
-  --bg-deep: #f1f5f4;
-  --bg: #ffffff;
+  /* ── Superfícies: tela cinzenta + painéis brancos ──
+     O site deixa de ser branco sobre branco: a tela
+     (--canvas) recua e os painéis brancos ganham relevo. */
+  --canvas: #f4f5f7;
+  --canvas-deep: #eceef2;
+  --bg-deep: #eceef2;
+  --bg: #f4f5f7;
   --bg-raised: #ffffff;
   --surface: #ffffff;
-  --surface-alt: #f2f6f5;
-  --surface-warm: #f8faf9;
+  /* Preenchimento neutro de chips, segmentos e hovers */
+  --surface-alt: #f1f3f6;
+  --surface-hover: #e8ebf0;
+  --surface-warm: #f8f9fb;
 
   /* ── Texto (todos AA sobre branco/--surface) ── */
-  --text: #1b2c33;
-  --text-secondary: #475a62;
-  --text-muted: #64787f;
+  --text: #12191f;
+  --text-secondary: #46545f;
+  --text-muted: #6b7885;
 
-  /* ── Bordas (subtis sobre claro) ── */
-  --border: rgba(27, 44, 51, 0.1);
-  --border-strong: rgba(27, 44, 51, 0.18);
+  /* ── Bordas (hairlines; a profundidade vem da sombra) ── */
+  --border: rgba(18, 25, 31, 0.07);
+  --border-strong: rgba(18, 25, 31, 0.13);
 
   /* ── Cores semânticas (só em contexto funcional) ── */
   --success: #15803d;
@@ -165,11 +177,15 @@
   /* Blocos de destaque: gradiente teal (texto branco por cima) */
   --grad-dark: linear-gradient(155deg, #0F5F6E 0%, #0B4A56 100%);
 
-  /* ── Sombras (suaves, tema claro) ── */
-  --shadow-xs: 0 1px 2px rgba(20, 45, 52, 0.06);
-  --shadow-sm: 0 1px 2px rgba(20, 45, 52, 0.05), 0 3px 12px rgba(20, 45, 52, 0.07);
-  --shadow-md: 0 10px 30px rgba(20, 45, 52, 0.1);
-  --shadow-lg: 0 2px 8px rgba(20, 45, 52, 0.06), 0 18px 44px rgba(20, 45, 52, 0.14);
+  /* ── Sombras (difusas, de baixa opacidade) ──
+     Duas camadas: um contacto curto que substitui a borda
+     de 1px e uma difusão longa que levanta o painel. */
+  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05), 0 6px 16px -8px rgba(16, 24, 40, 0.12);
+  --shadow-md: 0 2px 6px -2px rgba(16, 24, 40, 0.07), 0 14px 34px -12px rgba(16, 24, 40, 0.16);
+  --shadow-lg: 0 4px 10px -4px rgba(16, 24, 40, 0.08), 0 26px 60px -20px rgba(16, 24, 40, 0.22);
+  /* Pastilhas que flutuam sobre o mapa (fundo imprevisível) */
+  --shadow-float: 0 1px 2px rgba(16, 24, 40, 0.16), 0 8px 20px -6px rgba(16, 24, 40, 0.24);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
   --shadow-primary: 0 10px 24px -12px rgba(25, 159, 177, 0.45);
@@ -177,19 +193,23 @@
   --shadow-gold: 0 10px 24px -12px rgba(25, 159, 177, 0.45);
   --shadow-accent: 0 12px 28px -12px rgba(25, 159, 177, 0.5);
 
-  /* ── Raios (contidos; botões em pílula) ── */
-  --radius-xs: 8px;
-  --radius-sm: 10px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 16px;
-  --radius-2xl: 20px;
+  /* ── Raios (generosos; controlos em pílula) ── */
+  --radius-xs: 10px;
+  --radius-sm: 12px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --radius-2xl: 28px;
   --radius-full: 9999px;
+  /* Painéis flutuantes (barra lateral, mapa, cartões grandes) */
+  --radius-panel: 22px;
+  /* Controlos (segmentos, opções, campos) */
+  --radius-control: 14px;
   /* Botões: formato pílula em todo o site */
   --radius-btn: var(--radius-full);
 
   /* ── Escala tipográfica ── */
-  --fs-display: clamp(3rem, 5.2vw, 4rem);
+  --fs-display: clamp(2.5rem, 4.6vw, 3.75rem);
   --fs-h1: clamp(2rem, 3.6vw, 2.75rem);
   --fs-h2: clamp(1.75rem, 3vw, 2rem);
   --fs-h3: clamp(1.25rem, 2vw, 1.5rem);
@@ -220,8 +240,10 @@
   --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
-  --navbar-h: 64px;
-  --navbar-h-scrolled: 56px;
+  --navbar-h: 72px;
+  --navbar-h-scrolled: 64px;
+  /* Folga entre os painéis flutuantes e as margens da tela */
+  --gutter: 16px;
   /* Altura reservada para o rodapé fixo. Deve ser >= altura real do footer
      em cada breakpoint para o conteúdo não ficar escondido atrás dele. */
   --footer-h: 46px;
@@ -244,8 +266,9 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
-  /* Fundo branco em todo o site — sem fotografias nem texturas */
-  background-color: #ffffff;
+  /* Tela cinzenta muito clara: é o que faz os painéis brancos
+     ler como painéis e não como pedaços de página */
+  background-color: var(--canvas);
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
@@ -297,8 +320,8 @@ body {
   color: var(--on-accent);
   font-size: 0.875rem;
   font-weight: 600;
-  padding: 12px 18px;
-  border-radius: var(--radius-md);
+  padding: 12px 20px;
+  border-radius: var(--radius-full);
   text-decoration: none;
   /* Sem sombra enquanto escondido — evita a mancha no canto do ecrã */
   box-shadow: none;
@@ -329,23 +352,26 @@ body {
   height: var(--navbar-h);
   display: flex;
   align-items: center;
-  padding: 0 28px;
+  padding: 0 26px;
   /* Barra branca translúcida com blur */
-  background: rgba(255, 255, 255, 0.88);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
+  /* Sem borda no topo: só ao rolar é que a barra se destaca da tela */
+  border-bottom: 1px solid transparent;
   box-shadow: none;
   z-index: 1100;
   gap: 16px;
   transition: border-color var(--transition), height var(--transition-slow),
-    background var(--transition);
+    background var(--transition), box-shadow var(--transition);
 }
 
-/* Ao rolar: encolhe ligeiramente. */
+/* Ao rolar: encolhe e ganha uma sombra rasa em vez de uma linha dura. */
 .navbar.navbar--scrolled {
   height: var(--navbar-h-scrolled);
+  background: rgba(255, 255, 255, 0.9);
   border-bottom-color: var(--border);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
 }
 .navbar--scrolled .nav-logo-img { height: 30px; }
 
@@ -363,9 +389,9 @@ body {
   text-decoration: none;
   color: var(--text);
   font-family: var(--font-display);
-  font-size: 1.02rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-size: 1.06rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
   white-space: nowrap;
   flex-shrink: 0;
   display: flex;
@@ -383,34 +409,41 @@ body {
   flex-shrink: 0;
 }
 
+/* O logótipo passa a viver dentro de uma pastilha arredondada com sombra —
+   lê como a marca do produto e não como uma imagem solta na barra. */
 .nav-logo-img {
-  height: 34px;
-  width: auto;
+  height: 36px;
+  width: 36px;
   flex-shrink: 0;
-  transition: height var(--transition-slow);
+  border-radius: 11px;
+  object-fit: cover;
+  box-shadow: 0 2px 6px -2px rgba(16, 24, 40, 0.3);
+  transition: height var(--transition-slow), width var(--transition-slow);
 }
+.navbar--scrolled .nav-logo-img { width: 32px; }
 
 .nav-links {
   display: flex;
-  gap: 2px;
+  gap: 4px;
   flex: 1;
   justify-content: center;
   align-items: center;
 }
 
+/* Caixa normal, peso médio, forma de pastilha: o menu deixa de gritar em
+   maiúsculas e o item ativo distingue-se pelo preenchimento, não por um
+   sublinhado de 2px que se perde em ecrãs pequenos. */
 .nav-link {
   position: relative;
   color: var(--text-secondary);
   text-decoration: none;
-  /* Itens de menu em maiúsculas com leve tracking (estilo sport/premium) */
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  padding: 9px 15px;
+  border-radius: var(--radius-full);
   background: transparent;
-  transition: color var(--transition);
+  transition: color var(--transition), background var(--transition);
   white-space: nowrap;
   display: flex;
   align-items: center;
@@ -418,7 +451,7 @@ body {
 }
 .nav-link:hover {
   color: var(--text);
-  background: transparent;
+  background: var(--surface-alt);
 }
 .nav-link:focus-visible {
   outline: 2px solid var(--focus-ring);
@@ -427,17 +460,7 @@ body {
 .nav-link.active {
   color: var(--text);
   font-weight: 600;
-}
-/* Item ativo: sublinhado fino teal */
-.nav-link.active::after {
-  content: '';
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 1px;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--accent);
+  background: var(--surface-alt);
 }
 
 .nav-link-icon {
@@ -448,11 +471,13 @@ body {
 .nav-icons {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-shrink: 0;
   margin-left: auto;
 }
 
+/* Botões-ícone circulares em cinzento muito claro (padrão dos headers de
+   produto atuais): alvo de 40px, sem borda, hover mais escuro. */
 .profile-icon {
   text-decoration: none;
   color: var(--text-secondary);
@@ -460,17 +485,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
-  background: transparent;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--surface-alt);
   transition: color var(--transition), background var(--transition);
 }
 .profile-icon:hover {
   color: var(--text);
-  background: var(--surface-alt);
-  border-color: transparent;
+  background: var(--surface-hover);
   transform: none;
   box-shadow: none;
 }
@@ -509,12 +533,12 @@ body {
 
 .menu-toggle {
   display: none;
-  background: transparent;
+  background: var(--surface-alt);
   border: none;
   color: var(--text);
   font-size: 1.4rem;
   padding: 6px;
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-full);
   cursor: pointer;
   transition: color var(--transition), background var(--transition);
   align-items: center;
@@ -525,7 +549,7 @@ body {
 }
 .menu-toggle:hover {
   color: var(--text);
-  background: var(--surface-alt);
+  background: var(--surface-hover);
   transform: none;
   box-shadow: none;
   filter: none;
@@ -564,7 +588,8 @@ body {
   height: 100%;
   max-width: none;
   margin: 0 auto;
-  padding: calc(var(--navbar-h) + 16px) 0.5rem calc(var(--footer-h) + env(safe-area-inset-bottom, 0px));
+  padding: calc(var(--navbar-h) + var(--gutter)) var(--gutter)
+    calc(var(--footer-h) + env(safe-area-inset-bottom, 0px));
   background: transparent;
 }
 
@@ -612,9 +637,9 @@ button {
   color: var(--btn-color);
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: -0.005em;
-  padding: 10px 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 11px 22px;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
@@ -792,21 +817,24 @@ h2 {
     padding: 6px 12px;
   }
 
+  /* Painel flutuante destacado da barra, com a mesma forma dos painéis
+     do resto do site (cantos grandes + sombra difusa). */
   .nav-links {
     display: none;
     position: fixed;
-    top: var(--navbar-h);
-    left: 0;
-    width: 100%;
+    top: calc(var(--navbar-h) + 6px);
+    left: 10px;
+    right: 10px;
+    width: auto;
     flex-direction: column;
     align-items: stretch;
-    background: rgba(255, 255, 255, 0.96);
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--border);
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    padding: 12px 16px 20px;
+    background: rgba(255, 255, 255, 0.97);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    border: none;
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow-lg);
+    padding: 10px;
     gap: 2px;
     z-index: 1050;
     animation: fadeInUp 0.24s var(--ease-out);
@@ -818,8 +846,8 @@ h2 {
 
   .nav-link {
     padding: 12px 16px;
-    font-size: 0.9rem;
-    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    border-radius: var(--radius-control);
     min-height: 48px;
     display: flex;
     align-items: center;
@@ -831,16 +859,11 @@ h2 {
     background: var(--surface-alt);
   }
 
-  /* No menu móvel o item ativo usa um traço de acento à esquerda
-     (em vez do sublinhado fino usado no desktop). */
+  /* No menu móvel o item ativo enche a pastilha a teal — é o mesmo
+     vocabulário dos segmentos de filtro do mapa. */
   .nav-link.active {
-    color: var(--text);
-    background: var(--surface-alt);
-    box-shadow: inset 3px 0 0 var(--accent);
-  }
-
-  .nav-link.active::after {
-    display: none;
+    color: var(--on-accent);
+    background: var(--accent);
   }
 
   .nav-cta {
@@ -856,7 +879,7 @@ h2 {
   }
 
   .container {
-    padding: calc(var(--navbar-h) + 8px) 0.25rem calc(var(--footer-h) + env(safe-area-inset-bottom, 0px));
+    padding: calc(var(--navbar-h) + 10px) 10px calc(var(--footer-h) + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -887,8 +910,8 @@ h2 {
 
 @supports (padding: max(0px)) {
   .navbar {
-    padding-left: max(28px, env(safe-area-inset-left));
-    padding-right: max(28px, env(safe-area-inset-right));
+    padding-left: max(26px, env(safe-area-inset-left));
+    padding-right: max(26px, env(safe-area-inset-right));
   }
 
   @media (max-width: 768px) {
@@ -927,14 +950,15 @@ h2 {
 }
 
 .back-btn {
-  background: none;
+  background: var(--surface);
   border: none;
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-secondary);
-  padding: 6px 10px;
-  border-radius: var(--radius-sm);
+  padding: 9px 16px 9px 13px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-xs);
   margin-bottom: 1rem;
   display: inline-flex;
   align-items: center;
@@ -946,9 +970,9 @@ h2 {
 }
 .back-btn:hover {
   color: var(--text);
-  background: var(--surface-alt);
+  background: var(--surface);
   transform: none;
-  box-shadow: none;
+  box-shadow: var(--shadow-sm);
   filter: none;
 }
 .back-btn:focus-visible {
@@ -995,9 +1019,9 @@ h2 {
 
 /* Cabeçalho de página legal: título simples, sem painel decorativo. */
 .legal-header {
-  border-bottom: 1px solid var(--border);
-  padding: 24px 0 20px;
-  margin-bottom: 2rem;
+  border-bottom: none;
+  padding: 20px 4px 22px;
+  margin-bottom: 1rem;
 }
 
 .legal-header h1,
@@ -1027,11 +1051,11 @@ h2 {
 
 .legal-container section {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: none;
-  padding: 28px 32px;
-  margin-bottom: 1.25rem;
+  border: none;
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-sm);
+  padding: 30px 34px;
+  margin-bottom: 1rem;
 }
 
 .legal-container h2 {

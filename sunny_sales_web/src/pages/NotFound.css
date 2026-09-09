@@ -13,18 +13,20 @@
 }
 
 .notfound-code {
-  font-size: clamp(3.5rem, 10vw, 5.5rem);
-  font-weight: 600;
-  letter-spacing: -0.04em;
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 11vw, 6rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
   line-height: 1;
-  margin: 0 0 8px;
-  color: var(--border-strong);
+  margin: 0 0 10px;
+  color: var(--canvas-deep);
 }
 
 .notfound-title {
-  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 700;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.03em;
   color: var(--text);
   margin: 0 0 10px;
 }
@@ -49,8 +51,9 @@
   gap: 7px;
   text-decoration: none;
   font-size: 0.9rem;
-  font-weight: 500;
-  padding: 11px 24px;
+  font-weight: 600;
+  min-height: 48px;
+  padding: 13px 26px;
   border-radius: var(--radius-btn);
   transition: background var(--transition), transform var(--transition),
     box-shadow var(--transition), border-color var(--transition),
@@ -58,24 +61,22 @@
 }
 
 .notfound-btn-primary {
-  color: var(--on-accent);
+  color: #fff;
   background: var(--ink);
-  box-shadow: var(--shadow-sm);
 }
 .notfound-btn-primary:hover {
   background: var(--ink-hover);
   transform: none;
-  box-shadow: none;
 }
 
 .notfound-btn-ghost {
-  color: var(--text);
-  border: 1px solid var(--border-strong);
-  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  background: var(--surface);
+  box-shadow: var(--shadow-xs);
 }
 .notfound-btn-ghost:hover {
-  border-color: var(--text-muted);
   color: var(--text);
   transform: none;
-  box-shadow: none;
+  box-shadow: var(--shadow-sm);
 }

@@ -5,10 +5,10 @@
   left: 0;
   width: 100%;
   overflow: hidden;
-  /* Barra branca translúcida (par do header) */
-  background: rgba(255, 255, 255, 0.88);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  /* Barra translúcida (par do header), sem linha dura sobre a tela */
+  background: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
   border-top: 1px solid var(--border);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -63,7 +63,8 @@
 .footer-link:hover {
   color: var(--text, #0f0f0f);
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
 }
 
 .footer-link:focus-visible {

@@ -13,25 +13,21 @@
 
 .faq-item {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-xs);
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition: box-shadow var(--transition);
 }
 
-.faq-item:hover {
-  border-color: var(--border-strong);
-}
-
+.faq-item:hover,
 .faq-item[open] {
-  border-color: var(--border-strong);
   box-shadow: var(--shadow-sm);
 }
 
 .faq-q {
-  padding: 16px 20px;
-  font-size: 0.94rem;
+  padding: 18px 22px;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text);
   cursor: pointer;
@@ -59,15 +55,30 @@
   border-radius: var(--radius-lg);
 }
 
+/* O "+" vive numa pastilha cinzenta redonda — o mesmo vocabulário dos
+   botões-ícone do header. */
 .faq-q::after {
   content: '+';
-  font-size: 1.25rem;
-  color: var(--primary);
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  font-weight: 500;
   flex-shrink: 0;
   line-height: 1;
   /* Rotação suave ao expandir/colapsar */
-  transition: transform var(--transition-slow);
+  transition: transform var(--transition-slow), background var(--transition),
+    color var(--transition);
+}
+
+.faq-item[open] .faq-q::after {
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .faq-item[open] .faq-q::after {
@@ -76,7 +87,7 @@
 }
 
 .faq-a {
-  padding: 0 20px 18px;
+  padding: 0 22px 20px;
   font-size: 0.89rem;
   color: var(--text-secondary);
   line-height: 1.65;
