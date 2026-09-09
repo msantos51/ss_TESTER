@@ -85,7 +85,7 @@ export default function HomeMapPreview() {
   const defaultZoom = 7;
 
   const handleMapClick = () => {
-    navigate('/map');
+    navigate('/mapa');
   };
 
   return (

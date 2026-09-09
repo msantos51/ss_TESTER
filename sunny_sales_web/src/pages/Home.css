@@ -290,25 +290,6 @@
   background: transparent;
 }
 
-/* ── Tagline ──────────────────────────────────────────
-   Continua a ser o <h1> da página — para SEO e para os leitores de ecrã —
-   mas deixa de ser desenhada sobre o mapa. O visitante que chega por QR code
-   está de pé ao sol com menos de 30 segundos: o mapa explica-se sozinho e um
-   banner de texto por cima dele só atrasa a leitura (e colidia com o botão
-   de filtros no canto superior direito). */
-
-.map-tagline {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-
 /* ── Faixa de estado do mapa ──────────────────────────
    Carregamento e estado vazio partilham forma e posição: são vistos muitas
    vezes e o utilizador não deve ter de reaprender onde olhar. Ancorada acima
@@ -1423,19 +1404,6 @@
   color: var(--text);
 }
 
-.card-product {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--accent-soft);
-  color: var(--accent-text);
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 5px 11px;
-  border-radius: var(--radius-full);
-  margin-bottom: 12px;
-}
-
 .card-payments {
   display: flex;
   justify-content: center;
@@ -1825,4 +1793,515 @@
   .map-toolbar-label { display: none; }
   .map-toolbar-btn { padding: 0 13px; }
   .filter-fab { padding: 0 20px; }
+}
+/* ============================================================
+   Redesign do ecrã do mapa — colar no fim de Home.css.
+   Todas as regras repetem seletores já existentes; para reverter,
+   apaga o bloco.
+   ============================================================ */
+
+/* O rodapé deixou de ser desenhado em /mapa (ver App.jsx), por isso a altura
+   calculada em index.css e o espaço que reservava deixam de fazer sentido.
+   Precisam da mesma especificidade das regras que substituem. */
+.wrapper--map {
+  --footer-h: 0px;
+}
+
+.wrapper--map .modern-layout {
+  height: auto;
+}
+
+/* A tela ganha ar: os três painéis flutuam com a mesma folga. */
+.modern-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gutter);
+  align-items: stretch;
+  padding: var(--gutter);
+}
+
+.sidebar-left {
+  flex: 1 1 268px;
+  min-width: 260px;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gutter);
+}
+
+.map-wrapper {
+  flex: 4 1 460px;
+  min-width: 300px;
+}
+
+.sidebar-right {
+  flex: 1 1 300px;
+  min-width: 280px;
+  max-width: 360px;
+}
+
+/* Sem altura fixa no `.modern-layout`, o mapa precisa de um mínimo próprio,
+   senão os painéis encolhem para o conteúdo e sobra tela morta por baixo. O
+   mínimo é o ecrã menos a navbar e as duas goteiras — o mesmo que a altura
+   calculada dava, mas sem impedir a coluna de crescer. */
+.map-area {
+  position: relative;
+  height: 100%;
+  min-height: max(560px, calc(100svh - var(--navbar-h) - var(--gutter) * 2));
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- Pastilha de estado em tempo real --- */
+
+.map-live {
+  position: absolute;
+  z-index: 600;
+  top: 14px;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 9px 14px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.map-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--forest);
+  animation: map-live-blink 1.8s ease-in-out infinite;
+}
+
+@keyframes map-live-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+/* --- Alternador de vista --- */
+
+.map-toolbar {
+  position: absolute;
+  z-index: 600;
+  top: 14px;
+  right: 14px;
+  left: auto;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+}
+
+.map-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.map-toolbar-btn.active {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* --- Painel de pesquisa --- */
+
+.search-panel {
+  padding: var(--space-lg);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.search-panel-title {
+  margin: 0;
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.search-panel-count {
+  margin: 4px 0 var(--space-lg);
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.segmented {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-control);
+  background: var(--surface-alt);
+}
+
+.segmented-opt {
+  flex: 1;
+  min-height: 40px;
+  padding: 9px 2px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.segmented-opt.active {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.option-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.option-card.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.option-card-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--on-accent);
+}
+
+.option-card.active .option-card-mark {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+/* --- Lista de vendedores --- */
+
+.vendors-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.vendors-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-lg) var(--space-lg) var(--space-sm);
+}
+
+.vendors-title {
+  margin: 0;
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.vendors-count {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.vendors-list {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 var(--space-sm) var(--space-sm);
+}
+
+.vendor-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: 66px;
+  padding: var(--space-sm);
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  cursor: pointer;
+}
+
+.vendor-item:hover {
+  background: var(--surface-alt);
+}
+
+.vendor-item.active {
+  background: var(--accent-soft);
+}
+
+.vendor-item-photo {
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: var(--radius-control);
+  object-fit: cover;
+}
+
+.vendor-item-name {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vendor-item-product {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.vendor-item-distance {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* --- Cartão do vendedor --- */
+
+.vendor-card {
+  position: absolute;
+  /* Os controlos de zoom do Leaflet estão a 1000: abaixo disso o cartão
+     aparece cortado por eles no canto inferior direito. */
+  z-index: 1000;
+  /* `top`, `transform`, `width` e `text-align` vinham da versão centrada e
+     têm de ser repostos, senão o cartão fica a meio do mapa e cortado. */
+  top: auto;
+  transform: none;
+  bottom: 18px;
+  left: 18px;
+  right: 92px;
+  width: auto;
+  max-width: 380px;
+  padding: var(--space-lg);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  text-align: left;
+  animation: vendor-card-rise 0.22s ease-out;
+}
+
+@keyframes vendor-card-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.card-photo {
+  width: 54px;
+  height: 54px;
+  flex: none;
+  margin: 0;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+}
+
+.card-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.card-head-text {
+  /* Deixa o nome truncar em vez de empurrar a foto para fora do cartão. */
+  min-width: 0;
+}
+
+.card-sub {
+  margin: 3px 0 0;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.card-payments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: var(--space-md) 0;
+}
+
+.card-payment-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.card-products {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-sm);
+}
+
+.card-product-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: var(--fs-body-sm);
+}
+
+.card-product-price {
+  margin-left: auto;
+  font-weight: 600;
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* --- Botão de localização --- */
+
+.locate-btn {
+  bottom: 22px;
+  right: 18px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--coral);
+  color: #fff;
+  /* O anel branco fica: ao sol o que falha primeiro é a diferença de
+     luminância contra o tile, não o rácio da cor contra o branco. */
+  box-shadow: 0 0 0 3px #fff, var(--shadow-float);
+}
+
+.locate-btn:hover {
+  background: var(--coral-hover);
+}
+
+/* --- Telemóvel: mapa a ecrã cheio, painéis por cima --- */
+
+@media (max-width: 768px) {
+  .modern-layout {
+    padding: 0;
+    gap: 0;
+  }
+
+  .sidebar-left {
+    display: none;
+  }
+
+  .map-wrapper {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .map-area {
+    min-height: calc(100svh - var(--navbar-h));
+    border-radius: 0;
+  }
+
+  .sidebar-right {
+    position: fixed;
+    z-index: 800;
+    inset: auto 0 0 0;
+    max-width: none;
+    max-height: 62vh;
+  }
+
+  .vendors-panel {
+    border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+    box-shadow: var(--shadow-float);
+  }
+
+  .vendor-card {
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    /* Acima do FAB "Filtros" e do botão de localizar, que em telemóvel
+       ficariam por cima do cartão. */
+    bottom: 92px;
+    max-height: calc(100svh - var(--navbar-h) - 116px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .map-live {
+    top: 12px;
+    left: 12px;
+  }
+
+  .map-toolbar {
+    top: 12px;
+    right: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-live-dot { animation: none; }
+  .vendor-card { animation: none; }
+}
+
+/* Texto só para leitores de ecrã (não existe em index.css — acrescenta-o). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }

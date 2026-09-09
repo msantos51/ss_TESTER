@@ -1,0 +1,383 @@
+/* (em português) Página de entrada. Só tokens de index.css. */
+
+.landing {
+  padding-bottom: var(--space-2xl);
+}
+
+/* ---------- Hero ---------- */
+
+.landing-hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: clamp(24px, 4vw, 56px);
+  align-items: center;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 64px) 0;
+}
+
+.landing-live {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+
+.landing-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--forest);
+  animation: landing-blink 1.8s ease-in-out infinite;
+}
+
+@keyframes landing-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+.landing-title {
+  margin: var(--space-lg) 0 0;
+  font-size: var(--fs-display);
+  line-height: 1.03;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--text);
+  text-wrap: pretty;
+}
+
+.landing-lead {
+  margin: var(--space-lg) 0 0;
+  max-width: 46ch;
+  font-size: var(--fs-lead);
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: var(--space-xl);
+}
+
+.landing-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 14px 26px;
+  border: 0;
+  border-radius: var(--radius-btn);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.landing-btn--primary {
+  background: var(--ink);
+  color: #fff;
+}
+
+.landing-btn--primary:hover {
+  background: var(--ink-hover);
+  color: #fff;
+}
+
+.landing-btn--ghost {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.landing-btn--ghost:hover {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.landing-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg) var(--space-2xl);
+  margin: var(--space-2xl) 0 0;
+}
+
+.landing-stats dt {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.landing-stats dd {
+  margin: 2px 0 0;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+/* Pré-visualização do mapa */
+
+.landing-hero-frame {
+  position: relative;
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  aspect-ratio: 4 / 3.4;
+  min-height: 300px;
+}
+
+.landing-hero-map {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  background: #e6e9ee;
+}
+
+.landing-hero-cta {
+  position: absolute;
+  z-index: 500;
+  bottom: var(--space-md);
+  left: var(--space-md);
+  right: var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  min-height: 48px;
+  padding: 14px 20px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-float);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.landing-hero-cta:hover {
+  background: #fff;
+  color: var(--text);
+}
+
+.landing-btn:focus-visible,
+.landing-hero-cta:focus-visible,
+.landing-banner-btn:focus-visible,
+.nav-cta-map:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ---------- Secções ---------- */
+
+.landing-section {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 56px) 0 0;
+}
+
+.landing-h2 {
+  margin: 0 0 4px;
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.landing-section-lead {
+  margin: 0 0 var(--space-lg);
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+}
+
+.landing-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing-step {
+  padding: var(--space-lg);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.landing-step-n {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: var(--fs-body-sm);
+  font-weight: 700;
+}
+
+.landing-step-title {
+  margin: var(--space-md) 0 6px;
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.landing-step-body {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+/* ---------- Banner teal ---------- */
+
+.landing-banner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-lg) clamp(24px, 4vw, 48px);
+  align-items: center;
+  padding: clamp(24px, 4vw, 48px);
+  border-radius: var(--radius-2xl);
+  background: var(--grad-dark);
+  color: var(--on-accent);
+}
+
+.landing-banner-title {
+  margin: 0 0 var(--space-sm);
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--on-accent);
+}
+
+.landing-banner-body {
+  margin: 0;
+  max-width: 48ch;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--on-accent);
+}
+
+.landing-banner-btn {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 14px 26px;
+  border-radius: var(--radius-btn);
+  background: var(--surface);
+  color: var(--accent);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.landing-banner-btn:hover {
+  background: var(--surface-alt);
+  color: var(--accent-hover);
+}
+
+/* ---------- Navbar: CTA "Abrir mapa" ---------- */
+
+.nav-cta-map {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 40px;
+  margin-left: 6px;
+  padding: 10px 18px;
+  border-radius: var(--radius-btn);
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-cta-map:hover {
+  background: var(--ink-hover);
+  color: #fff;
+}
+
+.nav-cta-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #6be3a2;
+  animation: landing-blink 1.8s ease-in-out infinite;
+}
+
+/* O item equivalente dentro do menu; em desktop é o CTA preto que manda. */
+.nav-link--map {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .nav-cta-map {
+    display: none;
+  }
+
+  .nav-link--map {
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-live-dot,
+  .nav-cta-dot { animation: none; }
+}
+
+/* ---------- Pins da pré-visualização ----------
+   O CSS dos pins vive em Home.css, que agora só carrega em /mapa. A landing
+   precisa das mesmas regras à escala do ícone que declara (28×34). */
+
+.landing-hero-frame .vendor-pin {
+  background: transparent !important;
+  border: none !important;
+}
+
+.landing-hero-frame .vendor-pin-marker {
+  position: relative;
+  width: 28px;
+  height: 34px;
+  box-sizing: border-box;
+}
+
+.landing-hero-frame .vendor-pin-marker::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 28px;
+  box-sizing: border-box;
+  border: 2px solid #fff;
+  border-radius: 50% 50% 0;
+  background: var(--pin-color, #1D5C3A);
+  transform: rotate(45deg);
+  filter: drop-shadow(0 3px 6px rgba(16, 24, 40, 0.35));
+}
+
+.landing-hero-frame .vendor-pin-core {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  z-index: 1;
+}

@@ -8,7 +8,7 @@ import { BASE_URL, mediaUrl, TILE_LAYER } from '../config';
 import LocateButton from '../components/LocateButton';
 import WeatherCard from '../components/WeatherCard';
 import {
-  FiMapPin, FiTag, FiShoppingBag,
+  FiMapPin, FiShoppingBag,
   FiSmartphone, FiCreditCard,
   FiSliders, FiCheck, FiX, FiMap, FiList,
 } from 'react-icons/fi';
@@ -711,9 +711,13 @@ export default function Home() {
 
         <div className="map-wrapper">
           <section className="map-area" aria-label="Mapa de vendedores">
-            <h1 className="map-tagline">
-              Encontra vendedores de praia perto de ti, em tempo real
-            </h1>
+            <h1 className="sr-only">Mapa de vendedores de praia em tempo real</h1>
+            {/* Estado do canal em tempo real, sempre visível sobre o mapa. */}
+            <div className="map-live" role="status">
+              <span className="map-live-dot" aria-hidden="true" />
+              {filteredVendors.length}{' '}
+              {filteredVendors.length === 1 ? 'vendedor ativo' : 'vendedores ativos'}
+            </div>
             <MapContainer
               ref={mapRef}
               center={initialView.center}
@@ -787,21 +791,21 @@ export default function Home() {
             <div className="map-toolbar" role="group" aria-label="Modo de visualização">
               <button
                 type="button"
-                className={`map-toolbar-btn${viewMode === 'map' ? ' active' : ''}`}
-                aria-pressed={viewMode === 'map'}
-                onClick={() => setViewMode('map')}
-              >
-                <FiMap size={16} aria-hidden="true" />
-                <span className="map-toolbar-label">Mapa</span>
-              </button>
-              <button
-                type="button"
                 className={`map-toolbar-btn${viewMode === 'list' ? ' active' : ''}`}
                 aria-pressed={viewMode === 'list'}
                 onClick={() => setViewMode('list')}
               >
                 <FiList size={16} aria-hidden="true" />
                 <span className="map-toolbar-label">Lista</span>
+              </button>
+              <button
+                type="button"
+                className={`map-toolbar-btn${viewMode === 'map' ? ' active' : ''}`}
+                aria-pressed={viewMode === 'map'}
+                onClick={() => setViewMode('map')}
+              >
+                <FiMap size={16} aria-hidden="true" />
+                <span className="map-toolbar-label">Só mapa</span>
               </button>
             </div>
 
@@ -826,25 +830,28 @@ export default function Home() {
                 >
                   ×
                 </button>
-                {selected.profile_photo ? (
-                  <img
-                    src={mediaUrl(selected.profile_photo)}
-                    alt={selected.name}
-                    className="card-photo"
-                  />
-                ) : (
-                  <div
-                    className="card-photo card-photo--placeholder"
-                    style={{ background: selected.pin_color || '#ccc' }}
-                  />
-                )}
-                <h4 className="card-name">{selected.name}</h4>
-                {selected.product && (
-                  <div className="card-product">
-                    <FiTag size={12} />
-                    <span>{selected.product}</span>
+                {/* Foto, nome e produto numa linha só: o cartão abre sobre o
+                    mapa e cada linha extra tapa um pin. */}
+                <div className="card-head">
+                  {selected.profile_photo ? (
+                    <img
+                      src={mediaUrl(selected.profile_photo)}
+                      alt={selected.name}
+                      className="card-photo"
+                    />
+                  ) : (
+                    <div
+                      className="card-photo card-photo--placeholder"
+                      style={{ background: selected.pin_color || '#ccc' }}
+                    />
+                  )}
+                  <div className="card-head-text">
+                    <h4 className="card-name">{selected.name}</h4>
+                    {selected.product && (
+                      <p className="card-sub">{selected.product}</p>
+                    )}
                   </div>
-                )}
+                </div>
                 {selected.payment_methods && (
                   <div className="card-payments">
                     {selected.payment_methods.split(',').map((m) => {
