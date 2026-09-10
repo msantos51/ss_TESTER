@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FiArrowLeft } from 'react-icons/fi';
 import { BASE_URL } from '../config.js';
 
 function getVendorIdFromToken(token) {
@@ -10,12 +11,16 @@ function getVendorIdFromToken(token) {
   }
 }
 
-export default function Login({ onLogin }) {
-  const [email, setEmail] = useState('');
+export default function Login({ onLogin, onBack, onRegister, initialEmail = '' }) {
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [forceConfirm, setForceConfirm] = useState(false);
+  // Conta criada mas email por confirmar: oferecemos reenviar a confirmação.
+  const [needsEmailConfirm, setNeedsEmailConfirm] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [info, setInfo] = useState('');
 
   const attemptLogin = async (force = false) => {
     const tokenRes = await fetch(`${BASE_URL}/token`, {
@@ -29,6 +34,10 @@ export default function Login({ onLogin }) {
       if (status === 409) {
         setForceConfirm(true);
         throw Object.assign(new Error('conflict'), { status: 409 });
+      }
+      if (status === 403) {
+        setNeedsEmailConfirm(true);
+        throw new Error('Confirma o teu email antes de iniciar sessão.');
       }
       throw new Error(err.detail || 'Falha no login');
     }
@@ -51,7 +60,9 @@ export default function Login({ onLogin }) {
     if (!email || !password) return;
     setLoading(true);
     setError(null);
+    setInfo('');
     setForceConfirm(false);
+    setNeedsEmailConfirm(false);
     try {
       const result = await attemptLogin(false);
       onLogin(result);
@@ -76,8 +87,36 @@ export default function Login({ onLogin }) {
     }
   };
 
+  const handleResendConfirmation = async () => {
+    setResending(true);
+    setError(null);
+    setInfo('');
+    try {
+      const res = await fetch(`${BASE_URL}/vendors/resend-confirmation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const payload = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(payload?.detail || 'Não foi possível reenviar o email.');
+      setInfo(payload?.detail || 'Email de confirmação reenviado.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setResending(false);
+    }
+  };
+
   return (
     <div className="screen login-screen">
+      {onBack && (
+        <div className="auth-topbar auth-topbar-floating">
+          <button type="button" className="btn-icon auth-back" onClick={onBack} title="Voltar">
+            <FiArrowLeft />
+          </button>
+        </div>
+      )}
+
       <div className="login-header">
         <div className="logo-circle">
           <svg viewBox="0 0 64 64" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -86,7 +125,7 @@ export default function Login({ onLogin }) {
           </svg>
         </div>
         <h1 className="app-title">Sunny Sales</h1>
-        <p className="app-subtitle">Área do Vendedor</p>
+        <p className="app-subtitle">App do Vendedor</p>
       </div>
 
       <form className="login-form" onSubmit={handleSubmit}>
@@ -114,6 +153,18 @@ export default function Login({ onLogin }) {
         </div>
 
         {error && <div className="error-msg">{error}</div>}
+        {info && <div className="info-msg">{info}</div>}
+
+        {needsEmailConfirm && (
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleResendConfirmation}
+            disabled={resending || !email}
+          >
+            {resending ? 'A reenviar…' : 'Reenviar email de confirmação'}
+          </button>
+        )}
 
         {forceConfirm ? (
           <div className="force-confirm">
@@ -142,6 +193,12 @@ export default function Login({ onLogin }) {
             disabled={loading}
           >
             {loading ? 'A entrar…' : 'Entrar'}
+          </button>
+        )}
+
+        {onRegister && (
+          <button type="button" className="auth-link" onClick={onRegister}>
+            Ainda não tens conta? <strong>Regista-te</strong>
           </button>
         )}
       </form>

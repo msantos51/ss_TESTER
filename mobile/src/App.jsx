@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Geolocation } from '@capacitor/geolocation';
-import HomePage from './pages/HomePage.jsx';
+import WelcomeScreen from './pages/WelcomeScreen.jsx';
+import RegisterScreen from './pages/RegisterScreen.jsx';
 import Login from './pages/Login.jsx';
 import MapTab from './pages/MapTab.jsx';
 import DashboardScreen from './pages/DashboardScreen.jsx';
 
 export default function App() {
   const [auth, setAuth] = useState(null);
-  const [activePage, setActivePage] = useState('home');
+  // Ecrã público (sem sessão): boas-vindas, registo ou início de sessão.
+  const [publicPage, setPublicPage] = useState('welcome');
+  // Ecrã do vendedor autenticado: mapa (partilha) ou dashboard.
+  const [activePage, setActivePage] = useState('map');
+  const [prefilledEmail, setPrefilledEmail] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -45,7 +50,7 @@ export default function App() {
     localStorage.removeItem('user');
     localStorage.removeItem('vendorId');
     setAuth(null);
-    setActivePage('home');
+    setPublicPage('welcome');
   };
 
   const handleUserUpdate = (updatedUser) => {
@@ -53,11 +58,36 @@ export default function App() {
     setAuth((prev) => ({ ...prev, user: updatedUser }));
   };
 
+  // Depois do registo o vendedor confirma o email e entra com as credenciais.
+  const handleRegistered = (email) => {
+    setPrefilledEmail(email);
+    setPublicPage('login');
+  };
+
   if (!auth) {
-    return activePage === 'login' ? (
-      <Login onLogin={handleLogin} />
-    ) : (
-      <HomePage />
+    if (publicPage === 'login') {
+      return (
+        <Login
+          initialEmail={prefilledEmail}
+          onLogin={handleLogin}
+          onBack={() => setPublicPage('welcome')}
+          onRegister={() => setPublicPage('register')}
+        />
+      );
+    }
+    if (publicPage === 'register') {
+      return (
+        <RegisterScreen
+          onBack={() => setPublicPage('welcome')}
+          onRegistered={handleRegistered}
+        />
+      );
+    }
+    return (
+      <WelcomeScreen
+        onLogin={() => setPublicPage('login')}
+        onRegister={() => setPublicPage('register')}
+      />
     );
   }
 

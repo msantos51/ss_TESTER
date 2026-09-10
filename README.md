@@ -39,7 +39,7 @@ O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma a
 | Sessões ativas | Ver e terminar sessões em outros dispositivos |
 | Subscrição e faturação | Integração com Stripe; histórico de semanas pagas com links de recibo |
 | Stories | Publicar fotos/vídeos efémeros visíveis no perfil |
-| App móvel | App Android (Capacitor + React) para vendedores: partilha de localização em tempo real (serviço nativo), gestão de conta, produtos, subscrição e faturas |
+| App móvel | App Android (Capacitor + React) dedicada ao vendedor: registo de conta, partilha de localização em tempo real (serviço nativo), gestão de conta, produtos, subscrição e faturas |
 
 ---
 
@@ -53,15 +53,15 @@ ss_TESTER/
 │       ├── models.py         # Modelos: Vendor, Route, PaidWeek, Story, VendorSession
 │       ├── schemas.py        # Schemas Pydantic
 │       └── database.py       # Configuração da BD
-├── sunny_sales_web/          # React 19 + Vite (web)
+├── sunny_sales_web/          # React 19 + Vite (web, para banhistas)
 │   └── src/
-│       ├── pages/            # Dashboard, Rotas, Stats, Login, Registo, ...
-│       ├── components/       # Botões de mapa, cropper de imagem, footer, ...
+│       ├── pages/            # Mapa, Praia Sustentável, Sobre, FAQs, Contacto, ...
+│       ├── components/       # Botões de mapa, meteorologia, footer, ...
 │       └── config.js         # BASE_URL do backend
-├── mobile/                   # Capacitor + React + Vite (móvel Android)
+├── mobile/                   # Capacitor + React + Vite (móvel Android, para vendedores)
 │   └── src/
-│       ├── pages/            # Login, MainScreen (mapa), ProfileScreen
-│       ├── components/       # AnimatedMarker
+│       ├── pages/            # Welcome, Registo, Login, MapTab (partilha), Dashboard, ...
+│       ├── components/       # AnimatedMarker, cropper de imagem, seletor de cor
 │       └── hooks/            # useDeviceHeading (bússola)
 ├── scripts/                  # Utilitários (simulação de movimento, ...)
 ├── requirements.txt          # Dependências Python
