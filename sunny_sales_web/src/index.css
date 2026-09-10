@@ -375,16 +375,6 @@ body {
 }
 .navbar--scrolled .nav-logo-img { height: 30px; }
 
-/* No topo da página inicial o header é transparente sobre o hero branco
-   e só ganha fundo (e borda) ao rolar. */
-.navbar.navbar--home {
-  background: transparent;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  border-bottom-color: transparent;
-  box-shadow: none;
-}
-
 .nav-logo {
   text-decoration: none;
   color: var(--text);

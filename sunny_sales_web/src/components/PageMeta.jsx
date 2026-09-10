@@ -37,7 +37,7 @@ const META = {
     description:
       'Fala connosco: dúvidas, sugestões ou parcerias. Respondemos em 24–48 horas úteis.',
   },
-  '/map': {
+  '/mapa': {
     title: 'Mapa de Vendedores · Sunny Sales',
     description:
       'Vê em tempo real os vendedores de praia perto de ti e filtra por produto e distância.',

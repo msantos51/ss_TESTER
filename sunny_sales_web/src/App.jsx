@@ -10,7 +10,7 @@ import {
 import { FiMenu, FiX } from 'react-icons/fi';
 import { FaInstagram } from 'react-icons/fa';
 import { lazy, Suspense, useState, useEffect, useRef } from 'react';
-import Home from './pages/Home';
+import Landing from './pages/Landing';
 import BackHomeButton from './components/BackHomeButton';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
@@ -19,11 +19,15 @@ import LoadingDots from './components/LoadingDots';
 import useScrollReveal from './hooks/useScrollReveal';
 import './index.css';
 
-// (em português) O site é dedicado exclusivamente ao banhista: mapa na página
-// inicial e um punhado de páginas informativas. Não há área de vendedor, nem
-// início de sessão ou criação de conta.
+// (em português) O site é dedicado exclusivamente ao banhista: uma página de
+// entrada que explica o serviço, o mapa em /mapa e um punhado de páginas
+// informativas. Não há área de vendedor, nem início de sessão ou criação de
+// conta.
 // As restantes páginas são carregadas sob demanda (code-splitting) para reduzir
-// o tamanho do bundle inicial. Apenas a Home é carregada de imediato.
+// o tamanho do bundle inicial. Apenas a Landing é carregada de imediato; o
+// ecrã do mapa, com toda a lógica de GPS, bússola e WebSocket, só chega a
+// quem abre /mapa.
+const Home = lazy(() => import('./pages/Home'));
 const SobreProjeto = lazy(() => import('./pages/SobreProjeto'));
 const Sustentabilidade = lazy(() => import('./pages/Sustentabilidade'));
 const Contacto = lazy(() => import('./pages/Contacto'));
@@ -34,8 +38,9 @@ const LegalNotice = lazy(() => import('./pages/LegalNotice'));
 const CookiesPolicy = lazy(() => import('./pages/CookiesPolicy'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
-// Rotas sem botão de voltar global: apenas a página inicial, que tem UI própria.
-const HIDE_BACK_ROUTES = ['/'];
+// Rotas sem botão de voltar global: a página de entrada e o mapa, que têm UI
+// própria.
+const HIDE_BACK_ROUTES = ['/', '/mapa'];
 
 function PageLoader() {
   return (
@@ -97,12 +102,10 @@ function AppLayout() {
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
-  // Na página inicial o mapa é o conteúdo. Em telemóvel o cromo fixo (navbar +
-  // rodapé) custava 114px de altura sobre um mapa que é a única coisa que o
-  // visitante veio ver — ver `.wrapper--map` em index.css.
-  const isMapRoute = location.pathname === '/';
-  // Na página inicial o header fica transparente enquanto está no topo.
-  const navTransparent = location.pathname === '/' && !scrolled && !menuOpen;
+  // Em /mapa o mapa é o conteúdo. Em telemóvel o cromo fixo (navbar + rodapé)
+  // custava 114px de altura sobre um mapa que é a única coisa que o visitante
+  // veio ver — ver `.wrapper--map` em index.css.
+  const isMapRoute = location.pathname === '/mapa';
 
   // Salta o foco diretamente para o conteúdo. Faz-se em JS (preventDefault +
   // scroll manual) para não deixar o "#conteudo" no URL nem interferir com o
@@ -122,9 +125,7 @@ function AppLayout() {
         Saltar para o conteúdo
       </a>
       <nav
-        className={`navbar${navTransparent ? ' navbar--home' : ''}${
-          scrolled ? ' navbar--scrolled' : ''
-        }`}
+        className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}
         aria-label="Navegação principal"
       >
         <Link className="nav-logo" to="/">
@@ -142,6 +143,17 @@ function AppLayout() {
         </Link>
 
         <div className={`nav-links ${menuOpen ? 'open' : ''}`} ref={navLinksRef}>
+          {/* Em desktop o mapa é o CTA preto à direita; em telemóvel esse
+              botão não cabe ao lado do logótipo, do Instagram e do hamburger,
+              por isso entra aqui como primeiro item do menu. */}
+          <NavLink
+            className={({ isActive }) =>
+              `nav-link nav-link--map${isActive ? ' active' : ''}`
+            }
+            to="/mapa"
+          >
+            Abrir mapa
+          </NavLink>
           <NavLink
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             to="/sustentabilidade"
@@ -167,6 +179,11 @@ function AppLayout() {
             Contacto
           </NavLink>
         </div>
+
+        <Link to="/mapa" className="nav-cta-map">
+          <span className="nav-cta-dot" aria-hidden="true" />
+          Abrir mapa
+        </Link>
 
         <div className="nav-icons">
           <a
@@ -200,10 +217,11 @@ function AppLayout() {
         {!HIDE_BACK_ROUTES.includes(location.pathname) && <BackHomeButton />}
         <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route path="/" element={<Home />} />
-          {/* O mapa completo vive na página inicial; /map continua a existir
-              como redirect para não deixar links antigos num beco sem saída. */}
-          <Route path="/map" element={<Navigate to="/" replace />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/mapa" element={<Home />} />
+          {/* /map continua a existir como redirect para não deixar links
+              antigos num beco sem saída. */}
+          <Route path="/map" element={<Navigate to="/mapa" replace />} />
           <Route path="/sustentabilidade" element={<Sustentabilidade />} />
           <Route path="/sobre-projeto" element={<SobreProjeto />} />
           <Route path="/faqs" element={<FAQ />} />
@@ -216,7 +234,9 @@ function AppLayout() {
         </Routes>
         </Suspense>
       </div>
-      <Footer />
+      {/* Em /mapa o mapa é ecrã cheio: o rodapé sairia de qualquer forma em
+          telemóvel e em desktop só roubava altura ao mapa. */}
+      {!isMapRoute && <Footer />}
     </div>
   );
 }
