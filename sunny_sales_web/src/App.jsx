@@ -36,6 +36,7 @@ const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions'));
 const LegalNotice = lazy(() => import('./pages/LegalNotice'));
 const CookiesPolicy = lazy(() => import('./pages/CookiesPolicy'));
+const AccountDeletion = lazy(() => import('./pages/AccountDeletion'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Rotas sem botão de voltar global: a página de entrada e o mapa, que têm UI
@@ -230,6 +231,9 @@ function AppLayout() {
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="/legal-notice" element={<LegalNotice />} />
           <Route path="/cookies-policy" element={<CookiesPolicy />} />
+          {/* Exigida pela Google Play: eliminação de conta acessível
+              fora da app, para quem já a desinstalou. */}
+          <Route path="/eliminar-conta" element={<AccountDeletion />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>

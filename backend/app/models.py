@@ -51,6 +51,12 @@ class Vendor(Base):
     terms_accepted = Column(Boolean, default=False)
     terms_accepted_at = Column(DateTime, nullable=True)
 
+    # RGPD — direito ao apagamento (art. 17.º). Quando preenchido, a conta foi
+    # eliminada pelo titular: os dados pessoais já foram apagados/anonimizados e
+    # a linha só subsiste como referência dos pagamentos, que a lei fiscal obriga
+    # a conservar. Uma conta com `deleted_at` nunca autentica nem é listada.
+    deleted_at = Column(DateTime, nullable=True)
+
     routes = relationship("Route", back_populates="vendor")
     sessions = relationship(
         "VendorSession", back_populates="vendor", cascade="all, delete-orphan"

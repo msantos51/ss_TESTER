@@ -111,6 +111,8 @@ export default function Footer() {
           <Link to="/legal-notice" className="footer-link">Aviso Legal</Link>
           <span className="footer-link-divider">•</span>
           <Link to="/cookies-policy" className="footer-link">Cookies</Link>
+          <span className="footer-link-divider">•</span>
+          <Link to="/eliminar-conta" className="footer-link">Eliminar conta</Link>
         </div>
       </div>
     </footer>

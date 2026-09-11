@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react';
-import { FiUser, FiLock, FiCamera, FiCheck, FiChevronDown, FiChevronUp, FiDroplet, FiShoppingBag, FiCreditCard } from 'react-icons/fi';
-import { BASE_URL, mediaUrl } from '../config.js';
+import { FiUser, FiLock, FiCamera, FiCheck, FiChevronDown, FiChevronUp, FiDroplet, FiShoppingBag, FiCreditCard, FiAlertTriangle, FiDownload, FiTrash2 } from 'react-icons/fi';
+import { BASE_URL, WEB_URL, mediaUrl } from '../config.js';
 import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
 
-export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
+export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDeleted }) {
   const { token, user, vendorId } = auth;
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
@@ -19,6 +19,13 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [showSecurity, setShowSecurity] = useState(false);
+  const [showDanger, setShowDanger] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [dangerError, setDangerError] = useState('');
+  const [dangerInfo, setDangerInfo] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
@@ -98,6 +105,61 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
       setError(err.message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  // (em português) RGPD art. 20.º — descarrega em JSON tudo o que o servidor
+  // guarda sobre o vendedor. Em WebView o download por blob nem sempre é
+  // permitido, por isso o erro remete para a mesma função na versão web.
+  const exportData = async () => {
+    setExporting(true);
+    setDangerError('');
+    setDangerInfo('');
+    try {
+      const res = await fetch(`${BASE_URL}/vendors/me/export`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Não foi possível preparar os teus dados.');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `sunny-sales-dados-${vendorId}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setDangerInfo('Os teus dados foram descarregados em formato JSON.');
+    } catch (err) {
+      setDangerError(`${err.message} Podes descarregá-los em ${WEB_URL}/eliminar-conta`);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  // (em português) RGPD art. 17.º e requisito obrigatório da Google Play: o
+  // utilizador tem de poder eliminar a conta a partir da própria app.
+  const deleteAccount = async () => {
+    setDeleting(true);
+    setDangerError('');
+    setDangerInfo('');
+    try {
+      const res = await fetch(`${BASE_URL}/vendors/me`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password: deletePassword }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.detail || 'Não foi possível eliminar a conta.');
+      setDeletePassword('');
+      onAccountDeleted?.();
+    } catch (err) {
+      setDangerError(err.message);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -297,6 +359,90 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate }) {
             {saving ? 'A guardar…' : 'Guardar alterações'}
           </button>
         </form>
+
+        {/* Os teus dados — RGPD (exportação e eliminação da conta) */}
+        <div className="profile-form">
+          <div className="profile-section-card profile-danger-card">
+            <button
+              type="button"
+              className="profile-section-header profile-section-toggle"
+              onClick={() => setShowDanger((v) => !v)}
+              aria-expanded={showDanger}
+            >
+              <span className="profile-section-header-left">
+                <FiAlertTriangle className="profile-section-icon" />
+                <span className="profile-section-title">Os teus dados</span>
+              </span>
+              {showDanger ? <FiChevronUp className="profile-toggle-icon" /> : <FiChevronDown className="profile-toggle-icon" />}
+            </button>
+
+            {showDanger && (
+              <div className="profile-section-body">
+                {dangerError && <div className="error-msg">{dangerError}</div>}
+                {dangerInfo && <div className="info-msg">{dangerInfo}</div>}
+
+                <p className="profile-danger-text">
+                  Podes descarregar tudo o que guardamos sobre ti, ou eliminar a
+                  conta em definitivo.
+                </p>
+
+                <button
+                  type="button"
+                  className="btn btn-secondary profile-danger-btn"
+                  onClick={exportData}
+                  disabled={exporting}
+                >
+                  <FiDownload /> {exporting ? 'A preparar…' : 'Descarregar os meus dados'}
+                </button>
+
+                {!confirmingDelete ? (
+                  <button
+                    type="button"
+                    className="btn btn-danger profile-danger-btn"
+                    onClick={() => { setConfirmingDelete(true); setDangerError(''); setDangerInfo(''); }}
+                  >
+                    <FiTrash2 /> Eliminar a minha conta
+                  </button>
+                ) : (
+                  <div className="profile-danger-confirm">
+                    <p className="profile-danger-text">
+                      Isto apaga em definitivo o teu perfil, trajetos, produtos e
+                      stories. O registo dos pagamentos é conservado por obrigação
+                      fiscal. <strong>Não há forma de recuperar.</strong>
+                    </p>
+                    <div className="profile-input-group">
+                      <label className="profile-label">Confirma com a tua palavra-passe</label>
+                      <input
+                        className="profile-input"
+                        type="password"
+                        placeholder="Palavra-passe"
+                        value={deletePassword}
+                        onChange={(e) => setDeletePassword(e.target.value)}
+                        autoComplete="current-password"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-danger profile-danger-btn"
+                      onClick={deleteAccount}
+                      disabled={deleting || !deletePassword}
+                    >
+                      {deleting ? 'A eliminar…' : 'Eliminar em definitivo'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary profile-danger-btn"
+                      onClick={() => { setConfirmingDelete(false); setDeletePassword(''); }}
+                      disabled={deleting}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {cropSrc && (
