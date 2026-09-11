@@ -9,16 +9,26 @@ import { terminateCurrentSession } from '../sessionApi.js';
 import AnimatedMarker from '../components/AnimatedMarker.jsx';
 import useDeviceHeading from '../hooks/useDeviceHeading.js';
 import PlansScreen from './PlansScreen.jsx';
+import '../styles/MapTab.css';
 
 const LocationTracker = registerPlugin('LocationTracker');
 
-const DEFAULT_PIN = '#EE9B00';
+// (em português) Cor por omissão do pin — a mesma que o site usa para os
+// vendedores sem cor escolhida, para o vendedor se ver no mapa da app tal
+// como os banhistas o veem no mapa do site.
+const DEFAULT_PIN = '#1D5C3A';
 
 function hexToRgba(hex, alpha) {
   const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
-  if (!match) return `rgba(238, 155, 0, ${alpha})`;
+  if (!match) return `rgba(29, 92, 58, ${alpha})`;
   const [r, g, b] = match.slice(1).map((h) => parseInt(h, 16));
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function escapeHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
 }
 
 // (em português) Distância entre duas coordenadas, em metros. É o que
@@ -46,16 +56,20 @@ function formatKm(meters) {
   return `${(meters / 1000).toFixed(1).replace('.', ',')} km`;
 }
 
-// O pin do vendedor: círculo na cor escolhida no perfil, com uma vela
-// branca dentro. O anel só pulsa enquanto a partilha está ligada.
+// O pin do vendedor é o mesmo marcador que o site desenha para a posição do
+// dispositivo: círculo na cor escolhida no perfil, anel branco e seta de
+// direção lá dentro. O halo só pulsa enquanto a partilha está ligada.
 function getVendorLocationHtml(heading, color, sharing) {
   const hasHeading = heading !== null && !isNaN(heading);
-  const sail = `<svg viewBox="0 0 20 20" width="11" height="11" style="display:block;${hasHeading ? `transform:rotate(${heading}deg);` : ''}"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="#fff"/></svg>`;
-  const pinColor = color || DEFAULT_PIN;
-  const pulse = sharing
-    ? `<div class="vendor-location-pulse" style="background:${hexToRgba(pinColor, 0.3)};"></div>`
+  const arrow = hasHeading
+    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="display:block;flex-shrink:0;transform:rotate(${heading}deg);"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="#fff"/></svg>`
     : '';
-  return `<div class="vendor-location-marker">${pulse}<div class="vendor-location-dot" style="background:${pinColor};">${sail}</div></div>`;
+  const pinColor = color || DEFAULT_PIN;
+  const safeColor = escapeHtml(pinColor);
+  const pulse = sharing
+    ? `<div class="user-location-pulse" style="background:${hexToRgba(pinColor, 0.2)};"></div>`
+    : '';
+  return `<div class="user-location-marker">${pulse}<div class="user-location-dot" style="background:${safeColor};box-shadow:0 2px 8px ${hexToRgba(pinColor, 0.45)};">${arrow}</div></div>`;
 }
 
 function FollowPosition({ position }) {
@@ -88,16 +102,17 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const [startedAt, setStartedAt] = useState(null);
   const [elapsed, setElapsed] = useState(0);
   const [distanceM, setDistanceM] = useState(0);
+  const [tilesLoaded, setTilesLoaded] = useState(false);
   const listenerRef = useRef(null);
   const watchIdRef = useRef(null);
   const lastTrackedRef = useRef(null);
   const { heading, reportGpsHeading } = useDeviceHeading();
   const pinColor = user?.pin_color || DEFAULT_PIN;
   const vendorIcon = useMemo(() => L.divIcon({
-    className: '',
+    className: 'vendor-location-pin',
     html: getVendorLocationHtml(heading, pinColor, sharing),
-    iconSize: [56, 56],
-    iconAnchor: [28, 28],
+    iconSize: [54, 54],
+    iconAnchor: [27, 27],
   }), [heading, pinColor, sharing]);
 
   const authHeader = { Authorization: `Bearer ${token}` };
@@ -136,6 +151,15 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
       if (watchIdRef.current != null) Geolocation.clearWatch({ id: watchIdRef.current });
     };
   }, []);
+
+  // Como no site: numa 4G de praia congestionada é melhor mostrar o mapa
+  // meio carregado do que segurar a grelha cinzenta à espera do evento
+  // `load` dos tiles, que pode nunca chegar.
+  useEffect(() => {
+    if (tilesLoaded || !position) return undefined;
+    const t = setTimeout(() => setTilesLoaded(true), 2500);
+    return () => clearTimeout(t);
+  }, [tilesLoaded, position]);
 
   // O tempo decorrido vem do instante em que a sessão começou, não de um
   // contador local: assim sobrevive a app ir para segundo plano.
@@ -294,15 +318,22 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
     <div className="map-screen">
       {/* O mapa ocupa todo o fundo; o resto é sobreposto. */}
       <div className="map-canvas">
-        {position ? (
+        {position && (
           <MapContainer center={position} zoom={16} className="map-container" zoomControl={false}>
-            <TileLayer {...TILE_LAYER} />
+            <TileLayer
+              {...TILE_LAYER}
+              eventHandlers={{ load: () => setTilesLoaded(true) }}
+            />
             <AnimatedMarker position={position} icon={vendorIcon} />
             <FollowPosition position={position} />
           </MapContainer>
-        ) : (
-          <div className="map-placeholder" aria-hidden="true" />
         )}
+        {/* Grelha com brilho a atravessar, como no mapa do site, enquanto
+            não há posição ou os tiles ainda não pintaram. */}
+        <div
+          className={`map-skeleton${position && tilesLoaded ? ' map-skeleton--hidden' : ''}`}
+          aria-hidden="true"
+        />
       </div>
 
       <div className="map-chrome">
@@ -328,16 +359,16 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
         </div>
 
         <div className="map-bottom">
-          {/* GPS ainda por obter: skeleton com a forma do cartão. */}
+          {/* GPS ainda por obter: a mesma faixa de estado do site — texto
+              branco sobre petróleo, legível num ecrã ao sol. */}
           {!position && !mapError && (
-            <div className="map-gps-skeleton">
-              <span className="ss-skeleton ss-skeleton-line map-gps-skeleton-line" />
-              <span className="map-gps-skeleton-text">A obter a tua localização…</span>
-            </div>
+            <p className="map-status" role="status">
+              A obter a tua localização…
+            </p>
           )}
 
           {mapError && (
-            <div className="ss-error map-alert">
+            <div className="map-alert">
               <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                 <line x1="12" y1="9" x2="12" y2="13" />
@@ -348,7 +379,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
           )}
 
           {error && (
-            <div className="ss-error map-alert">
+            <div className="map-alert">
               <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" />

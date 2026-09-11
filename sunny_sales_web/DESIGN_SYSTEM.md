@@ -136,3 +136,20 @@ apenas com texto e badges; o único `<img>` do layout é o logótipo da navbar
 - `prefers-reduced-motion`: todas as animações e transições são reduzidas a
   ~0ms (ver `index.css`); o spinner do botão de localização abranda em vez de
   desaparecer.
+
+## 6. Mapa da app do vendedor
+
+O ecrã do mapa da app móvel (`mobile/src/pages/MapTab.jsx` +
+`mobile/src/styles/MapTab.css`) segue **este** sistema, e não a paleta
+areia/oceano do resto da app: é o mesmo mapa que os banhistas veem no site,
+por isso fala a mesma língua visual — pastilhas e painéis brancos com
+`--shadow-float` e `--radius-panel` sobre o mapa, tipografia Inter, uma única
+ação âncora (`--ink`, ou `--coral` quando é urgente parar a partilha),
+dourado só como fundo de informação e o pin do vendedor desenhado como o
+marcador de posição do site (círculo na cor do perfil, anel branco de 3px,
+seta de direção e halo a pulsar enquanto emite).
+
+Os tokens são **reproduzidos** lá com o prefixo `--site-` (a app não importa
+o CSS do site), por isso uma mudança de paleta aqui tem de ser copiada para
+`mobile/src/styles/MapTab.css`. Os restantes separadores da app — Produtos,
+Trajetos, Conta, planos — mantêm os seus próprios tokens.

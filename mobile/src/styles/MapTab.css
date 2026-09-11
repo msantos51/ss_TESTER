@@ -1,0 +1,541 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Sunny Sales — Mapa da app do vendedor
+
+   O mapa da app usa o mesmo design do mapa do site ("Canvas / Painéis",
+   descrito em sunny_sales_web/DESIGN_SYSTEM.md): o mapa é o fundo e tudo
+   o que lhe fica por cima flutua em pastilhas e painéis brancos de cantos
+   grandes com sombra difusa (--site-shadow-float), tipografia Inter,
+   acento teal da marca e uma única ação âncora por ecrã — Gunmetal
+   quando é a ação normal, coral quando é urgente (parar a partilha).
+
+   É o ecrã que o vendedor vê espelhado no site: quem está na praia com a
+   app e quem abre o mapa público passam a ver a mesma linguagem visual,
+   incluindo o pin — mesma forma, mesmo anel branco, mesma pulsação.
+
+   Os tokens do site são reproduzidos aqui com o prefixo `--site-` em vez
+   de reescreverem os tokens da app: os restantes separadores (Produtos,
+   Trajetos, Conta) e a folha de planos — que é filha deste ecrã —
+   continuam com a paleta areia/oceano da app.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.map-screen {
+  /* ── Paleta (sunny_sales_web/src/index.css · :root) ── */
+  --site-surface: #ffffff;
+  --site-surface-alt: #f1f3f6;
+  --site-accent: #519CAB;          /* Moonstone: ação secundária, seleção */
+  --site-accent-hover: #3D8496;
+  --site-ink: #20373B;             /* Gunmetal: a ação principal do ecrã */
+  --site-ink-hover: #152527;
+  --site-coral: #C9371B;           /* só o que é urgente: parar a partilha */
+  --site-coral-hover: #A82C14;
+  --site-forest: #1D5C3A;          /* presença de vendedores (pins) */
+  --site-gold: #FFC64F;            /* informação, nunca ação; sempre fundo */
+  --site-text: #12191f;
+  --site-text-secondary: #46545f;
+  --site-text-muted: #6b7885;
+  --site-border: rgba(18, 25, 31, 0.07);
+  --site-error: #b91c1c;
+  --site-error-border: rgba(185, 28, 28, 0.35);
+  /* Fundo do mapa enquanto os tiles não chegam (igual ao do site) */
+  --site-map-bg: #e6e9ee;
+
+  /* ── Sombras: contacto curto + difusão longa ── */
+  --site-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05), 0 6px 16px -8px rgba(16, 24, 40, 0.12);
+  --site-shadow-lg: 0 4px 10px -4px rgba(16, 24, 40, 0.08), 0 26px 60px -20px rgba(16, 24, 40, 0.22);
+  /* Para o que flutua sobre o mapa, onde o fundo é imprevisível */
+  --site-shadow-float: 0 1px 2px rgba(16, 24, 40, 0.16), 0 8px 20px -6px rgba(16, 24, 40, 0.24);
+
+  /* ── Raios: painéis 22, controlos 14, botões em pílula ── */
+  --site-radius-control: 14px;
+  --site-radius-lg: 18px;
+  --site-radius-panel: 22px;
+  --site-radius-full: 9999px;
+
+  /* ── Tipografia (Inter, nada em caixa alta) ── */
+  --site-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --site-fs-caption: 13px;
+  --site-fs-body-sm: 15px;
+  --site-fs-body: 16px;
+
+  --site-transition: 0.2s cubic-bezier(0, 0, 0.2, 1);
+  --site-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--site-map-bg);
+}
+
+/* ── Estrutura ────────────────────────────────────────
+   O mapa ocupa todo o fundo; o "chrome" (pastilhas, banners e cartão de
+   partilha) é sobreposto. */
+.map-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  background: var(--site-map-bg);
+}
+
+/* ── Skeleton dos tiles ───────────────────────────────
+   O mesmo do site: grelha cinzenta com um brilho a atravessar, em vez de
+   um retângulo morto. Some assim que os tiles pintam — numa 4G de praia
+   é melhor um mapa meio carregado do que um ecrã à espera. */
+.map-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 450;
+  pointer-events: none;
+  background-color: var(--site-map-bg);
+  background-image:
+    linear-gradient(to right, rgba(15, 15, 15, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 15, 15, 0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 1;
+  transition: opacity 0.5s var(--site-ease-out);
+}
+
+.map-skeleton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 70%
+  );
+  background-size: 220% 100%;
+  animation: map-shimmer 1.6s ease-in-out infinite;
+}
+
+.map-skeleton--hidden {
+  opacity: 0;
+}
+
+@keyframes map-shimmer {
+  0%   { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
+}
+
+/* ── Chrome sobreposto ────────────────────────────────
+   Só os elementos do chrome intercetam toques: entre eles o mapa continua
+   a arrastar-se normalmente. */
+.map-chrome {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--site-font);
+  color: var(--site-text);
+}
+
+.map-chrome,
+.map-topbar,
+.map-bottom {
+  pointer-events: none;
+}
+
+.map-topbar > *,
+.map-bottom > * {
+  pointer-events: auto;
+}
+
+.map-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 14px 14px;
+}
+
+.map-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 14px 14px;
+}
+
+/* ── Pastilhas flutuantes ─────────────────────────────
+   Brancas, em pílula, com --site-shadow-float: é como o site desenha tudo
+   o que assenta sobre o mapa (vista, zoom, localizar, estado em direto). */
+.map-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 5px 16px 5px 5px;
+  border: none;
+  border-radius: var(--site-radius-full);
+  background: var(--site-surface);
+  box-shadow: var(--site-shadow-float);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--site-transition);
+}
+
+.map-user-pill:active {
+  background: var(--site-surface-alt);
+}
+
+.map-user-avatar {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.map-user-avatar-initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--site-accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.map-user-name {
+  font-size: var(--site-fs-body-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--site-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Estado em direto: a mesma pastilha do `.map-live` do site, com o ponto
+   verde-floresta a piscar enquanto a posição está a ser emitida. */
+.map-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: var(--site-radius-full);
+  background: var(--site-surface);
+  box-shadow: var(--site-shadow-float);
+}
+
+.map-status-label {
+  font-size: var(--site-fs-caption);
+  font-weight: 600;
+  color: var(--site-text);
+}
+
+/* Sem partilha a pastilha não desaparece, só baixa o tom: o vendedor
+   continua a saber onde está a ler o seu estado. */
+.map-status-pill.is-idle .map-status-label {
+  color: var(--site-text-secondary);
+}
+
+.map-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--site-text-muted);
+}
+
+.map-status-pill.is-sharing .map-status-dot {
+  background: var(--site-forest);
+  animation: map-live-blink 1.8s ease-in-out infinite;
+}
+
+@keyframes map-live-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+
+/* ── Faixa de estado ──────────────────────────────────
+   Texto branco sobre petróleo translúcido, como no site: uma pastilha
+   clara sobre um mapa claro é um borrão num ecrã ao sol. */
+.map-status {
+  margin: 0;
+  padding: 16px 20px;
+  border-radius: var(--site-radius-lg);
+  background: rgba(18, 25, 31, 0.9);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #fbfcfc;
+  font-size: var(--site-fs-body);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: balance;
+  box-shadow: var(--site-shadow-float);
+}
+
+/* ── Erros ────────────────────────────────────────────
+   Painel branco com o vermelho funcional do site. */
+.map-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--site-radius-lg);
+  background: var(--site-surface);
+  border: 1px solid var(--site-error-border);
+  box-shadow: var(--site-shadow-float);
+  color: var(--site-error);
+  font-size: var(--site-fs-body-sm);
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.map-alert svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Banner de subscrição inativa ─────────────────────
+   Painel branco (é o que flutua sobre o mapa) com o dourado só no ícone:
+   no sistema do site o dourado é informação e usa-se sempre como fundo,
+   com texto escuro por cima — nunca como cor de texto nem de ação. */
+.map-sub-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--site-radius-panel);
+  background: var(--site-surface);
+  box-shadow: var(--site-shadow-float);
+}
+
+.map-sub-icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--site-radius-control);
+  background: var(--site-gold);
+  color: var(--site-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-sub-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.map-sub-title {
+  font-size: var(--site-fs-body-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--site-text);
+}
+
+.map-sub-desc {
+  font-size: var(--site-fs-caption);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--site-text-muted);
+}
+
+/* Pílula teal — o preto fica reservado à ação principal do ecrã, que é
+   iniciar a partilha. */
+.map-sub-btn {
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--site-radius-full);
+  background: var(--site-accent);
+  color: #fff;
+  font-family: inherit;
+  font-size: var(--site-fs-caption);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--site-transition);
+}
+
+.map-sub-btn:active {
+  background: var(--site-accent-hover);
+}
+
+/* ── Cartão de partilha ───────────────────────────────
+   Painel branco de 22px com a sombra longa dos painéis do site. */
+.share-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--site-radius-panel);
+  background: var(--site-surface);
+  box-shadow: var(--site-shadow-lg);
+}
+
+.share-metrics {
+  display: flex;
+  gap: 10px;
+}
+
+.share-metric {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border-radius: var(--site-radius-control);
+  background: var(--site-surface-alt);
+}
+
+.share-metric-label {
+  font-size: var(--site-fs-caption);
+  font-weight: 500;
+  color: var(--site-text-muted);
+}
+
+.share-metric-value {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--site-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A única ação âncora do ecrã: Gunmetal para iniciar, coral para parar —
+   parar é a única coisa urgente que este ecrã tem. */
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 54px;
+  padding: 0 24px;
+  border: none;
+  border-radius: var(--site-radius-full);
+  background: var(--site-ink);
+  color: #fff;
+  font-family: inherit;
+  font-size: var(--site-fs-body);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background var(--site-transition), opacity var(--site-transition);
+}
+
+.share-btn:active:not(:disabled) {
+  background: var(--site-ink-hover);
+}
+
+.share-btn.is-sharing {
+  background: var(--site-coral);
+}
+
+.share-btn.is-sharing:active:not(:disabled) {
+  background: var(--site-coral-hover);
+}
+
+.share-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.share-btn-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ── Pin do vendedor ──────────────────────────────────
+   O mesmo marcador que o site desenha para a posição do dispositivo:
+   círculo de 26px na cor do perfil, anel branco de 3px e seta de direção
+   lá dentro. O halo só pulsa enquanto a partilha está ligada — é o sinal
+   de que o vendedor está mesmo no ar. */
+/* A caixa do divIcon não desenha nada — só o pin lá dentro (o Leaflet põe
+   por omissão um quadrado branco com borda). */
+.vendor-location-pin {
+  background: transparent;
+  border: none;
+}
+
+.user-location-marker {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-location-pulse {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  animation: user-pulse 2s ease-out infinite;
+  pointer-events: none;
+}
+
+.user-location-dot {
+  position: relative;
+  z-index: 1;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes user-pulse {
+  0%   { transform: scale(0.4); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+/* ── Leaflet ──────────────────────────────────────────
+   A atribuição do OSM é obrigatória, mas não pode competir com o cartão
+   de partilha: fica discreta no canto, com a forma que tem no site. */
+.map-canvas .leaflet-container {
+  font-family: var(--site-font);
+  background: var(--site-map-bg);
+}
+
+.map-canvas .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: var(--site-radius-full) 0 0 0;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--site-text-muted);
+}
+
+.map-canvas .leaflet-control-attribution a {
+  color: var(--site-text-muted);
+}
+
+/* Quem pediu menos movimento fica sem pulsação nem brilho. */
+@media (prefers-reduced-motion: reduce) {
+  .map-skeleton::before,
+  .map-status-pill.is-sharing .map-status-dot {
+    animation: none;
+  }
+
+  .user-location-pulse {
+    display: none;
+  }
+}
