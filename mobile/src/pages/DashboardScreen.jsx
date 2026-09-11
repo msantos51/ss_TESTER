@@ -1,25 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  FiUser, FiCheckSquare,
-  FiFileText, FiMail, FiLogOut, FiShoppingBag,
-  FiChevronRight, FiExternalLink
+  FiUser, FiFileText, FiMail, FiLogOut, FiShoppingBag,
+  FiChevronRight, FiExternalLink,
 } from 'react-icons/fi';
-import { WEB_URL, mediaUrl } from '../config.js';
+import { BASE_URL, WEB_URL, mediaUrl } from '../config.js';
 import { terminateCurrentSession } from '../sessionApi.js';
 import ProfileScreen from './ProfileScreen.jsx';
 import PlansScreen from './PlansScreen.jsx';
 import InvoicesScreen from './InvoicesScreen.jsx';
 
 export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUpdate }) {
-  const { user } = auth;
+  const { user, token, vendorId } = auth;
   const [showProfile, setShowProfile] = useState(false);
   const [showPlans, setShowPlans] = useState(false);
   const [showInvoices, setShowInvoices] = useState(false);
+  const [productCount, setProductCount] = useState(null);
 
   const subscriptionActive = user?.subscription_active;
   const subscriptionDate = user?.subscription_valid_until
     ? new Date(user.subscription_valid_until).toLocaleDateString('pt-PT')
     : null;
+
+  // A linha "Produtos" mostra a contagem à direita, como no design.
+  useEffect(() => {
+    let active = true;
+    fetch(`${BASE_URL}/vendors/${vendorId}/products`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => { if (active) setProductCount(Array.isArray(data) ? data.length : 0); })
+      .catch(() => { if (active) setProductCount(null); });
+    return () => { active = false; };
+  }, [vendorId, token]);
 
   const handleLogout = async () => {
     await terminateCurrentSession(auth.token);
@@ -38,109 +50,97 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
     window.open(`${WEB_URL}/#${path}`, '_system');
   };
 
-  // Menus agrupados (foto em cima, menus em baixo)
-  const menuGroups = [
-    {
-      label: 'Conta',
-      items: [
-        { icon: <FiUser />, label: 'Perfil', desc: 'Ver e editar informações', onClick: () => setShowProfile(true) },
-      ],
-    },
+  const groups = [
     {
       label: 'Negócio',
       items: [
-        { icon: <FiShoppingBag />, label: 'Produtos', desc: 'Adicionar e gerir produtos', onClick: () => onChangePage('products') },
         {
-          icon: <FiCheckSquare />,
-          label: 'Subscrição',
-          value: subscriptionActive ? 'Ativa' : 'Inativa',
-          valueClass: subscriptionActive ? 'on' : 'off',
-          onClick: () => setShowPlans(true),
+          icon: <FiShoppingBag />,
+          label: 'Produtos',
+          value: productCount === null ? null : String(productCount),
+          onClick: () => onChangePage('products'),
         },
-        { icon: <FiFileText />, label: 'Faturas', desc: 'Semanas pagas e recibos', onClick: () => setShowInvoices(true) },
+        { icon: <FiFileText />, label: 'Faturas', onClick: () => setShowInvoices(true) },
+        {
+          icon: <FiMail />,
+          label: 'Contactar suporte',
+          external: true,
+          onClick: () => openWebsite('/contacto'),
+        },
       ],
     },
     {
-      label: 'Suporte',
+      label: 'Conta',
       items: [
-        { icon: <FiMail />, label: 'Contactar suporte', external: true, onClick: () => openWebsite('/contacto') },
+        { icon: <FiUser />, label: 'Perfil e dados', onClick: () => setShowProfile(true) },
+        { icon: <FiLogOut />, label: 'Terminar sessão', danger: true, onClick: handleLogout },
       ],
     },
   ];
 
-  return (
-    <div className="dashboard-screen">
-      {/* Hero header com gradiente */}
-      <button className="dashboard-hero" onClick={() => setShowProfile(true)}>
-        <div className="dashboard-hero-content">
-          {user?.profile_photo ? (
-            <img
-              src={mediaUrl(user.profile_photo)}
-              alt="Foto de perfil"
-              className="dashboard-hero-avatar"
-            />
-          ) : (
-            <div className="dashboard-hero-avatar dashboard-hero-avatar-placeholder">
-              {user?.name?.charAt(0)?.toUpperCase() || '?'}
-            </div>
-          )}
-          <div className="dashboard-hero-meta">
-            <div className="dashboard-hero-name">{user?.name}</div>
-            <div className="dashboard-hero-email">{user?.email}</div>
-            <span className={`dashboard-hero-badge${subscriptionActive ? ' active' : ' inactive'}`}>
-              <span className="dashboard-hero-dot" />
-              {subscriptionActive
-                ? <>Ativa{subscriptionDate && <> · {subscriptionDate}</>}</>
-                : 'Inativa'}
-            </span>
-          </div>
-          <FiChevronRight className="dashboard-hero-chevron" />
-        </div>
-      </button>
+  const initial = user?.name?.charAt(0)?.toUpperCase() || '?';
 
-      <div className="dashboard-body">
-        {/* CTA de subscrição inativa */}
-        {user && !subscriptionActive && (
-          <div className="dashboard-cta-card">
-            <div className="dashboard-cta-text">
-              <span className="dashboard-cta-title">Subscrição Inativa</span>
-              <span className="dashboard-cta-desc">Ative para aparecer no mapa</span>
-            </div>
-            <button className="dashboard-cta-btn" onClick={() => setShowPlans(true)}>
-              Ativar
-            </button>
-          </div>
+  return (
+    <div className="account-screen">
+      {/* Cabeçalho de identidade */}
+      <header className="account-header">
+        {user?.profile_photo ? (
+          <img src={mediaUrl(user.profile_photo)} alt="" className="account-avatar" />
+        ) : (
+          <span className="account-avatar account-avatar-initial">{initial}</span>
         )}
 
-        {/* Menus em baixo (formato lista agrupada) */}
-        {menuGroups.map((group) => (
-          <div className="dash-menu-section" key={group.label}>
-            <span className="dash-menu-section-label">{group.label}</span>
-            <div className="dash-menu-group">
+        <div className="account-identity">
+          <span className="account-name">{user?.name}</span>
+          <span className="account-email">{user?.email}</span>
+          {user?.product && <span className="account-product">{user.product}</span>}
+        </div>
+
+        <button type="button" className="account-edit-btn" onClick={() => setShowProfile(true)}>
+          Editar
+        </button>
+      </header>
+
+      <div className="account-body">
+        {/* Cartão de subscrição */}
+        <div className={`account-sub-card${subscriptionActive ? ' is-active' : ''}`}>
+          <div className="account-sub-text">
+            <span className="account-sub-title">
+              {subscriptionActive ? 'Subscrição ativa' : 'Subscrição inativa'}
+            </span>
+            <span className="account-sub-desc">
+              {subscriptionActive
+                ? `Válida até ${subscriptionDate || '—'}`
+                : 'Ativa um plano para apareceres no mapa'}
+            </span>
+          </div>
+          <button type="button" className="account-sub-btn" onClick={() => setShowPlans(true)}>
+            {subscriptionActive ? 'Gerir' : 'Ativar'}
+          </button>
+        </div>
+
+        {groups.map((group) => (
+          <section className="ss-group" key={group.label}>
+            <h2 className="ss-group-label">{group.label}</h2>
+            <div className="ss-group-card">
               {group.items.map((item) => (
-                <button key={item.label} className="dash-menu-row" onClick={item.onClick}>
-                  <span className="dash-menu-row-icon">{item.icon}</span>
-                  <span className="dash-menu-row-label">{item.label}</span>
-                  {item.value && (
-                    <span className={`dash-menu-row-value ${item.valueClass || ''}`}>{item.value}</span>
-                  )}
-                  {item.external
-                    ? <FiExternalLink className="dash-menu-row-chevron" />
-                    : <FiChevronRight className="dash-menu-row-chevron" />}
+                <button
+                  type="button"
+                  key={item.label}
+                  className={`ss-row${item.danger ? ' is-danger' : ''}`}
+                  onClick={item.onClick}
+                >
+                  <span className="ss-row-icon">{item.icon}</span>
+                  <span className="ss-row-label">{item.label}</span>
+                  {item.value && <span className="ss-row-value">{item.value}</span>}
+                  {!item.danger && (item.external
+                    ? <FiExternalLink className="ss-row-chevron" />
+                    : <FiChevronRight className="ss-row-chevron" />)}
                 </button>
               ))}
             </div>
-          </div>
+          </section>
         ))}
-
-        <div className="dash-menu-section">
-          <div className="dash-menu-group">
-            <button className="dash-menu-row danger" onClick={handleLogout}>
-              <span className="dash-menu-row-icon"><FiLogOut /></span>
-              <span className="dash-menu-row-label">Terminar Sessão</span>
-            </button>
-          </div>
-        </div>
       </div>
 
       {showProfile && (
@@ -152,13 +152,9 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
         />
       )}
 
-      {showPlans && (
-        <PlansScreen auth={auth} onClose={() => setShowPlans(false)} />
-      )}
+      {showPlans && <PlansScreen auth={auth} onClose={() => setShowPlans(false)} />}
 
-      {showInvoices && (
-        <InvoicesScreen auth={auth} onClose={() => setShowInvoices(false)} />
-      )}
+      {showInvoices && <InvoicesScreen auth={auth} onClose={() => setShowInvoices(false)} />}
     </div>
   );
 }
