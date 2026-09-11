@@ -34,6 +34,13 @@ jobs:
 
       - name: Build React
         working-directory: mobile
+        env:
+          # O estilo do mapa da app tem de ser o mesmo do site: CARTO Voyager.
+          # O Vite injeta a chave no bundle durante o build, por isso ela tem
+          # de existir AQUI — sem o secret `CARTO_API_KEY` definido no
+          # repositório, a APK cai para os tiles do OpenStreetMap e fica com
+          # um mapa visualmente diferente do site.
+          VITE_CARTO_API_KEY: ${{ secrets.CARTO_API_KEY }}
         run: npm run build
 
       - name: Sync Capacitor Android

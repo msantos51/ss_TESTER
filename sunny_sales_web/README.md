@@ -46,6 +46,10 @@ por isso tem de existir no momento da compilação):
   `npm run build` no deploy, por isso basta redeployar depois de a adicionar.
 - *Mobile (Capacitor)*: cria `mobile/.env.local` antes de
   `npm run build && npm run cap:sync`; o valor fica embutido no bundle da app.
+- *Mobile (APK do GitHub Actions)*: define o secret `CARTO_API_KEY` no
+  repositório (Settings → Secrets and variables → Actions). O workflow
+  `android-build.yml` passa-o ao `npm run build`; sem ele a APK sai com os
+  tiles do OpenStreetMap e o mapa da app fica diferente do mapa do site.
 
 A chave fica visível no bundle do frontend (como qualquer chave de mapas do lado
 do cliente), por isso convém restringi-la por domínio no painel da CARTO, se a

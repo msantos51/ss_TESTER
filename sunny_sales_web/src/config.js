@@ -34,3 +34,13 @@ export const TILE_LAYER = CARTO_API_KEY
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 19,
     };
+
+// Sem chave, o mapa continua a funcionar mas com outro aspeto — e é assim que
+// o mapa da app e o do site deixam de ser iguais. O aviso poupa a caça ao erro.
+if (!CARTO_API_KEY && import.meta.env.DEV) {
+  console.warn(
+    'VITE_CARTO_API_KEY não definida: os mapas usam os tiles do OpenStreetMap '
+    + 'em vez do estilo Voyager da CARTO. Define a chave antes do build para o '
+    + 'mapa ficar igual ao do site.'
+  );
+}
