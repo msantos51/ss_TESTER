@@ -1,53 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {
+  FiPlus, FiX, FiTrash2, FiEdit2, FiCheck, FiImage, FiCamera, FiAlertTriangle,
+} from 'react-icons/fi';
 import { BASE_URL, mediaUrl } from '../config.js';
 import ImageCropper from '../components/ImageCropper';
 import '../styles/ProductsScreen.css';
 
 const MAX_PRODUCTS = 10;
 
-const ShoppingBagIcon = ({ size = 14 }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="9" cy="21" r="1" />
-    <circle cx="20" cy="21" r="1" />
-    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-  </svg>
-);
-
-const PlusIcon = ({ size = 14 }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2">
-    <line x1="12" y1="5" x2="12" y2="19" />
-    <line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-);
-
-const EditIcon = ({ size = 14 }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-  </svg>
-);
-
-const TrashIcon = ({ size = 14 }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="3 6 5 6 21 6" />
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-  </svg>
-);
-
-const CheckIcon = ({ size = 14 }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
-
-const CloseIcon = ({ size = 14 }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2">
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-
 export default function ProductsScreen({ auth, onClose }) {
+  // Sem `onClose` o ecrã é um separador de página inteira; com ele mantém-se
+  // como bottom sheet (usado a partir de outros ecrãs).
+  const asTab = typeof onClose !== 'function';
   const { token, vendorId } = auth;
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,6 +40,9 @@ export default function ProductsScreen({ auth, onClose }) {
   const [editError, setEditError] = useState('');
   const editFileRef = useRef(null);
   const editCameraRef = useRef(null);
+
+  // Apagar é destrutivo e chama a API: confirma-se na própria linha.
+  const [confirmingDelete, setConfirmingDelete] = useState(null);
 
   const authHeader = { Authorization: `Bearer ${token}` };
 
@@ -132,6 +99,11 @@ export default function ProductsScreen({ auth, onClose }) {
     setShowForm(false);
   };
 
+  const toggleForm = () => {
+    if (showForm) closeForm();
+    else { resetForm(); setShowForm(true); }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -159,6 +131,7 @@ export default function ProductsScreen({ auth, onClose }) {
 
   // ---------- Editar ----------
   const startEdit = (product) => {
+    setConfirmingDelete(null);
     setEditingId(product.id);
     setEditName(product.name);
     setEditPrice(String(product.price));
@@ -220,6 +193,7 @@ export default function ProductsScreen({ auth, onClose }) {
 
   // ---------- Remover ----------
   const handleDelete = async (productId) => {
+    setConfirmingDelete(null);
     try {
       const res = await fetch(`${BASE_URL}/vendors/${vendorId}/products/${productId}`, {
         method: 'DELETE',
@@ -232,261 +206,236 @@ export default function ProductsScreen({ auth, onClose }) {
     }
   };
 
-  const formatPrice = (value) => `€${parseFloat(value).toFixed(2).replace('.', ',')}`;
+  const formatPrice = (value) => `${parseFloat(value).toFixed(2).replace('.', ',')} €`;
   const atLimit = products.length >= MAX_PRODUCTS;
 
+  const photoFields = (preview, cameraRef, fileRef, onChange) => (
+    <div className="product-form-photo">
+      {preview ? (
+        <img src={preview} alt="" className="product-form-thumb" />
+      ) : (
+        <span className="product-form-thumb is-placeholder"><FiImage size={22} /></span>
+      )}
+      <div className="product-form-photo-btns">
+        <button type="button" className="product-photo-btn" onClick={() => cameraRef.current?.click()}>
+          <FiCamera size={14} /> Tirar foto
+        </button>
+        <button type="button" className="product-photo-btn is-ghost" onClick={() => fileRef.current?.click()}>
+          <FiImage size={14} /> Galeria
+        </button>
+      </div>
+      <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={onChange} style={{ display: 'none' }} />
+      <input ref={fileRef} type="file" accept="image/*" onChange={onChange} style={{ display: 'none' }} />
+    </div>
+  );
+
   return (
-    <div className="products-overlay">
-      <div className="products-sheet">
-        <div className="products-header">
-          <h2>Produtos</h2>
-          <button className="btn-icon" onClick={onClose} title="Fechar">
-            <CloseIcon size={22} />
-          </button>
+    <div className={asTab ? 'products-screen' : 'products-overlay'}>
+      <div className={asTab ? 'products-panel' : 'products-sheet'}>
+        <div className="screen-head">
+          <div className="screen-head-text">
+            <h2 className="screen-title">Produtos</h2>
+            <p className="screen-subtitle">
+              {products.length} de {MAX_PRODUCTS} · visíveis no teu perfil
+            </p>
+          </div>
+          {asTab ? (
+            <button
+              type="button"
+              className={`product-add-fab${showForm ? ' is-open' : ''}`}
+              onClick={toggleForm}
+              disabled={atLimit && !showForm}
+              aria-label={showForm ? 'Fechar formulário' : 'Adicionar produto'}
+              aria-expanded={showForm}
+            >
+              {showForm ? <FiX size={20} /> : <FiPlus size={20} />}
+            </button>
+          ) : (
+            <button type="button" className="ss-sheet-close" onClick={onClose} aria-label="Fechar">
+              <FiX size={18} />
+            </button>
+          )}
         </div>
 
-        {error && <div className="error-msg">{error}</div>}
+        <div className="products-body">
+          {error && (
+            <div className="ss-error">
+              <FiAlertTriangle size={17} />
+              <span>{error}</span>
+            </div>
+          )}
 
-        {loading ? (
-          <div className="products-loading">
-            <span className="loading-dots"><span /><span /><span /></span>
-            <p>A carregar produtos…</p>
-          </div>
-        ) : (
-          <div className="products-body">
-            <p className="products-limit-info">
-              {products.length}/{MAX_PRODUCTS} produtos
+          {atLimit && (
+            <p className="products-limit">
+              Atingiste o limite de {MAX_PRODUCTS} produtos. Remove um para adicionar outro.
             </p>
+          )}
 
-            {/* Adicionar produto */}
-            {atLimit ? (
-              <p className="products-limit-warning">
-                Atingiste o limite de {MAX_PRODUCTS} produtos. Remove um para adicionar outro.
-              </p>
-            ) : showForm ? (
-              <form className="product-form" onSubmit={handleSubmit}>
-                <div className="product-form-photo-row">
-                  {photoPreview ? (
-                    <img src={photoPreview} alt="Pré-visualização" className="product-form-photo" />
-                  ) : (
-                    <div className="product-form-photo product-form-photo-placeholder">
-                      <ShoppingBagIcon size={22} />
-                    </div>
-                  )}
-                  <div className="product-photo-btns">
-                    <button
-                      type="button"
-                      className="product-photo-btn"
-                      onClick={() => addCameraRef.current?.click()}
-                    >
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                      Tirar foto
-                    </button>
-                    <button
-                      type="button"
-                      className="product-photo-btn product-photo-btn-secondary"
-                      onClick={() => addFileRef.current?.click()}
-                    >
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                      Galeria
-                    </button>
-                  </div>
-                  <input
-                    ref={addCameraRef}
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    onChange={handlePhotoChange}
-                    style={{ display: 'none' }}
-                  />
-                  <input
-                    ref={addFileRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoChange}
-                    style={{ display: 'none' }}
-                  />
+          {showForm && !atLimit && (
+            <form className="product-form" onSubmit={handleSubmit}>
+              <span className="product-form-title">Novo produto</span>
+              {photoFields(photoPreview, addCameraRef, addFileRef, handlePhotoChange)}
+
+              <input
+                className="product-input"
+                type="text"
+                placeholder="Nome do produto"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+              <input
+                className="product-input"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="Preço (€)"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                required
+              />
+
+              {formError && (
+                <div className="ss-error">
+                  <FiAlertTriangle size={17} />
+                  <span>{formError}</span>
                 </div>
+              )}
 
-                <div className="product-form-field">
-                  <label className="product-form-label">Nome do produto</label>
-                  <input
-                    className="product-form-input"
-                    type="text"
-                    placeholder="Ex: Gelado de morango"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="product-form-field">
-                  <label className="product-form-label">Preço (€)</label>
-                  <input
-                    className="product-form-input"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="0,00"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    required
-                  />
-                </div>
-
-                {formError && <div className="product-form-error">{formError}</div>}
-
-                <div className="product-form-actions">
-                  <button type="button" className="product-form-cancel" onClick={closeForm} disabled={saving}>
-                    <CloseIcon size={15} /> Cancelar
-                  </button>
-                  <button type="submit" className="product-form-submit" disabled={saving}>
-                    <PlusIcon size={15} /> {saving ? 'A adicionar…' : 'Adicionar'}
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <button
-                type="button"
-                className="btn btn-primary product-add-btn"
-                onClick={() => setShowForm(true)}
-              >
-                <PlusIcon size={16} /> Adicionar produto
-              </button>
-            )}
-
-            {/* Lista de produtos */}
-            {products.length === 0 ? (
-              <div className="products-empty">
-                <div className="products-empty-icon"><ShoppingBagIcon size={40} /></div>
-                <h3>Nenhum produto adicionado</h3>
-                <p>Começa a adicionar produtos para aumentar a visibilidade das tuas ofertas.</p>
+              <div className="product-form-actions">
+                <button type="button" className="product-btn-cancel" onClick={closeForm} disabled={saving}>
+                  Cancelar
+                </button>
+                <button type="submit" className="product-btn-save" disabled={saving}>
+                  {saving ? 'A guardar…' : 'Guardar'}
+                </button>
               </div>
-            ) : (
-              <div className="products-list">
-                {products.map((product) =>
-                  editingId === product.id ? (
-                    <div key={product.id} className="product-item product-item-editing">
-                      <form className="product-form" onSubmit={(e) => handleEditSubmit(e, product.id)}>
-                        <div className="product-form-photo-row">
-                          {editPhotoPreview ? (
-                            <img src={editPhotoPreview} alt="Pré-visualização" className="product-form-photo" />
-                          ) : (
-                            <div className="product-form-photo product-form-photo-placeholder">
-                              <ShoppingBagIcon size={22} />
-                            </div>
-                          )}
-                          <div className="product-photo-btns">
-                            <button
-                              type="button"
-                              className="product-photo-btn"
-                              onClick={() => editCameraRef.current?.click()}
-                            >
-                              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                              Tirar foto
-                            </button>
-                            <button
-                              type="button"
-                              className="product-photo-btn product-photo-btn-secondary"
-                              onClick={() => editFileRef.current?.click()}
-                            >
-                              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                              Galeria
-                            </button>
-                          </div>
-                          <input
-                            ref={editCameraRef}
-                            type="file"
-                            accept="image/*"
-                            capture="environment"
-                            onChange={handleEditPhotoChange}
-                            style={{ display: 'none' }}
-                          />
-                          <input
-                            ref={editFileRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleEditPhotoChange}
-                            style={{ display: 'none' }}
-                          />
-                        </div>
+            </form>
+          )}
 
-                        <div className="product-form-field">
-                          <label className="product-form-label">Nome do produto</label>
-                          <input
-                            className="product-form-input"
-                            type="text"
-                            value={editName}
-                            onChange={(e) => setEditName(e.target.value)}
-                            required
-                          />
-                        </div>
-
-                        <div className="product-form-field">
-                          <label className="product-form-label">Preço (€)</label>
-                          <input
-                            className="product-form-input"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={editPrice}
-                            onChange={(e) => setEditPrice(e.target.value)}
-                            required
-                          />
-                        </div>
-
-                        {editError && <div className="product-form-error">{editError}</div>}
-
-                        <div className="product-form-actions">
-                          <button type="button" className="product-form-cancel" onClick={cancelEdit} disabled={editSaving}>
-                            <CloseIcon size={15} /> Cancelar
-                          </button>
-                          <button type="submit" className="product-form-submit" disabled={editSaving}>
-                            <CheckIcon size={15} /> {editSaving ? 'A guardar…' : 'Guardar'}
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                  ) : (
-                    <div key={product.id} className="product-item">
-                      {product.photo ? (
-                        <div className="product-item-image">
-                          <img src={mediaUrl(product.photo)} alt={product.name} />
-                        </div>
-                      ) : (
-                        <div className="product-item-image product-item-image-placeholder">
-                          <ShoppingBagIcon size={22} />
-                        </div>
-                      )}
-                      <div className="product-item-content">
-                        <h3 className="product-item-name">{product.name}</h3>
-                        <div className="product-item-price">{formatPrice(product.price)}</div>
-                      </div>
-                      <div className="product-item-actions">
-                        <button
-                          type="button"
-                          className="product-item-action"
-                          onClick={() => startEdit(product)}
-                          aria-label="Editar produto"
-                        >
-                          <EditIcon size={17} />
-                        </button>
-                        <button
-                          type="button"
-                          className="product-item-action product-item-action-danger"
-                          onClick={() => handleDelete(product.id)}
-                          aria-label="Remover produto"
-                        >
-                          <TrashIcon size={17} />
-                        </button>
-                      </div>
-                    </div>
-                  )
+          {loading ? (
+            <div className="products-list">
+              {[0, 1, 2].map((i) => <span key={i} className="ss-skeleton product-skeleton" />)}
+            </div>
+          ) : products.length === 0 ? (
+            !error && (
+              <div className="ss-empty">
+                <span className="ss-empty-icon"><FiImage size={22} /></span>
+                <h3>Ainda não tens produtos</h3>
+                <p>Os produtos que adicionares aqui aparecem no teu perfil público.</p>
+                {!showForm && (
+                  <button type="button" className="ss-empty-cta" onClick={toggleForm}>
+                    Adicionar o primeiro
+                  </button>
                 )}
               </div>
-            )}
-          </div>
-        )}
+            )
+          ) : (
+            <div className="products-list">
+              {products.map((product) => (
+                editingId === product.id ? (
+                  <form
+                    key={product.id}
+                    className="product-form"
+                    onSubmit={(e) => handleEditSubmit(e, product.id)}
+                  >
+                    <span className="product-form-title">Editar produto</span>
+                    {photoFields(editPhotoPreview, editCameraRef, editFileRef, handleEditPhotoChange)}
+
+                    <input
+                      className="product-input"
+                      type="text"
+                      placeholder="Nome do produto"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      required
+                    />
+                    <input
+                      className="product-input"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="Preço (€)"
+                      value={editPrice}
+                      onChange={(e) => setEditPrice(e.target.value)}
+                      required
+                    />
+
+                    {editError && (
+                      <div className="ss-error">
+                        <FiAlertTriangle size={17} />
+                        <span>{editError}</span>
+                      </div>
+                    )}
+
+                    <div className="product-form-actions">
+                      <button type="button" className="product-btn-cancel" onClick={cancelEdit} disabled={editSaving}>
+                        Cancelar
+                      </button>
+                      <button type="submit" className="product-btn-save" disabled={editSaving}>
+                        <FiCheck size={15} /> {editSaving ? 'A guardar…' : 'Guardar'}
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="product-row" key={product.id}>
+                    {product.photo ? (
+                      <img src={mediaUrl(product.photo)} alt="" className="product-thumb" />
+                    ) : (
+                      <span className="product-thumb is-placeholder"><FiImage size={22} /></span>
+                    )}
+
+                    <div className="product-row-main">
+                      <span className="product-row-name">{product.name}</span>
+                      <span className="product-row-price">{formatPrice(product.price)}</span>
+                    </div>
+
+                    {confirmingDelete === product.id ? (
+                      <div className="product-row-confirm">
+                        <span className="product-row-confirm-text">Apagar?</span>
+                        <button
+                          type="button"
+                          className="product-row-btn is-danger"
+                          onClick={() => handleDelete(product.id)}
+                          aria-label={`Confirmar apagar ${product.name}`}
+                        >
+                          <FiCheck size={17} />
+                        </button>
+                        <button
+                          type="button"
+                          className="product-row-btn"
+                          onClick={() => setConfirmingDelete(null)}
+                          aria-label="Cancelar"
+                        >
+                          <FiX size={17} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="product-row-actions">
+                        <button
+                          type="button"
+                          className="product-row-btn"
+                          onClick={() => startEdit(product)}
+                          aria-label={`Editar ${product.name}`}
+                        >
+                          <FiEdit2 size={17} />
+                        </button>
+                        <button
+                          type="button"
+                          className="product-row-btn is-danger"
+                          onClick={() => setConfirmingDelete(product.id)}
+                          aria-label={`Remover ${product.name}`}
+                        >
+                          <FiTrash2 size={17} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {cropSrc && (

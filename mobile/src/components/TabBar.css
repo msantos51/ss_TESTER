@@ -1,0 +1,53 @@
+/* Barra de separadores: fundo branco, pílula de fundo no separador ativo. */
+.ss-tabbar {
+  flex-shrink: 0;
+  display: flex;
+  background: var(--surface);
+  border-top: 1px solid var(--line-tab);
+  padding: 10px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+}
+
+.ss-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  /* 6px + 30px (pílula) + 5px + 13px (rótulo) + 6px = 60px de alvo. */
+  padding: 6px 0;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  color: var(--tab-inactive);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ss-tab.is-active {
+  color: var(--ink);
+}
+
+.ss-tab-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 30px;
+  border-radius: var(--r-pill);
+  background: transparent;
+  transition: background var(--transition);
+}
+
+.ss-tab.is-active .ss-tab-pill {
+  background: var(--ocean-tint);
+}
+
+.ss-tab-label {
+  font-size: var(--fs-label);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.ss-tab:active .ss-tab-pill {
+  transform: scale(0.94);
+}

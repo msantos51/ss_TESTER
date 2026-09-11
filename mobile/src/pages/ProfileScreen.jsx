@@ -1,8 +1,14 @@
 import React, { useRef, useState } from 'react';
-import { FiUser, FiLock, FiCamera, FiCheck, FiChevronDown, FiChevronUp, FiDroplet, FiShoppingBag, FiCreditCard, FiAlertTriangle, FiDownload, FiTrash2 } from 'react-icons/fi';
+import {
+  FiLock, FiCamera, FiChevronDown, FiChevronUp,
+  FiAlertTriangle, FiDownload, FiTrash2,
+} from 'react-icons/fi';
 import { BASE_URL, WEB_URL, mediaUrl } from '../config.js';
 import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
+
+const PAYMENT_METHODS = ['MB Way', 'Numerário', 'Cartão'];
+const DEFAULT_PIN = '#EE9B00';
 
 export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDeleted }) {
   const { token, user, vendorId } = auth;
@@ -11,8 +17,10 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
   const [nif, setNif] = useState(user?.nif || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [product, setProduct] = useState(user?.product || '');
-  const [paymentMethods, setPaymentMethods] = useState(user?.payment_methods ? user.payment_methods.split(',').filter(Boolean) : []);
-  const [pinColor, setPinColor] = useState(user?.pin_color || '#7B61FF');
+  const [paymentMethods, setPaymentMethods] = useState(
+    user?.payment_methods ? user.payment_methods.split(',').filter(Boolean) : []
+  );
+  const [pinColor, setPinColor] = useState(user?.pin_color || DEFAULT_PIN);
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [cropSrc, setCropSrc] = useState(null);
@@ -30,12 +38,6 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const fileInputRef = useRef(null);
-
-  const PAYMENT_ICONS = {
-    'MB Way': <FiCreditCard />,
-    'Numerário': <FiCreditCard />,
-    'Cartão': <FiCreditCard />,
-  };
 
   const togglePaymentMethod = (method) => {
     setPaymentMethods((prev) =>
@@ -80,7 +82,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
         data.append('new_password', newPassword);
         data.append('old_password', oldPassword);
       }
-      if (pinColor !== (user.pin_color || '#7B61FF')) data.append('pin_color', pinColor);
+      if (pinColor !== (user.pin_color || DEFAULT_PIN)) data.append('pin_color', pinColor);
       if (photo) data.append('profile_photo', new File([photo], 'profile.jpg', { type: 'image/jpeg' }));
 
       const res = await fetch(`${BASE_URL}/vendors/${vendorId}/profile`, {
@@ -164,34 +166,30 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
   };
 
   const avatarSrc = photoPreview || (user?.profile_photo ? mediaUrl(user.profile_photo) : null);
+  const initial = user?.name?.charAt(0)?.toUpperCase() || '?';
 
   return (
-    <div className="profile-overlay">
-      <div className="profile-sheet">
-        <div className="profile-header">
-          <div>
-            <h2>Editar Perfil</h2>
-            <p className="profile-header-subtitle">Personalize sua experiência na plataforma</p>
-          </div>
-          <button className="btn-icon" onClick={onClose} title="Fechar">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2">
+    <div className="ss-sheet-overlay" role="dialog" aria-modal="true" aria-label="Perfil">
+      <div className="ss-sheet">
+        <span className="ss-sheet-handle" aria-hidden="true" />
+
+        <div className="ss-sheet-head">
+          <h2 className="ss-sheet-title">Perfil</h2>
+          <button type="button" className="ss-sheet-close" onClick={onClose} aria-label="Fechar">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>
 
-        <form onSubmit={save} className="profile-form">
-          {error && <div className="error-msg">{error}</div>}
+        <form onSubmit={save} className="ss-sheet-body">
+          {error && <div className="ss-error">{error}</div>}
           {info && <div className="info-msg">{info}</div>}
 
-          {/* Aparência */}
-          <div className="profile-section-card">
-            <div className="profile-section-header">
-              <FiDroplet className="profile-section-icon" />
-              <span className="profile-section-title">Aparência</span>
-            </div>
-            <div className="profile-photo-section">
+          {/* Identidade */}
+          <div className="profile-card">
+            <div className="profile-photo-row">
               <button
                 type="button"
                 className="profile-avatar-btn"
@@ -199,17 +197,16 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
                 aria-label="Alterar foto de perfil"
               >
                 {avatarSrc ? (
-                  <img src={avatarSrc} alt="Foto de perfil" className="profile-avatar" />
+                  <img src={avatarSrc} alt="" className="profile-avatar" />
                 ) : (
-                  <div className="profile-avatar profile-avatar-placeholder">
-                    {user.name?.charAt(0)?.toUpperCase() || '?'}
-                  </div>
+                  <span className="profile-avatar profile-avatar-initial">{initial}</span>
                 )}
-                <div className="profile-avatar-overlay">
-                  <FiCamera className="profile-avatar-cam" />
-                </div>
+                <span className="profile-avatar-overlay"><FiCamera /></span>
               </button>
-              <span className="profile-photo-hint">Clica para alterar a foto</span>
+              <div className="profile-photo-text">
+                <span className="profile-photo-title">Foto de perfil</span>
+                <span className="profile-photo-hint">Toca para alterar</span>
+              </div>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -218,13 +215,27 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
                 style={{ display: 'none' }}
               />
             </div>
-            <div className="profile-input-group">
-              <PinColorPicker value={pinColor} onChange={setPinColor} />
+
+            <div className="ss-field">
+              <label className="ss-label" htmlFor="profile-name">Nome</label>
+              <input
+                id="profile-name"
+                className="ss-input"
+                type="text"
+                placeholder="O teu nome"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
             </div>
-            <div className="profile-input-group">
-              <label className="profile-label">Produto</label>
+
+            <PinColorPicker value={pinColor} onChange={setPinColor} />
+
+            <div className="ss-field">
+              <label className="ss-label" htmlFor="profile-product">Produto</label>
               <select
-                className="profile-input"
+                id="profile-product"
+                className="ss-input"
                 value={product}
                 onChange={(e) => setProduct(e.target.value)}
               >
@@ -234,17 +245,18 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
                 <option value="Acessórios de Praia">Acessórios de Praia</option>
               </select>
             </div>
-            <div className="profile-input-group">
-              <label className="profile-label">Métodos de pagamento aceites</label>
-              <div className="profile-payment-grid">
-                {Object.keys(PAYMENT_ICONS).map((method) => (
+
+            <div className="ss-field">
+              <span className="ss-label">Métodos de pagamento</span>
+              <div className="profile-chips">
+                {PAYMENT_METHODS.map((method) => (
                   <button
                     type="button"
                     key={method}
-                    className={`profile-payment-chip${paymentMethods.includes(method) ? ' active' : ''}`}
+                    className={`profile-chip${paymentMethods.includes(method) ? ' is-on' : ''}`}
                     onClick={() => togglePaymentMethod(method)}
+                    aria-pressed={paymentMethods.includes(method)}
                   >
-                    <span className="profile-payment-chip-icon">{PAYMENT_ICONS[method]}</span>
                     {method}
                   </button>
                 ))}
@@ -252,27 +264,15 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
             </div>
           </div>
 
-          {/* Dados Pessoais */}
-          <div className="profile-section-card">
-            <div className="profile-section-header">
-              <FiUser className="profile-section-icon" />
-              <span className="profile-section-title">Dados Pessoais</span>
-            </div>
-            <div className="profile-input-group">
-              <label className="profile-label">Nome completo</label>
+          {/* Dados pessoais */}
+          <div className="profile-card">
+            <span className="profile-card-title">Dados pessoais</span>
+
+            <div className="ss-field">
+              <label className="ss-label" htmlFor="profile-email">Email</label>
               <input
-                className="profile-input"
-                type="text"
-                placeholder="O teu nome"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="profile-input-group">
-              <label className="profile-label">Email</label>
-              <input
-                className="profile-input"
+                id="profile-email"
+                className="ss-input"
                 type="email"
                 placeholder="email@exemplo.com"
                 value={email}
@@ -280,19 +280,21 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
                 required
               />
               {user.pending_email ? (
-                <span className="profile-input-hint">
+                <span className="ss-hint">
                   Alteração pendente: confirma <strong>{user.pending_email}</strong> no email que enviámos.
                 </span>
               ) : (
-                <span className="profile-input-hint">
+                <span className="ss-hint">
                   Ao alterar o email vais receber um link de confirmação no novo endereço.
                 </span>
               )}
             </div>
-            <div className="profile-input-group">
-              <label className="profile-label">NIF</label>
+
+            <div className="ss-field">
+              <label className="ss-label" htmlFor="profile-nif">NIF</label>
               <input
-                className="profile-input"
+                id="profile-nif"
+                className="ss-input"
                 type="text"
                 inputMode="numeric"
                 maxLength={9}
@@ -301,10 +303,12 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
                 onChange={(e) => setNif(e.target.value.replace(/\D/g, ''))}
               />
             </div>
-            <div className="profile-input-group">
-              <label className="profile-label">Telemóvel</label>
+
+            <div className="ss-field">
+              <label className="ss-label" htmlFor="profile-phone">Telemóvel</label>
               <input
-                className="profile-input"
+                id="profile-phone"
+                className="ss-input"
                 type="tel"
                 placeholder="912345678"
                 value={phone}
@@ -313,26 +317,28 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
             </div>
           </div>
 
-          {/* Segurança */}
-          <div className="profile-section-card">
+          {/* Segurança e RGPD, com a anatomia de lista da Conta */}
+          <div className="ss-group-card">
             <button
               type="button"
-              className="profile-section-header profile-section-toggle"
-              onClick={() => setShowSecurity(v => !v)}
+              className="ss-row"
+              onClick={() => setShowSecurity((v) => !v)}
               aria-expanded={showSecurity}
             >
-              <span className="profile-section-header-left">
-                <FiLock className="profile-section-icon" />
-                <span className="profile-section-title">Segurança</span>
-              </span>
-              {showSecurity ? <FiChevronUp className="profile-toggle-icon" /> : <FiChevronDown className="profile-toggle-icon" />}
+              <span className="ss-row-icon"><FiLock /></span>
+              <span className="ss-row-label">Segurança</span>
+              {showSecurity
+                ? <FiChevronUp className="ss-row-chevron" />
+                : <FiChevronDown className="ss-row-chevron" />}
             </button>
+
             {showSecurity && (
-              <div className="profile-section-body">
-                <div className="profile-input-group">
-                  <label className="profile-label">Palavra-passe atual</label>
+              <div className="ss-row-body">
+                <div className="ss-field">
+                  <label className="ss-label" htmlFor="profile-old-pass">Palavra-passe atual</label>
                   <input
-                    className="profile-input"
+                    id="profile-old-pass"
+                    className="ss-input"
                     type="password"
                     placeholder="Palavra-passe atual"
                     value={oldPassword}
@@ -340,10 +346,11 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
                     autoComplete="current-password"
                   />
                 </div>
-                <div className="profile-input-group">
-                  <label className="profile-label">Nova palavra-passe</label>
+                <div className="ss-field">
+                  <label className="ss-label" htmlFor="profile-new-pass">Nova palavra-passe</label>
                   <input
-                    className="profile-input"
+                    id="profile-new-pass"
+                    className="ss-input"
                     type="password"
                     placeholder="Mínimo 8 caracteres, maiúscula e número"
                     value={newPassword}
@@ -353,42 +360,33 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
                 </div>
               </div>
             )}
-          </div>
 
-          <button type="submit" className="btn btn-primary" disabled={saving}>
-            {saving ? 'A guardar…' : 'Guardar alterações'}
-          </button>
-        </form>
-
-        {/* Os teus dados — RGPD (exportação e eliminação da conta) */}
-        <div className="profile-form">
-          <div className="profile-section-card profile-danger-card">
             <button
               type="button"
-              className="profile-section-header profile-section-toggle"
+              className="ss-row is-danger-icon"
               onClick={() => setShowDanger((v) => !v)}
               aria-expanded={showDanger}
             >
-              <span className="profile-section-header-left">
-                <FiAlertTriangle className="profile-section-icon" />
-                <span className="profile-section-title">Os teus dados</span>
-              </span>
-              {showDanger ? <FiChevronUp className="profile-toggle-icon" /> : <FiChevronDown className="profile-toggle-icon" />}
+              <span className="ss-row-icon"><FiAlertTriangle /></span>
+              <span className="ss-row-label">Os teus dados (RGPD)</span>
+              {showDanger
+                ? <FiChevronUp className="ss-row-chevron" />
+                : <FiChevronDown className="ss-row-chevron" />}
             </button>
 
             {showDanger && (
-              <div className="profile-section-body">
-                {dangerError && <div className="error-msg">{dangerError}</div>}
+              <div className="ss-row-body">
+                {dangerError && <div className="ss-error">{dangerError}</div>}
                 {dangerInfo && <div className="info-msg">{dangerInfo}</div>}
 
-                <p className="profile-danger-text">
+                <p className="ss-row-text">
                   Podes descarregar tudo o que guardamos sobre ti, ou eliminar a
                   conta em definitivo.
                 </p>
 
                 <button
                   type="button"
-                  className="btn btn-secondary profile-danger-btn"
+                  className="ss-btn-outline"
                   onClick={exportData}
                   disabled={exporting}
                 >
@@ -398,22 +396,25 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
                 {!confirmingDelete ? (
                   <button
                     type="button"
-                    className="btn btn-danger profile-danger-btn"
+                    className="ss-btn-danger"
                     onClick={() => { setConfirmingDelete(true); setDangerError(''); setDangerInfo(''); }}
                   >
                     <FiTrash2 /> Eliminar a minha conta
                   </button>
                 ) : (
-                  <div className="profile-danger-confirm">
-                    <p className="profile-danger-text">
+                  <>
+                    <p className="ss-row-text">
                       Isto apaga em definitivo o teu perfil, trajetos, produtos e
                       stories. O registo dos pagamentos é conservado por obrigação
                       fiscal. <strong>Não há forma de recuperar.</strong>
                     </p>
-                    <div className="profile-input-group">
-                      <label className="profile-label">Confirma com a tua palavra-passe</label>
+                    <div className="ss-field">
+                      <label className="ss-label" htmlFor="profile-del-pass">
+                        Confirma com a tua palavra-passe
+                      </label>
                       <input
-                        className="profile-input"
+                        id="profile-del-pass"
+                        className="ss-input"
                         type="password"
                         placeholder="Palavra-passe"
                         value={deletePassword}
@@ -423,7 +424,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
                     </div>
                     <button
                       type="button"
-                      className="btn btn-danger profile-danger-btn"
+                      className="ss-btn-danger"
                       onClick={deleteAccount}
                       disabled={deleting || !deletePassword}
                     >
@@ -431,18 +432,22 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
                     </button>
                     <button
                       type="button"
-                      className="btn btn-secondary profile-danger-btn"
+                      className="ss-btn-outline"
                       onClick={() => { setConfirmingDelete(false); setDeletePassword(''); }}
                       disabled={deleting}
                     >
                       Cancelar
                     </button>
-                  </div>
+                  </>
                 )}
               </div>
             )}
           </div>
-        </div>
+
+          <button type="submit" className="ss-btn-primary" disabled={saving}>
+            {saving ? 'A guardar…' : 'Guardar alterações'}
+          </button>
+        </form>
       </div>
 
       {cropSrc && (

@@ -1,45 +1,39 @@
 import React from 'react';
 import './PinColorPicker.css';
 
+// As seis cores do design. Quem já tiver guardada uma cor fora desta lista
+// continua a vê-la (e selecionada) como uma amostra extra.
 const PRESET_COLORS = [
+  { name: 'Sol', value: '#EE9B00' },
+  { name: 'Oceano', value: '#147B9E' },
+  { name: 'Coral', value: '#E63946' },
+  { name: 'Verde', value: '#16A34A' },
   { name: 'Roxo', value: '#7B61FF' },
-  { name: 'Azul', value: '#4BA3C3' },
-  { name: 'Verde', value: '#10B981' },
-  { name: 'Vermelho', value: '#EF4444' },
-  { name: 'Laranja', value: '#F97316' },
-  { name: 'Rosa', value: '#EC4899' },
-  { name: 'Amarelo', value: '#EACC00' },
-  { name: 'Teal', value: '#14B8A6' },
+  { name: 'Azul-escuro', value: '#0B2A3D' },
 ];
 
 export default function PinColorPicker({ value, onChange }) {
-  return (
-    <div className="pcp-container">
-      <div className="pcp-preview-section">
-        <label className="pcp-preview-label">Pré-visualização do pin</label>
-        <div className="pcp-preview-pin" style={{ '--pin-color': value }}>
-          <div className="pcp-pin-marker">
-            <div className="pcp-pin-dot" />
-            <div className="pcp-pin-shadow" />
-          </div>
-        </div>
-      </div>
+  const known = PRESET_COLORS.some((c) => c.value.toLowerCase() === (value || '').toLowerCase());
+  const colors = known || !value
+    ? PRESET_COLORS
+    : [...PRESET_COLORS, { name: 'A tua cor', value }];
 
-      <div className="pcp-colors-section">
-        <label className="pcp-colors-label">Selecione uma cor</label>
-        <div className="pcp-colors-grid">
-          {PRESET_COLORS.map((color) => (
-            <button
-              key={color.value}
-              type="button"
-              className={`pcp-color-btn ${value === color.value ? 'active' : ''}`}
-              onClick={() => onChange(color.value)}
-              style={{ backgroundColor: color.value }}
-              title={color.name}
-              aria-label={`Cor ${color.name}`}
-            />
-          ))}
-        </div>
+  return (
+    <div className="ss-field">
+      <span className="ss-label">Cor do pin no mapa</span>
+      <div className="pcp-swatches">
+        {colors.map((color) => (
+          <button
+            key={color.value}
+            type="button"
+            className={`pcp-swatch${value === color.value ? ' is-on' : ''}`}
+            onClick={() => onChange(color.value)}
+            style={{ backgroundColor: color.value }}
+            title={color.name}
+            aria-label={`Cor ${color.name}`}
+            aria-pressed={value === color.value}
+          />
+        ))}
       </div>
     </div>
   );
