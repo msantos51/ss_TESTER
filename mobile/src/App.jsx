@@ -91,19 +91,25 @@ export default function App() {
     );
   }
 
-  return activePage === 'map' ? (
-    <MapTab
-      auth={auth}
-      onChangePage={setActivePage}
-      onLogout={handleLogout}
-      onUserUpdate={handleUserUpdate}
-    />
-  ) : (
-    <DashboardScreen
-      auth={auth}
-      onChangePage={setActivePage}
-      onLogout={handleLogout}
-      onUserUpdate={handleUserUpdate}
-    />
+  // Keep both screens mounted to preserve MapTab's sharing state across navigation
+  return (
+    <>
+      <div style={{ display: activePage === 'map' ? 'block' : 'none', height: '100%' }}>
+        <MapTab
+          auth={auth}
+          onChangePage={setActivePage}
+          onLogout={handleLogout}
+          onUserUpdate={handleUserUpdate}
+        />
+      </div>
+      <div style={{ display: activePage === 'dashboard' ? 'block' : 'none', height: '100%' }}>
+        <DashboardScreen
+          auth={auth}
+          onChangePage={setActivePage}
+          onLogout={handleLogout}
+          onUserUpdate={handleUserUpdate}
+        />
+      </div>
+    </>
   );
 }
