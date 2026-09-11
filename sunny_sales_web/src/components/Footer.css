@@ -9,7 +9,7 @@
   background: rgba(255, 255, 255, 0.7);
   -webkit-backdrop-filter: saturate(180%) blur(18px);
   backdrop-filter: saturate(180%) blur(18px);
-  border-top: 1px solid var(--border);
+  border-top: 1.5px solid rgba(195, 231, 241, 0.7);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -61,7 +61,7 @@
 }
 
 .footer-link:hover {
-  color: var(--text, #0f0f0f);
+  color: var(--palette-moonstone, #519CAB);
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-thickness: 1px;
