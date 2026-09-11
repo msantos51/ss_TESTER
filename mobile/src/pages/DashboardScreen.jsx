@@ -1,23 +1,19 @@
 import React, { useState } from 'react';
 import {
-  FiUser, FiSend, FiCheckSquare,
+  FiUser, FiCheckSquare,
   FiFileText, FiMail, FiLogOut, FiShoppingBag,
-  FiChevronRight, FiExternalLink, FiMap
+  FiChevronRight, FiExternalLink
 } from 'react-icons/fi';
 import { WEB_URL, mediaUrl } from '../config.js';
 import { terminateCurrentSession } from '../sessionApi.js';
 import ProfileScreen from './ProfileScreen.jsx';
 import PlansScreen from './PlansScreen.jsx';
-import RoutesScreen from './RoutesScreen.jsx';
-import ProductsScreen from './ProductsScreen.jsx';
 import InvoicesScreen from './InvoicesScreen.jsx';
 
 export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUpdate }) {
   const { user } = auth;
   const [showProfile, setShowProfile] = useState(false);
   const [showPlans, setShowPlans] = useState(false);
-  const [showRoutes, setShowRoutes] = useState(false);
-  const [showProducts, setShowProducts] = useState(false);
   const [showInvoices, setShowInvoices] = useState(false);
 
   const subscriptionActive = user?.subscription_active;
@@ -51,16 +47,9 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
       ],
     },
     {
-      label: 'Atividade',
-      items: [
-        { icon: <FiMap />, label: 'Mapa', desc: 'Voltar ao mapa', onClick: () => onChangePage('map') },
-        { icon: <FiSend />, label: 'Trajetos', desc: 'Consultar histórico de rotas', onClick: () => setShowRoutes(true) },
-      ],
-    },
-    {
       label: 'Negócio',
       items: [
-        { icon: <FiShoppingBag />, label: 'Produtos', desc: 'Adicionar e gerir produtos', onClick: () => setShowProducts(true) },
+        { icon: <FiShoppingBag />, label: 'Produtos', desc: 'Adicionar e gerir produtos', onClick: () => onChangePage('products') },
         {
           icon: <FiCheckSquare />,
           label: 'Subscrição',
@@ -165,14 +154,6 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
 
       {showPlans && (
         <PlansScreen auth={auth} onClose={() => setShowPlans(false)} />
-      )}
-
-      {showRoutes && (
-        <RoutesScreen auth={auth} onClose={() => setShowRoutes(false)} />
-      )}
-
-      {showProducts && (
-        <ProductsScreen auth={auth} onClose={() => setShowProducts(false)} />
       )}
 
       {showInvoices && (

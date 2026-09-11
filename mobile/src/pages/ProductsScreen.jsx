@@ -48,6 +48,9 @@ const CloseIcon = ({ size = 14 }) => (
 );
 
 export default function ProductsScreen({ auth, onClose }) {
+  // Sem `onClose` o ecrã é um separador de página inteira; com ele mantém-se
+  // como bottom sheet (usado a partir de outros ecrãs).
+  const asTab = typeof onClose !== 'function';
   const { token, vendorId } = auth;
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -236,13 +239,15 @@ export default function ProductsScreen({ auth, onClose }) {
   const atLimit = products.length >= MAX_PRODUCTS;
 
   return (
-    <div className="products-overlay">
-      <div className="products-sheet">
+    <div className={asTab ? 'products-screen' : 'products-overlay'}>
+      <div className={asTab ? 'products-panel' : 'products-sheet'}>
         <div className="products-header">
           <h2>Produtos</h2>
-          <button className="btn-icon" onClick={onClose} title="Fechar">
-            <CloseIcon size={22} />
-          </button>
+          {!asTab && (
+            <button className="btn-icon" onClick={onClose} title="Fechar">
+              <CloseIcon size={22} />
+            </button>
+          )}
         </div>
 
         {error && <div className="error-msg">{error}</div>}

@@ -1,3 +1,16 @@
+/* Modo separador: ocupa o painel todo, sem overlay nem sheet. */
+.products-screen,
+.products-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.products-screen {
+  background: var(--sand);
+}
+
 .products-overlay {
   position: fixed;
   top: 0;

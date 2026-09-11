@@ -223,7 +223,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate }) {
 
       {/* Top bar */}
       <div className="main-top-bar">
-        <button className="vendor-info vendor-info-btn" onClick={() => onChangePage('dashboard')} title="Ir para dashboard">
+        <button className="vendor-info vendor-info-btn" onClick={() => onChangePage('account')} title="Ir para a conta">
           <div className="vendor-avatar" style={{ borderColor: user?.pin_color }}>
             {vendorName.charAt(0).toUpperCase()}
           </div>

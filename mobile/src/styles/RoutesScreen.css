@@ -1,3 +1,16 @@
+/* Modo separador: ocupa o painel todo, sem overlay nem sheet. */
+.routes-screen,
+.routes-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.routes-screen {
+  background: var(--sand);
+}
+
 .routes-overlay {
   position: fixed;
   top: 0;

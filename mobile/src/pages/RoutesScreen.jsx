@@ -17,6 +17,8 @@ const ClockIcon = ({ size = 14 }) => (
 );
 
 export default function RoutesScreen({ auth, onClose }) {
+  // Sem `onClose` o ecrã é um separador de página inteira.
+  const asTab = typeof onClose !== 'function';
   const { token, vendorId } = auth;
   const [routes, setRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,16 +56,18 @@ export default function RoutesScreen({ auth, onClose }) {
   };
 
   return (
-    <div className="routes-overlay">
-      <div className="routes-sheet">
+    <div className={asTab ? 'routes-screen' : 'routes-overlay'}>
+      <div className={asTab ? 'routes-panel' : 'routes-sheet'}>
         <div className="routes-header">
           <h2>Trajetos</h2>
-          <button className="btn-icon" onClick={onClose} title="Fechar">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
+          {!asTab && (
+            <button className="btn-icon" onClick={onClose} title="Fechar">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          )}
         </div>
 
         {error && <div className="error-msg">{error}</div>}
