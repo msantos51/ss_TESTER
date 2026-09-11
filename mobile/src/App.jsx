@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Geolocation } from '@capacitor/geolocation';
 import WelcomeScreen from './pages/WelcomeScreen.jsx';
 import RegisterScreen from './pages/RegisterScreen.jsx';
@@ -20,6 +20,12 @@ export default function App() {
   // primeira visita, mas ficam montados a partir daí.
   const [visitedTabs, setVisitedTabs] = useState(() => new Set(['map']));
   const [prefilledEmail, setPrefilledEmail] = useState('');
+  // O botão de sair vive agora na Conta, mas quem sabe parar a partilha é o
+  // mapa — que fica montado. O mapa regista aqui a sua função de paragem.
+  const stopSharingRef = useRef(null);
+  const registerStopSharing = useCallback((fn) => {
+    stopSharingRef.current = fn;
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -58,7 +64,12 @@ export default function App() {
     requestLocationPermissions();
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await stopSharingRef.current?.();
+    } catch (error) {
+      console.error('Erro ao parar a partilha antes de sair:', error);
+    }
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('vendorId');
@@ -90,6 +101,7 @@ export default function App() {
             onChangePage={goToTab}
             onLogout={handleLogout}
             onUserUpdate={handleUserUpdate}
+            registerStopSharing={registerStopSharing}
           />
         ),
       },
