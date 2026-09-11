@@ -1639,92 +1639,152 @@ body {
   color: var(--primary);
 }
 
-/* ── Ecrã de boas-vindas ────────────────────────── */
+/* ═══ Ecrã de boas-vindas ════════════════════ */
 .welcome-screen {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 45%, #6BBDE0 100%);
-  justify-content: center;
-  padding: 32px 24px calc(32px + env(safe-area-inset-bottom, 0));
-  gap: 32px;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) 26px calc(34px + env(safe-area-inset-bottom, 0px));
+  background: var(--ink);
   overflow: hidden;
 }
 
-.welcome-screen::before {
-  content: '';
+.welcome-halo {
   position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 400px;
-  height: 400px;
-  background: rgba(238, 155, 0, 0.15);
   border-radius: 50%;
-  filter: blur(80px);
   pointer-events: none;
 }
 
-.welcome-card {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: var(--shadow-lg);
+.welcome-halo-sun {
+  top: -90px;
+  right: -70px;
+  width: 320px;
+  height: 320px;
+  background: rgba(238, 155, 0, 0.22);
+  filter: blur(70px);
+}
+
+.welcome-halo-ocean {
+  bottom: -120px;
+  left: -90px;
+  width: 300px;
+  height: 300px;
+  background: rgba(75, 163, 195, 0.28);
+  filter: blur(80px);
+}
+
+.welcome-lead {
   position: relative;
   z-index: 1;
-}
-
-.welcome-benefits {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  list-style: none;
-  margin-bottom: 6px;
-}
-
-.welcome-benefit {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.welcome-benefit-icon {
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  border-radius: var(--radius-sm);
-  background: var(--primary-light);
-  color: var(--primary-dark);
-  display: flex;
-  align-items: center;
   justify-content: center;
-  font-size: 18px;
+  gap: 22px;
 }
 
-.welcome-benefit-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.welcome-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
 }
 
-.welcome-benefit-text strong {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
+.welcome-title {
+  font-size: var(--fs-display);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -1.4px;
+  color: #fff;
 }
 
-.welcome-benefit-text small {
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--text-secondary);
+.welcome-text {
+  margin-top: 16px;
+  max-width: 280px;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .welcome-foot {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.welcome-proofs {
+  display: flex;
+  gap: 22px;
+}
+
+.welcome-proof {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.welcome-proof-value {
+  font-size: var(--fs-metric);
+  font-weight: 800;
+  color: var(--sun);
+}
+
+.welcome-proof-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.welcome-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.welcome-btn-primary,
+.welcome-btn-secondary {
+  width: 100%;
+  min-height: 48px;
+  padding: 17px;
+  border-radius: var(--r-pill);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.welcome-btn-primary {
+  border: none;
+  background: var(--sun);
+  color: var(--sun-ink);
+  font-size: var(--fs-btn);
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.welcome-btn-secondary {
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  background: transparent;
+  color: #fff;
+  font-size: var(--fs-body);
+  font-weight: 700;
+}
+
+.welcome-btn-primary:active,
+.welcome-btn-secondary:active {
+  transform: scale(0.99);
+}
+
+.welcome-note {
   text-align: center;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* ── Ecrã de registo ────────────────────────────── */

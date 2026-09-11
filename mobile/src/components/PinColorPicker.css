@@ -6,6 +6,7 @@
 
 /* 40px de amostra dentro de um alvo de 44px, como pede o design. */
 .pcp-swatch {
+  position: relative;
   width: 40px;
   height: 40px;
   padding: 0;
@@ -14,6 +15,14 @@
   box-shadow: var(--shadow-card);
   cursor: pointer;
   transition: border-color var(--transition), transform var(--transition);
+}
+
+/* Alarga a área de toque para 44px sem mexer no desenho. */
+.pcp-swatch::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
 }
 
 .pcp-swatch.is-on {
