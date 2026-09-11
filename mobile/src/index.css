@@ -1054,11 +1054,6 @@ body {
   text-align: left;
 }
 
-.main-top-bar .vendor-avatar {
-  border: 2px solid transparent;
-}
-
-/* ── Profile screen overlay ─────────────────────── */
 /* ═══ Primitivos de lista, campo e botão ═════
    Partilhados pela Conta e pela sheet de Perfil. */
 .ss-group {
