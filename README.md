@@ -27,6 +27,7 @@ O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma a
 | Mapa rotativo | O mapa roda com a orientação do dispositivo (iOS 13+ e Android) |
 | Perfil do vendedor | Foto, produto, e stories efémeros (fotos/vídeos com expiração) |
 | Páginas informativas | Sobre o projeto, Sustentabilidade, Implementação para municípios |
+| Páginas legais | Privacidade, Termos, Aviso Legal, Cookies e gestão da conta de vendedor (`/eliminar-conta`) |
 
 #### Para vendedores
 | Funcionalidade | Descrição |
@@ -39,6 +40,7 @@ O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma a
 | Sessões ativas | Ver e terminar sessões em outros dispositivos |
 | Subscrição e faturação | Integração com Stripe; histórico de semanas pagas com links de recibo |
 | Stories | Publicar fotos/vídeos efémeros visíveis no perfil |
+| Os teus dados (RGPD) | Descarregar todos os dados pessoais em JSON e eliminar a conta em definitivo, na app ou em `/eliminar-conta` |
 | App móvel | App Android (Capacitor + React) dedicada ao vendedor: registo de conta, partilha de localização em tempo real (serviço nativo), gestão de conta, produtos, subscrição e faturas |
 
 ---
@@ -87,7 +89,7 @@ ss_TESTER/
 
 ### Modelos de Dados (principais)
 
-- **Vendor** — conta do vendedor (nome, email, produto, foto, cor do pin, coordenadas atuais, subscrição)
+- **Vendor** — conta do vendedor (nome, email, produto, foto, cor do pin, coordenadas atuais, subscrição, `deleted_at` para contas eliminadas)
 - **Route** — sessão de rastreio (pontos GPS, duração, distância em metros)
 - **PaidWeek** — registo de pagamento (intervalo de datas, URL do recibo Stripe)
 - **Story** — media efémero do vendedor (foto/vídeo com expiração)
@@ -119,6 +121,28 @@ ss_TESTER/
    ```
 
 > A variável `BASE_URL` em `sunny_sales_web/src/config.js` deve apontar para o endereço do backend.
+
+---
+
+## Proteção de Dados (RGPD)
+
+O vendedor exerce dois direitos diretamente, sem depender de suporte:
+
+| Direito | Como | Endpoint |
+|---|---|---|
+| Portabilidade (art. 20.º) | App: *Perfil → Os teus dados*. Web: `/eliminar-conta` | `GET /vendors/me/export` |
+| Apagamento (art. 17.º) | Idem, com confirmação da palavra-passe | `DELETE /vendors/me` |
+
+A eliminação apaga de forma irreversível o perfil, os trajetos GPS, os produtos,
+as stories e os ficheiros correspondentes no armazenamento, e termina todas as
+sessões. Subsiste apenas o registo de pagamentos (`paid_weeks`), sem dados
+pessoais associados: a lei fiscal portuguesa obriga a conservar os documentos de
+faturação durante 10 anos e o RGPD (art. 17.º, n.º 3, al. b)) ressalva
+expressamente essa obrigação. A conta deixa de autenticar e o email fica livre
+para um novo registo.
+
+> A página `/eliminar-conta` é acessível sem instalar a app — requisito
+> obrigatório da Google Play para qualquer aplicação com contas de utilizador.
 
 ---
 

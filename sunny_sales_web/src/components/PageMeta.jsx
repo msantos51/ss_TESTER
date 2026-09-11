@@ -58,6 +58,10 @@ const META = {
     title: 'Política de Cookies · Sunny Sales',
     description: 'Como o Sunny Sales utiliza cookies e tecnologias semelhantes.',
   },
+  '/eliminar-conta': {
+    title: 'Eliminar conta · Sunny Sales',
+    description: 'Descarrega os teus dados ou elimina em definitivo a tua conta de vendedor Sunny Sales.',
+  },
 };
 
 function setMeta(selector, attr, value) {

@@ -30,6 +30,14 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
     onLogout();
   };
 
+  // (em português) A conta foi eliminada: o servidor já apagou as sessões, por
+  // isso basta limpar o estado local — chamar terminateCurrentSession aqui só
+  // daria 401 contra uma conta que já não existe.
+  const handleAccountDeleted = () => {
+    setShowProfile(false);
+    onLogout();
+  };
+
   const openWebsite = (path) => {
     window.open(`${WEB_URL}/#${path}`, '_system');
   };
@@ -147,7 +155,12 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
       </div>
 
       {showProfile && (
-        <ProfileScreen auth={auth} onClose={() => setShowProfile(false)} onUserUpdate={onUserUpdate} />
+        <ProfileScreen
+          auth={auth}
+          onClose={() => setShowProfile(false)}
+          onUserUpdate={onUserUpdate}
+          onAccountDeleted={handleAccountDeleted}
+        />
       )}
 
       {showPlans && (

@@ -802,3 +802,189 @@ def test_cors_rejects_unknown_origin(client):
     assert resp.status_code == 200
     assert "access-control-allow-origin" not in resp.headers
 
+
+
+# --------------------------
+# RGPD — exportação e eliminação da conta
+# --------------------------
+
+def _vendor_with_data(client):
+    """Regista um vendedor com trajeto, produto e pagamento associados."""
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = activate_subscription(client, vendor_id)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    client.post(f"/vendors/{vendor_id}/routes/start", headers=headers)
+    client.put(
+        f"/vendors/{vendor_id}/location", json={"lat": 38.68, "lng": -9.33}, headers=headers
+    )
+    client.post(f"/vendors/{vendor_id}/routes/stop", headers=headers)
+    client.post(
+        f"/vendors/{vendor_id}/products",
+        data={"name": "Bola de Berlim", "price": "1.5"},
+        headers=headers,
+    )
+    return vendor_id, token, headers
+
+
+def test_export_my_data_returns_all_personal_data(client):
+    """RGPD art. 20.º: o titular consegue descarregar tudo o que guardamos."""
+    vendor_id, _token, headers = _vendor_with_data(client)
+
+    resp = client.get("/vendors/me/export", headers=headers)
+    assert resp.status_code == 200
+    assert "attachment" in resp.headers["content-disposition"]
+    assert f"sunny-sales-dados-{vendor_id}.json" in resp.headers["content-disposition"]
+
+    data = resp.json()
+    assert data["conta"]["id"] == vendor_id
+    assert data["conta"]["email"] == "vendor@example.com"
+    assert data["conta"]["telefone"] == "912345678"
+    assert len(data["trajetos"]) == 1
+    assert data["trajetos"][0]["pontos"]
+    assert len(data["produtos"]) == 1
+    assert data["produtos"][0]["nome"] == "Bola de Berlim"
+    assert len(data["pagamentos"]) == 1
+    assert len(data["sessoes"]) == 1
+
+
+def test_export_requires_authentication(client):
+    assert client.get("/vendors/me/export").status_code in (401, 403)
+
+
+def test_delete_account_requires_correct_password(client):
+    """Uma palavra-passe errada não pode destruir a conta de ninguém."""
+    vendor_id, _token, headers = _vendor_with_data(client)
+
+    resp = client.request(
+        "DELETE", "/vendors/me", json={"password": "ErradaXYZ1"}, headers=headers
+    )
+    assert resp.status_code == 401
+
+    # A conta continua intacta e utilizável.
+    assert client.get("/vendors/me", headers=headers).status_code == 200
+    listed = client.get("/vendors/").json()
+    assert any(v["id"] == vendor_id for v in listed)
+
+
+def test_delete_account_erases_personal_data(client):
+    """RGPD art. 17.º: os dados pessoais desaparecem e a conta deixa de existir."""
+    from backend.app import database, models
+
+    vendor_id, _token, headers = _vendor_with_data(client)
+
+    resp = client.request(
+        "DELETE", "/vendors/me", json={"password": "Secret123"}, headers=headers
+    )
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "deleted"
+
+    # Deixa de autenticar, por token antigo ou por credenciais.
+    assert client.get("/vendors/me", headers=headers).status_code == 401
+    assert client.post(
+        "/login", json={"email": "vendor@example.com", "password": "Secret123"}
+    ).status_code == 401
+    assert client.post(
+        "/token", json={"email": "vendor@example.com", "password": "Secret123"}
+    ).status_code == 401
+
+    # Desaparece do mapa público e do detalhe.
+    assert all(v["id"] != vendor_id for v in client.get("/vendors/").json())
+    assert client.get(f"/vendors/{vendor_id}").status_code == 404
+
+    db = database.SessionLocal()
+    try:
+        # Trajetos GPS e produtos apagados de facto; sessões terminadas.
+        assert db.query(models.Route).filter_by(vendor_id=vendor_id).count() == 0
+        assert db.query(models.Product).filter_by(vendor_id=vendor_id).count() == 0
+        assert db.query(models.VendorSession).filter_by(vendor_id=vendor_id).count() == 0
+
+        # O registo de pagamentos subsiste — obrigação fiscal (10 anos).
+        assert db.query(models.PaidWeek).filter_by(vendor_id=vendor_id).count() == 1
+
+        vendor = db.query(models.Vendor).filter_by(id=vendor_id).first()
+        assert vendor is not None
+        assert vendor.deleted_at is not None
+        assert vendor.email == f"apagado+{vendor_id}@sunnysales.invalid"
+        assert vendor.name == "Conta eliminada"
+        assert vendor.subscription_active is False
+        for field in (
+            "nif",
+            "phone",
+            "address",
+            "iban",
+            "id_document_number",
+            "business_name",
+            "profile_photo",
+            "beaches",
+            "current_lat",
+            "current_lng",
+        ):
+            assert getattr(vendor, field) is None, f"{field} não foi anonimizado"
+    finally:
+        db.close()
+
+
+def test_deleted_account_frees_the_email_for_a_new_registration(client):
+    """Quem elimina a conta pode voltar a registar-se com o mesmo email."""
+    _vendor_id, _token, headers = _vendor_with_data(client)
+    client.request("DELETE", "/vendors/me", json={"password": "Secret123"}, headers=headers)
+
+    resp = register_vendor(client, email="vendor@example.com")
+    assert resp.status_code == 201
+
+
+def test_stripe_webhook_ignores_deleted_account(client):
+    """Um checkout que conclua depois da eliminação não pode creditar a conta."""
+    from backend.app import database, models
+
+    vendor_id, _token, headers = _vendor_with_data(client)
+    client.request("DELETE", "/vendors/me", json={"password": "Secret123"}, headers=headers)
+
+    event = {
+        "type": "checkout.session.completed",
+        "data": {
+            "object": {
+                "id": "cs_test_apos_eliminacao",
+                "payment_status": "paid",
+                "client_reference_id": str(vendor_id),
+                "metadata": {"vendor_id": str(vendor_id), "plan": "mensal"},
+            }
+        },
+    }
+    resp = client.post(
+        "/stripe/webhook",
+        json=event,
+        headers={"stripe-signature": "test"},
+    )
+    assert resp.status_code == 200
+
+    db = database.SessionLocal()
+    try:
+        vendor = db.query(models.Vendor).filter_by(id=vendor_id).first()
+        assert vendor.subscription_active is False
+        # Continua a existir apenas o pagamento anterior à eliminação.
+        assert db.query(models.PaidWeek).filter_by(vendor_id=vendor_id).count() == 1
+    finally:
+        db.close()
+
+
+def test_password_reset_ignores_deleted_account(client):
+    """A lápide de uma conta eliminada não gera tokens de recuperação."""
+    from backend.app import database, models
+
+    vendor_id, _token, headers = _vendor_with_data(client)
+    client.request("DELETE", "/vendors/me", json={"password": "Secret123"}, headers=headers)
+
+    tombstone = f"apagado+{vendor_id}@sunnysales.invalid"
+    resp = client.post("/password-reset-request", json={"email": tombstone})
+    assert resp.status_code == 200  # resposta neutra, como para um email inexistente
+
+    db = database.SessionLocal()
+    try:
+        vendor = db.query(models.Vendor).filter_by(id=vendor_id).first()
+        assert vendor.password_reset_token is None
+    finally:
+        db.close()

@@ -197,7 +197,11 @@ export default function PrivacyPolicy() {
             </li>
           </ul>
           <p>
-            Para exercer estes direitos, contacte-nos através dos dados abaixo.
+            Os vendedores registados podem exercer de imediato, e sem nos
+            contactar, o direito de portabilidade e o direito ao apagamento: na
+            app, em <strong>Perfil &rarr; Os teus dados</strong>, ou em{' '}
+            <a href="/eliminar-conta">sunnysales.pt/eliminar-conta</a>. Para os
+            restantes direitos, contacte-nos através dos dados abaixo.
           </p>
         </section>
 

@@ -16,6 +16,12 @@ class UserLogin(BaseModel):
     password: str
     force: bool = False
 
+class AccountDeleteRequest(BaseModel):
+    """Reautenticação exigida para eliminar a conta (RGPD art. 17.º)."""
+
+    password: str
+
+
 class VendorProfileUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None

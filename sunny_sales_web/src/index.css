@@ -1044,6 +1044,96 @@ h2 {
   font-style: normal;
 }
 
+
+/* ════════════════════════════════════════════════════════
+   Gestão da conta de vendedor (/eliminar-conta)
+   Formulário sóbrio dentro do painel legal — não é uma área
+   de vendedor, é um fluxo único de exportar ou eliminar.
+   ════════════════════════════════════════════════════════ */
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.account-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.account-input {
+  width: 100%;
+  padding: 12px 14px;
+  font: inherit;
+  color: var(--text);
+  background: var(--canvas);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+}
+
+.account-input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.account-btn {
+  padding: 12px 18px;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s var(--ease-out), opacity 0.2s var(--ease-out);
+}
+
+.account-btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.account-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.account-btn-ghost {
+  color: var(--text);
+  background: transparent;
+  border-color: var(--border-strong);
+}
+
+.account-btn-ghost:hover:not(:disabled) {
+  background: var(--accent-soft);
+}
+
+.account-btn-danger {
+  background: var(--danger);
+}
+
+.account-btn-danger:hover:not(:disabled) {
+  background: var(--danger);
+  opacity: 0.88;
+}
+
+.account-msg {
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+}
+
+.account-msg-error {
+  color: var(--danger);
+  background: rgba(185, 28, 28, 0.08);
+}
+
+.account-msg-info {
+  color: var(--text);
+  background: var(--accent-soft);
+}
+
 .legal-container section {
   background: var(--surface);
   border: none;

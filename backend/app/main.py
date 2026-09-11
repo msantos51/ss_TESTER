@@ -498,7 +498,11 @@ def get_current_vendor(
     token = credentials.credentials
     payload = decode_token(token)
     vendor_id = payload.get("sub")
-    vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
+    vendor = (
+        db.query(models.Vendor)
+        .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
+        .first()
+    )
     if not vendor:
         raise HTTPException(status_code=401, detail="Vendor not found")
     session = (
@@ -519,7 +523,11 @@ def get_current_vendor_optional(request: Request, db: Session = Depends(get_db))
         try:
             payload = decode_token(token)
             vendor_id = payload.get("sub")
-            vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
+            vendor = (
+                db.query(models.Vendor)
+                .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
+                .first()
+            )
             if vendor:
                 session = (
                     db.query(models.VendorSession)
@@ -621,7 +629,8 @@ def login(request: Request, credentials: schemas.UserLogin, db: Session = Depend
             or_(
                 models.Vendor.email == identifier,
                 models.Vendor.name == identifier,
-            )
+            ),
+            models.Vendor.deleted_at == None,
         )
         .first()
     )
@@ -666,7 +675,11 @@ async def generate_token(
         security_logger.warning(f"Token request with missing credentials from {request.client.host}")
         raise HTTPException(status_code=400, detail="Email and password required")
 
-    vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
+    vendor = (
+        db.query(models.Vendor)
+        .filter(models.Vendor.email == email, models.Vendor.deleted_at == None)
+        .first()
+    )
     if not vendor or not pwd_context.verify(password, vendor.hashed_password):
         security_logger.warning(f"Failed token request for {email} from {request.client.host}")
         raise HTTPException(status_code=401, detail="Incorrect email or password")
@@ -877,7 +890,11 @@ async def resend_confirmation_email(
     email: str = Body(..., embed=True),
     db: Session = Depends(get_db),
 ):
-    vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
+    vendor = (
+        db.query(models.Vendor)
+        .filter(models.Vendor.email == email, models.Vendor.deleted_at == None)
+        .first()
+    )
     if not vendor:
         raise HTTPException(status_code=404, detail="Email não encontrado")
     if vendor.email_confirmed:
@@ -977,7 +994,11 @@ def list_vendors(
     if current_vendor:
         vendors = [current_vendor]
     else:
-        vendors = db.query(models.Vendor).all()
+        # Contas eliminadas (RGPD) continuam na base de dados como lápide sem
+        # dados pessoais — nunca podem aparecer no mapa público.
+        vendors = (
+            db.query(models.Vendor).filter(models.Vendor.deleted_at == None).all()
+        )
 
     # mapear rotas ativas para evitar uma query por vendedor
     active_routes = {
@@ -998,7 +1019,11 @@ def list_vendors(
 # --------------------------
 @app.get("/vendors/{vendor_id:int}", response_model=schemas.VendorPublicOut)
 def get_vendor(vendor_id: int, db: Session = Depends(get_db)):
-    vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
+    vendor = (
+        db.query(models.Vendor)
+        .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
+        .first()
+    )
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendedor não encontrado")
     return vendor
@@ -1452,7 +1477,11 @@ async def password_reset_request(
     if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", email):
         raise HTTPException(status_code=400, detail="Email inválido")
 
-    vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
+    vendor = (
+        db.query(models.Vendor)
+        .filter(models.Vendor.email == email, models.Vendor.deleted_at == None)
+        .first()
+    )
     if vendor:
         token = uuid4().hex
         vendor.password_reset_token = token
@@ -1944,7 +1973,11 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
             security_logger.warning(f"Invalid plan in webhook: {plan}")
             return {"status": "ignored"}
 
-        vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
+        vendor = (
+            db.query(models.Vendor)
+            .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
+            .first()
+        )
         if vendor:
             try:
                 paid = apply_subscription_payment(vendor, plan, db)
@@ -1971,7 +2004,11 @@ def activate_subscription_manual(
     db: Session = Depends(get_db),
     admin: bool = Depends(get_admin),
 ):
-    vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
+    vendor = (
+        db.query(models.Vendor)
+        .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
+        .first()
+    )
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found")
 
@@ -1984,7 +2021,7 @@ def activate_subscription_manual(
 # --------------------------
 @app.get("/admin/vendors", response_model=list[schemas.VendorOut])
 def admin_list_vendors(db: Session = Depends(get_db), admin: bool = Depends(get_admin)):
-    vendors = db.query(models.Vendor).all()
+    vendors = db.query(models.Vendor).filter(models.Vendor.deleted_at == None).all()
     return vendors
 
 @app.post("/admin/vendors/{vendor_id}/deactivate")
@@ -2002,6 +2039,247 @@ def get_my_vendor_profile(
     db: Session = Depends(get_db),
 ):
     return refresh_subscription_status(current_vendor, db)
+
+
+# --------------------------
+# RGPD — exportação dos dados pessoais (art. 20.º, direito à portabilidade)
+# --------------------------
+@app.get("/vendors/me/export")
+@limiter.limit("5/hour")
+def export_my_data(
+    request: Request,
+    current_vendor: models.Vendor = Depends(get_current_vendor),
+    db: Session = Depends(get_db),
+):
+    """Devolve, em JSON, todos os dados pessoais associados à conta.
+
+    O ficheiro é servido como transferência (`Content-Disposition: attachment`)
+    para que o titular o possa guardar. Inclui perfil, trajetos GPS, produtos,
+    stories, pagamentos e sessões — tudo o que o Sunny Sales guarda sobre ele.
+    """
+    vendor = current_vendor
+
+    routes = (
+        db.query(models.Route)
+        .filter(models.Route.vendor_id == vendor.id)
+        .order_by(models.Route.start_time.asc())
+        .all()
+    )
+    products = (
+        db.query(models.Product)
+        .filter(models.Product.vendor_id == vendor.id)
+        .order_by(models.Product.created_at.asc())
+        .all()
+    )
+    stories = (
+        db.query(models.Story)
+        .filter(models.Story.vendor_id == vendor.id)
+        .order_by(models.Story.created_at.asc())
+        .all()
+    )
+    paid_weeks = (
+        db.query(models.PaidWeek)
+        .filter(models.PaidWeek.vendor_id == vendor.id)
+        .order_by(models.PaidWeek.start_date.asc())
+        .all()
+    )
+    sessions = (
+        db.query(models.VendorSession)
+        .filter(models.VendorSession.vendor_id == vendor.id)
+        .order_by(models.VendorSession.created_at.asc())
+        .all()
+    )
+
+    def iso(value):
+        return value.isoformat() if value else None
+
+    payload = {
+        "exportado_em": utcnow().isoformat(),
+        "formato": "application/json",
+        "conta": {
+            "id": vendor.id,
+            "nome": vendor.name,
+            "email": vendor.email,
+            "email_confirmado": bool(vendor.email_confirmed),
+            "email_pendente": vendor.pending_email,
+            "produto": vendor.product,
+            "categorias_de_produto": vendor.product_categories,
+            "praias": vendor.beaches,
+            "metodos_de_pagamento": vendor.payment_methods,
+            "cor_do_pin": vendor.pin_color,
+            "foto_de_perfil": vendor.profile_photo,
+            "nif": vendor.nif,
+            "documento_de_identificacao": vendor.id_document_number,
+            "telefone": vendor.phone,
+            "morada": vendor.address,
+            "iban": vendor.iban,
+            "nome_comercial": vendor.business_name,
+            "termos_aceites": bool(vendor.terms_accepted),
+            "termos_aceites_em": iso(vendor.terms_accepted_at),
+            "subscricao_ativa": bool(vendor.subscription_active),
+            "subscricao_valida_ate": iso(vendor.subscription_valid_until),
+        },
+        "trajetos": [
+            {
+                "id": r.id,
+                "inicio": iso(r.start_time),
+                "fim": iso(r.end_time),
+                "distancia_m": r.distance_m,
+                "pontos": json.loads(r.points or "[]"),
+            }
+            for r in routes
+        ],
+        "produtos": [
+            {
+                "id": pr.id,
+                "nome": pr.name,
+                "preco": pr.price,
+                "foto": pr.photo,
+                "criado_em": iso(pr.created_at),
+            }
+            for pr in products
+        ],
+        "stories": [
+            {
+                "id": st.id,
+                "media": st.media_path,
+                "criado_em": iso(st.created_at),
+                "expira_em": iso(st.expires_at),
+            }
+            for st in stories
+        ],
+        "pagamentos": [
+            {
+                "id": pw.id,
+                "inicio": iso(pw.start_date),
+                "fim": iso(pw.end_date),
+                "recibo": pw.receipt_url,
+            }
+            for pw in paid_weeks
+        ],
+        "sessoes": [
+            {
+                "id": se.id,
+                "dispositivo": se.user_agent,
+                "criada_em": iso(se.created_at),
+            }
+            for se in sessions
+        ],
+    }
+
+    security_logger.info(f"Data export requested by vendor {vendor.id}")
+    return JSONResponse(
+        content=payload,
+        headers={
+            "Content-Disposition": f'attachment; filename="sunny-sales-dados-{vendor.id}.json"'
+        },
+    )
+
+
+# --------------------------
+# RGPD — eliminação da conta (art. 17.º, direito ao apagamento)
+# Exigido também pela Google Play para qualquer app com contas de utilizador.
+# --------------------------
+@app.delete("/vendors/me")
+@limiter.limit("5/hour")
+def delete_my_account(
+    request: Request,
+    payload: schemas.AccountDeleteRequest,
+    current_vendor: models.Vendor = Depends(get_current_vendor),
+    db: Session = Depends(get_db),
+):
+    """Apaga a conta do vendedor autenticado e os seus dados pessoais.
+
+    Pede a palavra-passe como reautenticação, para que um telemóvel deixado
+    desbloqueado não chegue para destruir a conta de alguém.
+
+    O que é apagado de forma irreversível: trajetos GPS, produtos, stories, foto
+    de perfil (incluindo os ficheiros no armazenamento), sessões e todos os
+    campos de identificação do perfil.
+
+    O que subsiste: o registo dos pagamentos (`paid_weeks`) e uma linha-lápide
+    sem dados pessoais que lhe serve de referência. A lei fiscal portuguesa
+    obriga a conservar os documentos de faturação durante 10 anos, e o RGPD
+    (art. 17.º, n.º 3, al. b)) ressalva expressamente essa obrigação legal do
+    direito ao apagamento. Depois disto a conta não volta a autenticar-se e o
+    email fica livre para um novo registo.
+    """
+    vendor = current_vendor
+
+    if not pwd_context.verify(payload.password, vendor.hashed_password):
+        security_logger.warning(
+            f"Failed account deletion attempt for vendor {vendor.id} from {request.client.host}"
+        )
+        raise HTTPException(status_code=401, detail="Palavra-passe incorreta")
+
+    vendor_id = vendor.id
+
+    # 1. Trajetos — o histórico de GPS é o dado mais sensível que guardamos.
+    db.query(models.Route).filter(models.Route.vendor_id == vendor_id).delete(
+        synchronize_session=False
+    )
+
+    # 2. Stories e produtos, com os respetivos ficheiros no armazenamento.
+    for story in db.query(models.Story).filter(models.Story.vendor_id == vendor_id).all():
+        if story.media_path:
+            _delete_file(story.media_path)
+        db.delete(story)
+
+    for product in db.query(models.Product).filter(models.Product.vendor_id == vendor_id).all():
+        if product.photo:
+            _delete_file(product.photo)
+        db.delete(product)
+
+    # 3. Foto de perfil.
+    if vendor.profile_photo:
+        _delete_file(vendor.profile_photo)
+
+    # 4. Sessões — termina imediatamente o acesso em todos os dispositivos.
+    db.query(models.VendorSession).filter(
+        models.VendorSession.vendor_id == vendor_id
+    ).delete(synchronize_session=False)
+
+    # 5. Anonimização do perfil. O email passa a um endereço no domínio
+    # reservado `.invalid` (RFC 2606), que nunca pode existir, mantendo a
+    # restrição de unicidade satisfeita e libertando o email real.
+    vendor.name = "Conta eliminada"
+    vendor.email = f"apagado+{vendor_id}@sunnysales.invalid"
+    vendor.hashed_password = pwd_context.hash(uuid4().hex + uuid4().hex)
+    vendor.product = ""
+    vendor.profile_photo = None
+    vendor.pin_color = None
+    vendor.payment_methods = None
+    vendor.nif = None
+    vendor.id_document_number = None
+    vendor.phone = None
+    vendor.address = None
+    vendor.beaches = None
+    vendor.product_categories = None
+    vendor.iban = None
+    vendor.business_name = None
+    vendor.pending_email = None
+    vendor.confirmation_token = None
+    vendor.email_change_token = None
+    vendor.password_reset_token = None
+    vendor.password_reset_expires = None
+    vendor.session_token = None
+    vendor.current_lat = None
+    vendor.current_lng = None
+    vendor.email_confirmed = False
+    vendor.subscription_active = False
+    vendor.subscription_valid_until = None
+    vendor.deleted_at = utcnow()
+
+    db.commit()
+
+    security_logger.info(f"Account deleted by vendor {vendor_id}")
+    return {
+        "status": "deleted",
+        "detail": (
+            "Conta eliminada. Os dados pessoais foram apagados; o registo dos "
+            "pagamentos é conservado por obrigação fiscal."
+        ),
+    }
 
 
 @app.post("/api/contact")

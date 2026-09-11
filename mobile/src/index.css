@@ -992,6 +992,40 @@ body {
   border-top: 1px solid var(--border);
 }
 
+/* Zona de dados/eliminação de conta (RGPD) */
+.profile-danger-card {
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+}
+
+.profile-danger-card .profile-section-icon {
+  color: var(--danger);
+}
+
+.profile-danger-text {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.profile-danger-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.profile-danger-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--danger) 6%, transparent);
+}
+
 /* ── Dashboard Screen ─────────────────────────────── */
 .dashboard-screen {
   display: flex;
