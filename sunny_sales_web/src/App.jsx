@@ -7,9 +7,9 @@ import {
   Navigate,
   useLocation,
 } from 'react-router-dom';
-import { FiMenu, FiX } from 'react-icons/fi';
+import { FiMapPin, FiSun, FiInfo, FiHelpCircle, FiMail } from 'react-icons/fi';
 import { FaInstagram } from 'react-icons/fa';
-import { lazy, Suspense, useState, useEffect, useRef } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import Landing from './pages/Landing';
 import BackHomeButton from './components/BackHomeButton';
 import Footer from './components/Footer';
@@ -43,6 +43,17 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 // própria.
 const HIDE_BACK_ROUTES = ['/', '/mapa'];
 
+// Os destinos do site. Em desktop vivem dentro da cápsula de vidro; em
+// telemóvel são a tab bar fixa em baixo — a mesma lista, sem menu escondido.
+// O ícone só é usado na tab bar (na cápsula o rótulo chega).
+const DESTINATIONS = [
+  { to: '/mapa', label: 'Mapa', short: 'Mapa', Icon: FiMapPin },
+  { to: '/sustentabilidade', label: 'Praia Sustentável', short: 'Praia', Icon: FiSun },
+  { to: '/sobre-projeto', label: 'Sobre o Projeto', short: 'Projeto', Icon: FiInfo },
+  { to: '/faqs', label: 'FAQs', short: 'FAQs', Icon: FiHelpCircle },
+  { to: '/contacto', label: 'Contacto', short: 'Contacto', Icon: FiMail },
+];
+
 function PageLoader() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem 0' }}>
@@ -63,45 +74,19 @@ export default function App() {
 
 function AppLayout() {
   const location = useLocation();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const navLinksRef = useRef(null);
 
   // Revelação suave dos elementos .reveal ao entrarem no ecrã.
   useScrollReveal();
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname]);
-
-  // Navbar sem fundo sobre o hero da página inicial; ganha fundo ao rolar.
+  // A cápsula de vidro fica mais densa assim que há conteúdo a correr
+  // por baixo dela.
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
-  // Close mobile menu on outside click
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handleKey = (e) => {
-      if (e.key === 'Escape') setMenuOpen(false);
-    };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [menuOpen]);
-
-  // Lock body scroll when mobile menu is open
-  useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
-  }, [menuOpen]);
 
   // Em /mapa o mapa é o conteúdo. Em telemóvel o cromo fixo (navbar + rodapé)
   // custava 114px de altura sobre um mapa que é a única coisa que o visitante
@@ -143,42 +128,19 @@ function AppLayout() {
           Sunny Sales
         </Link>
 
-        <div className={`nav-links ${menuOpen ? 'open' : ''}`} ref={navLinksRef}>
-          {/* Em desktop o mapa é o CTA preto à direita; em telemóvel esse
-              botão não cabe ao lado do logótipo, do Instagram e do hamburger,
-              por isso entra aqui como primeiro item do menu. */}
-          <NavLink
-            className={({ isActive }) =>
-              `nav-link nav-link--map${isActive ? ' active' : ''}`
-            }
-            to="/mapa"
-          >
-            Abrir mapa
-          </NavLink>
-          <NavLink
-            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-            to="/sustentabilidade"
-          >
-            Praia Sustentável
-          </NavLink>
-          <NavLink
-            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-            to="/sobre-projeto"
-          >
-            Sobre o Projeto
-          </NavLink>
-          <NavLink
-            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-            to="/faqs"
-          >
-            FAQs
-          </NavLink>
-          <NavLink
-            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-            to="/contacto"
-          >
-            Contacto
-          </NavLink>
+        {/* Em desktop os destinos vivem aqui dentro; em telemóvel esta lista
+            sai e os mesmos destinos aparecem na tab bar. O mapa fica de fora
+            porque é o CTA cheio à direita. */}
+        <div className="nav-links">
+          {DESTINATIONS.filter((d) => d.to !== '/mapa').map(({ to, label }) => (
+            <NavLink
+              key={to}
+              className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+              to={to}
+            >
+              {label}
+            </NavLink>
+          ))}
         </div>
 
         <Link to="/mapa" className="nav-cta-map">
@@ -196,23 +158,8 @@ function AppLayout() {
           >
             <FaInstagram size={18} />
           </a>
-          <button
-            className="menu-toggle"
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
-            aria-expanded={menuOpen}
-          >
-            {menuOpen ? <FiX size={22} /> : <FiMenu size={22} />}
-          </button>
         </div>
       </nav>
-
-      {/* Backdrop overlay for mobile menu */}
-      <div
-        className={`nav-overlay${menuOpen ? ' visible' : ''}`}
-        onClick={() => setMenuOpen(false)}
-        aria-hidden="true"
-      />
 
       <div className="container" role="main" id="conteudo" tabIndex={-1}>
         {!HIDE_BACK_ROUTES.includes(location.pathname) && <BackHomeButton />}
@@ -241,6 +188,23 @@ function AppLayout() {
       {/* Em /mapa o mapa é ecrã cheio: o rodapé sairia de qualquer forma em
           telemóvel e em desktop só roubava altura ao mapa. */}
       {!isMapRoute && <Footer />}
+
+      {/* Tab bar: só existe em ≤768px (o CSS trata disso), e está sempre
+          presente — incluindo sobre o mapa, que lhe reserva a altura. */}
+      <nav className="tabbar" aria-label="Navegação principal">
+        {DESTINATIONS.map((dest) => (
+          <NavLink
+            key={dest.to}
+            to={dest.to}
+            className={({ isActive }) => `tab-link${isActive ? ' active' : ''}`}
+          >
+            <span className="tab-link-pill">
+              <dest.Icon size={21} aria-hidden="true" />
+            </span>
+            <span className="tab-link-label">{dest.short}</span>
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 }

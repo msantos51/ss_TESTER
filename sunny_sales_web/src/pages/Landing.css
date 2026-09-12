@@ -1,7 +1,24 @@
 /* (em português) Página de entrada. Só tokens de index.css. */
 
 .landing {
+  position: relative;
   padding-bottom: var(--space-2xl);
+}
+
+/* O ambiente aguarela: é o que dá cor por baixo do vidro da cápsula de
+   navegação. Sem isto, o vidro não tem nada para filtrar e lê como
+   um retângulo branco. Fica atrás de tudo e não apanha cliques. */
+.landing::before {
+  content: '';
+  position: absolute;
+  top: calc(-1 * var(--navbar-h) - var(--gutter));
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: clamp(420px, 78vh, 760px);
+  background: var(--grad-ambient);
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* ---------- Hero ---------- */
@@ -16,14 +33,18 @@
   padding: clamp(24px, 5vw, 64px) 0;
 }
 
+/* Pastilha de vidro: o mesmo material da cápsula de navegação, em pequeno. */
 .landing-live {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: 7px 14px;
+  padding: 8px 15px;
   border-radius: var(--radius-full);
-  background: rgba(255, 198, 79, 0.18);
-  color: var(--palette-gunmetal, #20373B);
+  background: var(--glass);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  backdrop-filter: saturate(180%) blur(10px);
+  box-shadow: var(--glass-ring), 0 4px 12px -6px rgba(6, 39, 47, 0.35);
+  color: var(--accent-text);
   font-size: var(--fs-caption);
   font-weight: 600;
 }
@@ -32,7 +53,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--palette-saffron, #FFC64F);
+  background: var(--gold);
   animation: landing-blink 1.8s ease-in-out infinite;
 }
 
@@ -84,6 +105,7 @@
 .landing-btn--primary {
   background: var(--ink);
   color: #fff;
+  box-shadow: var(--shadow-ink);
 }
 
 .landing-btn--primary:hover {
@@ -91,14 +113,18 @@
   color: #fff;
 }
 
+/* A ação secundária é vidro, não um painel branco: assenta no ambiente
+   em vez de o tapar. */
 .landing-btn--ghost {
-  background: var(--surface);
+  background: var(--glass);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  backdrop-filter: saturate(180%) blur(10px);
   color: var(--text);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-ring), var(--shadow-sm);
 }
 
 .landing-btn--ghost:hover {
-  background: var(--surface-alt);
+  background: var(--glass-strong);
   color: var(--text);
 }
 
@@ -113,7 +139,9 @@
   font-size: var(--fs-h3);
   font-weight: 700;
   letter-spacing: -0.03em;
-  color: var(--palette-moonstone, #519CAB);
+  /* --teal-text e não --teal: a 20px isto ainda é texto, e o teal cheio
+     sobre a tela daria 3,6:1. */
+  color: var(--teal-text);
 }
 
 .landing-stats dd {
@@ -124,11 +152,15 @@
 
 /* Pré-visualização do mapa */
 
+/* O mapa é um painel de vidro: aresta interior clara, sombra longa. */
 .landing-hero-frame {
   position: relative;
   border-radius: var(--radius-2xl);
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  box-shadow:
+    0 2px 4px rgba(6, 39, 47, 0.1),
+    0 40px 70px -34px rgba(6, 39, 47, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.6);
   aspect-ratio: 4 / 3.4;
   min-height: 300px;
 }
@@ -138,25 +170,27 @@
   inset: 0;
   height: 100%;
   width: 100%;
-  background: #e6e9ee;
+  background: #E7EDEA;
 }
 
+/* Folha de vidro sobre o mapa, como a da app Mapas. */
 .landing-hero-cta {
   position: absolute;
   z-index: 500;
-  bottom: var(--space-md);
-  left: var(--space-md);
-  right: var(--space-md);
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-sm);
   min-height: 48px;
   padding: 14px 20px;
-  border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(8px);
-  box-shadow: var(--shadow-float);
+  border-radius: var(--radius-xl);
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-ring), 0 10px 26px -14px rgba(6, 39, 47, 0.5);
   font-size: var(--fs-body-sm);
   font-weight: 600;
   text-decoration: none;
@@ -202,7 +236,7 @@
   width: 32px;
   height: 3px;
   border-radius: 2px;
-  background: var(--palette-saffron, #FFC64F);
+  background: var(--gold);
 }
 
 .landing-section-lead {
@@ -227,14 +261,16 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* Os passos são mesmo uma sequência: o número é informação, por isso leva
+   Summer Sun — com tinta escura por cima, que é a única forma de o usar. */
 .landing-step-n {
   display: grid;
   place-items: center;
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: var(--palette-saffron, #FFC64F);
-  color: var(--palette-gunmetal, #20373B);
+  background: var(--gold);
+  color: var(--gold-ink);
   font-size: var(--fs-body-sm);
   font-weight: 700;
 }
@@ -290,34 +326,37 @@
   min-height: 48px;
   padding: 14px 26px;
   border-radius: var(--radius-btn);
-  background: var(--palette-saffron, #FFC64F);
-  color: var(--palette-gunmetal, #20373B);
+  background: var(--gold);
+  color: var(--gold-ink);
   font-size: var(--fs-body);
   font-weight: 700;
   text-decoration: none;
+  transition: background var(--transition);
 }
 
 .landing-banner-btn:hover {
-  background: #FFD27A;
-  color: var(--palette-gunmetal, #20373B);
+  background: #FFB22E;
+  color: var(--gold-ink);
 }
 
-/* ---------- Navbar: CTA "Abrir mapa" ---------- */
+/* ---------- Cápsula: CTA "Abrir mapa" ---------- */
 
 .nav-cta-map {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  min-height: 40px;
+  min-height: 42px;
   margin-left: 6px;
   padding: 10px 18px;
   border-radius: var(--radius-btn);
   background: var(--ink);
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
+  box-shadow: 0 6px 14px -8px rgba(0, 95, 115, 0.9);
+  transition: background var(--transition);
 }
 
 .nav-cta-map:hover {
@@ -329,22 +368,15 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--palette-saffron, #FFC64F);
+  background: var(--gold);
   animation: landing-blink 1.8s ease-in-out infinite;
 }
 
-/* O item equivalente dentro do menu; em desktop é o CTA preto que manda. */
-.nav-link--map {
-  display: none;
-}
-
+/* Em telemóvel o mapa é o primeiro separador da tab bar, por isso o CTA
+   sai da cápsula e deixa lá só a marca e o Instagram. */
 @media (max-width: 768px) {
   .nav-cta-map {
     display: none;
-  }
-
-  .nav-link--map {
-    display: flex;
   }
 }
 

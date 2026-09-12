@@ -23,34 +23,44 @@
 }
 
 /* ════════════════════════════════════════════════════════
-   Sunny Sales — Design System "Canvas / Painéis"
+   Sunny Sales — Design System "Vidro & Maré"
 
-   CONCEITO (UI de mapa moderna, ao estilo dos produtos de
-   pesquisa geográfica atuais):
-   · A página é uma TELA cinzenta muito clara (--canvas).
+   CONCEITO (navegação ao estilo iOS sobre cores de verão):
+   · A página é uma TELA cor de areia (--canvas, White Cloud).
      Sobre ela flutuam PAINÉIS brancos arredondados
      (--radius-panel) com sombra difusa e sem contornos
      duros — a profundidade vem da sombra, não da borda.
+   · A navegação não toca as margens: é uma CÁPSULA DE VIDRO
+     centrada (--glass + --glass-blur), que encolhe ao rolar.
+     Em telemóvel, essa cápsula dá lugar a uma TAB BAR fixa
+     em baixo — o polegar chega a tudo sem abrir menu.
    · O mapa é ele próprio um painel arredondado; todos os
      controlos (zoom, localizar, vista) flutuam por cima
-     em pastilhas brancas.
+     em pastilhas de vidro.
    · Controlos de escolha: segmentos e pastilhas. O estado
-     selecionado é preenchido a TEAL com texto branco; o
-     não selecionado é cinzento muito claro sem borda.
-   · A ação principal de cada ecrã é um botão PRETO
-     (--ink) de canto arredondado — âncora visual única.
+     selecionado é um tinte TEAL com texto Sky Blue; o
+     não selecionado é areia clara sem borda.
+   · A ação principal de cada ecrã é um botão SKY BLUE
+     (--ink) em pílula — âncora visual única.
 
-   PALETA (regras de uso):
-   · --accent / --primary = TEAL #0F5F6E (7,3:1 com branco).
-     Estados ativos, seleções, ícones de marca.
-   · --ink = quase-preto #14181F. Só a ação principal.
-   · --canvas = tela cinzenta; --surface = painéis brancos;
-     --surface-alt = preenchimento de chips e segmentos.
+   PALETA (regras de uso e contraste real):
+   · --ink / --accent = SKY BLUE #005F73 — 7,3:1 com branco.
+     É a única das quatro que aguenta texto pequeno, por isso
+     é a tinta das ações e dos links.
+   · --teal = TEAL OCEAN #0A9396 — 3,7:1 com branco: chega
+     para estados, ícones e texto grande, nunca para corpo.
+     Como texto usa-se --teal-text (#077C80, 4,8:1).
+   · --gold = SUMMER SUN #EE9B00 — 2,3:1 com branco, logo
+     SEMPRE como fundo com texto escuro (--gold-ink).
+     Significa uma coisa só: há vendedores ativos agora.
+   · --canvas = WHITE CLOUD #FFF9F4, a tela de todo o site.
    · --coral = única ação urgente do mapa (localizar-me).
-   · --forest = presença de vendedores (pins).
-   · --gold = informação, nunca ação (sempre como fundo).
+   · --forest = presença de vendedores (pins) — mantém-se
+     escuro e saturado para ler contra os tiles do mapa.
 
    TIPOGRAFIA (escala única, aplicada em todo o site):
+   · A letra é a do sistema: SF Pro no iPhone e no Mac, Inter
+     (auto-hospedada) em tudo o resto.
    · --fs-display  48→64px Hero da Home
    · --fs-h1       32→44px Título hero das páginas internas
    · --fs-h2       28→32px Títulos de secção
@@ -67,100 +77,124 @@
    ════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Acento = teal (verde-água da marca) ──
-     #0F5F6E dá 7,29:1 com texto branco. O anterior #199fb1 dava 3,16:1, o que
-     reprova WCAG AA (4,5:1) e ficava a rasar o mínimo de 3:1 para componentes
-     de interface — invisível num ecrã ao sol, que é o contexto de uso real. */
-  /* ── Paleta 2025: Moonstone · Saffron · Gunmetal · Light Blue ── */
-  --palette-moonstone: #519CAB;
-  --palette-saffron: #FFC64F;
-  --palette-gunmetal: #20373B;
-  --palette-lightblue: #C3E7F1;
+  /* ── Paleta de verão ──
+     As quatro cores da marca, com o papel de cada uma fixado pelo
+     contraste que conseguem aguentar (ver cabeçalho). */
+  --palette-sky: #005F73;
+  --palette-teal: #0A9396;
+  --palette-sun: #EE9B00;
+  --palette-cloud: #FFF9F4;
+  /* Tons de apoio das mesmas famílias */
+  --palette-foam: #94D2BD;
+  --palette-dune: #E9D8A6;
+  --palette-sunset: #BB3E03;
+  --palette-night: #001219;
 
-  --accent: #519CAB;
-  --accent-hover: #3D8496;
-  --accent-soft: rgba(81, 156, 171, 0.12);
+  /* ── Acento = Sky Blue ──
+     #005F73 dá 7,28:1 com texto branco, por isso é ele que carrega
+     botões, links e tudo o que leva texto pequeno por cima. */
+  --accent: #005F73;
+  --accent-hover: #00485A;
+  --accent-soft: rgba(10, 147, 150, 0.12);
   /* Ícones/realces "de acento" sobre fundo claro */
-  --accent-text: #519CAB;
-  /* Texto sobre superfícies teal (botões, badges, blocos) */
+  --accent-text: #005F73;
+  /* Texto sobre superfícies Sky Blue (botões, badges, blocos) */
   --on-accent: #ffffff;
 
   /* ── Cor primária (alias do acento, compatibilidade) ── */
-  --primary: #519CAB;
-  --primary-hover: #3D8496;
-  --primary-dark: #3D8496;
-  --primary-bright: #6BBACB;
-  --primary-light: rgba(81, 156, 171, 0.1);
-  --primary-light-solid: #C3E7F1;
+  --primary: #005F73;
+  --primary-hover: #00485A;
+  --primary-dark: #00384A;
+  --primary-bright: #0A9396;
+  --primary-light: rgba(10, 147, 150, 0.1);
+  --primary-light-solid: #D6EEEC;
 
   /* ── Ação primária (CTAs sólidos) ── */
-  --secondary: #519CAB;
-  --secondary-hover: #3D8496;
-  --secondary-light: rgba(81, 156, 171, 0.12);
+  --secondary: #005F73;
+  --secondary-hover: #00485A;
+  --secondary-light: rgba(10, 147, 150, 0.12);
 
   /* ── Coral: reservado ao que é acionável ──
-     5,19:1 com texto branco. Regra: só o botão de localização do mapa e o
+     5,58:1 com texto branco. Regra: só o botão de localização do mapa e o
      botão de filtros quando há um filtro ativo. Em mais nenhum sítio — se o
      coral aparecer em dois sítios ao mesmo tempo, deixa de significar algo. */
-  --coral: #C9371B;
-  --coral-hover: #A82C14;
+  --coral: #BB3E03;
+  --coral-hover: #9A3303;
 
   /* ── Verde floresta: presença de vendedores ──
-     7,94:1 com texto branco. Cor por omissão dos pins no mapa. */
+     7,94:1 com texto branco. Cor por omissão dos pins no mapa. Não muda
+     com a paleta: é lida contra os tiles do mapa, não contra a tela. */
   --forest: #1D5C3A;
   --forest-light: rgba(29, 92, 58, 0.12);
 
-  /* ── Saffron: informação, nunca ação ──
-     Usar sempre como FUNDO com texto escuro por cima. Nunca com texto branco. */
-  --gold: #FFC64F;
-  --gold-strong: #7A5200;
-  --amber: #FFC64F;
-  --amber-strong: #7A5200;
+  /* ── Summer Sun: informação, nunca ação ──
+     Usar sempre como FUNDO com --gold-ink por cima (8,1:1). Nunca com
+     texto branco, que daria 2,3:1. */
+  --gold: #EE9B00;
+  --gold-ink: #2A1A00;
+  --gold-soft: rgba(238, 155, 0, 0.18);
+  --gold-strong: #8A5A00;
+  --amber: #EE9B00;
+  --amber-strong: #8A5A00;
 
-  /* ── Aliases de azul/teal (links funcionais, mapa) ──
-     --blue é a posição do utilizador no mapa: 4,98:1, já passava AA. Mantém-se. */
+  /* ── Teal Ocean: estado ativo, seleção, ícones ──
+     3,7:1 com branco — serve para superfícies e texto grande. Como texto
+     sobre a tela usa-se --teal-text, que passa AA. */
   --blue: #1078a0;
   --blue-hover: #0d5d8a;
-  --teal: #519CAB;
-  --teal-strong: #3D8496;
-  --teal-light: rgba(81, 156, 171, 0.12);
+  --teal: #0A9396;
+  --teal-text: #077C80;
+  --teal-strong: #087E81;
+  --teal-light: rgba(10, 147, 150, 0.12);
   --sky: #1078a0;
 
-  /* ── "Ink" — Gunmetal da ação principal ──
-     Um único botão Gunmetal por ecrã (o "Ver no mapa" da Home,
-     o "Voltar ao início" do 404). Tudo o resto é Moonstone ou
-     cinzento: se houver dois escuros, deixa de haver âncora. */
-  --ink: #20373B;
-  --ink-hover: #152527;
+  /* ── "Ink" — a ação principal do ecrã ──
+     Um único botão Sky Blue por ecrã (o "Ver o mapa agora" da entrada,
+     o "Voltar ao início" do 404). Se houver dois, deixa de haver âncora. */
+  --ink: #005F73;
+  --ink-hover: #00485A;
   /* Texto escuro para fundos claros */
-  --ink-on-light: #20373B;
-  /* ── Painéis institucionais (Gunmetal escuro) ── */
-  --navy: #20373B;
-  --navy-light: #519CAB;
-  --navy-border: rgba(32, 55, 59, 0.2);
+  --ink-on-light: #06272F;
+  /* ── Painéis institucionais (petróleo profundo) ── */
+  --navy: #06272F;
+  --navy-light: #0A9396;
+  --navy-border: rgba(6, 39, 47, 0.2);
 
-  /* ── Superfícies: tela cinzenta + painéis brancos ──
-     O site deixa de ser branco sobre branco: a tela
-     (--canvas) recua e os painéis brancos ganham relevo. */
-  --canvas: #f4f5f7;
-  --canvas-deep: #eceef2;
-  --bg-deep: #eceef2;
-  --bg: #f4f5f7;
+  /* ── Superfícies: tela de areia + painéis brancos ──
+     A tela (--canvas) recua e os painéis brancos ganham relevo. O cinzento
+     azulado anterior lia a frio num site de praia. */
+  --canvas: #FFF9F4;
+  --canvas-deep: #F7EFE7;
+  --bg-deep: #F7EFE7;
+  --bg: #FFF9F4;
   --bg-raised: #ffffff;
   --surface: #ffffff;
   /* Preenchimento neutro de chips, segmentos e hovers */
-  --surface-alt: #f1f3f6;
-  --surface-hover: #e8ebf0;
-  --surface-warm: #f8f9fb;
+  --surface-alt: #F4EDE6;
+  --surface-hover: #EBE1D7;
+  --surface-warm: #FFFCF9;
 
-  /* ── Texto (todos AA sobre branco/--surface) ── */
-  --text: #12191f;
-  --text-secondary: #46545f;
-  --text-muted: #6b7885;
+  /* ── Vidro (cápsula de navegação, tab bar, pastilhas do mapa) ──
+     O vidro precisa de cor por baixo para ler como vidro: daí o ambiente
+     aguarela do hero. Onde o blur não é suportado, --glass-solid entra
+     no lugar através de @supports. */
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-strong: rgba(255, 255, 255, 0.82);
+  /* Material espesso da tab bar: por baixo dela passa texto a rolar, e a
+     0,82 de opacidade lia-se o texto através da barra. */
+  --glass-thick: rgba(255, 253, 250, 0.93);
+  --glass-solid: #FFFDFB;
+  --glass-blur: saturate(180%) blur(18px);
+  --glass-ring: inset 0 0 0 1px rgba(255, 255, 255, 0.85);
+
+  /* ── Texto (todos AA sobre a tela e sobre branco) ── */
+  --text: #06272F;
+  --text-secondary: #3E6A72;
+  --text-muted: #55767D;
 
   /* ── Bordas (hairlines; a profundidade vem da sombra) ── */
-  --border: rgba(18, 25, 31, 0.07);
-  --border-strong: rgba(18, 25, 31, 0.13);
+  --border: rgba(6, 39, 47, 0.08);
+  --border-strong: rgba(6, 39, 47, 0.15);
 
   /* ── Cores semânticas (só em contexto funcional) ── */
   --success: #15803d;
@@ -174,29 +208,37 @@
   --error-border: rgba(185, 28, 28, 0.35);
   --danger: #b91c1c;
 
-  /* ── Gradientes — paleta 2025 ── */
-  --grad-sun: linear-gradient(135deg, #519CAB, #3D8496);
-  --grad-gold: linear-gradient(135deg, #FFC64F, #E8A800);
-  --grad-sea: linear-gradient(135deg, #519CAB, #3D8496);
-  --grad-dusk: linear-gradient(135deg, #20373B, #152527);
-  /* Blocos de destaque: Gunmetal profundo (texto branco por cima) */
-  --grad-dark: linear-gradient(155deg, #20373B 0%, #152527 100%);
+  /* ── Gradientes — paleta de verão ── */
+  --grad-sun: linear-gradient(135deg, #EE9B00, #CA6702);
+  --grad-gold: linear-gradient(135deg, #EE9B00, #CA6702);
+  --grad-sea: linear-gradient(135deg, #0A9396, #005F73);
+  --grad-dusk: linear-gradient(135deg, #005F73, #001219);
+  /* Blocos de destaque: Sky Blue a descer para a noite (texto branco) */
+  --grad-dark: linear-gradient(155deg, #005F73 0%, #00323F 100%);
+  /* Ambiente do hero: a aguarela por baixo do vidro */
+  --grad-ambient:
+    radial-gradient(46% 58% at 16% 34%, rgba(10, 147, 150, 0.26), transparent 70%),
+    radial-gradient(40% 52% at 78% 14%, rgba(238, 155, 0, 0.22), transparent 72%),
+    radial-gradient(52% 60% at 54% 78%, rgba(0, 95, 115, 0.13), transparent 70%);
 
   /* ── Sombras (difusas, de baixa opacidade) ──
      Duas camadas: um contacto curto que substitui a borda
      de 1px e uma difusão longa que levanta o painel. */
-  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05), 0 6px 16px -8px rgba(16, 24, 40, 0.12);
-  --shadow-md: 0 2px 6px -2px rgba(16, 24, 40, 0.07), 0 14px 34px -12px rgba(16, 24, 40, 0.16);
-  --shadow-lg: 0 4px 10px -4px rgba(16, 24, 40, 0.08), 0 26px 60px -20px rgba(16, 24, 40, 0.22);
+  --shadow-xs: 0 1px 2px rgba(6, 39, 47, 0.05);
+  --shadow-sm: 0 1px 2px rgba(6, 39, 47, 0.05), 0 6px 16px -8px rgba(6, 39, 47, 0.14);
+  --shadow-md: 0 2px 6px -2px rgba(6, 39, 47, 0.07), 0 14px 34px -12px rgba(6, 39, 47, 0.18);
+  --shadow-lg: 0 4px 10px -4px rgba(6, 39, 47, 0.08), 0 26px 60px -20px rgba(6, 39, 47, 0.24);
   /* Pastilhas que flutuam sobre o mapa (fundo imprevisível) */
-  --shadow-float: 0 1px 2px rgba(16, 24, 40, 0.16), 0 8px 20px -6px rgba(16, 24, 40, 0.24);
+  --shadow-float: 0 1px 2px rgba(6, 39, 47, 0.16), 0 8px 20px -6px rgba(6, 39, 47, 0.26);
+  /* Cápsula de navegação e tab bar: contacto curto + difusão longa,
+     mais o anel interior que dá a aresta de vidro. */
+  --shadow-glass: 0 1px 1px rgba(6, 39, 47, 0.06), 0 14px 30px -16px rgba(6, 39, 47, 0.4);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
-  --shadow-primary: 0 10px 24px -12px rgba(81, 156, 171, 0.45);
-  --shadow-ink: 0 10px 24px -12px rgba(32, 55, 59, 0.35);
-  --shadow-gold: 0 10px 24px -12px rgba(255, 198, 79, 0.35);
-  --shadow-accent: 0 12px 28px -12px rgba(81, 156, 171, 0.5);
+  --shadow-primary: 0 10px 24px -12px rgba(0, 95, 115, 0.5);
+  --shadow-ink: 0 10px 24px -12px rgba(0, 95, 115, 0.5);
+  --shadow-gold: 0 10px 24px -12px rgba(238, 155, 0, 0.4);
+  --shadow-accent: 0 12px 28px -12px rgba(10, 147, 150, 0.5);
 
   /* ── Raios (generosos; controlos em pílula) ── */
   --radius-xs: 10px;
@@ -241,19 +283,31 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* Uma única família tipográfica */
-  --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* A letra do sistema primeiro (SF Pro no iPhone e no Mac), Inter
+     auto-hospedada para todos os outros — a mesma forma, sem round-trip. */
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter',
+    system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter',
+    system-ui, 'Segoe UI', Roboto, sans-serif;
 
-  --navbar-h: 72px;
-  --navbar-h-scrolled: 64px;
+  /* A cápsula flutua: a altura é a da cápsula + a folga por cima e por baixo. */
+  --navbar-h: 86px;
+  --navbar-h-scrolled: 74px;
+  --capsule-h: 58px;
+  --capsule-h-scrolled: 50px;
+  /* A mesma largura máxima do conteúdo (hero, secções): as arestas da
+     cápsula caem por cima da coluna de texto em vez de a cortarem. */
+  --capsule-max: 1240px;
   /* Folga entre os painéis flutuantes e as margens da tela */
   --gutter: 16px;
   /* Altura reservada para o rodapé fixo. Deve ser >= altura real do footer
      em cada breakpoint para o conteúdo não ficar escondido atrás dele. */
   --footer-h: 46px;
+  /* Tab bar: 0 em desktop (não existe), altura real em telemóvel. Todo o
+     conteúdo que se encosta ao fundo do ecrã reserva esta folga. */
+  --tabbar-h: 0px;
 
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-body);
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   color: var(--text);
   /* Controlos nativos (inputs, scrollbars) em modo claro */
@@ -321,6 +375,9 @@ body {
   top: 12px;
   left: 12px;
   z-index: 2000;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   background: var(--ink);
   color: var(--on-accent);
   font-size: 0.875rem;
@@ -349,34 +406,43 @@ body {
 
 /* ── Navbar ──────────────────────────────────────────── */
 
+/* A barra não toca as margens: é uma cápsula de vidro centrada que flutua
+   sobre a tela. O blur precisa de cor por baixo para ler como vidro — é o
+   que o ambiente aguarela do hero lhe dá. */
 .navbar {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: var(--navbar-h);
+  top: var(--gutter);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(var(--capsule-max), calc(100% - 2 * var(--gutter)));
+  height: var(--capsule-h);
   display: flex;
   align-items: center;
-  padding: 0 26px;
-  /* Barra branca translúcida com blur */
-  background: rgba(255, 255, 255, 0.82);
-  -webkit-backdrop-filter: saturate(180%) blur(18px);
-  backdrop-filter: saturate(180%) blur(18px);
-  /* Sem borda no topo: só ao rolar é que a barra se destaca da tela */
-  border-bottom: 1px solid transparent;
-  box-shadow: none;
+  padding: 0 8px 0 16px;
+  border-radius: var(--radius-full);
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: none;
+  box-shadow: var(--shadow-glass), var(--glass-ring);
   z-index: 1100;
-  gap: 16px;
-  transition: border-color var(--transition), height var(--transition-slow),
-    background var(--transition), box-shadow var(--transition);
+  gap: 10px;
+  transition: height var(--transition-slow), background var(--transition),
+    box-shadow var(--transition);
 }
 
-/* Ao rolar: encolhe e ganha uma sombra rasa em vez de uma linha dura. */
+/* Onde não há backdrop-filter (telemóveis antigos, Firefox sem a flag) a
+   cápsula fica opaca em vez de ficar um retângulo cinzento ilegível. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .navbar { background: var(--glass-solid); }
+}
+
+/* Ao rolar: encolhe e o vidro fica mais denso, porque passa a ter conteúdo
+   a correr por baixo. */
 .navbar.navbar--scrolled {
-  height: var(--navbar-h-scrolled);
-  background: rgba(255, 255, 255, 0.9);
-  border-bottom-color: var(--border);
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  height: var(--capsule-h-scrolled);
+  background: var(--glass-strong);
+  box-shadow: var(--shadow-glass), var(--glass-ring);
 }
 .navbar--scrolled .nav-logo-img { height: 30px; }
 
@@ -419,10 +485,11 @@ body {
 
 .nav-links {
   display: flex;
-  gap: 4px;
+  gap: 2px;
   flex: 1;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
+  margin-left: 6px;
 }
 
 /* Caixa normal, peso médio, forma de pastilha: o menu deixa de gritar em
@@ -446,16 +513,18 @@ body {
 }
 .nav-link:hover {
   color: var(--text);
-  background: var(--surface-alt);
+  background: rgba(6, 39, 47, 0.06);
 }
 .nav-link:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
+/* Item ativo: tinte teal com texto Sky Blue. Teal cheio com texto branco
+   daria 3,7:1 — chumba em texto de 14px. */
 .nav-link.active {
-  color: var(--text);
+  color: var(--accent-text);
   font-weight: 600;
-  background: var(--surface-alt);
+  background: var(--accent-soft);
 }
 
 .nav-link-icon {
@@ -471,8 +540,8 @@ body {
   margin-left: auto;
 }
 
-/* Botões-ícone circulares em cinzento muito claro (padrão dos headers de
-   produto atuais): alvo de 40px, sem borda, hover mais escuro. */
+/* Botões-ícone circulares dentro da cápsula: alvo de 40px, sem borda,
+   preenchimento translúcido que escurece no hover. */
 .profile-icon {
   text-decoration: none;
   color: var(--text-secondary);
@@ -484,12 +553,12 @@ body {
   height: 40px;
   border-radius: var(--radius-full);
   border: none;
-  background: var(--surface-alt);
+  background: rgba(6, 39, 47, 0.06);
   transition: color var(--transition), background var(--transition);
 }
 .profile-icon:hover {
   color: var(--text);
-  background: var(--surface-hover);
+  background: rgba(6, 39, 47, 0.11);
   transform: none;
   box-shadow: none;
 }
@@ -526,49 +595,82 @@ body {
   outline-offset: 2px;
 }
 
-.menu-toggle {
-  display: none;
-  background: var(--surface-alt);
-  border: none;
-  color: var(--text);
-  font-size: 1.4rem;
-  padding: 6px;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  transition: color var(--transition), background var(--transition);
-  align-items: center;
-  justify-content: center;
-  min-height: auto;
-  min-width: auto;
-  box-shadow: none;
-}
-.menu-toggle:hover {
-  color: var(--text);
-  background: var(--surface-hover);
-  transform: none;
-  box-shadow: none;
-  filter: none;
-}
-.menu-toggle:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
+/* ── Tab bar (telemóvel) ─────────────────────────────
+   Substitui o menu hamburger: os cinco destinos ficam sempre à vista, ao
+   alcance do polegar. Só existe em ≤768px — em desktop os mesmos destinos
+   vivem dentro da cápsula. */
 
-/* Mobile nav overlay */
-.nav-overlay {
+.tabbar {
   display: none;
   position: fixed;
-  inset: 0;
-  background: rgba(27, 44, 51, 0.35);
-  backdrop-filter: blur(2px);
-  z-index: 1040;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--transition-slow);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1100;
+  /* Altura fixada no token: se a barra crescesse com o conteúdo, o mapa e o
+     rodapé reservariam menos espaço do que ela ocupa e ficariam por baixo. */
+  height: var(--tabbar-h);
+  padding: 8px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+  background: var(--glass-thick);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-top: 0.5px solid var(--border-strong);
 }
-.nav-overlay.visible {
-  opacity: 1;
-  pointer-events: auto;
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tabbar { background: var(--glass-solid); }
+}
+
+.tab-link {
+  flex: 1;
+  min-width: 0;
+  /* 6 + 30 (pastilha) + 4 + 12 (rótulo) + 6 = 58px de alvo, acima dos 48
+     mínimos, porque é a navegação principal do telemóvel. */
+  padding: 6px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--transition);
+}
+
+.tab-link-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  transition: background var(--transition);
+}
+
+.tab-link.active {
+  color: var(--accent-text);
+}
+.tab-link.active .tab-link-pill {
+  background: var(--accent-soft);
+}
+.tab-link:active .tab-link-pill {
+  transform: scale(0.94);
+}
+.tab-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+  border-radius: var(--radius-control);
+}
+
+.tab-link-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ── Container / Wrapper ─────────────────────────────── */
@@ -583,8 +685,10 @@ body {
   height: 100%;
   max-width: none;
   margin: 0 auto;
+  /* --tabbar-h é 0 em desktop e a altura real da tab bar em telemóvel
+     (já com a safe area lá dentro), por isso nada fica escondido atrás dela. */
   padding: calc(var(--navbar-h) + var(--gutter)) var(--gutter)
-    calc(var(--footer-h) + env(safe-area-inset-bottom, 0px));
+    calc(var(--footer-h) + var(--tabbar-h));
   background: transparent;
 }
 
@@ -596,27 +700,21 @@ body {
 
 @media (max-width: 768px) {
   .wrapper--map {
-    --navbar-h: 52px;
-    --navbar-h-scrolled: 52px;
     --footer-h: 0px;
-  }
-
-  .wrapper--map .navbar {
-    background: rgba(255, 255, 255, 0.86);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
   }
 
   .wrapper--map .footer-wrapper {
     display: none;
   }
 
+  /* O mapa encosta às margens laterais, mas nunca por baixo da cápsula nem
+     da tab bar: o que flutua sobre o mapa é posicionado dentro desta caixa. */
   .wrapper--map .container {
-    padding: var(--navbar-h) 0 0;
+    padding: var(--navbar-h) 0 var(--tabbar-h);
   }
 
   .wrapper--map .modern-layout {
-    height: calc(100svh - var(--navbar-h));
+    height: calc(100svh - var(--navbar-h) - var(--tabbar-h));
   }
 }
 
@@ -789,11 +887,23 @@ h2 {
 /* ── Responsive ──────────────────────────────────────── */
 
 @media (max-width: 768px) {
-  /* Em ecrãs médios o rodapé empilha em duas linhas e fica mais alto. */
-  :root { --footer-h: 58px; }
+  /* A tab bar passa a existir e todo o conteúdo lhe reserva a folga. O
+     rodapé deixa de ser uma barra fixa (ver .footer-wrapper abaixo), por
+     isso já não reserva altura nenhuma. */
+  :root {
+    --footer-h: 0px;
+    --tabbar-h: calc(76px + env(safe-area-inset-bottom, 0px));
+    /* A cápsula encolhe: em telemóvel só leva a marca e o Instagram. */
+    --capsule-h: 50px;
+    --capsule-h-scrolled: 48px;
+    --navbar-h: 72px;
+    --navbar-h-scrolled: 70px;
+  }
 
   .navbar {
-    padding: 0 16px;
+    top: 10px;
+    width: calc(100% - 20px);
+    padding: 0 6px 0 12px;
   }
 
   /* Alvos de toque ≥44×44px em mobile (ícones do header e botão voltar) */
@@ -802,8 +912,7 @@ h2 {
     height: 44px;
   }
 
-  .menu-toggle {
-    min-width: 44px;
+  .nav-logo {
     min-height: 44px;
   }
 
@@ -812,69 +921,17 @@ h2 {
     padding: 6px 12px;
   }
 
-  /* Painel flutuante destacado da barra, com a mesma forma dos painéis
-     do resto do site (cantos grandes + sombra difusa). */
+  /* Os destinos deixam a cápsula e passam para a tab bar. */
   .nav-links {
     display: none;
-    position: fixed;
-    top: calc(var(--navbar-h) + 6px);
-    left: 10px;
-    right: 10px;
-    width: auto;
-    flex-direction: column;
-    align-items: stretch;
-    background: rgba(255, 255, 255, 0.97);
-    -webkit-backdrop-filter: blur(18px);
-    backdrop-filter: blur(18px);
-    border: none;
-    border-radius: var(--radius-panel);
-    box-shadow: var(--shadow-lg);
-    padding: 10px;
-    gap: 2px;
-    z-index: 1050;
-    animation: fadeInUp 0.24s var(--ease-out);
   }
 
-  .nav-links.open {
+  .tabbar {
     display: flex;
-  }
-
-  .nav-link {
-    padding: 12px 16px;
-    font-size: 0.95rem;
-    border-radius: var(--radius-control);
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    color: var(--text-secondary);
-  }
-
-  .nav-link:hover {
-    color: var(--text);
-    background: var(--surface-alt);
-  }
-
-  /* No menu móvel o item ativo enche a pastilha a teal — é o mesmo
-     vocabulário dos segmentos de filtro do mapa. */
-  .nav-link.active {
-    color: var(--on-accent);
-    background: var(--accent);
-  }
-
-  .nav-cta {
-    display: none;
-  }
-
-  .menu-toggle {
-    display: flex;
-  }
-
-  .nav-overlay {
-    display: block;
   }
 
   .container {
-    padding: calc(var(--navbar-h) + 10px) 10px calc(var(--footer-h) + env(safe-area-inset-bottom, 0px));
+    padding: calc(var(--navbar-h) + 6px) 10px var(--gutter);
   }
 }
 
@@ -882,7 +939,6 @@ h2 {
   /* Em telemóveis o rodapé usa fontes menores, logo é um pouco mais baixo. */
   :root { --footer-h: 50px; }
 
-  .navbar { padding: 0 14px; }
   .nav-logo { font-size: 0.98rem; }
 
   .form-container,
@@ -899,34 +955,19 @@ h2 {
 }
 
 @media (max-width: 375px) {
-  .navbar { padding: 0 12px; }
   .nav-logo { font-size: 0.94rem; }
+  /* Cinco destinos em 375px: o rótulo encolhe antes de o alvo encolher. */
+  .tab-link { font-size: 0.65rem; }
+  .tab-link-pill { width: 46px; }
 }
 
+/* A cápsula e a tab bar já estão afastadas das margens; em ecrãs com
+   recorte lateral (landscape num iPhone) a folga cresce com a safe area. */
 @supports (padding: max(0px)) {
-  .navbar {
-    padding-left: max(26px, env(safe-area-inset-left));
-    padding-right: max(26px, env(safe-area-inset-right));
-  }
-
   @media (max-width: 768px) {
-    .navbar {
-      padding-left: max(16px, env(safe-area-inset-left));
-      padding-right: max(16px, env(safe-area-inset-right));
-    }
-  }
-
-  @media (max-width: 480px) {
-    .navbar {
-      padding-left: max(14px, env(safe-area-inset-left));
-      padding-right: max(14px, env(safe-area-inset-right));
-    }
-  }
-
-  @media (max-width: 375px) {
-    .navbar {
-      padding-left: max(12px, env(safe-area-inset-left));
-      padding-right: max(12px, env(safe-area-inset-right));
+    .tabbar {
+      padding-left: max(6px, env(safe-area-inset-left));
+      padding-right: max(6px, env(safe-area-inset-right));
     }
   }
 }
@@ -953,14 +994,15 @@ h2 {
   color: var(--text-secondary);
   padding: 9px 16px 9px 13px;
   border-radius: var(--radius-full);
-  box-shadow: var(--shadow-xs);
   margin-bottom: 1rem;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   transition: color var(--transition), background var(--transition);
   box-shadow: none;
-  min-height: auto;
+  /* 44px também em desktop: o `min-height: auto` que aqui estava vencia a
+     regra de telemóvel (vem depois no ficheiro) e o alvo ficava em 35px. */
+  min-height: 44px;
   -webkit-tap-highlight-color: transparent;
 }
 .back-btn:hover {

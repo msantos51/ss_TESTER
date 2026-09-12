@@ -1,29 +1,53 @@
 /* ═══════════════════════════════════════════════════════════════════
    Sunny Sales — tokens da app do vendedor
-   A Manrope é carregada em index.html (Google Fonts, 400/500/600/700/800).
+
+   A app segue a mesma direção do site ("Vidro & Maré"): paleta de verão,
+   superfícies de vidro e a tela cor de areia. A NAVEGAÇÃO mantém-se como
+   está — os mesmos quatro separadores, o mesmo comportamento; só o
+   material da barra muda (ver components/TabBar.css).
+
+   Regras de contraste herdadas do site:
+   · --ink (Sky Blue #005F73) é a única cor de marca que aguenta texto
+     pequeno branco por cima (7,3:1) — daí ser a dos botões e dos fundos
+     escuros.
+   · --ocean (Teal Ocean #0A9396) dá 3,7:1: serve para ícones, tintes e
+     texto grande, nunca para corpo sobre branco.
+   · --sun (#EE9B00) é sempre fundo com --sun-ink por cima.
+
+   A Manrope é carregada em index.html (Google Fonts, 400/500/600/700/800)
+   e mantém-se: é a letra da app, e o mapa — que é o ecrã partilhado com o
+   site — continua a usar Inter através dos tokens --site-*.
    ═══════════════════════════════════════════════════════════════════ */
 :root {
-  /* ── Paleta ───────────────────────────────── */
-  --ink: #0B2A3D;              /* fundo escuro, botões primários, títulos */
-  --ocean: #147B9E;            /* ação secundária, preços, ícones de lista */
-  --ocean-tint: #E3F1F6;       /* fundo de ícones, pílula do separador ativo */
+  /* ── Paleta de verão ──────────────────────── */
+  --ink: #005F73;              /* Sky Blue: fundo escuro, botões primários */
+  --ocean: #0A9396;            /* Teal Ocean: ícones de lista, tintes */
+  --ocean-tint: #D9EFEE;       /* fundo de ícones, pílula do separador ativo */
+  --ocean-ink: #06696D;        /* o teal escurecido para glifos sobre o tinte */
   --sun: #EE9B00;              /* acento: CTA, avatar, pin do mapa */
   --sun-ink: #2A1A00;          /* texto sobre o acento */
-  --sand: #F4F1EC;             /* fundo geral dos ecrãs */
-  --sand-alt: #EDE9E2;         /* areia mais escura (puxadores, chips) */
+  --sand: #FFF9F4;             /* White Cloud: fundo geral dos ecrãs */
+  --sand-alt: #F4EDE6;         /* areia mais escura (puxadores, chips) */
   --surface: #FFFFFF;          /* cartões, linhas de lista, tab bar */
-  --field-bg: #FAF8F5;         /* fundo de inputs */
-  --line: #EFE9E0;             /* contorno de cartões */
-  --line-soft: #F3EEE6;        /* separador entre linhas de lista */
-  --line-field: #E7E2D9;       /* contorno de inputs e botões secundários */
-  --line-tab: #EAE4DA;         /* borda superior da tab bar */
+  --field-bg: #FFFCF9;         /* fundo de inputs */
+  --line: #F1E8DE;             /* contorno de cartões */
+  --line-soft: #F6EFE7;        /* separador entre linhas de lista */
+  --line-field: #E8DDD1;       /* contorno de inputs e botões secundários */
+  --line-tab: rgba(6, 39, 47, 0.12); /* aresta superior da tab bar de vidro */
 
-  --text-primary: #16242E;
-  --text-secondary: #5C6B74;
-  --text-muted: #6B7B85;
-  --text-faint: #8A959B;       /* rótulos de secção em maiúsculas */
-  --icon-faint: #B4BCC1;       /* chevrons */
-  --tab-inactive: #98A2A8;
+  /* ── Vidro (tab bar, folhas e pastilhas sobre o mapa) ── */
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-thick: rgba(255, 253, 250, 0.93);
+  --glass-solid: #FFFDFB;
+  --glass-blur: saturate(180%) blur(18px);
+  --glass-ring: inset 0 0 0 1px rgba(255, 255, 255, 0.85);
+
+  --text-primary: #06272F;
+  --text-secondary: #3E6A72;
+  --text-muted: #55767D;
+  --text-faint: #7A969C;       /* rótulos de secção em maiúsculas */
+  --icon-faint: #A8BEC2;       /* chevrons */
+  --tab-inactive: #8AA5AA;
 
   --success: #16A34A;
   --success-ink: #16794A;
@@ -31,18 +55,18 @@
   --success-bg: #E9F7EF;
   --success-line: #BFE5CF;
 
-  --warn-bg: #FFF3DE;
-  --warn-line: #F2D6A0;
+  --warn-bg: #FDF0DA;
+  --warn-line: #F2D5A0;
   --warn-ink: #6B4A00;
   --warn-soft: #8A6A22;
 
-  --danger: #C1121F;           /* terminar sessão, apagar produto */
-  --danger-bg: #FDF5F5;
-  --danger-bg-alt: #FDF0F1;
-  --danger-line: #F0D8DA;
-  --stop: #E63946;             /* botão "Parar partilha" */
+  --danger: #AE2012;           /* terminar sessão, apagar produto */
+  --danger-bg: #FDF4F2;
+  --danger-bg-alt: #FBEDEA;
+  --danger-line: #F0D6D0;
+  --stop: #BB3E03;             /* botão "Parar partilha" */
 
-  --skeleton: #F0EBE2;         /* fundo dos skeletons de carregamento */
+  --skeleton: #F4ECE2;         /* fundo dos skeletons de carregamento */
 
   /* ── Tipografia ───────────────────────────── */
   --font: 'Manrope', system-ui, sans-serif;
@@ -71,28 +95,31 @@
   --r-input: 14px;
   --r-icon: 12px;
 
-  /* ── Sombras ──────────────────────────────── */
-  --shadow-share: 0 12px 36px rgba(11, 42, 61, 0.14);
-  --shadow-banner: 0 8px 24px rgba(11, 42, 61, 0.10);
-  --shadow-pill: 0 4px 18px rgba(11, 42, 61, 0.12);
-  --shadow-fab: 0 6px 18px rgba(11, 42, 61, 0.22);
-  --shadow-card: 0 3px 12px rgba(11, 42, 61, 0.05);
-  --shadow-pin: 0 4px 12px rgba(11, 42, 61, 0.30);
+  /* ── Sombras (petróleo, não azul-cinza) ───── */
+  --shadow-share: 0 12px 36px rgba(6, 39, 47, 0.14);
+  --shadow-banner: 0 8px 24px rgba(6, 39, 47, 0.10);
+  --shadow-pill: 0 4px 18px rgba(6, 39, 47, 0.12);
+  --shadow-fab: 0 6px 18px rgba(6, 39, 47, 0.22);
+  --shadow-card: 0 3px 12px rgba(6, 39, 47, 0.06);
+  --shadow-pin: 0 4px 12px rgba(6, 39, 47, 0.30);
+  --shadow-glass: 0 1px 1px rgba(6, 39, 47, 0.06), 0 14px 30px -16px rgba(6, 39, 47, 0.4);
 
   /* ── Aliases herdados ─────────────────────────
      Os ecrãs ainda não refinados (login, registo, planos, faturas)
      continuam a usar estes nomes; apontá-los para a paleta nova muda
      o tom da app toda de uma vez. */
-  --primary: var(--ocean);
-  --primary-hover: #0F6480;
-  --primary-dark: var(--ink);
+  /* --primary carrega texto branco (.btn-primary), por isso é Sky Blue e não
+     Teal Ocean: o teal com branco dá 3,7:1 e reprova AA. */
+  --primary: var(--ink);
+  --primary-hover: #00485A;
+  --primary-dark: #00384A;
   --primary-light: var(--ocean-tint);
-  --primary-light-solid: #D6E9F0;
+  --primary-light-solid: #C9E8E6;
   --secondary: var(--sun);
-  --secondary-hover: #D48900;
-  --danger-dark: #A30E19;
+  --secondary-hover: #CA6702;
+  --danger-dark: #8C1A0E;
   --gold: var(--sun);
-  --gold-hover: #D48900;
+  --gold-hover: #CA6702;
   --navy: var(--ink);
   --bg: var(--sand);
   --surface-alt: var(--field-bg);
@@ -246,7 +273,7 @@ body {
   height: 52px;
   border-radius: var(--r-field);
   background: var(--ocean-tint);
-  color: var(--ocean);
+  color: var(--ocean-ink);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -420,7 +447,7 @@ body {
 .input-group input:focus {
   border-color: var(--primary);
   background: white;
-  box-shadow: 0 0 0 3px rgba(75, 163, 195, 0.1);
+  box-shadow: 0 0 0 3px rgba(10, 147, 150, 0.14);
 }
 
 .input-group select {
@@ -442,7 +469,7 @@ body {
 
 .input-group select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(75, 163, 195, 0.1);
+  box-shadow: 0 0 0 3px rgba(10, 147, 150, 0.14);
 }
 
 .force-confirm {
@@ -504,24 +531,24 @@ body {
   background: var(--primary);
   color: white;
   width: 100%;
-  box-shadow: 0 4px 14px rgba(75, 163, 195, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 95, 115, 0.28);
 }
 
 .btn-primary:active:not(:disabled) {
   background: var(--primary-dark);
-  box-shadow: 0 2px 8px rgba(75, 163, 195, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 95, 115, 0.18);
 }
 
 .btn-danger {
   background: var(--danger);
   color: white;
   width: 100%;
-  box-shadow: 0 4px 14px rgba(230, 57, 70, 0.25);
+  box-shadow: 0 4px 14px rgba(187, 62, 3, 0.28);
 }
 
 .btn-danger:active:not(:disabled) {
   background: var(--danger-dark);
-  box-shadow: 0 2px 8px rgba(230, 57, 70, 0.15);
+  box-shadow: 0 2px 8px rgba(187, 62, 3, 0.18);
 }
 
 .btn-secondary {
@@ -563,11 +590,11 @@ body {
   font-weight: 800;
   letter-spacing: -0.3px;
   border-radius: var(--radius-full);
-  box-shadow: 0 8px 28px rgba(75, 163, 195, 0.35);
+  box-shadow: 0 8px 28px rgba(0, 95, 115, 0.35);
 }
 
 .btn-danger.location-toggle-btn {
-  box-shadow: 0 8px 28px rgba(230, 57, 70, 0.3);
+  box-shadow: 0 8px 28px rgba(187, 62, 3, 0.32);
 }
 
 /* ── Error ─────────────────────────────────── */
@@ -727,7 +754,7 @@ body {
   flex-shrink: 0;
   border-radius: var(--r-icon);
   background: var(--ocean-tint);
-  color: var(--ocean);
+  color: var(--ocean-ink);
   font-size: 17px;
 }
 
@@ -875,7 +902,7 @@ body {
   z-index: 100;
   display: flex;
   align-items: flex-end;
-  background: rgba(11, 42, 61, 0.5);
+  background: rgba(6, 39, 47, 0.5);
 }
 
 .ss-sheet {
@@ -1270,12 +1297,14 @@ body {
   pointer-events: none;
 }
 
+/* Halos sobre Sky Blue: o laranja saturado a 22% dava um verde-azeitona
+   sujo. Um dourado mais claro e a espuma do mar leem como luz. */
 .welcome-halo-sun {
   top: -90px;
   right: -70px;
   width: 320px;
   height: 320px;
-  background: rgba(238, 155, 0, 0.22);
+  background: rgba(255, 198, 106, 0.26);
   filter: blur(70px);
 }
 
@@ -1284,7 +1313,7 @@ body {
   left: -90px;
   width: 300px;
   height: 300px;
-  background: rgba(75, 163, 195, 0.28);
+  background: rgba(148, 210, 189, 0.24);
   filter: blur(80px);
 }
 

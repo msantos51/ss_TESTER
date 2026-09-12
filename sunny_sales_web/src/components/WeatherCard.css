@@ -4,13 +4,13 @@
   width: 100%;
   border-radius: var(--radius-panel, 22px);
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.94);
-  -webkit-backdrop-filter: saturate(180%) blur(14px);
-  backdrop-filter: saturate(180%) blur(14px);
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   color: var(--text, #0f0f0f);
   border: none;
-  box-shadow: var(--shadow-float, 0 8px 30px rgba(0, 0, 0, 0.12));
-  font-family: 'Inter', 'Roboto', sans-serif;
+  box-shadow: var(--glass-ring), var(--shadow-float);
+  font-family: var(--font-body);
   user-select: none;
   flex-shrink: 0;
 }
@@ -89,7 +89,7 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
-  background: rgba(195, 231, 241, 0.45);
+  background: rgba(148, 210, 189, 0.28);
   border-top: none;
   padding: 11px 20px 13px;
 }
