@@ -7,6 +7,7 @@
 /* ---------- Hero ---------- */
 
 .landing-hero {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: clamp(24px, 4vw, 56px);
@@ -16,14 +17,37 @@
   padding: clamp(24px, 5vw, 64px) 0;
 }
 
+/* Sol por trás do hero: um halo decorativo que não ocupa espaço no
+   grid (position: absolute) nem apanha cliques. Respira devagar. */
+.landing-hero::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: -14%;
+  right: -6%;
+  width: min(460px, 62vw);
+  aspect-ratio: 1;
+  max-width: 100%;
+  border-radius: 50%;
+  background: var(--glow-sun);
+  pointer-events: none;
+  animation: sunBreathe 9s ease-in-out infinite;
+}
+
+.landing-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
 .landing-live {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
   padding: 7px 14px;
   border-radius: var(--radius-full);
-  background: rgba(255, 198, 79, 0.18);
-  color: var(--palette-gunmetal, #20373B);
+  /* Sol em fundo, texto escuro por cima — a regra do dourado. */
+  background: rgba(255, 194, 74, 0.3);
+  color: var(--palette-gunmetal, #123B45);
   font-size: var(--fs-caption);
   font-weight: 600;
 }
@@ -32,7 +56,9 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--palette-saffron, #FFC64F);
+  background: var(--palette-saffron, #FFC24A);
+  /* Pequeno halo: o ponto passa a ler-se como um sol em miniatura */
+  box-shadow: 0 0 0 3px rgba(255, 194, 74, 0.35);
   animation: landing-blink 1.8s ease-in-out infinite;
 }
 
@@ -102,6 +128,12 @@
   color: var(--text);
 }
 
+/* O CTA principal leva a sombra quente do acento — o botão fica
+   assente na areia em vez de recortado sobre ela. */
+.landing-btn--primary {
+  box-shadow: var(--shadow-ink);
+}
+
 .landing-stats {
   display: flex;
   flex-wrap: wrap;
@@ -113,7 +145,7 @@
   font-size: var(--fs-h3);
   font-weight: 700;
   letter-spacing: -0.03em;
-  color: var(--palette-moonstone, #519CAB);
+  color: var(--palette-moonstone, #0C7383);
 }
 
 .landing-stats dd {
@@ -124,11 +156,14 @@
 
 /* Pré-visualização do mapa */
 
+/* A moldura do mapa ganha um aro de água e a sombra quente: parece
+   uma janela para o mar, não um ecrã colado à página. */
 .landing-hero-frame {
   position: relative;
   border-radius: var(--radius-2xl);
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), 0 0 0 4px rgba(255, 255, 255, 0.9),
+    0 0 0 7px rgba(43, 166, 184, 0.18);
   aspect-ratio: 4 / 3.4;
   min-height: 300px;
 }
@@ -194,15 +229,17 @@
   display: inline-block;
 }
 
+/* Traço de sol sob cada título de secção: um raio curto que vai do
+   dourado ao laranja em vez de uma barra chapada. */
 .landing-h2::after {
   content: '';
   position: absolute;
   bottom: -6px;
   left: 0;
-  width: 32px;
-  height: 3px;
-  border-radius: 2px;
-  background: var(--palette-saffron, #FFC64F);
+  width: 44px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--grad-sun);
 }
 
 .landing-section-lead {
@@ -220,11 +257,36 @@
   list-style: none;
 }
 
+/* Cada passo é uma toalha estendida: branco quente, com a areia a
+   subir pela base e um levantar suave ao passar o rato. */
 .landing-step {
+  position: relative;
   padding: var(--space-lg);
   border-radius: var(--radius-panel);
-  background: var(--surface);
+  background: linear-gradient(180deg, #ffffff 62%, var(--surface-warm) 100%);
   box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.landing-step:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Fio de sol no topo do cartão */
+.landing-step::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--grad-sun);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.landing-step:hover::before {
+  opacity: 1;
 }
 
 .landing-step-n {
@@ -233,10 +295,11 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: var(--palette-saffron, #FFC64F);
-  color: var(--palette-gunmetal, #20373B);
+  background: var(--palette-saffron, #FFC24A);
+  color: var(--palette-gunmetal, #123B45);
   font-size: var(--fs-body-sm);
   font-weight: 700;
+  box-shadow: var(--shadow-gold);
 }
 
 .landing-step-title {
@@ -256,7 +319,12 @@
 
 /* ---------- Banner teal ---------- */
 
+/* Pôr-do-sol sobre o mar: o bloco é mar fundo (--grad-dark, ≥9:1 com
+   texto branco) e o sol entra como halo no canto, por cima do
+   gradiente mas por baixo do texto. O contraste do texto continua a
+   ser medido contra o gradiente, não contra o halo. */
 .landing-banner {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: var(--space-lg) clamp(24px, 4vw, 48px);
@@ -265,6 +333,27 @@
   border-radius: var(--radius-2xl);
   background: var(--grad-dark);
   color: var(--on-accent);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.landing-banner::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: -45%;
+  right: -10%;
+  width: min(420px, 70%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 194, 74, 0.26) 0%, rgba(255, 194, 74, 0) 68%);
+  pointer-events: none;
+  animation: sunBreathe 11s ease-in-out infinite;
+}
+
+.landing-banner > * {
+  position: relative;
+  z-index: 1;
 }
 
 .landing-banner-title {
@@ -290,16 +379,19 @@
   min-height: 48px;
   padding: 14px 26px;
   border-radius: var(--radius-btn);
-  background: var(--palette-saffron, #FFC64F);
-  color: var(--palette-gunmetal, #20373B);
+  background: var(--palette-saffron, #FFC24A);
+  color: var(--palette-gunmetal, #123B45);
   font-size: var(--fs-body);
   font-weight: 700;
   text-decoration: none;
+  box-shadow: 0 8px 22px -10px rgba(255, 194, 74, 0.8);
+  transition: background var(--transition), box-shadow var(--transition);
 }
 
 .landing-banner-btn:hover {
   background: #FFD27A;
-  color: var(--palette-gunmetal, #20373B);
+  color: var(--palette-gunmetal, #123B45);
+  box-shadow: 0 10px 26px -10px rgba(255, 194, 74, 0.9);
 }
 
 /* ---------- Navbar: CTA "Abrir mapa" ---------- */
@@ -329,7 +421,8 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--palette-saffron, #FFC64F);
+  background: var(--palette-saffron, #FFC24A);
+  box-shadow: 0 0 0 3px rgba(255, 194, 74, 0.28);
   animation: landing-blink 1.8s ease-in-out infinite;
 }
 
@@ -351,6 +444,15 @@
 @media (prefers-reduced-motion: reduce) {
   .landing-live-dot,
   .nav-cta-dot { animation: none; }
+
+  /* Os halos ficam — parados, na posição de repouso. */
+  .landing-hero::before,
+  .landing-banner::before {
+    animation: none;
+    transform: none;
+  }
+
+  .landing-step:hover { transform: none; }
 }
 
 /* ---------- Pins da pré-visualização ----------

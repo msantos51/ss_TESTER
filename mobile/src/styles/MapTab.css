@@ -5,7 +5,7 @@
    descrito em sunny_sales_web/DESIGN_SYSTEM.md): o mapa é o fundo e tudo
    o que lhe fica por cima flutua em pastilhas e painéis brancos de cantos
    grandes com sombra difusa (--site-shadow-float), tipografia Inter,
-   acento teal da marca e uma única ação âncora por ecrã — Gunmetal
+   acento maré da marca e uma única ação âncora por ecrã — mar profundo
    quando é a ação normal, coral quando é urgente (parar a partilha).
 
    É o ecrã que o vendedor vê espelhado no site: quem está na praia com a
@@ -19,31 +19,35 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 .map-screen {
-  /* ── Paleta (sunny_sales_web/src/index.css · :root) ── */
+  /* ── Paleta (sunny_sales_web/src/index.css · :root) ──
+     Espelho da paleta de verão do site. Só os valores mudaram: cada
+     token continua a ter exatamente o mesmo papel de antes. */
   --site-surface: #ffffff;
-  --site-surface-alt: #f1f3f6;
-  --site-accent: #519CAB;          /* Moonstone: ação secundária, seleção */
-  --site-accent-hover: #3D8496;
-  --site-ink: #20373B;             /* Gunmetal: a ação principal do ecrã */
-  --site-ink-hover: #152527;
-  --site-coral: #C9371B;           /* só o que é urgente: parar a partilha */
+  --site-surface-alt: #F5EDE0;
+  --site-accent: #0C7383;          /* Maré: ação secundária, seleção */
+  --site-accent-hover: #0A5D6B;
+  --site-ink: #123B45;             /* Mar profundo: a ação principal do ecrã */
+  --site-ink-hover: #0B2830;
+  --site-coral: #CF3C18;           /* só o que é urgente: parar a partilha */
   --site-coral-hover: #A82C14;
   --site-forest: #1D5C3A;          /* presença de vendedores (pins) */
-  --site-gold: #FFC64F;            /* informação, nunca ação; sempre fundo */
-  --site-text: #12191f;
-  --site-text-secondary: #46545f;
-  --site-text-muted: #6b7885;
-  --site-border: rgba(18, 25, 31, 0.07);
+  --site-gold: #FFC24A;            /* informação, nunca ação; sempre fundo */
+  --site-text: #1A2327;
+  --site-text-secondary: #4A585F;
+  --site-text-muted: #606D74;
+  --site-border: rgba(30, 22, 10, 0.07);
   --site-error: #b91c1c;
   --site-error-border: rgba(185, 28, 28, 0.35);
-  /* Fundo do mapa enquanto os tiles não chegam (igual ao do site) */
+  /* Fundo do mapa enquanto os tiles não chegam (igual ao do site).
+     Fica cinzento de propósito: é o tom dos tiles que vão substituí-lo,
+     e aquecê-lo daria um salto de cor no momento em que chegam. */
   --site-map-bg: #e6e9ee;
 
-  /* ── Sombras: contacto curto + difusão longa ── */
-  --site-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05), 0 6px 16px -8px rgba(16, 24, 40, 0.12);
-  --site-shadow-lg: 0 4px 10px -4px rgba(16, 24, 40, 0.08), 0 26px 60px -20px rgba(16, 24, 40, 0.22);
+  /* ── Sombras: contacto curto + difusão longa (tom de areia) ── */
+  --site-shadow-sm: 0 1px 2px rgba(84, 58, 24, 0.06), 0 6px 16px -8px rgba(84, 58, 24, 0.14);
+  --site-shadow-lg: 0 4px 10px -4px rgba(84, 58, 24, 0.09), 0 26px 60px -20px rgba(84, 58, 24, 0.24);
   /* Para o que flutua sobre o mapa, onde o fundo é imprevisível */
-  --site-shadow-float: 0 1px 2px rgba(16, 24, 40, 0.16), 0 8px 20px -6px rgba(16, 24, 40, 0.24);
+  --site-shadow-float: 0 1px 2px rgba(24, 38, 42, 0.16), 0 8px 20px -6px rgba(24, 38, 42, 0.24);
 
   /* ── Raios: painéis 22, controlos 14, botões em pílula ── */
   --site-radius-control: 14px;
@@ -381,7 +385,7 @@
   color: var(--site-text-muted);
 }
 
-/* Pílula teal — o preto fica reservado à ação principal do ecrã, que é
+/* Pílula maré — o preto fica reservado à ação principal do ecrã, que é
    iniciar a partilha. */
 .map-sub-btn {
   flex-shrink: 0;
@@ -444,7 +448,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* A única ação âncora do ecrã: Gunmetal para iniciar, coral para parar —
+/* A única ação âncora do ecrã: mar profundo para iniciar, coral para parar —
    parar é a única coisa urgente que este ecrã tem. */
 .share-btn {
   display: flex;

@@ -12,6 +12,7 @@
 }
 
 .faq-item {
+  position: relative;
   background: var(--surface);
   border: none;
   border-radius: var(--radius-lg);
@@ -23,6 +24,22 @@
 .faq-item:hover,
 .faq-item[open] {
   box-shadow: var(--shadow-sm);
+}
+
+/* Aberta, a pergunta ganha um fio de sol na margem esquerda — o
+   mesmo vocabulário decorativo do resto do site, à vertical. */
+.faq-item::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--grad-sun);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.faq-item[open]::before {
+  opacity: 1;
 }
 
 .faq-q {

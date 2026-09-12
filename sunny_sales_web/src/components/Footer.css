@@ -5,11 +5,17 @@
   left: 0;
   width: 100%;
   overflow: hidden;
-  /* Barra translúcida (par do header), sem linha dura sobre a tela */
-  background: rgba(255, 255, 255, 0.7);
+  /* Barra translúcida (par do header), sem linha dura sobre a tela.
+     A linha de topo é a espuma onde a maré chega: um fio de água que
+     atravessa a largura toda. */
+  background: rgba(255, 252, 246, 0.74);
   -webkit-backdrop-filter: saturate(180%) blur(18px);
   backdrop-filter: saturate(180%) blur(18px);
-  border-top: 1.5px solid rgba(195, 231, 241, 0.7);
+  border-top: 1.5px solid transparent;
+  border-image: linear-gradient(90deg,
+      rgba(255, 194, 74, 0.55) 0%,
+      rgba(43, 166, 184, 0.5) 55%,
+      rgba(255, 194, 74, 0.4) 100%) 1;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -61,7 +67,7 @@
 }
 
 .footer-link:hover {
-  color: var(--palette-moonstone, #519CAB);
+  color: var(--palette-moonstone, #0C7383);
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-thickness: 1px;

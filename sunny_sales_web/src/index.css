@@ -23,11 +23,14 @@
 }
 
 /* ════════════════════════════════════════════════════════
-   Sunny Sales — Design System "Canvas / Painéis"
+   Sunny Sales — Design System "Canvas / Painéis", em verão
 
    CONCEITO (UI de mapa moderna, ao estilo dos produtos de
-   pesquisa geográfica atuais):
-   · A página é uma TELA cinzenta muito clara (--canvas).
+   pesquisa geográfica atuais — com a temperatura do sítio
+   onde o site é usado: a praia, ao meio-dia):
+   · A página é uma TELA DE AREIA lavada (--canvas), com um
+     halo de sol no canto superior e uma lavagem de água
+     rasa em baixo (camada fixa `body::before`, decorativa).
      Sobre ela flutuam PAINÉIS brancos arredondados
      (--radius-panel) com sombra difusa e sem contornos
      duros — a profundidade vem da sombra, não da borda.
@@ -35,20 +38,23 @@
      controlos (zoom, localizar, vista) flutuam por cima
      em pastilhas brancas.
    · Controlos de escolha: segmentos e pastilhas. O estado
-     selecionado é preenchido a TEAL com texto branco; o
-     não selecionado é cinzento muito claro sem borda.
-   · A ação principal de cada ecrã é um botão PRETO
-     (--ink) de canto arredondado — âncora visual única.
+     selecionado é preenchido a MARÉ com texto branco; o
+     não selecionado é areia clara sem borda.
+   · A ação principal de cada ecrã é um botão de MAR
+     PROFUNDO (--ink) arredondado — âncora visual única.
 
    PALETA (regras de uso):
-   · --accent / --primary = TEAL #0F5F6E (7,3:1 com branco).
+   · --accent / --primary = MARÉ #0C7383 (5,5:1 com branco).
      Estados ativos, seleções, ícones de marca.
-   · --ink = quase-preto #14181F. Só a ação principal.
-   · --canvas = tela cinzenta; --surface = painéis brancos;
+   · --primary-bright = turquesa de água rasa #2BA6B8. Só
+     decoração (glows, gradientes, traços): 2,9:1, nunca
+     texto nem preenchimento de botão.
+   · --ink = mar profundo #123B45. Só a ação principal.
+   · --canvas = tela de areia; --surface = painéis brancos;
      --surface-alt = preenchimento de chips e segmentos.
    · --coral = única ação urgente do mapa (localizar-me).
    · --forest = presença de vendedores (pins).
-   · --gold = informação, nunca ação (sempre como fundo).
+   · --gold = sol: informação, nunca ação (sempre como fundo).
 
    TIPOGRAFIA (escala única, aplicada em todo o site):
    · --fs-display  48→64px Hero da Home
@@ -67,100 +73,114 @@
    ════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Acento = teal (verde-água da marca) ──
-     #0F5F6E dá 7,29:1 com texto branco. O anterior #199fb1 dava 3,16:1, o que
-     reprova WCAG AA (4,5:1) e ficava a rasar o mínimo de 3:1 para componentes
-     de interface — invisível num ecrã ao sol, que é o contexto de uso real. */
-  /* ── Paleta 2025: Moonstone · Saffron · Gunmetal · Light Blue ── */
-  --palette-moonstone: #519CAB;
-  --palette-saffron: #FFC64F;
-  --palette-gunmetal: #20373B;
+  /* ── Paleta de verão: Maré · Sol · Areia · Maresia ──
+     A mesma gramática de sempre (acento = seleção, dourado = informação,
+     coral = urgência, escuro = ação âncora), afinada para a praia ao
+     meio-dia. Cada valor sólido continua a cumprir WCAG AA no contexto em
+     que é usado — o site lê-se num telemóvel ao sol, onde o mínimo não
+     chega: ver a tabela de rácios em DESIGN_SYSTEM.md. */
+  --palette-tide: #0C7383;      /* Maré — o mar fundo da marca */
+  --palette-lagoon: #2BA6B8;    /* Lagoa — turquesa só decorativo */
+  --palette-sun: #FFC24A;       /* Sol — informação, nunca ação */
+  --palette-sand: #FAF3E6;      /* Areia — a tela do site */
+  --palette-deepsea: #123B45;   /* Mar profundo — a ação âncora */
+  --palette-shell: #C3E7F1;     /* Concha — tint claro de mar */
+  /* Aliases da paleta anterior (Moonstone/Saffron/Gunmetal) — mantidos
+     porque há CSS a referenciá-los diretamente; apontam para o verão. */
+  --palette-moonstone: #0C7383;
+  --palette-saffron: #FFC24A;
+  --palette-gunmetal: #123B45;
   --palette-lightblue: #C3E7F1;
 
-  --accent: #519CAB;
-  --accent-hover: #3D8496;
-  --accent-soft: rgba(81, 156, 171, 0.12);
+  --accent: #0C7383;
+  --accent-hover: #0A5D6B;
+  --accent-soft: rgba(12, 115, 131, 0.12);
   /* Ícones/realces "de acento" sobre fundo claro */
-  --accent-text: #519CAB;
-  /* Texto sobre superfícies teal (botões, badges, blocos) */
+  --accent-text: #0A5D6B;
+  /* Texto sobre superfícies de maré (botões, badges, blocos) */
   --on-accent: #ffffff;
 
   /* ── Cor primária (alias do acento, compatibilidade) ── */
-  --primary: #519CAB;
-  --primary-hover: #3D8496;
-  --primary-dark: #3D8496;
-  --primary-bright: #6BBACB;
-  --primary-light: rgba(81, 156, 171, 0.1);
-  --primary-light-solid: #C3E7F1;
+  --primary: #0C7383;
+  --primary-hover: #0A5D6B;
+  --primary-dark: #0A5D6B;
+  /* Turquesa de água rasa: SÓ decoração (glows, gradientes, traços). Dá
+     2,9:1 com branco — nunca texto, nunca preenchimento de botão. */
+  --primary-bright: #2BA6B8;
+  --primary-light: rgba(12, 115, 131, 0.1);
+  --primary-light-solid: #D8F0F6;
 
   /* ── Ação primária (CTAs sólidos) ── */
-  --secondary: #519CAB;
-  --secondary-hover: #3D8496;
-  --secondary-light: rgba(81, 156, 171, 0.12);
+  --secondary: #0C7383;
+  --secondary-hover: #0A5D6B;
+  --secondary-light: rgba(12, 115, 131, 0.12);
 
-  /* ── Coral: reservado ao que é acionável ──
-     5,19:1 com texto branco. Regra: só o botão de localização do mapa e o
+  /* ── Coral de pôr-do-sol: reservado ao que é acionável ──
+     4,87:1 com texto branco. Regra: só o botão de localização do mapa e o
      botão de filtros quando há um filtro ativo. Em mais nenhum sítio — se o
      coral aparecer em dois sítios ao mesmo tempo, deixa de significar algo. */
-  --coral: #C9371B;
+  --coral: #CF3C18;
   --coral-hover: #A82C14;
 
-  /* ── Verde floresta: presença de vendedores ──
+  /* ── Verde palmeira: presença de vendedores ──
      7,94:1 com texto branco. Cor por omissão dos pins no mapa. */
   --forest: #1D5C3A;
   --forest-light: rgba(29, 92, 58, 0.12);
 
-  /* ── Saffron: informação, nunca ação ──
-     Usar sempre como FUNDO com texto escuro por cima. Nunca com texto branco. */
-  --gold: #FFC64F;
+  /* ── Sol: informação, nunca ação ──
+     Usar sempre como FUNDO com texto escuro por cima (9,95:1 com --text).
+     Nunca com texto branco — daria 1,61:1. */
+  --gold: #FFC24A;
   --gold-strong: #7A5200;
-  --amber: #FFC64F;
+  --amber: #FFC24A;
   --amber-strong: #7A5200;
 
-  /* ── Aliases de azul/teal (links funcionais, mapa) ──
-     --blue é a posição do utilizador no mapa: 4,98:1, já passava AA. Mantém-se. */
-  --blue: #1078a0;
-  --blue-hover: #0d5d8a;
-  --teal: #519CAB;
-  --teal-strong: #3D8496;
-  --teal-light: rgba(81, 156, 171, 0.12);
-  --sky: #1078a0;
+  /* ── Aliases de azul/mar (links funcionais, mapa) ──
+     --blue é a posição do utilizador no mapa: 5,72:1, AA sobre branco. */
+  --blue: #0F6E93;
+  --blue-hover: #0B5474;
+  --teal: #0C7383;
+  --teal-strong: #0A5D6B;
+  --teal-light: rgba(12, 115, 131, 0.12);
+  --sky: #0F6E93;
 
-  /* ── "Ink" — Gunmetal da ação principal ──
-     Um único botão Gunmetal por ecrã (o "Ver no mapa" da Home,
-     o "Voltar ao início" do 404). Tudo o resto é Moonstone ou
-     cinzento: se houver dois escuros, deixa de haver âncora. */
-  --ink: #20373B;
-  --ink-hover: #152527;
+  /* ── "Ink" — o mar profundo da ação principal ──
+     Um único botão escuro por ecrã (o "Ver o mapa" da entrada,
+     o "Voltar ao início" do 404). Tudo o resto é maré ou areia:
+     se houver dois escuros, deixa de haver âncora. */
+  --ink: #123B45;
+  --ink-hover: #0B2830;
   /* Texto escuro para fundos claros */
-  --ink-on-light: #20373B;
-  /* ── Painéis institucionais (Gunmetal escuro) ── */
-  --navy: #20373B;
-  --navy-light: #519CAB;
-  --navy-border: rgba(32, 55, 59, 0.2);
+  --ink-on-light: #123B45;
+  /* ── Painéis institucionais (mar profundo) ── */
+  --navy: #123B45;
+  --navy-light: #0C7383;
+  --navy-border: rgba(18, 59, 69, 0.2);
 
-  /* ── Superfícies: tela cinzenta + painéis brancos ──
-     O site deixa de ser branco sobre branco: a tela
-     (--canvas) recua e os painéis brancos ganham relevo. */
-  --canvas: #f4f5f7;
-  --canvas-deep: #eceef2;
-  --bg-deep: #eceef2;
-  --bg: #f4f5f7;
+  /* ── Superfícies: tela de areia + painéis brancos ──
+     A tela deixou de ser um cinzento de escritório: é areia lavada
+     (--canvas), morna, sobre a qual os painéis brancos leem como
+     toalhas e chapéus-de-sol. O contraste painel/tela (1,10:1) é o
+     mesmo de antes — muda a temperatura, não a leitura. */
+  --canvas: #FAF3E6;
+  --canvas-deep: #F2E5D1;
+  --bg-deep: #F2E5D1;
+  --bg: #FAF3E6;
   --bg-raised: #ffffff;
   --surface: #ffffff;
-  /* Preenchimento neutro de chips, segmentos e hovers */
-  --surface-alt: #f1f3f6;
-  --surface-hover: #e8ebf0;
-  --surface-warm: #f8f9fb;
+  /* Preenchimento de chips, segmentos e hovers (areia mais clara) */
+  --surface-alt: #F5EDE0;
+  --surface-hover: #EDE3D2;
+  --surface-warm: #FDF8F0;
 
-  /* ── Texto (todos AA sobre branco/--surface) ── */
-  --text: #12191f;
-  --text-secondary: #46545f;
-  --text-muted: #6b7885;
+  /* ── Texto (todos AA sobre branco, areia e chips) ── */
+  --text: #1A2327;
+  --text-secondary: #4A585F;
+  --text-muted: #606D74;
 
   /* ── Bordas (hairlines; a profundidade vem da sombra) ── */
-  --border: rgba(18, 25, 31, 0.07);
-  --border-strong: rgba(18, 25, 31, 0.13);
+  --border: rgba(30, 22, 10, 0.07);
+  --border-strong: rgba(30, 22, 10, 0.14);
 
   /* ── Cores semânticas (só em contexto funcional) ── */
   --success: #15803d;
@@ -174,29 +194,40 @@
   --error-border: rgba(185, 28, 28, 0.35);
   --danger: #b91c1c;
 
-  /* ── Gradientes — paleta 2025 ── */
-  --grad-sun: linear-gradient(135deg, #519CAB, #3D8496);
-  --grad-gold: linear-gradient(135deg, #FFC64F, #E8A800);
-  --grad-sea: linear-gradient(135deg, #519CAB, #3D8496);
-  --grad-dusk: linear-gradient(135deg, #20373B, #152527);
-  /* Blocos de destaque: Gunmetal profundo (texto branco por cima) */
-  --grad-dark: linear-gradient(155deg, #20373B 0%, #152527 100%);
+  /* ── Gradientes de verão ──
+     Decorativos: só vivem em fundos. Onde levam texto por cima, esse
+     texto é branco e as duas pontas do gradiente são escuras o
+     suficiente para o aguentar (≥7,8:1). */
+  --grad-sun: linear-gradient(135deg, #FFD37A, #F5941F);
+  --grad-gold: linear-gradient(135deg, #FFD470, #F2A21C);
+  --grad-sea: linear-gradient(135deg, #2BA6B8, #0A5D6B);
+  --grad-dusk: linear-gradient(135deg, #0E5A68, #0B2830);
+  /* Blocos de destaque: mar ao anoitecer (texto branco por cima) */
+  --grad-dark: linear-gradient(150deg, #0E5A68 0%, #123B45 55%, #0A333C 100%);
+  /* Céu do meio-dia → água rasa. Lavagens de fundo, nunca texto por cima. */
+  --grad-sky: linear-gradient(180deg, #D8F0F6 0%, #FAF3E6 100%);
+  /* Halos decorativos. O do sol é somado por cima da lavagem fixa do
+     body, por isso é mais fraco do que parece isolado. */
+  --glow-sun: radial-gradient(circle, rgba(255, 194, 74, 0.3) 0%, rgba(255, 194, 74, 0) 70%);
+  --glow-sea: radial-gradient(circle, rgba(31, 133, 190, 0.22) 0%, rgba(31, 133, 190, 0) 70%);
 
   /* ── Sombras (difusas, de baixa opacidade) ──
      Duas camadas: um contacto curto que substitui a borda
-     de 1px e uma difusão longa que levanta o painel. */
-  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05), 0 6px 16px -8px rgba(16, 24, 40, 0.12);
-  --shadow-md: 0 2px 6px -2px rgba(16, 24, 40, 0.07), 0 14px 34px -12px rgba(16, 24, 40, 0.16);
-  --shadow-lg: 0 4px 10px -4px rgba(16, 24, 40, 0.08), 0 26px 60px -20px rgba(16, 24, 40, 0.22);
+     de 1px e uma difusão longa que levanta o painel. O tom passou
+     de azul-ardósia a castanho-areia: é a sombra que um chapéu
+     faz na areia, não a de um escritório. */
+  --shadow-xs: 0 1px 2px rgba(84, 58, 24, 0.06);
+  --shadow-sm: 0 1px 2px rgba(84, 58, 24, 0.06), 0 6px 16px -8px rgba(84, 58, 24, 0.14);
+  --shadow-md: 0 2px 6px -2px rgba(84, 58, 24, 0.08), 0 14px 34px -12px rgba(84, 58, 24, 0.18);
+  --shadow-lg: 0 4px 10px -4px rgba(84, 58, 24, 0.09), 0 26px 60px -20px rgba(84, 58, 24, 0.24);
   /* Pastilhas que flutuam sobre o mapa (fundo imprevisível) */
-  --shadow-float: 0 1px 2px rgba(16, 24, 40, 0.16), 0 8px 20px -6px rgba(16, 24, 40, 0.24);
+  --shadow-float: 0 1px 2px rgba(24, 38, 42, 0.16), 0 8px 20px -6px rgba(24, 38, 42, 0.24);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
-  --shadow-primary: 0 10px 24px -12px rgba(81, 156, 171, 0.45);
-  --shadow-ink: 0 10px 24px -12px rgba(32, 55, 59, 0.35);
-  --shadow-gold: 0 10px 24px -12px rgba(255, 198, 79, 0.35);
-  --shadow-accent: 0 12px 28px -12px rgba(81, 156, 171, 0.5);
+  --shadow-primary: 0 10px 24px -12px rgba(12, 115, 131, 0.45);
+  --shadow-ink: 0 10px 24px -12px rgba(18, 59, 69, 0.35);
+  --shadow-gold: 0 10px 24px -12px rgba(255, 194, 74, 0.5);
+  --shadow-accent: 0 12px 28px -12px rgba(12, 115, 131, 0.5);
 
   /* ── Raios (generosos; controlos em pílula) ── */
   --radius-xs: 10px;
@@ -232,8 +263,8 @@
   --space-2xl: 48px;
   --section-pad: clamp(4rem, 8vw, 7rem);
 
-  /* ── Foco visível (teclado): teal escuro, ≥3:1 sobre branco ── */
-  --focus-ring: #1078a0;
+  /* ── Foco visível (teclado): azul-mar, ≥4,9:1 sobre branco e areia ── */
+  --focus-ring: #0F6E93;
 
   /* ── Movimento (200ms, ease-out, nada mais) ── */
   --transition: 0.2s cubic-bezier(0, 0, 0.2, 1);
@@ -271,7 +302,7 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
-  /* Tela cinzenta muito clara: é o que faz os painéis brancos
+  /* Tela de areia lavada: é o que faz os painéis brancos
      ler como painéis e não como pedaços de página */
   background-color: var(--canvas);
   overflow-x: hidden;
@@ -282,12 +313,35 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-::selection {
-  background: var(--accent);
-  color: var(--on-accent);
+/* ── Atmosfera: sol em cima, água rasa em baixo ───────────
+   Uma única camada fixa atrás de tudo (z-index negativo,
+   sem eventos de rato). Não entra no fluxo, não mexe em
+   nenhuma caixa e não tapa nada: só dá temperatura à tela.
+   Opacidades baixas de propósito — o contraste do texto é
+   medido contra --canvas e tem de continuar a bater certo. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    /* sol alto, fora do canto superior direito */
+    radial-gradient(58vw 58vw at 88% -12%, rgba(255, 194, 74, 0.24) 0%, rgba(255, 194, 74, 0) 62%),
+    /* reflexo quente mais aberto, a segurar o meio da página */
+    radial-gradient(80vw 55vw at 50% 8%, rgba(255, 211, 122, 0.13) 0%, rgba(255, 211, 122, 0) 70%),
+    /* maré a entrar pela base. Azul e não turquesa de propósito: sobre
+       areia amarelada, um ciano translúcido vira verde-lodo. */
+    radial-gradient(95vw 42vw at 8% 112%, rgba(31, 133, 190, 0.16) 0%, rgba(31, 133, 190, 0) 66%);
 }
 
-/* Scrollbar fina e neutra */
+::selection {
+  /* O sol como marcador: amarelo com texto escuro (9,95:1) */
+  background: var(--gold);
+  color: var(--text);
+}
+
+/* Scrollbar fina e morna */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--border-strong) transparent;
@@ -358,8 +412,8 @@ body {
   display: flex;
   align-items: center;
   padding: 0 26px;
-  /* Barra branca translúcida com blur */
-  background: rgba(255, 255, 255, 0.82);
+  /* Barra translúcida com blur, na temperatura da areia */
+  background: rgba(255, 252, 246, 0.82);
   -webkit-backdrop-filter: saturate(180%) blur(18px);
   backdrop-filter: saturate(180%) blur(18px);
   /* Sem borda no topo: só ao rolar é que a barra se destaca da tela */
@@ -374,9 +428,9 @@ body {
 /* Ao rolar: encolhe e ganha uma sombra rasa em vez de uma linha dura. */
 .navbar.navbar--scrolled {
   height: var(--navbar-h-scrolled);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 252, 246, 0.92);
   border-bottom-color: var(--border);
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  box-shadow: 0 1px 2px rgba(84, 58, 24, 0.05);
 }
 .navbar--scrolled .nav-logo-img { height: 30px; }
 
@@ -559,7 +613,7 @@ body {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(27, 44, 51, 0.35);
+  background: rgba(18, 59, 69, 0.35);
   backdrop-filter: blur(2px);
   z-index: 1040;
   opacity: 0;
@@ -602,7 +656,7 @@ body {
   }
 
   .wrapper--map .navbar {
-    background: rgba(255, 255, 255, 0.86);
+    background: rgba(255, 252, 246, 0.88);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
@@ -773,9 +827,23 @@ h2 {
   to { background-position: 200% center; }
 }
 @keyframes pinPulse {
-  0% { box-shadow: 0 0 0 0 rgba(81, 156, 171, 0.4); }
-  70% { box-shadow: 0 0 0 14px rgba(81, 156, 171, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(81, 156, 171, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(12, 115, 131, 0.4); }
+  70% { box-shadow: 0 0 0 14px rgba(12, 115, 131, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(12, 115, 131, 0); }
+}
+
+/* ── Verão: o sol respira, a maré vai e vem ──────────────
+   Dois ciclos longos e de amplitude mínima. Servem camadas
+   decorativas (::before/::after de heroes e banners), nunca
+   conteúdo — e o bloco `prefers-reduced-motion` acima já os
+   reduz a ~0ms para quem pediu menos movimento. */
+@keyframes sunBreathe {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+@keyframes tideDrift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(-2.5%, 1.5%, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -823,7 +891,7 @@ h2 {
     width: auto;
     flex-direction: column;
     align-items: stretch;
-    background: rgba(255, 255, 255, 0.97);
+    background: rgba(255, 252, 246, 0.97);
     -webkit-backdrop-filter: blur(18px);
     backdrop-filter: blur(18px);
     border: none;

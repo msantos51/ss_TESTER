@@ -36,7 +36,7 @@
 }
 
 .home-hero-map {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.04));
+  background: linear-gradient(135deg, rgba(255, 194, 74, 0.08), rgba(43, 166, 184, 0.08));
 }
 
 .home-hero-map > * {
@@ -123,13 +123,24 @@
 }
 
 .home-stat {
-  background: var(--surface);
+  position: relative;
+  background: linear-gradient(180deg, #ffffff 62%, var(--surface-warm) 100%);
   border: 1px solid var(--border);
   color: var(--text);
   text-align: justify;
   border-radius: var(--radius-lg);
   padding: 28px 20px;
   box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* Fio de sol no topo do cartão, igual aos passos da página de entrada */
+.home-stat::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--grad-sun);
 }
 
 .home-stat-num {
@@ -150,14 +161,38 @@
   color: var(--text-secondary);
 }
 
-/* ── CTA Final: bloco TEAL com texto branco ── */
+/* ── CTA Final: mar ao fim da tarde, com texto branco ── */
 .home-final {
+  position: relative;
+  overflow: hidden;
   text-align: center;
   border-radius: var(--radius-2xl);
   background: var(--grad-dark);
   border: none;
   padding: clamp(3.5rem, 7vw, 5rem) 1.5rem;
   box-shadow: var(--shadow-md);
+}
+
+/* Sol a pôr-se no canto — decorativo, por baixo do texto */
+.home-final::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: -40%;
+  right: -8%;
+  width: min(420px, 60%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 194, 74, 0.24) 0%, rgba(255, 194, 74, 0) 68%);
+  pointer-events: none;
+  animation: sunBreathe 11s ease-in-out infinite;
+}
+
+.home-final-title,
+.home-final-text,
+.home-final .hero-pill {
+  position: relative;
+  z-index: 1;
 }
 
 .home-final-title {
@@ -183,7 +218,7 @@
   box-shadow: var(--shadow-md);
 }
 .home-final .hero-pill-primary:hover {
-  background: #eef4f2;
+  background: #FFF6E6;
 }
 
 /* ═══════════════ RESPONSIVE ═══════════════ */
@@ -293,7 +328,7 @@
 /* ── Faixa de estado do mapa ──────────────────────────
    Carregamento e estado vazio partilham forma e posição: são vistos muitas
    vezes e o utilizador não deve ter de reaprender onde olhar. Ancorada acima
-   do botão de localização, em texto branco sobre petróleo (15,8:1) — a
+   do botão de localização, em texto branco sobre mar profundo (15,4:1) — a
    pílula branca com texto cinzento que aqui estava era um borrão claro sobre
    fundo claro num ecrã ao sol. */
 
@@ -306,7 +341,7 @@
   margin: 0;
   padding: 16px 20px;
   border-radius: var(--radius-lg);
-  background: rgba(18, 25, 31, 0.9);
+  background: rgba(11, 40, 48, 0.9);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   color: #fbfcfc;
