@@ -5,10 +5,8 @@
   padding-bottom: var(--space-2xl);
 }
 
-/* A entrada não tem camada de ambiente própria: a cor por baixo do vidro da
-   cápsula vem do gradiente do site (--grad-site, em `body::before`), que está
-   em todas as páginas. Somar-lhe uma segunda aguarela só aqui escurecia o
-   canto do hero — onde o lead e as legendas assentam direto no fundo. */
+/* A entrada não tem camada de ambiente própria: o fundo é a mesma tela
+   branca (--canvas) de todas as páginas. */
 
 /* ---------- Hero ---------- */
 
@@ -136,10 +134,7 @@
 .landing-stats dd {
   margin: 2px 0 0;
   font-size: var(--fs-caption);
-  /* --text-secondary e não --text-muted: esta legenda assenta direto no
-     fundo do site, e o cinzento mais claro só dá AA sobre a tela lisa — no
-     azul do gradiente cairia para 3,6:1. */
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 /* Pré-visualização do mapa */
