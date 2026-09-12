@@ -260,6 +260,37 @@
   50%      { opacity: 0.25; }
 }
 
+/* ── Botão do norte ───────────────────────────────────
+   Aparece só depois de o vendedor rodar o mapa com dois dedos e endireita-o.
+   Encostado à direita, por cima do cartão de partilha: é o canto do polegar
+   de quem segura o telemóvel com uma mão. A agulha roda com o mapa, por isso
+   aponta sempre para o norte real. */
+.map-north-btn {
+  align-self: flex-end;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--site-radius-full);
+  background: var(--site-surface);
+  box-shadow: var(--site-shadow-float);
+  cursor: pointer;
+  transition: background var(--site-transition);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.map-north-btn:active {
+  background: var(--site-surface-alt);
+}
+
+.map-north-icon {
+  display: block;
+  transform: rotate(var(--map-bearing, 0deg));
+}
+
 /* ── Faixa de estado ──────────────────────────────────
    Texto branco sobre petróleo translúcido, como no site: uma pastilha
    clara sobre um mapa claro é um borrão num ecrã ao sol. */
@@ -500,6 +531,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* A seta aponta para o rumo do vendedor, mas o marcador vive no painel que
+   não roda com o mapa: o ângulo no ecrã é o rumo mais o bearing do mapa, que
+   o MapBearingPublisher escreve em `--map-bearing`. Com o mapa a norte as
+   contas dão o rumo, como sempre deram. */
+.user-location-arrow {
+  display: block;
+  flex-shrink: 0;
+  transform: rotate(calc(var(--pin-heading, 0deg) + var(--map-bearing, 0deg)));
 }
 
 @keyframes user-pulse {

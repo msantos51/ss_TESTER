@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -126,10 +126,14 @@ function AnimatedVendorMarker({ position, icon, eventHandlers }) {
   );
 }
 
+// (em português) O `heading` que chega aqui já vem convertido para bearing de
+// mapa (360 − rumo da bússola), que é o que alimenta a rotação. A seta precisa
+// do rumo geográfico de volta; ao bearing atual do mapa soma-o o CSS, através
+// da variável `--map-bearing`, porque o marcador vive no painel que não roda.
 function getClientPinHtml(heading, color) {
   const hasHeading = heading !== null && !isNaN(heading);
   const arrow = hasHeading
-    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="display:block;flex-shrink:0;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
+    ? `<svg viewBox="0 0 20 20" width="12" height="12" class="user-location-arrow" style="--pin-heading:${((360 - heading) % 360).toFixed(1)}deg;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="white"/></svg>`
     : '';
   const safeColor = color ? escapeHtml(color) : '';
   const pulseStyle = safeColor ? ` style="background:${safeColor}33;"` : '';
@@ -168,26 +172,110 @@ function MapZoomA11y() {
   return null;
 }
 
-function MapBearingController({ targetBearingRef }) {
+// (em português) Quantos graus é preciso rodar com os dois dedos para o mapa
+// deixar de seguir a bússola. Abaixo disto é o tremer das mãos durante um
+// pinch de zoom, que não deve custar ao utilizador a orientação automática.
+const MANUAL_ROTATE_DEG = 4;
+
+// Diferença entre dois rumos, sempre entre 0 e 180 graus.
+function bearingGap(a, b) {
+  const diff = Math.abs(a - b) % 360;
+  return diff > 180 ? 360 - diff : diff;
+}
+
+// Dono da rotação do mapa. Há dois candidatos ao volante: a bússola do
+// dispositivo, que mantém o mapa virado para onde o utilizador olha, e os dois
+// dedos do utilizador. Quem toca manda — assim que o gesto roda mesmo o mapa,
+// a bússola larga o volante e o mapa fica onde o utilizador o deixou, até ele
+// carregar no botão do norte ou no de localizar.
+function MapRotationController({ targetBearingRef, followCompass, onManualRotate, onRotatedChange }) {
   const map = useMap();
+  // Rumo no início do gesto de dois dedos; `null` quando não há gesto a
+  // decorrer — é também o sinal de "não mexer no mapa" para a bússola.
+  const gestureBearingRef = useRef(null);
+  // Rumo suavizado que a bússola está a aplicar; `null` = ainda não arrancou.
+  const smoothBearingRef = useRef(null);
+
+  // O bearing do mapa publicado em CSS. A seta do pin aponta para um rumo
+  // geográfico mas vive num painel que não roda com o mapa, por isso é o CSS
+  // que lhe soma esta variável. Escrevê-la aqui, e não em estado, evita
+  // redesenhar todos os marcadores a cada grau de rotação.
   useEffect(() => {
-    const current = { val: null };
+    const container = map.getContainer();
+    const publish = () => {
+      const bearing = map.getBearing();
+      container.style.setProperty('--map-bearing', `${bearing.toFixed(1)}deg`);
+      onRotatedChange(bearingGap(bearing, 0) > 1);
+    };
+    publish();
+    map.on('rotate', publish);
+    return () => map.off('rotate', publish);
+  }, [map, onRotatedChange]);
+
+  // Gesto de dois dedos: enquanto dura, o mapa é do utilizador; se chegar a
+  // rodá-lo mais do que um tremer de mão, a bússola larga-o de vez.
+  useEffect(() => {
+    const container = map.getContainer();
+
+    const onTouchStart = (e) => {
+      if (e.touches.length === 2) gestureBearingRef.current = map.getBearing();
+    };
+    const onTouchEnd = (e) => {
+      if (e.touches.length < 2) gestureBearingRef.current = null;
+    };
+    const onRotate = () => {
+      const start = gestureBearingRef.current;
+      if (start !== null && bearingGap(map.getBearing(), start) > MANUAL_ROTATE_DEG) {
+        onManualRotate();
+      }
+    };
+    // Em computador é o shift + roda do rato que roda o mapa (leaflet-rotate).
+    const onWheel = (e) => {
+      if (e.shiftKey) onManualRotate();
+    };
+
+    container.addEventListener('touchstart', onTouchStart, { passive: true });
+    container.addEventListener('touchend', onTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', onTouchEnd, { passive: true });
+    container.addEventListener('wheel', onWheel, { passive: true });
+    map.on('rotate', onRotate);
+    return () => {
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchend', onTouchEnd);
+      container.removeEventListener('touchcancel', onTouchEnd);
+      container.removeEventListener('wheel', onWheel);
+      map.off('rotate', onRotate);
+    };
+  }, [map, onManualRotate]);
+
+  useEffect(() => {
+    if (!followCompass) return undefined;
     let rafId;
     const LERP = 0.18;
 
     const tick = () => {
       const target = targetBearingRef.current;
-      if (target !== null && !isNaN(target)) {
-        if (current.val === null) {
-          current.val = target;
+      // Se o mapa foi rodado por fora — pelos dedos, pelo botão do norte — a
+      // bússola retoma a partir de onde ele está e não de onde o deixou, que
+      // é o que evita o salto ao reatar.
+      if (
+        smoothBearingRef.current !== null
+        && bearingGap(map.getBearing(), smoothBearingRef.current) > 0.5
+      ) {
+        smoothBearingRef.current = map.getBearing();
+      }
+      // Dedos no mapa: a bússola cala-se até os levantarem.
+      if (gestureBearingRef.current === null && target !== null && !isNaN(target)) {
+        if (smoothBearingRef.current === null) {
+          smoothBearingRef.current = target;
           map.setBearing(target);
         } else {
-          let diff = target - current.val;
+          let diff = target - smoothBearingRef.current;
           if (diff > 180) diff -= 360;
           if (diff < -180) diff += 360;
           if (Math.abs(diff) > 0.08) {
-            current.val = (current.val + diff * LERP + 360) % 360;
-            map.setBearing(current.val);
+            smoothBearingRef.current = (smoothBearingRef.current + diff * LERP + 360) % 360;
+            map.setBearing(smoothBearingRef.current);
           }
         }
       }
@@ -195,8 +283,48 @@ function MapBearingController({ targetBearingRef }) {
     };
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [map, targetBearingRef]);
+  }, [map, targetBearingRef, followCompass]);
+
   return null;
+}
+
+// Botão do norte: só aparece com o mapa torto. Endireita-o e, ao mesmo tempo,
+// cala a bússola — senão o mapa voltava a rodar no instante seguinte. Para o
+// mapa voltar a seguir a bússola há o botão de localizar, mesmo ao lado.
+function NorthUpButton({ show, onReset }) {
+  const map = useMap();
+
+  const handleClick = () => {
+    onReset();
+    const from = map.getBearing();
+    // Pelo caminho mais curto: acima de meia volta é mais perto dar a volta.
+    const to = from > 180 ? 360 : 0;
+    const start = performance.now();
+    const DURATION = 320;
+    const step = (now) => {
+      const t = Math.min(1, (now - start) / DURATION);
+      map.setBearing(from + (to - from) * (1 - (1 - t) ** 3));
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
+  if (!show) return null;
+
+  return (
+    <button
+      type="button"
+      className="compass-btn"
+      onClick={handleClick}
+      title="Virar o mapa para norte"
+      aria-label="Virar o mapa para norte"
+    >
+      <svg className="compass-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <polygon points="12,3 8.2,15 12,12.4 15.8,15" fill="#C9371B" />
+        <polygon points="12,21 8.2,15 12,17.6 15.8,15" fill="#9aa5b1" />
+      </svg>
+    </button>
+  );
 }
 
 function ClientAutoFollow({ clientPos, isAutoFollowing, setIsAutoFollowing }) {
@@ -272,6 +400,11 @@ export default function Home() {
   const mapRef = useRef(null);
   const isNarrow = useIsNarrow();
   const [isAutoFollowing, setIsAutoFollowing] = useState(true);
+
+  // Rotação: o mapa segue a bússola até o utilizador o rodar com dois dedos.
+  const [followCompass, setFollowCompass] = useState(true);
+  const [isRotated, setIsRotated] = useState(false);
+  const stopFollowingCompass = useCallback(() => setFollowCompass(false), []);
 
   // (em português) Mapa ou lista. Em desktop a lista é uma coluna à direita e
   // está aberta por omissão; em telemóvel é um painel que cobre o mapa, por
@@ -718,6 +851,11 @@ export default function Home() {
               {filteredVendors.length}{' '}
               {filteredVendors.length === 1 ? 'vendedor ativo' : 'vendedores ativos'}
             </div>
+            {/* `touchRotate` liga o gesto de dois dedos do leaflet-rotate: o
+                mesmo gesto faz zoom e roda o mapa, como em qualquer mapa de
+                telemóvel. Em computador é shift + roda do rato. O controlo de
+                rotação do plugin fica desligado — o botão do norte, aqui ao
+                lado do de localizar, faz o mesmo com o desenho do site. */}
             <MapContainer
               ref={mapRef}
               center={initialView.center}
@@ -725,9 +863,16 @@ export default function Home() {
               className="map-container"
               rotate={true}
               bearing={0}
+              touchRotate={true}
+              rotateControl={false}
             >
               <MapZoomA11y />
-              <MapBearingController targetBearingRef={targetBearingRef} />
+              <MapRotationController
+                targetBearingRef={targetBearingRef}
+                followCompass={followCompass}
+                onManualRotate={stopFollowingCompass}
+                onRotatedChange={setIsRotated}
+              />
               <TileLayer
                 {...TILE_LAYER}
                 eventHandlers={{ load: () => setTilesLoaded(true) }}
@@ -774,6 +919,7 @@ export default function Home() {
                 clientPos={clientPos}
                 enabled={!hadLastPos}
               />
+              <NorthUpButton show={isRotated} onReset={stopFollowingCompass} />
               <LocateButton
                 currentPos={clientPos}
                 onLocationFound={(pos) => {
@@ -781,7 +927,13 @@ export default function Home() {
                   writeLastPos(pos.lat, pos.lng);
                   setIsAutoFollowing(true);
                 }}
-                onClick={requestCompassPermission}
+                // Localizar é o "volta ao princípio" do mapa: recentra e
+                // devolve a rotação à bússola, depois de o utilizador a ter
+                // tirado com os dedos.
+                onClick={() => {
+                  requestCompassPermission();
+                  setFollowCompass(true);
+                }}
               />
             </MapContainer>
 
