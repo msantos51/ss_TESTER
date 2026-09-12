@@ -5,21 +5,10 @@
   padding-bottom: var(--space-2xl);
 }
 
-/* O ambiente aguarela: é o que dá cor por baixo do vidro da cápsula de
-   navegação. Sem isto, o vidro não tem nada para filtrar e lê como
-   um retângulo branco. Fica atrás de tudo e não apanha cliques. */
-.landing::before {
-  content: '';
-  position: absolute;
-  top: calc(-1 * var(--navbar-h) - var(--gutter));
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
-  height: clamp(420px, 78vh, 760px);
-  background: var(--grad-ambient);
-  pointer-events: none;
-  z-index: -1;
-}
+/* A entrada não tem camada de ambiente própria: a cor por baixo do vidro da
+   cápsula vem do gradiente do site (--grad-site, em `body::before`), que está
+   em todas as páginas. Somar-lhe uma segunda aguarela só aqui escurecia o
+   canto do hero — onde o lead e as legendas assentam direto no fundo. */
 
 /* ---------- Hero ---------- */
 
@@ -147,7 +136,10 @@
 .landing-stats dd {
   margin: 2px 0 0;
   font-size: var(--fs-caption);
-  color: var(--text-muted);
+  /* --text-secondary e não --text-muted: esta legenda assenta direto no
+     fundo do site, e o cinzento mais claro só dá AA sobre a tela lisa — no
+     azul do gradiente cairia para 3,6:1. */
+  color: var(--text-secondary);
 }
 
 /* Pré-visualização do mapa */
