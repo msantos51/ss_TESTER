@@ -221,37 +221,39 @@
   --grad-dusk: linear-gradient(135deg, #005F73, #001219);
   /* Blocos de destaque: Sky Blue a descer para a noite (texto branco) */
   --grad-dark: linear-gradient(155deg, #005F73 0%, #00323F 100%);
-  /* ── Fundo do site: a diagonal MAR → SOL ──
-     Fixa ao ecrã (ver `body::before`) e presente em todas as páginas. É uma
-     só ideia, lida na diagonal, com as quatro cores da paleta pela ordem em
-     que se veem na praia: Sky Blue no vértice superior esquerdo, Teal Ocean a
-     abrir, a tela de areia a atravessar o meio, a duna e o Summer Sun a
-     fechar o canto inferior direito. Existe por duas razões: dá cor para o
-     vidro da cápsula e do rodapé filtrarem e fecha o ecrã em vez de o deixar
-     num bege liso. É a ÚNICA camada de ambiente: o hero da entrada tinha a
-     sua (--grad-ambient) e, somadas, davam uma mancha turva por baixo do
-     texto do hero — precisamente onde o lead e as legendas assentam direto no
-     fundo. Uma ideia, uma camada.
-     A faixa do meio (46%→58%) é canvas puro de propósito: é o descanso entre
-     o azul e o amarelo, sem o qual os dois lavariam um no outro.
-     TETO DE CONTRASTE: o gradiente é fixo ao ECRÃ, por isso qualquer linha de
-     texto passa por qualquer ponto dele ao rolar — não há cantos "seguros".
-     Os alfas estão travados onde o ponto mais carregado (azul a 0,17 no
-     vértice, sol a 0,24 no oposto) ainda dá ≥4,5:1 a --text-secondary, que é
-     a tinta mais clara autorizada em cima do fundo (ver secção 5 do
-     DESIGN_SYSTEM). Subir um alfa sem refazer essa conta parte o AA. */
+  /* ── Fundo do site: NASCER DO SOL ──
+     Fixa ao ecrã (ver `body::before`) e presente em todas as páginas.
+     Versão "quente" da diagonal original: o Sky Blue deixa de abrir a
+     diagonal e passa a ser só uma mancha compacta no vértice superior
+     esquerdo (o radial-gradient); todo o resto do ecrã é a progressão
+     quente — Teal Ocean muito ténue, a tela a descansar ao centro, depois
+     duna, Summer Sun, e a fechar em Amber/Terracota (as mesmas cores de
+     --grad-sun e --palette-sunset) no canto inferior direito. Existe por
+     duas razões: dá cor para o vidro da cápsula e do rodapé filtrarem e
+     fecha o ecrã em vez de o deixar num bege liso. É a ÚNICA camada de
+     ambiente — ver a nota sobre --grad-ambient no ficheiro Landing.css.
+     A faixa do meio (34%→46%) continua canvas puro de propósito: sem ela o
+     azul do canto e o quente do resto lavavam-se um no outro.
+     TETO DE CONTRASTE: o gradiente é fixo ao ECRÃ, por isso qualquer linha
+     de texto passa por qualquer ponto dele ao rolar — não há cantos
+     "seguros". Há dois pontos que travam os alfas, um de cada lado:
+     o vértice azul (radial 0,08 + diagonal 0,06, combinados ≈0,135) dá
+     4,64:1, e o canto quente mais carregado (entre o amber a 88% e o
+     terracota a 100%, ≈0,18) dá 4,57:1 — ambos acima de 4,5:1 a
+     --text-secondary, a tinta mais clara autorizada em cima do fundo (ver
+     secção 5 do DESIGN_SYSTEM). Subir um alfa de qualquer um dos dois lados
+     sem refazer essa conta parte o AA. */
   --grad-site:
-    radial-gradient(58% 46% at 100% 100%, rgba(238, 155, 0, 0.1), transparent 74%),
+    radial-gradient(64% 55% at 8% 6%, rgba(0, 95, 115, 0.08), transparent 66%),
     linear-gradient(
-      146deg,
-      rgba(0, 95, 115, 0.14) 0%,
-      rgba(10, 147, 150, 0.17) 13%,
-      rgba(10, 147, 150, 0.15) 30%,
-      rgba(10, 147, 150, 0.06) 43%,
-      rgba(255, 249, 244, 0) 51%,
-      rgba(233, 216, 166, 0.14) 60%,
-      rgba(233, 216, 166, 0.32) 78%,
-      rgba(238, 155, 0, 0.16) 100%
+      150deg,
+      rgba(0, 95, 115, 0.06) 0%,
+      rgba(10, 147, 150, 0.10) 18%,
+      rgba(255, 249, 244, 0) 34%,
+      rgba(233, 216, 166, 0.26) 52%,
+      rgba(238, 155, 0, 0.26) 74%,
+      rgba(202, 103, 2, 0.19) 88%,
+      rgba(187, 62, 3, 0.15) 100%
     );
 
   /* ── Sombras (difusas, de baixa opacidade) ──
