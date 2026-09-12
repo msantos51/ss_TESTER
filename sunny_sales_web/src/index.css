@@ -32,8 +32,13 @@
      duros — a profundidade vem da sombra, não da borda.
    · A navegação não toca as margens: é uma CÁPSULA DE VIDRO
      centrada (--glass + --glass-blur), que encolhe ao rolar.
-     Em telemóvel, essa cápsula dá lugar a uma TAB BAR fixa
-     em baixo — o polegar chega a tudo sem abrir menu.
+     Em telemóvel a cápsula fica com a marca, o atalho do
+     mapa e um BOTÃO DE MENU: os destinos abrem numa folha
+     de vidro por baixo dela.
+   · Por baixo de tudo, em todas as páginas, está um
+     GRADIENTE SUAVE da paleta fixo ao ecrã (--grad-site):
+     mar e sol em cima, maré e espuma no fundo da página.
+     É ele que dá cor para o vidro filtrar.
    · O mapa é ele próprio um painel arredondado; todos os
      controlos (zoom, localizar, vista) flutuam por cima
      em pastilhas de vidro.
@@ -174,14 +179,14 @@
   --surface-hover: #EBE1D7;
   --surface-warm: #FFFCF9;
 
-  /* ── Vidro (cápsula de navegação, tab bar, pastilhas do mapa) ──
-     O vidro precisa de cor por baixo para ler como vidro: daí o ambiente
-     aguarela do hero. Onde o blur não é suportado, --glass-solid entra
-     no lugar através de @supports. */
+  /* ── Vidro (cápsula de navegação, menu de telemóvel, pastilhas do mapa) ──
+     O vidro precisa de cor por baixo para ler como vidro: daí o gradiente do
+     site (--grad-site) e o ambiente aguarela do hero. Onde o blur não é
+     suportado, --glass-solid entra no lugar através de @supports. */
   --glass: rgba(255, 255, 255, 0.72);
   --glass-strong: rgba(255, 255, 255, 0.82);
-  /* Material espesso da tab bar: por baixo dela passa texto a rolar, e a
-     0,82 de opacidade lia-se o texto através da barra. */
+  /* Material espesso da folha do menu: por baixo dela passa o conteúdo da
+     página, e a 0,82 de opacidade lia-se o texto através da folha. */
   --glass-thick: rgba(255, 253, 250, 0.93);
   --glass-solid: #FFFDFB;
   --glass-blur: saturate(180%) blur(18px);
@@ -215,11 +220,27 @@
   --grad-dusk: linear-gradient(135deg, #005F73, #001219);
   /* Blocos de destaque: Sky Blue a descer para a noite (texto branco) */
   --grad-dark: linear-gradient(155deg, #005F73 0%, #00323F 100%);
-  /* Ambiente do hero: a aguarela por baixo do vidro */
+  /* Ambiente do hero: a aguarela por baixo do vidro. Mais diluída desde que
+     o site todo tem o seu próprio gradiente (--grad-site) — as duas camadas
+     somam-se na entrada e, com os valores antigos, a soma ficava turva. */
   --grad-ambient:
-    radial-gradient(46% 58% at 16% 34%, rgba(10, 147, 150, 0.26), transparent 70%),
-    radial-gradient(40% 52% at 78% 14%, rgba(238, 155, 0, 0.22), transparent 72%),
-    radial-gradient(52% 60% at 54% 78%, rgba(0, 95, 115, 0.13), transparent 70%);
+    radial-gradient(46% 58% at 16% 34%, rgba(10, 147, 150, 0.2), transparent 70%),
+    radial-gradient(40% 52% at 78% 14%, rgba(238, 155, 0, 0.16), transparent 72%),
+    radial-gradient(52% 60% at 54% 78%, rgba(0, 95, 115, 0.1), transparent 70%);
+  /* ── Fundo do site ──
+     A mesma aguarela, muito mais diluída e fixa ao ecrã (ver `body::before`):
+     o mar no canto superior esquerdo, o sol no direito e, ao fundo da página,
+     a maré e a espuma. Duas razões para existir: dá cor para o vidro da
+     cápsula filtrar em TODAS as páginas (antes só a entrada a tinha) e fecha
+     o fundo do ecrã em vez de o deixar num bege liso.
+     Os dois focos de baixo estão ancorados nos cantos (4% e 98%) e apagam-se
+     antes do meio: é lá que vive o texto do rodapé, e o rodapé em telemóvel é
+     transparente. */
+  --grad-site:
+    radial-gradient(64% 44% at 6% -8%, rgba(10, 147, 150, 0.12), transparent 66%),
+    radial-gradient(50% 34% at 94% -4%, rgba(238, 155, 0, 0.1), transparent 68%),
+    radial-gradient(52% 38% at 4% 102%, rgba(0, 95, 115, 0.09), transparent 68%),
+    radial-gradient(54% 36% at 98% 100%, rgba(148, 210, 189, 0.22), transparent 70%);
 
   /* ── Sombras (difusas, de baixa opacidade) ──
      Duas camadas: um contacto curto que substitui a borda
@@ -230,7 +251,7 @@
   --shadow-lg: 0 4px 10px -4px rgba(6, 39, 47, 0.08), 0 26px 60px -20px rgba(6, 39, 47, 0.24);
   /* Pastilhas que flutuam sobre o mapa (fundo imprevisível) */
   --shadow-float: 0 1px 2px rgba(6, 39, 47, 0.16), 0 8px 20px -6px rgba(6, 39, 47, 0.26);
-  /* Cápsula de navegação e tab bar: contacto curto + difusão longa,
+  /* Cápsula de navegação e folha do menu: contacto curto + difusão longa,
      mais o anel interior que dá a aresta de vidro. */
   --shadow-glass: 0 1px 1px rgba(6, 39, 47, 0.06), 0 14px 30px -16px rgba(6, 39, 47, 0.4);
   --shadow-warm: var(--shadow-sm);
@@ -303,9 +324,6 @@
   /* Altura reservada para o rodapé fixo. Deve ser >= altura real do footer
      em cada breakpoint para o conteúdo não ficar escondido atrás dele. */
   --footer-h: 46px;
-  /* Tab bar: 0 em desktop (não existe), altura real em telemóvel. Todo o
-     conteúdo que se encosta ao fundo do ecrã reserva esta folga. */
-  --tabbar-h: 0px;
 
   font-family: var(--font-body);
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
@@ -334,6 +352,20 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* O gradiente do site. Fixo ao ecrã (e não à página) por três razões: não
+   estica nem deixa costuras em páginas longas, não depende da altura do
+   conteúdo e o foco de baixo fica sempre no fundo do ecrã. Fica atrás de tudo
+   (z-index: -1, por cima da cor da tela, que é pintada na canvas) e não apanha
+   cliques. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--grad-site);
+  pointer-events: none;
 }
 
 ::selection {
@@ -595,82 +627,36 @@ body {
   outline-offset: 2px;
 }
 
-/* ── Tab bar (telemóvel) ─────────────────────────────
-   Substitui o menu hamburger: os cinco destinos ficam sempre à vista, ao
-   alcance do polegar. Só existe em ≤768px — em desktop os mesmos destinos
-   vivem dentro da cápsula. */
+/* ── Botão de menu (telemóvel) ───────────────────────
+   Só existe em ≤768px, encostado à direita da cápsula: abre a folha com os
+   destinos (ver MobileMenu.css). Em desktop os mesmos destinos vivem dentro
+   da cápsula e este botão não é desenhado.
+   Material igual aos botões-ícone da cápsula, alvo de 44px. */
 
-.tabbar {
+.nav-burger {
   display: none;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1100;
-  /* Altura fixada no token: se a barra crescesse com o conteúdo, o mapa e o
-     rodapé reservariam menos espaço do que ela ocupa e ficariam por baixo. */
-  height: var(--tabbar-h);
-  padding: 8px 6px calc(6px + env(safe-area-inset-bottom, 0px));
-  background: var(--glass-thick);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  border-top: 0.5px solid var(--border-strong);
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .tabbar { background: var(--glass-solid); }
-}
-
-.tab-link {
-  flex: 1;
-  min-width: 0;
-  /* 6 + 30 (pastilha) + 4 + 12 (rótulo) + 6 = 58px de alvo, acima dos 48
-     mínimos, porque é a navegação principal do telemóvel. */
-  padding: 6px 2px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  text-decoration: none;
-  color: var(--text-muted);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: -0.005em;
-  -webkit-tap-highlight-color: transparent;
-  transition: color var(--transition);
-}
-
-.tab-link-pill {
-  display: flex;
   align-items: center;
   justify-content: center;
-  width: 54px;
-  height: 30px;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  min-height: 0;
+  padding: 0;
   border-radius: var(--radius-full);
-  background: transparent;
-  transition: background var(--transition);
+  background: rgba(6, 39, 47, 0.06);
+  color: var(--text-secondary);
+  transition: color var(--transition), background var(--transition);
 }
-
-.tab-link.active {
+.nav-burger:where(:enabled):hover {
+  color: var(--text);
+  background: rgba(6, 39, 47, 0.11);
+}
+/* Aberto: a mesma pastilha de tinte teal que marca o destino ativo — o botão
+   passou a ser o estado "menu aberto" e não apenas uma ação. */
+.nav-burger[aria-expanded='true'],
+.nav-burger[aria-expanded='true']:where(:enabled):hover {
   color: var(--accent-text);
-}
-.tab-link.active .tab-link-pill {
   background: var(--accent-soft);
-}
-.tab-link:active .tab-link-pill {
-  transform: scale(0.94);
-}
-.tab-link:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: -2px;
-  border-radius: var(--radius-control);
-}
-
-.tab-link-label {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* ── Container / Wrapper ─────────────────────────────── */
@@ -685,10 +671,7 @@ body {
   height: 100%;
   max-width: none;
   margin: 0 auto;
-  /* --tabbar-h é 0 em desktop e a altura real da tab bar em telemóvel
-     (já com a safe area lá dentro), por isso nada fica escondido atrás dela. */
-  padding: calc(var(--navbar-h) + var(--gutter)) var(--gutter)
-    calc(var(--footer-h) + var(--tabbar-h));
+  padding: calc(var(--navbar-h) + var(--gutter)) var(--gutter) var(--footer-h);
   background: transparent;
 }
 
@@ -707,14 +690,15 @@ body {
     display: none;
   }
 
-  /* O mapa encosta às margens laterais, mas nunca por baixo da cápsula nem
-     da tab bar: o que flutua sobre o mapa é posicionado dentro desta caixa. */
+  /* O mapa encosta às margens laterais e ao fundo do ecrã, mas nunca por
+     baixo da cápsula: o que flutua sobre o mapa é posicionado dentro desta
+     caixa. */
   .wrapper--map .container {
-    padding: var(--navbar-h) 0 var(--tabbar-h);
+    padding: var(--navbar-h) 0 0;
   }
 
   .wrapper--map .modern-layout {
-    height: calc(100svh - var(--navbar-h) - var(--tabbar-h));
+    height: calc(100svh - var(--navbar-h));
   }
 }
 
@@ -887,13 +871,12 @@ h2 {
 /* ── Responsive ──────────────────────────────────────── */
 
 @media (max-width: 768px) {
-  /* A tab bar passa a existir e todo o conteúdo lhe reserva a folga. O
-     rodapé deixa de ser uma barra fixa (ver .footer-wrapper abaixo), por
-     isso já não reserva altura nenhuma. */
+  /* O rodapé deixa de ser uma barra fixa (ver .footer-wrapper no Footer.css)
+     e passa a fechar a página, por isso já não reserva altura nenhuma. */
   :root {
     --footer-h: 0px;
-    --tabbar-h: calc(76px + env(safe-area-inset-bottom, 0px));
-    /* A cápsula encolhe: em telemóvel só leva a marca e o Instagram. */
+    /* A cápsula encolhe: em telemóvel leva a marca, o atalho do mapa e o
+       botão do menu. */
     --capsule-h: 50px;
     --capsule-h-scrolled: 48px;
     --navbar-h: 72px;
@@ -921,13 +904,15 @@ h2 {
     padding: 6px 12px;
   }
 
-  /* Os destinos deixam a cápsula e passam para a tab bar. */
-  .nav-links {
+  /* Os destinos e o Instagram deixam a cápsula e passam para a folha do
+     menu; fica a marca, o atalho do mapa e o botão que a abre. */
+  .nav-links,
+  .nav-icons {
     display: none;
   }
 
-  .tabbar {
-    display: flex;
+  .nav-burger {
+    display: inline-flex;
   }
 
   .container {
@@ -956,19 +941,20 @@ h2 {
 
 @media (max-width: 375px) {
   .nav-logo { font-size: 0.94rem; }
-  /* Cinco destinos em 375px: o rótulo encolhe antes de o alvo encolher. */
-  .tab-link { font-size: 0.65rem; }
-  .tab-link-pill { width: 46px; }
 }
 
-/* A cápsula e a tab bar já estão afastadas das margens; em ecrãs com
-   recorte lateral (landscape num iPhone) a folga cresce com a safe area. */
-@supports (padding: max(0px)) {
-  @media (max-width: 768px) {
-    .tabbar {
-      padding-left: max(6px, env(safe-area-inset-left));
-      padding-right: max(6px, env(safe-area-inset-right));
-    }
+/* Abaixo de 360px a cápsula não chega para a marca escrita, o atalho do mapa
+   e o botão do menu. Sai o nome — o símbolo identifica a marca e o nome
+   continua no DOM para os leitores de ecrã, senão o link para a entrada
+   ficaria sem nome acessível. */
+@media (max-width: 360px) {
+  .nav-logo-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 

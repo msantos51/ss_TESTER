@@ -1,9 +1,7 @@
 .footer-wrapper {
   position: fixed;
   z-index: 500;
-  /* Em telemóvel o fundo do ecrã é da tab bar: o rodapé assenta em cima
-     dela, nunca por baixo (--tabbar-h é 0 em desktop). */
-  bottom: var(--tabbar-h);
+  bottom: 0;
   left: 0;
   width: 100%;
   overflow: hidden;
@@ -95,17 +93,12 @@
 }
 
 @media (max-width: 768px) {
-  /* Em telemóvel o rodapé deixa de ser barra fixa e passa a fechar a
-     página: 58px de rodapé fixo mais 76px de tab bar gastavam um quinto do
-     ecrã em cromo permanente. A margem inferior afasta-o da tab bar, que
-     continua fixa por cima. */
+  /* Em telemóvel o rodapé deixa de ser barra fixa e passa a fechar a página:
+     58px de barra fixa por cima de um ecrã pequeno eram cromo permanente a
+     roubar conteúdo, e os links do rodapé não são o que se vem cá fazer. */
   .footer-wrapper {
     position: static;
     margin-top: var(--space-xl);
-    /* Folga para a tab bar em PADDING e não em margem: a margem inferior
-       colapsava para fora do .wrapper e o rodapé acabava por baixo da
-       barra, sem forma de rolar até ele. */
-    padding-bottom: var(--tabbar-h);
     background: transparent;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -133,7 +126,12 @@
     font-size: 0.75rem;
   }
 
+  /* Os cinco links em linha pedem ~406px: em qualquer telemóvel a linha saía
+     do ecrã pelos dois lados (o `flex-shrink: 0` não a deixa encolher e o
+     body corta o que passa). Passam a quebrar para a linha seguinte. */
   .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 8px;
     font-size: 0.75rem;
   }

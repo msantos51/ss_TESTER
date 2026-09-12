@@ -12,15 +12,19 @@ vidro** com blur. A profundidade vem da sombra, não de bordas de 1px. São
 cinco camadas:
 
 1. **A tela** — areia `#FFF9F4`, sem fotografias nem texturas;
-2. **O ambiente** — só no hero da entrada: uma aguarela de teal, sol e azul
-   (`--grad-ambient`) por baixo de tudo. É o que dá cor para o vidro filtrar;
-   sem ela, a cápsula de navegação leria como um retângulo branco;
+2. **O gradiente do site** (`--grad-site`, em `body::before`) — uma aguarela
+   muito diluída da paleta, **fixa ao ecrã e presente em todas as páginas**:
+   o mar no canto superior esquerdo, o sol no direito, a maré e a espuma ao
+   fundo. É o que dá cor para o vidro filtrar — sem ela a cápsula de
+   navegação leria como um retângulo branco — e é o que fecha o fundo da
+   página. No hero da entrada soma-se-lhe **o ambiente** (`--grad-ambient`),
+   a mesma aguarela mais densa;
 3. **Painéis brancos** de cantos grandes (`--radius-panel`, 22px) — a barra
    lateral de pesquisa, o mapa, a lista de vendedores, os cartões das páginas
    internas, os blocos das páginas legais;
 4. **Vidro** (`--glass` / `--glass-strong` / `--glass-thick` + `--glass-blur`
-   + `--glass-ring`) — a cápsula de navegação, a tab bar, o rodapé e tudo o
-   que flutua sobre o mapa;
+   + `--glass-ring`) — a cápsula de navegação, a folha do menu de telemóvel,
+   o rodapé e tudo o que flutua sobre o mapa;
 5. **Uma ação principal Sky Blue** por ecrã (`--ink`) — "Ver o mapa agora" na
    entrada, "Aplicar" na folha de filtros, "Enviar" no Contacto.
 
@@ -37,25 +41,29 @@ ilegível em vez de uma barra.
 
 | | Desktop (>768px) | Telemóvel (≤768px) |
 |---|---|---|
-| Forma | **Cápsula de vidro** centrada (`--capsule-max`, 1240px) que flutua a `--gutter` do topo e encolhe ao rolar | Cápsula compacta só com marca e Instagram + **tab bar fixa em baixo** |
-| Destinos | Os cinco links dentro da cápsula + CTA "Abrir mapa" | Os mesmos cinco na tab bar, com ícone e rótulo curto |
-| Item ativo | Pastilha `--accent-soft` com texto `--accent-text` | Pastilha `--accent-soft` + rótulo Sky Blue |
-| Menu escondido | — | **Nenhum.** Não há hamburger: os destinos estão sempre à vista |
+| Forma | **Cápsula de vidro** centrada (`--capsule-max`, 1240px) que flutua a `--gutter` do topo e encolhe ao rolar | A mesma cápsula, compacta: marca + CTA "Abrir mapa" + **botão de menu** |
+| Destinos | Os quatro links dentro da cápsula + CTA "Abrir mapa" | Os mesmos quatro na **folha do menu**, com ícone, mais o Instagram |
+| Item ativo | Pastilha `--accent-soft` com texto `--accent-text` | A mesma pastilha, na linha da folha |
+| Menu escondido | — | **Sim:** folha de vidro por baixo da cápsula (`.nav-burger` → `MobileMenu`) |
 
 A lista de destinos vive num sítio só — `DESTINATIONS` em
-[`src/App.jsx`](src/App.jsx) — e alimenta as duas navegações.
+[`src/App.jsx`](src/App.jsx) — e alimenta as duas navegações. O mapa não está
+lá: tem o seu próprio CTA na cápsula, visível em qualquer largura, porque é a
+razão de ser do site e quem chega por QR code não o deve ir buscar dentro de
+um menu. Abaixo de 360px sai o nome escrito da marca (fica o símbolo; o nome
+continua no DOM, senão o link para a entrada ficava sem nome acessível).
 
-**`--tabbar-h`** é 0 em desktop e a altura real da tab bar (com a safe area
-lá dentro) em telemóvel. Tudo o que se encosta ao fundo do ecrã reserva esta
-folga: o `.container`, a altura do mapa (`.map-area`), o painel de vendedores
-e o rodapé. A tab bar tem `height: var(--tabbar-h)` fixa — se crescesse com o
-conteúdo, o token mentiria e o conteúdo ficaria por baixo dela.
+**A folha do menu** ([`src/components/MobileMenu.jsx`](src/components/MobileMenu.jsx))
+é modal, porque tapa o conteúdo: escurece o fundo, prende o `Tab` lá dentro,
+fecha com `Escape`, com um toque no fundo, ao escolher um destino e ao passar
+a desktop, e devolve sempre o foco ao botão que a abriu. Só é montada quando
+está aberta. Não pode viver dentro da `.navbar`: o `backdrop-filter` do vidro
+faz da cápsula o bloco de referência de tudo o que é `position: fixed` lá
+dentro, e a folha deixaria de se posicionar em relação ao ecrã.
 
 Em telemóvel o rodapé **deixa de ser barra fixa** e passa a fechar a página:
-58px de rodapé fixo mais 76px de tab bar gastavam um quinto do ecrã em cromo
-permanente. A folga para a tab bar é dada em `padding-bottom` e não em
-`margin-bottom` — a margem colapsava para fora do `.wrapper` e o rodapé
-acabava por baixo da barra, sem forma de rolar até ele.
+uma barra fixa de 58px num ecrã pequeno é cromo permanente a roubar conteúdo,
+e os links do rodapé não são o que se vem cá fazer.
 
 ## 1. Paleta
 
@@ -78,10 +86,11 @@ telemóvel ao sol.
 | `--gold-strong` | `#8A5A00` | A variante para usar como **texto** dourado sobre branco (5,9:1). |
 | `--coral` / `--coral-hover` | `#BB3E03` / `#9A3303` | **Só o que é acionável e urgente** (5,58:1 com branco): o botão de localização do mapa e o botão de filtros quando há um filtro ativo. Em mais nenhum sítio. |
 | `--forest` | `#1D5C3A` | **Presença de vendedores** (7,94:1): cor por omissão dos pins do mapa. Não muda com a paleta — é lida contra os tiles, não contra a tela. |
-| `--glass` / `--glass-strong` / `--glass-thick` | `rgba(255,255,255,.72/.82)` / `rgba(255,253,250,.93)` | **Vidro.** `--glass` para a cápsula e o rodapé, `--glass-strong` para o que flutua sobre o mapa, `--glass-thick` para a tab bar (por baixo dela passa texto a rolar). |
+| `--glass` / `--glass-strong` / `--glass-thick` | `rgba(255,255,255,.72/.82)` / `rgba(255,253,250,.93)` | **Vidro.** `--glass` para a cápsula e o rodapé, `--glass-strong` para o que flutua sobre o mapa, `--glass-thick` para a folha do menu (por baixo dela passa o conteúdo da página). |
 | `--glass-blur` / `--glass-ring` / `--glass-solid` | `saturate(180%) blur(18px)` / anel interior branco / `#FFFDFB` | O blur, a aresta de vidro e o **plano B opaco** obrigatório. |
 | `--grad-dark` | gradiente `#005F73 → #00323F` | **Blocos de destaque** (banners/CTAs finais) com texto branco. |
-| `--grad-ambient` | três radiais (teal, sol, azul) | A aguarela por baixo do vidro, só no hero da entrada. |
+| `--grad-site` | quatro radiais (teal, sol, azul, espuma) | **O gradiente do site**, em `body::before`: fixo ao ecrã, em todas as páginas. Alfas de 0,09 a 0,22 — é um ambiente, não uma cor de fundo; os painéis brancos por cima é que levam o texto. Os focos de baixo estão nos cantos e apagam-se antes do meio, onde vive o texto do rodapé. |
+| `--grad-ambient` | três radiais (teal, sol, azul) | A mesma aguarela mais densa, só no hero da entrada, **por cima** de `--grad-site` (soma-se-lhe: por isso é mais diluída do que era). |
 | `--text` | `#06272F` | Títulos e texto principal (15,6:1 sobre a tela). |
 | `--text-secondary` | `#3E6A72` | Parágrafos de apoio (5,7:1). |
 | `--text-muted` | `#55767D` | Legendas, contadores e metadados (4,7:1). |
@@ -95,8 +104,8 @@ como tinte ou superfície, **nunca com texto branco por cima**; Summer Sun =
 "há vendedores ativos agora", sempre como fundo com tinta escura; coral =
 "faz isto agora" (um só visível de cada vez); verde floresta = "há aqui um
 vendedor". Dentro de um bloco Sky Blue o botão inverte para **pílula branca
-com texto Sky Blue**. A cápsula e a tab bar são vidro; a cápsula só fica com
-o vidro mais denso depois de rolar.
+com texto Sky Blue**. A cápsula e a folha do menu são vidro; a cápsula só
+fica com o vidro mais denso depois de rolar.
 
 ## 2. Tipografia
 
@@ -119,8 +128,8 @@ round-trip a um CDN de fontes.
 Títulos com `letter-spacing` negativo (−0.02 a −0.03em); nada em caixa alta.
 Menu de navegação: **caixa normal**, 0.9rem, peso 500, pastilha cinzenta em
 hover; o item ativo é uma pastilha de tinte teal com texto Sky Blue (não um
-sublinhado, e não teal cheio: a 14px isso reprovaria AA). Rótulos da tab bar:
-0.6875rem, peso 600.
+sublinhado, e não teal cheio: a 14px isso reprovaria AA). Linhas da folha do
+menu: `--fs-body`, peso 500 (600 no destino atual), em alvos de 52px.
 
 ## 3. Espaçamento, raios e sombras
 
@@ -156,8 +165,8 @@ sublinhado, e não teal cheio: a 14px isso reprovaria AA). Rótulos da tab bar:
 | Timeline numerada | `.info-timeline` (números em círculos Sky Blue) | `InfoPage.css` |
 | Banner de destaque | `.info-banner` (`--grad-dark`) + `.info-banner-btn` | `InfoPage.css` |
 | Inputs | `.contacto-input/-label/-error` — fundo `--surface-alt`, foco com contorno Sky Blue | `Contacto.css` |
-| Cápsula de navegação | `.navbar` (+ `.navbar--scrolled`) · `.nav-link` · `.nav-cta-map` | `index.css` / `Landing.css` |
-| Tab bar (telemóvel) | `.tabbar` + `.tab-link` / `.tab-link-pill` / `.tab-link-label` | `index.css` |
+| Cápsula de navegação | `.navbar` (+ `.navbar--scrolled`) · `.nav-link` · `.nav-cta-map` · `.nav-burger` | `index.css` / `Landing.css` |
+| Folha do menu (telemóvel) | `.nav-menu` + `.nav-menu-backdrop` / `.nav-menu-link` / `.nav-menu-icon` / `.nav-menu-divider` | `MobileMenu.css` |
 
 Sem imagens decorativas: os heroes das páginas internas são painéis brancos
 apenas com texto e badges; o único `<img>` do layout é o logótipo da navbar
@@ -168,6 +177,9 @@ apenas com texto e badges; o único `<img>` do layout é o logótipo da navbar
 - Foco visível: `outline: 2px solid var(--focus-ring)` (teal escuro `#1078a0`,
   +2px offset) em todos os elementos interativos.
 - Alvos de toque ≥48×48px em mobile (≥44px é o mínimo legal, não o alvo).
+- A folha do menu é um `role="dialog"` com `aria-modal`: o foco entra nela ao
+  abrir, o `Tab` circula lá dentro, `Escape` fecha, o foco volta ao botão (que
+  anuncia o estado em `aria-expanded`) e o `body` não rola por baixo dela.
 - Contraste: o site é usado num telemóvel ao sol, onde o mínimo AA não chega.
   `--text` (15,6:1), `--text-secondary` (5,7:1) e `--text-muted` (4,7:1)
   garantem AA sobre a tela; o Sky Blue `--accent` (#005F73) dá **7,28:1** com
