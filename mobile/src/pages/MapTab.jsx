@@ -4,6 +4,9 @@ import { Geolocation } from '@capacitor/geolocation';
 import { registerPlugin } from '@capacitor/core';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+// Mesmo plugin de rotação do mapa do site: o mapa da app roda com o gesto de
+// dois dedos, como qualquer mapa de telemóvel.
+import 'leaflet-rotate';
 import { BASE_URL, TILE_LAYER, mediaUrl } from '../config.js';
 import { terminateCurrentSession } from '../sessionApi.js';
 import AnimatedMarker from '../components/AnimatedMarker.jsx';
@@ -59,10 +62,12 @@ function formatKm(meters) {
 // O pin do vendedor é o mesmo marcador que o site desenha para a posição do
 // dispositivo: círculo na cor escolhida no perfil, anel branco e seta de
 // direção lá dentro. O halo só pulsa enquanto a partilha está ligada.
+// A seta aponta para o rumo geográfico; como o marcador vive no painel que não
+// roda com o mapa, é o CSS que lhe soma o bearing atual (`--map-bearing`).
 function getVendorLocationHtml(heading, color, sharing) {
   const hasHeading = heading !== null && !isNaN(heading);
   const arrow = hasHeading
-    ? `<svg viewBox="0 0 20 20" width="12" height="12" style="display:block;flex-shrink:0;transform:rotate(${heading}deg);"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="#fff"/></svg>`
+    ? `<svg viewBox="0 0 20 20" width="12" height="12" class="user-location-arrow" style="--pin-heading:${heading.toFixed(1)}deg;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="#fff"/></svg>`
     : '';
   const pinColor = color || DEFAULT_PIN;
   const safeColor = escapeHtml(pinColor);
@@ -78,6 +83,51 @@ function FollowPosition({ position }) {
     if (position) map.setView(position, map.getZoom() < 15 ? 16 : map.getZoom());
   }, [position, map]);
   return null;
+}
+
+// Diferença entre dois rumos, sempre entre 0 e 180 graus.
+function bearingGap(a, b) {
+  const diff = Math.abs(a - b) % 360;
+  return diff > 180 ? 360 - diff : diff;
+}
+
+// Publica o rumo do mapa em CSS (`--map-bearing`) e avisa o ecrã quando ele
+// está torto. A seta do pin vive num painel que não roda com o mapa, por isso
+// é o CSS que lhe soma este valor; escrevê-lo aqui, e não em estado, evita
+// redesenhar o marcador a cada grau do gesto.
+function MapBearingPublisher({ onRotatedChange }) {
+  const map = useMap();
+  useEffect(() => {
+    // No ecrã inteiro e não só no mapa: a variável tem de chegar tanto à seta
+    // do pin (dentro do mapa) como à agulha do botão do norte (no chrome, que
+    // é irmão do mapa).
+    const container = map.getContainer().closest('.map-screen') || map.getContainer();
+    const publish = () => {
+      const bearing = map.getBearing();
+      container.style.setProperty('--map-bearing', `${bearing.toFixed(1)}deg`);
+      onRotatedChange(bearingGap(bearing, 0) > 1);
+    };
+    publish();
+    map.on('rotate', publish);
+    return () => map.off('rotate', publish);
+  }, [map, onRotatedChange]);
+  return null;
+}
+
+// Endireita o mapa para norte, com a mesma suavidade do resto do ecrã.
+function animateToNorth(map) {
+  if (!map) return;
+  const from = map.getBearing();
+  // Pelo caminho mais curto: acima de meia volta é mais perto dar a volta.
+  const to = from > 180 ? 360 : 0;
+  const start = performance.now();
+  const DURATION = 320;
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / DURATION);
+    map.setBearing(from + (to - from) * (1 - (1 - t) ** 3));
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
 // Em browser o Capacitor não implementa `requestPermissions`; nesse caso é o
@@ -103,6 +153,8 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const [elapsed, setElapsed] = useState(0);
   const [distanceM, setDistanceM] = useState(0);
   const [tilesLoaded, setTilesLoaded] = useState(false);
+  const [isRotated, setIsRotated] = useState(false);
+  const mapRef = useRef(null);
   const listenerRef = useRef(null);
   const watchIdRef = useRef(null);
   const lastTrackedRef = useRef(null);
@@ -319,13 +371,28 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
       {/* O mapa ocupa todo o fundo; o resto é sobreposto. */}
       <div className="map-canvas">
         {position && (
-          <MapContainer center={position} zoom={16} className="map-container" zoomControl={false}>
+          /* `rotate` + `touchRotate`: o mesmo gesto de dois dedos faz zoom e
+             roda o mapa, como no site e como em qualquer mapa de telemóvel. O
+             controlo de rotação do plugin fica desligado — quem endireita o
+             mapa é o botão do norte, desenhado como o resto do ecrã. */
+          <MapContainer
+            ref={mapRef}
+            center={position}
+            zoom={16}
+            className="map-container"
+            zoomControl={false}
+            rotate={true}
+            bearing={0}
+            touchRotate={true}
+            rotateControl={false}
+          >
             <TileLayer
               {...TILE_LAYER}
               eventHandlers={{ load: () => setTilesLoaded(true) }}
             />
             <AnimatedMarker position={position} icon={vendorIcon} />
             <FollowPosition position={position} />
+            <MapBearingPublisher onRotatedChange={setIsRotated} />
           </MapContainer>
         )}
         {/* Grelha com brilho a atravessar, como no mapa do site, enquanto
@@ -359,6 +426,23 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
         </div>
 
         <div className="map-bottom">
+          {/* Botão do norte: só aparece com o mapa torto, isto é, depois de o
+              vendedor o ter rodado com os dois dedos. A agulha roda com o
+              mapa, por isso aponta sempre para o norte real. */}
+          {isRotated && (
+            <button
+              type="button"
+              className="map-north-btn"
+              onClick={() => animateToNorth(mapRef.current)}
+              aria-label="Virar o mapa para norte"
+            >
+              <svg className="map-north-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                <polygon points="12,3 8.2,15 12,12.4 15.8,15" fill="var(--site-coral)" />
+                <polygon points="12,21 8.2,15 12,17.6 15.8,15" fill="#9aa5b1" />
+              </svg>
+            </button>
+          )}
+
           {/* GPS ainda por obter: a mesma faixa de estado do site — texto
               branco sobre petróleo, legível num ecrã ao sol. */}
           {!position && !mapError && (

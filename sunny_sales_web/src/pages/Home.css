@@ -1569,6 +1569,10 @@
   .locate-btn .loader { animation-duration: 2s; }
 }
 
+/* Botão do norte: aparece assim que o mapa está torto — pela bússola ou pelos
+   dois dedos do utilizador — e endireita-o. A agulha roda com o mapa, por isso
+   aponta sempre para o norte real: é ela que diz para onde o mapa está virado
+   sem ser preciso ler nada. */
 .compass-btn {
   position: absolute;
   bottom: 74px;
@@ -1596,6 +1600,11 @@
   border-color: var(--primary);
   box-shadow: var(--shadow-warm);
   transform: scale(1.06);
+}
+
+.compass-btn .compass-icon {
+  display: block;
+  transform: rotate(var(--map-bearing, 0deg));
 }
 
 /* ── Client / user location pin ───────────────────────── */
@@ -1671,6 +1680,17 @@
   background: rgba(43, 124, 109, 0.2);
   animation: user-pulse 2s ease-out infinite;
   pointer-events: none;
+}
+
+/* A seta aponta para o rumo do utilizador, mas o marcador vive no painel que
+   não roda com o mapa: o ângulo no ecrã é o rumo mais o bearing do mapa, que
+   o MapRotationController publica em `--map-bearing`. Com o mapa a seguir a
+   bússola as duas parcelas anulam-se e a seta fica a apontar para cima, como
+   sempre esteve. */
+.user-location-arrow {
+  display: block;
+  flex-shrink: 0;
+  transform: rotate(calc(var(--pin-heading, 0deg) + var(--map-bearing, 0deg)));
 }
 
 /* A cor mantém-se: #1078a0 dá 4,98:1 e já passava AA. Cresce apenas para não
@@ -2227,6 +2247,15 @@
 
 .locate-btn:hover {
   background: var(--coral-hover);
+}
+
+/* O norte fica ao lado do botão de localizar, na mesma linha: são o par que
+   desfaz o que os dedos fizeram ao mapa — um endireita-o, o outro recentra-o.
+   À esquerda e não por cima porque a coluna acima já é do zoom. */
+.compass-btn {
+  bottom: 30px;
+  right: 88px;
+  box-shadow: 0 0 0 2px #fff, var(--shadow-float);
 }
 
 /* --- Telemóvel: mapa a ecrã cheio, painéis por cima --- */

@@ -24,7 +24,7 @@ O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma a
 | Mapa interativo em tempo real | Pins dos vendedores ativos com cores personalizadas, atualizados via WebSocket |
 | Localização própria | GPS do dispositivo com seta de direção baseada na bússola |
 | Filtros | Por tipo de produto (Bolas de Berlim, Gelados, Acessórios de Praia) e por distância (500 m a 5 km) |
-| Mapa rotativo | O mapa roda com a orientação do dispositivo (iOS 13+ e Android) |
+| Mapa rotativo | Roda com dois dedos no telemóvel (ou shift + roda do rato no computador) e, sem ninguém lhe tocar, segue a orientação do dispositivo (iOS 13+ e Android). O botão do norte endireita-o |
 | Perfil do vendedor | Foto, produto, e stories efémeros (fotos/vídeos com expiração) |
 | Páginas informativas | Sobre o projeto, Sustentabilidade, Implementação para municípios |
 | Páginas legais | Privacidade, Termos, Aviso Legal, Cookies e gestão da conta de vendedor (`/eliminar-conta`) |
@@ -78,8 +78,8 @@ ss_TESTER/
 |---|---|
 | Backend | FastAPI, SQLAlchemy, PostgreSQL / SQLite, JWT, bcrypt, Stripe, WebSocket |
 | Web frontend | React 19, Vite, React Router, Leaflet + react-leaflet, Recharts, Axios |
-| Mobile | Capacitor 7 (Android), React 18, Vite, Leaflet, @capacitor/geolocation |
-| Mapas | Leaflet com tiles CARTO, leaflet-rotate (bússola), Haversine (distâncias) |
+| Mobile | Capacitor 7 (Android), React 18, Vite, Leaflet + leaflet-rotate, @capacitor/geolocation |
+| Mapas | Leaflet com tiles CARTO, leaflet-rotate (rotação com dois dedos e pela bússola, no site e na app), Haversine (distâncias) |
 | Pagamentos | Stripe Checkout + Webhooks, semanas pagas com recibos |
 | Autenticação | JWT Bearer tokens, gestão de sessões multi-dispositivo |
 | Tempo real | WebSocket `/ws/locations` para atualizações de posição |
