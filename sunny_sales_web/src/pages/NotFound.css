@@ -12,6 +12,9 @@
   animation: fadeInUp 0.45s var(--ease-out);
 }
 
+/* O "404" é areia molhada a secar ao sol: pintado com o gradiente e
+   recortado no texto. É decoração — quem lê a página lê o título e o
+   parágrafo por baixo, ambos em --text sobre a tela. */
 .notfound-code {
   font-family: var(--font-display);
   font-size: clamp(4rem, 11vw, 6rem);
@@ -20,6 +23,10 @@
   line-height: 1;
   margin: 0 0 10px;
   color: var(--canvas-deep);
+  background: linear-gradient(150deg, var(--canvas-deep) 0%, #F6D9A8 55%, #CFE9EF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .notfound-title {

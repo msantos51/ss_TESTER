@@ -1,4 +1,6 @@
 /* ── Form wrapper ──────────────────────────────────────── */
+/* Painel branco com o mesmo fio de sol dos heroes das páginas
+   internas; os campos continuam a ler-se contra branco. */
 .contacto-form-wrap {
   position: relative;
   overflow: hidden;
@@ -9,8 +11,15 @@
   box-shadow: var(--shadow-sm);
   margin-bottom: 2rem;
 }
+/* 3px e não 4px: nesta página o hero por cima já leva o fio grosso,
+   e dois traços iguais seguidos lê-se como uma repetição por engano. */
 .contacto-form-wrap::before {
-  display: none;
+  content: '';
+  display: block;
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--grad-sun);
 }
 
 .contacto-form {
@@ -185,7 +194,9 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  background: var(--surface);
+  background:
+    radial-gradient(100% 120% at 50% 0%, rgba(255, 194, 74, 0.18) 0%, rgba(255, 194, 74, 0) 60%),
+    var(--surface);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-sm);
   padding: 64px 24px;
