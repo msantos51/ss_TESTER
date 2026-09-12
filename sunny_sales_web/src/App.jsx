@@ -7,12 +7,13 @@ import {
   Navigate,
   useLocation,
 } from 'react-router-dom';
-import { FiMapPin, FiSun, FiInfo, FiHelpCircle, FiMail } from 'react-icons/fi';
+import { FiSun, FiInfo, FiHelpCircle, FiMail, FiMenu, FiX } from 'react-icons/fi';
 import { FaInstagram } from 'react-icons/fa';
-import { lazy, Suspense, useState, useEffect } from 'react';
+import { lazy, Suspense, useCallback, useState, useEffect } from 'react';
 import Landing from './pages/Landing';
 import BackHomeButton from './components/BackHomeButton';
 import Footer from './components/Footer';
+import MobileMenu from './components/MobileMenu';
 import ScrollToTop from './components/ScrollToTop';
 import PageMeta from './components/PageMeta';
 import LoadingDots from './components/LoadingDots';
@@ -43,15 +44,15 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 // própria.
 const HIDE_BACK_ROUTES = ['/', '/mapa'];
 
-// Os destinos do site. Em desktop vivem dentro da cápsula de vidro; em
-// telemóvel são a tab bar fixa em baixo — a mesma lista, sem menu escondido.
-// O ícone só é usado na tab bar (na cápsula o rótulo chega).
+// Os destinos do site, numa lista só: em desktop vivem dentro da cápsula de
+// vidro, em telemóvel na folha do menu hamburger. O mapa não está aqui porque
+// tem o seu próprio CTA na cápsula, visível em qualquer largura. O ícone só é
+// usado na folha do menu (na cápsula o rótulo chega).
 const DESTINATIONS = [
-  { to: '/mapa', label: 'Mapa', short: 'Mapa', Icon: FiMapPin },
-  { to: '/sustentabilidade', label: 'Praia Sustentável', short: 'Praia', Icon: FiSun },
-  { to: '/sobre-projeto', label: 'Sobre o Projeto', short: 'Projeto', Icon: FiInfo },
-  { to: '/faqs', label: 'FAQs', short: 'FAQs', Icon: FiHelpCircle },
-  { to: '/contacto', label: 'Contacto', short: 'Contacto', Icon: FiMail },
+  { to: '/sustentabilidade', label: 'Praia Sustentável', Icon: FiSun },
+  { to: '/sobre-projeto', label: 'Sobre o Projeto', Icon: FiInfo },
+  { to: '/faqs', label: 'FAQs', Icon: FiHelpCircle },
+  { to: '/contacto', label: 'Contacto', Icon: FiMail },
 ];
 
 function PageLoader() {
@@ -75,9 +76,28 @@ export default function App() {
 function AppLayout() {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   // Revelação suave dos elementos .reveal ao entrarem no ecrã.
   useScrollReveal();
+
+  // O menu de telemóvel não sobrevive a uma mudança de página: os links já o
+  // fecham, isto cobre a navegação pelo histórico (o botão "voltar").
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  // Em desktop o botão do menu não existe; se o ecrã crescer com o menu
+  // aberto, a folha ficava presa e o scroll da página bloqueado.
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 769px)');
+    const onChange = (event) => {
+      if (event.matches) setMenuOpen(false);
+    };
+    desktop.addEventListener('change', onChange);
+    return () => desktop.removeEventListener('change', onChange);
+  }, []);
 
   // A cápsula de vidro fica mais densa assim que há conteúdo a correr
   // por baixo dela.
@@ -125,14 +145,15 @@ function AppLayout() {
             height="34"
             className="nav-logo-img"
           />
-          Sunny Sales
+          {/* Em ecrãs muito estreitos o nome sai de vista (mas não do DOM:
+              é o nome acessível deste link) — ver index.css. */}
+          <span className="nav-logo-text">Sunny Sales</span>
         </Link>
 
         {/* Em desktop os destinos vivem aqui dentro; em telemóvel esta lista
-            sai e os mesmos destinos aparecem na tab bar. O mapa fica de fora
-            porque é o CTA cheio à direita. */}
+            sai e os mesmos destinos aparecem na folha do menu. */}
         <div className="nav-links">
-          {DESTINATIONS.filter((d) => d.to !== '/mapa').map(({ to, label }) => (
+          {DESTINATIONS.map(({ to, label }) => (
             <NavLink
               key={to}
               className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
@@ -148,6 +169,7 @@ function AppLayout() {
           Abrir mapa
         </Link>
 
+        {/* Em telemóvel o Instagram passa para a folha do menu (index.css). */}
         <div className="nav-icons">
           <a
             href="https://www.instagram.com/sunny.sales_official/"
@@ -159,7 +181,32 @@ function AppLayout() {
             <FaInstagram size={18} />
           </a>
         </div>
+
+        {/* Só existe em telemóvel (≤768px): abre a folha com os destinos. */}
+        <button
+          type="button"
+          className="nav-burger"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+          aria-expanded={menuOpen}
+          aria-controls="nav-menu"
+        >
+          {menuOpen ? (
+            <FiX size={22} aria-hidden="true" />
+          ) : (
+            <FiMenu size={22} aria-hidden="true" />
+          )}
+        </button>
       </nav>
+
+      {/* A folha não pode viver dentro da cápsula: o backdrop-filter do vidro
+          faz dela o bloco de referência de tudo o que é `position: fixed` lá
+          dentro, e a folha deixaria de se posicionar em relação ao ecrã. */}
+      <MobileMenu
+        open={menuOpen}
+        destinations={DESTINATIONS}
+        onClose={closeMenu}
+      />
 
       <div className="container" role="main" id="conteudo" tabIndex={-1}>
         {!HIDE_BACK_ROUTES.includes(location.pathname) && <BackHomeButton />}
@@ -188,23 +235,6 @@ function AppLayout() {
       {/* Em /mapa o mapa é ecrã cheio: o rodapé sairia de qualquer forma em
           telemóvel e em desktop só roubava altura ao mapa. */}
       {!isMapRoute && <Footer />}
-
-      {/* Tab bar: só existe em ≤768px (o CSS trata disso), e está sempre
-          presente — incluindo sobre o mapa, que lhe reserva a altura. */}
-      <nav className="tabbar" aria-label="Navegação principal">
-        {DESTINATIONS.map((dest) => (
-          <NavLink
-            key={dest.to}
-            to={dest.to}
-            className={({ isActive }) => `tab-link${isActive ? ' active' : ''}`}
-          >
-            <span className="tab-link-pill">
-              <dest.Icon size={21} aria-hidden="true" />
-            </span>
-            <span className="tab-link-label">{dest.short}</span>
-          </NavLink>
-        ))}
-      </nav>
     </div>
   );
 }

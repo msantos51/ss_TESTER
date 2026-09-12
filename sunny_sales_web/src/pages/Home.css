@@ -9,9 +9,9 @@
    coladas às arestas: o fundo por baixo é imprevisível.
 
    Em telemóvel os painéis laterais saem: o mapa vai da
-   cápsula de navegação até ao topo da tab bar (--tabbar-h),
-   os filtros passam para uma folha inferior e a lista de
-   vendedores para um painel que desliza por cima do mapa.
+   cápsula de navegação até ao fundo do ecrã, os filtros
+   passam para uma folha inferior e a lista de vendedores
+   para um painel que desliza por cima do mapa.
    ══════════════════════════════════════════════════════════ */
 
 .home {
@@ -1887,7 +1887,7 @@
 .map-area {
   position: relative;
   height: 100%;
-  min-height: max(560px, calc(100svh - var(--navbar-h) - var(--tabbar-h) - var(--gutter) * 3));
+  min-height: max(560px, calc(100svh - var(--navbar-h) - var(--gutter) * 3));
   border-radius: var(--radius-panel);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -2298,18 +2298,17 @@
   }
 
   .map-area {
-    /* O mapa vai de baixo da cápsula até ao topo da tab bar. Tudo o que
-       flutua sobre ele (localizar, bússola, filtros, cartão) é posicionado
-       dentro desta caixa, por isso nada fica escondido pela tab bar. */
-    min-height: calc(100svh - var(--navbar-h) - var(--tabbar-h));
+    /* O mapa vai de baixo da cápsula até ao fundo do ecrã. Tudo o que flutua
+       sobre ele (localizar, bússola, filtros, cartão) é posicionado dentro
+       desta caixa. */
+    min-height: calc(100svh - var(--navbar-h));
     border-radius: 0;
   }
 
   .sidebar-right {
     position: fixed;
     z-index: 800;
-    /* Fixa ao viewport: aqui a folga da tab bar tem de ser explícita. */
-    inset: auto 0 var(--tabbar-h) 0;
+    inset: auto 0 0 0;
     max-width: none;
     max-height: 62vh;
   }
@@ -2317,6 +2316,24 @@
   .vendors-panel {
     border-radius: var(--radius-panel) var(--radius-panel) 0 0;
     box-shadow: var(--shadow-float);
+    /* O painel encosta ao fundo do ecrã: a última linha da lista não pode
+       ficar debaixo do indicador de home do iPhone. */
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* O mapa passou a ir até ao fundo do ecrã (antes havia 76px de tab bar a
+     proteger esta franja), por isso o que flutua em baixo sobe o que a safe
+     area lhe tira. */
+  .locate-btn {
+    bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .compass-btn {
+    bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .filter-fab {
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   }
 
   .vendor-card {
@@ -2326,7 +2343,7 @@
     /* Acima do FAB "Filtros" e do botão de localizar, que em telemóvel
        ficariam por cima do cartão. */
     bottom: 92px;
-    max-height: calc(100svh - var(--navbar-h) - var(--tabbar-h) - 116px);
+    max-height: calc(100svh - var(--navbar-h) - 116px);
     overflow-y: auto;
     overscroll-behavior: contain;
   }

@@ -372,11 +372,16 @@
   animation: landing-blink 1.8s ease-in-out infinite;
 }
 
-/* Em telemóvel o mapa é o primeiro separador da tab bar, por isso o CTA
-   sai da cápsula e deixa lá só a marca e o Instagram. */
+/* Em telemóvel o CTA fica — o mapa é a razão de ser do site e quem chega por
+   QR code não o deve ir buscar dentro de um menu. Só encolhe e é ele que
+   empurra o botão do menu para a direita da cápsula. */
 @media (max-width: 768px) {
   .nav-cta-map {
-    display: none;
+    margin-left: auto;
+    min-height: 38px;
+    padding: 8px 14px;
+    gap: 7px;
+    font-size: 0.8125rem;
   }
 }
 
