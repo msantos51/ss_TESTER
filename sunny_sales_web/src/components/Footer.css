@@ -33,7 +33,10 @@
   justify-content: center;
   gap: 8px;
   flex: 1;
-  color: var(--text-muted, #9ca3af);
+  /* O rodapé é vidro e por baixo dele passa o canto do sol do gradiente do
+     site — em telemóvel deixa mesmo de ser barra fixa e fecha a página. A
+     --text-muted, a 13px, isso ficava em 4,3:1. */
+  color: var(--text-secondary);
   font-family: var(--font-body);
   font-weight: 400;
   font-size: 0.8125rem;

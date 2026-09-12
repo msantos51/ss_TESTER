@@ -12,13 +12,14 @@ vidro** com blur. A profundidade vem da sombra, não de bordas de 1px. São
 cinco camadas:
 
 1. **A tela** — areia `#FFF9F4`, sem fotografias nem texturas;
-2. **O gradiente do site** (`--grad-site`, em `body::before`) — uma aguarela
-   muito diluída da paleta, **fixa ao ecrã e presente em todas as páginas**:
-   o mar no canto superior esquerdo, o sol no direito, a maré e a espuma ao
-   fundo. É o que dá cor para o vidro filtrar — sem ela a cápsula de
-   navegação leria como um retângulo branco — e é o que fecha o fundo da
-   página. No hero da entrada soma-se-lhe **o ambiente** (`--grad-ambient`),
-   a mesma aguarela mais densa;
+2. **O gradiente do site** (`--grad-site`, em `body::before`) — a **diagonal
+   mar → sol**, com as quatro cores da paleta pela ordem em que se veem na
+   praia: Sky Blue no vértice superior esquerdo, Teal Ocean a abrir, a tela de
+   areia a atravessar o meio, a duna e o Summer Sun a fechar o canto inferior
+   direito. Está **fixa ao ecrã e presente em todas as páginas**. É o que dá
+   cor para o vidro filtrar — sem ela a cápsula de navegação leria como um
+   retângulo branco — e é o que fecha o fundo da página. **É a única camada de
+   ambiente:** o hero da entrada não tem outra por cima (ver 1.1);
 3. **Painéis brancos** de cantos grandes (`--radius-panel`, 22px) — a barra
    lateral de pesquisa, o mapa, a lista de vendedores, os cartões das páginas
    internas, os blocos das páginas legais;
@@ -89,8 +90,7 @@ telemóvel ao sol.
 | `--glass` / `--glass-strong` / `--glass-thick` | `rgba(255,255,255,.72/.82)` / `rgba(255,253,250,.93)` | **Vidro.** `--glass` para a cápsula e o rodapé, `--glass-strong` para o que flutua sobre o mapa, `--glass-thick` para a folha do menu (por baixo dela passa o conteúdo da página). |
 | `--glass-blur` / `--glass-ring` / `--glass-solid` | `saturate(180%) blur(18px)` / anel interior branco / `#FFFDFB` | O blur, a aresta de vidro e o **plano B opaco** obrigatório. |
 | `--grad-dark` | gradiente `#005F73 → #00323F` | **Blocos de destaque** (banners/CTAs finais) com texto branco. |
-| `--grad-site` | quatro radiais (teal, sol, azul, espuma) | **O gradiente do site**, em `body::before`: fixo ao ecrã, em todas as páginas. Alfas de 0,09 a 0,22 — é um ambiente, não uma cor de fundo; os painéis brancos por cima é que levam o texto. Os focos de baixo estão nos cantos e apagam-se antes do meio, onde vive o texto do rodapé. |
-| `--grad-ambient` | três radiais (teal, sol, azul) | A mesma aguarela mais densa, só no hero da entrada, **por cima** de `--grad-site` (soma-se-lhe: por isso é mais diluída do que era). |
+| `--grad-site` | diagonal a 146° (Sky Blue → Teal Ocean → areia → duna → Summer Sun) + um foco de sol no canto | **O gradiente do site**, em `body::before`: fixo ao ecrã, em todas as páginas. Alfas de 0,06 a 0,32, travados pelo teto de contraste da secção 5. A faixa do meio (46%→58%) é areia lisa: é o descanso entre o azul e o amarelo. |
 | `--text` | `#06272F` | Títulos e texto principal (15,6:1 sobre a tela). |
 | `--text-secondary` | `#3E6A72` | Parágrafos de apoio (5,7:1). |
 | `--text-muted` | `#55767D` | Legendas, contadores e metadados (4,7:1). |
@@ -106,6 +106,23 @@ como tinte ou superfície, **nunca com texto branco por cima**; Summer Sun =
 vendedor". Dentro de um bloco Sky Blue o botão inverte para **pílula branca
 com texto Sky Blue**. A cápsula e a folha do menu são vidro; a cápsula só
 fica com o vidro mais denso depois de rolar.
+
+## 1.1. Tinta em cima do gradiente
+
+O gradiente é fixo ao **ecrã**, não à página: ao rolar, qualquer linha de texto
+passa por qualquer ponto dele. Não há cantos seguros, e por isso há duas regras
+que andam juntas:
+
+- **A tinta mais clara autorizada em cima do fundo é `--text-secondary`.**
+  `--text-muted` só é AA sobre a tela lisa — em cima do azul cai para 3,6:1.
+  Continua a ser a tinta das legendas **dentro dos painéis brancos**, que é
+  onde vive quase todo o texto pequeno do site. As duas exceções que assentam
+  direto no fundo — as legendas das estatísticas da entrada e a mensagem do
+  rodapé — usam `--text-secondary`.
+- **Os alfas de `--grad-site` têm um teto.** Estão travados onde o ponto mais
+  carregado (azul a 0,17 num vértice, sol a 0,24 no oposto) ainda dá ≥4,5:1 a
+  `--text-secondary`. Subir um alfa sem refazer essa conta parte o AA em todas
+  as páginas ao mesmo tempo.
 
 ## 2. Tipografia
 
@@ -182,7 +199,9 @@ apenas com texto e badges; o único `<img>` do layout é o logótipo da navbar
   anuncia o estado em `aria-expanded`) e o `body` não rola por baixo dela.
 - Contraste: o site é usado num telemóvel ao sol, onde o mínimo AA não chega.
   `--text` (15,6:1), `--text-secondary` (5,7:1) e `--text-muted` (4,7:1)
-  garantem AA sobre a tela; o Sky Blue `--accent` (#005F73) dá **7,28:1** com
+  garantem AA sobre a tela — mas sobre o **gradiente** já não: ver a regra da
+  tinta em 1.1, que é a que fixa o teto dos alfas de `--grad-site`;
+  o Sky Blue `--accent` (#005F73) dá **7,28:1** com
   texto branco, o verde floresta **7,94:1** e o coral **5,58:1**.
   **O Teal Ocean (#0A9396) dá 3,7:1**: serve para superfícies, ícones e texto
   grande, nunca para corpo — como texto usa-se `--teal-text`. **O Summer Sun

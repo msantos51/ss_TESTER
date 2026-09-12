@@ -35,10 +35,11 @@
      Em telemóvel a cápsula fica com a marca, o atalho do
      mapa e um BOTÃO DE MENU: os destinos abrem numa folha
      de vidro por baixo dela.
-   · Por baixo de tudo, em todas as páginas, está um
-     GRADIENTE SUAVE da paleta fixo ao ecrã (--grad-site):
-     mar e sol em cima, maré e espuma no fundo da página.
-     É ele que dá cor para o vidro filtrar.
+   · Por baixo de tudo, em todas as páginas, está a
+     DIAGONAL MAR → SOL fixa ao ecrã (--grad-site): azul
+     no canto superior esquerdo, areia a atravessar o meio,
+     amarelo no canto inferior direito. É a cor do fundo do
+     site e é ela que dá cor para o vidro filtrar.
    · O mapa é ele próprio um painel arredondado; todos os
      controlos (zoom, localizar, vista) flutuam por cima
      em pastilhas de vidro.
@@ -220,27 +221,38 @@
   --grad-dusk: linear-gradient(135deg, #005F73, #001219);
   /* Blocos de destaque: Sky Blue a descer para a noite (texto branco) */
   --grad-dark: linear-gradient(155deg, #005F73 0%, #00323F 100%);
-  /* Ambiente do hero: a aguarela por baixo do vidro. Mais diluída desde que
-     o site todo tem o seu próprio gradiente (--grad-site) — as duas camadas
-     somam-se na entrada e, com os valores antigos, a soma ficava turva. */
-  --grad-ambient:
-    radial-gradient(46% 58% at 16% 34%, rgba(10, 147, 150, 0.2), transparent 70%),
-    radial-gradient(40% 52% at 78% 14%, rgba(238, 155, 0, 0.16), transparent 72%),
-    radial-gradient(52% 60% at 54% 78%, rgba(0, 95, 115, 0.1), transparent 70%);
-  /* ── Fundo do site ──
-     A mesma aguarela, muito mais diluída e fixa ao ecrã (ver `body::before`):
-     o mar no canto superior esquerdo, o sol no direito e, ao fundo da página,
-     a maré e a espuma. Duas razões para existir: dá cor para o vidro da
-     cápsula filtrar em TODAS as páginas (antes só a entrada a tinha) e fecha
-     o fundo do ecrã em vez de o deixar num bege liso.
-     Os dois focos de baixo estão ancorados nos cantos (4% e 98%) e apagam-se
-     antes do meio: é lá que vive o texto do rodapé, e o rodapé em telemóvel é
-     transparente. */
+  /* ── Fundo do site: a diagonal MAR → SOL ──
+     Fixa ao ecrã (ver `body::before`) e presente em todas as páginas. É uma
+     só ideia, lida na diagonal, com as quatro cores da paleta pela ordem em
+     que se veem na praia: Sky Blue no vértice superior esquerdo, Teal Ocean a
+     abrir, a tela de areia a atravessar o meio, a duna e o Summer Sun a
+     fechar o canto inferior direito. Existe por duas razões: dá cor para o
+     vidro da cápsula e do rodapé filtrarem e fecha o ecrã em vez de o deixar
+     num bege liso. É a ÚNICA camada de ambiente: o hero da entrada tinha a
+     sua (--grad-ambient) e, somadas, davam uma mancha turva por baixo do
+     texto do hero — precisamente onde o lead e as legendas assentam direto no
+     fundo. Uma ideia, uma camada.
+     A faixa do meio (46%→58%) é canvas puro de propósito: é o descanso entre
+     o azul e o amarelo, sem o qual os dois lavariam um no outro.
+     TETO DE CONTRASTE: o gradiente é fixo ao ECRÃ, por isso qualquer linha de
+     texto passa por qualquer ponto dele ao rolar — não há cantos "seguros".
+     Os alfas estão travados onde o ponto mais carregado (azul a 0,17 no
+     vértice, sol a 0,24 no oposto) ainda dá ≥4,5:1 a --text-secondary, que é
+     a tinta mais clara autorizada em cima do fundo (ver secção 5 do
+     DESIGN_SYSTEM). Subir um alfa sem refazer essa conta parte o AA. */
   --grad-site:
-    radial-gradient(64% 44% at 6% -8%, rgba(10, 147, 150, 0.12), transparent 66%),
-    radial-gradient(50% 34% at 94% -4%, rgba(238, 155, 0, 0.1), transparent 68%),
-    radial-gradient(52% 38% at 4% 102%, rgba(0, 95, 115, 0.09), transparent 68%),
-    radial-gradient(54% 36% at 98% 100%, rgba(148, 210, 189, 0.22), transparent 70%);
+    radial-gradient(58% 46% at 100% 100%, rgba(238, 155, 0, 0.1), transparent 74%),
+    linear-gradient(
+      146deg,
+      rgba(0, 95, 115, 0.14) 0%,
+      rgba(10, 147, 150, 0.17) 13%,
+      rgba(10, 147, 150, 0.15) 30%,
+      rgba(10, 147, 150, 0.06) 43%,
+      rgba(255, 249, 244, 0) 51%,
+      rgba(233, 216, 166, 0.14) 60%,
+      rgba(233, 216, 166, 0.32) 78%,
+      rgba(238, 155, 0, 0.16) 100%
+    );
 
   /* ── Sombras (difusas, de baixa opacidade) ──
      Duas camadas: um contacto curto que substitui a borda
