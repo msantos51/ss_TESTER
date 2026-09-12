@@ -1,16 +1,17 @@
 /* ══════════════════════════════════════════════════════════
-   Sunny Sales — Home "Painéis sobre a tela"
+   Sunny Sales — Mapa "Painéis sobre a tela"
 
-   A página inicial é uma aplicação de mapa: três painéis
-   brancos arredondados a flutuar sobre a tela cinzenta —
+   O ecrã do mapa é uma aplicação: três painéis brancos
+   arredondados a flutuar sobre a tela cor de areia —
    pesquisa à esquerda, mapa ao centro, vendedores à direita.
    Todos os controlos do mapa flutuam por cima dele em
-   pastilhas brancas com sombra (nunca colados às arestas).
+   pastilhas de VIDRO (--glass-strong + --glass-blur), nunca
+   coladas às arestas: o fundo por baixo é imprevisível.
 
-   Em telemóvel os painéis laterais saem: o mapa fica
-   ao ecrã inteiro, os filtros passam para uma folha
-   inferior e a lista de vendedores para um painel que
-   desliza por cima do mapa.
+   Em telemóvel os painéis laterais saem: o mapa vai da
+   cápsula de navegação até ao topo da tab bar (--tabbar-h),
+   os filtros passam para uma folha inferior e a lista de
+   vendedores para um painel que desliza por cima do mapa.
    ══════════════════════════════════════════════════════════ */
 
 .home {
@@ -183,7 +184,7 @@
   box-shadow: var(--shadow-md);
 }
 .home-final .hero-pill-primary:hover {
-  background: #eef4f2;
+  background: var(--surface-warm);
 }
 
 /* ═══════════════ RESPONSIVE ═══════════════ */
@@ -306,7 +307,7 @@
   margin: 0;
   padding: 16px 20px;
   border-radius: var(--radius-lg);
-  background: rgba(18, 25, 31, 0.9);
+  background: rgba(6, 39, 47, 0.92);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   color: #fbfcfc;
@@ -338,7 +339,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e6e9ee;
+  background-color: #EFE7DA;
   background-image:
     linear-gradient(to right, rgba(15, 15, 15, 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(15, 15, 15, 0.04) 1px, transparent 1px);
@@ -414,8 +415,8 @@
 }
 
 .leaflet-container {
-  background: #e6e9ee;
-  font-family: 'Inter', 'Roboto', sans-serif;
+  background: #EFE7DA;
+  font-family: var(--font-body);
 }
 
 .leaflet-control-attribution {
@@ -872,6 +873,8 @@
 
 /* ── Barra de vista (Mapa / Lista) ────────────────────── */
 
+/* Tudo o que flutua sobre o mapa é vidro: o fundo por baixo é imprevisível,
+   por isso leva blur, anel interior claro e sombra de contacto. */
 .map-toolbar {
   position: absolute;
   top: 14px;
@@ -880,9 +883,15 @@
   display: flex;
   gap: 2px;
   padding: 4px;
-  background: var(--surface);
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   border-radius: var(--radius-full);
-  box-shadow: var(--shadow-float);
+  box-shadow: var(--glass-ring), var(--shadow-float);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .map-toolbar { background: var(--surface); }
 }
 
 .map-toolbar-btn {
@@ -942,7 +951,9 @@
 
 .map-container .leaflet-control-zoom-in,
 .map-container .leaflet-control-zoom-out {
-  background: var(--surface) !important;
+  background: var(--glass-strong) !important;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   color: var(--text) !important;
   border: none !important;
   width: 44px !important;
@@ -973,7 +984,7 @@
 
 .map-container .leaflet-control-zoom-in:hover,
 .map-container .leaflet-control-zoom-out:hover {
-  background: var(--surface-alt) !important;
+  background: #fff !important;
   color: var(--accent) !important;
 }
 
@@ -1323,12 +1334,20 @@
   transform: translate(-50%, -50%);
   width: 244px;
   padding: 22px 20px 18px;
-  background: var(--surface);
+  /* Folha de vidro, como a da app Mapas: deixa ver que há mapa por baixo
+     sem perder legibilidade. */
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   border: none;
   border-radius: var(--radius-panel);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--glass-ring), var(--shadow-lg);
   animation: fadeSlide 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   text-align: center;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .vendor-card { background: var(--surface); }
 }
 
 @keyframes fadeSlide {
@@ -1861,13 +1880,14 @@
 }
 
 /* Sem altura fixa no `.modern-layout`, o mapa precisa de um mínimo próprio,
-   senão os painéis encolhem para o conteúdo e sobra tela morta por baixo. O
-   mínimo é o ecrã menos a navbar e as duas goteiras — o mesmo que a altura
-   calculada dava, mas sem impedir a coluna de crescer. */
+   senão os painéis encolhem para o conteúdo e sobra tela morta por baixo.
+   São três goteiras: a do topo (dentro do padding do container) e as duas do
+   `.modern-layout`. Com duas, a página passava do ecrã por 16px e ganhava
+   uma barra de scroll que não servia para nada. */
 .map-area {
   position: relative;
   height: 100%;
-  min-height: max(560px, calc(100svh - var(--navbar-h) - var(--gutter) * 2));
+  min-height: max(560px, calc(100svh - var(--navbar-h) - var(--tabbar-h) - var(--gutter) * 3));
   border-radius: var(--radius-panel);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -1917,15 +1937,17 @@
   gap: 4px;
   padding: 4px;
   border-radius: var(--radius-full);
-  background: var(--surface);
-  box-shadow: var(--shadow-float);
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-ring), var(--shadow-float);
 }
 
 .map-toolbar-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 40px;
+  min-height: 44px;
   padding: 9px 16px;
   border: 0;
   border-radius: var(--radius-full);
@@ -2276,14 +2298,18 @@
   }
 
   .map-area {
-    min-height: calc(100svh - var(--navbar-h));
+    /* O mapa vai de baixo da cápsula até ao topo da tab bar. Tudo o que
+       flutua sobre ele (localizar, bússola, filtros, cartão) é posicionado
+       dentro desta caixa, por isso nada fica escondido pela tab bar. */
+    min-height: calc(100svh - var(--navbar-h) - var(--tabbar-h));
     border-radius: 0;
   }
 
   .sidebar-right {
     position: fixed;
     z-index: 800;
-    inset: auto 0 0 0;
+    /* Fixa ao viewport: aqui a folga da tab bar tem de ser explícita. */
+    inset: auto 0 var(--tabbar-h) 0;
     max-width: none;
     max-height: 62vh;
   }
@@ -2300,7 +2326,7 @@
     /* Acima do FAB "Filtros" e do botão de localizar, que em telemóvel
        ficariam por cima do cartão. */
     bottom: 92px;
-    max-height: calc(100svh - var(--navbar-h) - 116px);
+    max-height: calc(100svh - var(--navbar-h) - var(--tabbar-h) - 116px);
     overflow-y: auto;
     overscroll-behavior: contain;
   }

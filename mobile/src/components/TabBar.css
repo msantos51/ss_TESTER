@@ -1,10 +1,20 @@
-/* Barra de separadores: fundo branco, pílula de fundo no separador ativo. */
+/* Barra de separadores: o material passou a vidro (mesma barra do site),
+   mas a estrutura é a de sempre — os mesmos quatro separadores, a mesma
+   pílula no ativo, o mesmo comportamento. */
 .ss-tabbar {
   flex-shrink: 0;
   display: flex;
-  background: var(--surface);
-  border-top: 1px solid var(--line-tab);
+  background: var(--glass-thick);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-top: 0.5px solid var(--line-tab);
   padding: 10px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Sem backdrop-filter (WebView Android antigo) a barra fica opaca em vez
+   de deixar ler o conteúdo através dela. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .ss-tabbar { background: var(--glass-solid); }
 }
 
 .ss-tab {
@@ -23,6 +33,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Sky Blue e não Teal Ocean: o rótulo tem 11px e o teal não aguenta
+   texto pequeno. */
 .ss-tab.is-active {
   color: var(--ink);
 }

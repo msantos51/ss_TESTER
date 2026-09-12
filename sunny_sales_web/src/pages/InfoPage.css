@@ -3,7 +3,7 @@
   margin: 0 auto;
   padding: 0 0.5rem 3rem;
   color: var(--text);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-body);
   animation: fadeIn 0.45s var(--ease-out);
 }
 
@@ -487,7 +487,7 @@
 }
 
 .info-banner-btn:hover {
-  background: #eef4f2;
+  background: var(--surface-warm);
   box-shadow: var(--shadow-sm);
 }
 
@@ -548,7 +548,7 @@
 }
 
 .info-cta-btn:hover {
-  background: #eef4f2;
+  background: var(--surface-warm);
   box-shadow: var(--shadow-sm);
 }
 

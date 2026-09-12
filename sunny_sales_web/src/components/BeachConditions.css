@@ -5,7 +5,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 16px 18px;
-  font-family: 'Inter', 'Roboto', sans-serif;
+  font-family: var(--font-body);
   font-size: 0.875rem;
   box-shadow: var(--shadow-sm);
   box-sizing: border-box;
@@ -47,7 +47,7 @@
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   background: var(--surface-alt);
-  font-family: 'Inter', 'Roboto', sans-serif;
+  font-family: var(--font-body);
   font-size: 0.875rem;
   color: var(--text);
   cursor: pointer;

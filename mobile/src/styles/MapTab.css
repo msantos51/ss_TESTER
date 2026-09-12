@@ -1,11 +1,11 @@
 /* ═══════════════════════════════════════════════════════════════════
    Sunny Sales — Mapa da app do vendedor
 
-   O mapa da app usa o mesmo design do mapa do site ("Canvas / Painéis",
+   O mapa da app usa o mesmo design do mapa do site ("Vidro & Maré",
    descrito em sunny_sales_web/DESIGN_SYSTEM.md): o mapa é o fundo e tudo
-   o que lhe fica por cima flutua em pastilhas e painéis brancos de cantos
+   o que lhe fica por cima flutua em pastilhas e painéis de VIDRO de cantos
    grandes com sombra difusa (--site-shadow-float), tipografia Inter,
-   acento teal da marca e uma única ação âncora por ecrã — Gunmetal
+   Teal Ocean nos estados e uma única ação âncora por ecrã — Sky Blue
    quando é a ação normal, coral quando é urgente (parar a partilha).
 
    É o ecrã que o vendedor vê espelhado no site: quem está na praia com a
@@ -21,29 +21,37 @@
 .map-screen {
   /* ── Paleta (sunny_sales_web/src/index.css · :root) ── */
   --site-surface: #ffffff;
-  --site-surface-alt: #f1f3f6;
-  --site-accent: #519CAB;          /* Moonstone: ação secundária, seleção */
-  --site-accent-hover: #3D8496;
-  --site-ink: #20373B;             /* Gunmetal: a ação principal do ecrã */
-  --site-ink-hover: #152527;
-  --site-coral: #C9371B;           /* só o que é urgente: parar a partilha */
-  --site-coral-hover: #A82C14;
+  --site-surface-alt: #F4EDE6;
+  --site-accent: #005F73;          /* Sky Blue: ação, seleção, texto pequeno */
+  --site-accent-hover: #00485A;
+  --site-teal: #0A9396;            /* Teal Ocean: estados e ícones */
+  --site-ink: #005F73;             /* a ação principal do ecrã */
+  --site-ink-hover: #00485A;
+  --site-coral: #BB3E03;           /* só o que é urgente: parar a partilha */
+  --site-coral-hover: #9A3303;
   --site-forest: #1D5C3A;          /* presença de vendedores (pins) */
-  --site-gold: #FFC64F;            /* informação, nunca ação; sempre fundo */
-  --site-text: #12191f;
-  --site-text-secondary: #46545f;
-  --site-text-muted: #6b7885;
-  --site-border: rgba(18, 25, 31, 0.07);
+  --site-gold: #EE9B00;            /* informação, nunca ação; sempre fundo */
+  --site-gold-ink: #2A1A00;        /* texto por cima do dourado */
+  --site-text: #06272F;
+  --site-text-secondary: #3E6A72;
+  --site-text-muted: #55767D;
+  --site-border: rgba(6, 39, 47, 0.08);
   --site-error: #b91c1c;
   --site-error-border: rgba(185, 28, 28, 0.35);
   /* Fundo do mapa enquanto os tiles não chegam (igual ao do site) */
-  --site-map-bg: #e6e9ee;
+  --site-map-bg: #EFE7DA;
+
+  /* ── Vidro: o material de tudo o que flutua sobre o mapa ── */
+  --site-glass: rgba(255, 255, 255, 0.82);
+  --site-glass-solid: #FFFDFB;
+  --site-glass-blur: saturate(180%) blur(18px);
+  --site-glass-ring: inset 0 0 0 1px rgba(255, 255, 255, 0.85);
 
   /* ── Sombras: contacto curto + difusão longa ── */
-  --site-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05), 0 6px 16px -8px rgba(16, 24, 40, 0.12);
-  --site-shadow-lg: 0 4px 10px -4px rgba(16, 24, 40, 0.08), 0 26px 60px -20px rgba(16, 24, 40, 0.22);
+  --site-shadow-sm: 0 1px 2px rgba(6, 39, 47, 0.05), 0 6px 16px -8px rgba(6, 39, 47, 0.14);
+  --site-shadow-lg: 0 4px 10px -4px rgba(6, 39, 47, 0.08), 0 26px 60px -20px rgba(6, 39, 47, 0.24);
   /* Para o que flutua sobre o mapa, onde o fundo é imprevisível */
-  --site-shadow-float: 0 1px 2px rgba(16, 24, 40, 0.16), 0 8px 20px -6px rgba(16, 24, 40, 0.24);
+  --site-shadow-float: 0 1px 2px rgba(6, 39, 47, 0.16), 0 8px 20px -6px rgba(6, 39, 47, 0.26);
 
   /* ── Raios: painéis 22, controlos 14, botões em pílula ── */
   --site-radius-control: 14px;
@@ -52,7 +60,8 @@
   --site-radius-full: 9999px;
 
   /* ── Tipografia (Inter, nada em caixa alta) ── */
-  --site-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --site-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter',
+    system-ui, 'Segoe UI', Roboto, sans-serif;
   --site-fs-caption: 13px;
   --site-fs-body-sm: 15px;
   --site-fs-body: 16px;
@@ -178,8 +187,10 @@
   padding: 5px 16px 5px 5px;
   border: none;
   border-radius: var(--site-radius-full);
-  background: var(--site-surface);
-  box-shadow: var(--site-shadow-float);
+  background: var(--site-glass);
+  -webkit-backdrop-filter: var(--site-glass-blur);
+  backdrop-filter: var(--site-glass-blur);
+  box-shadow: var(--site-glass-ring), var(--site-shadow-float);
   font-family: inherit;
   cursor: pointer;
   transition: background var(--site-transition);
@@ -227,8 +238,10 @@
   min-height: 40px;
   padding: 0 14px;
   border-radius: var(--site-radius-full);
-  background: var(--site-surface);
-  box-shadow: var(--site-shadow-float);
+  background: var(--site-glass);
+  -webkit-backdrop-filter: var(--site-glass-blur);
+  backdrop-filter: var(--site-glass-blur);
+  box-shadow: var(--site-glass-ring), var(--site-shadow-float);
 }
 
 .map-status-label {
@@ -275,8 +288,10 @@
   justify-content: center;
   border: none;
   border-radius: var(--site-radius-full);
-  background: var(--site-surface);
-  box-shadow: var(--site-shadow-float);
+  background: var(--site-glass);
+  -webkit-backdrop-filter: var(--site-glass-blur);
+  backdrop-filter: var(--site-glass-blur);
+  box-shadow: var(--site-glass-ring), var(--site-shadow-float);
   cursor: pointer;
   transition: background var(--site-transition);
   -webkit-tap-highlight-color: transparent;
@@ -298,7 +313,7 @@
   margin: 0;
   padding: 16px 20px;
   border-radius: var(--site-radius-lg);
-  background: rgba(18, 25, 31, 0.9);
+  background: rgba(6, 39, 47, 0.92);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   color: #fbfcfc;
@@ -343,8 +358,10 @@
   gap: 12px;
   padding: 14px 16px;
   border-radius: var(--site-radius-panel);
-  background: var(--site-surface);
-  box-shadow: var(--site-shadow-float);
+  background: var(--site-glass);
+  -webkit-backdrop-filter: var(--site-glass-blur);
+  backdrop-filter: var(--site-glass-blur);
+  box-shadow: var(--site-glass-ring), var(--site-shadow-float);
 }
 
 .map-sub-icon {
@@ -578,5 +595,15 @@
 
   .user-location-pulse {
     display: none;
+  }
+}
+
+/* Sem backdrop-filter as pastilhas ficam opacas: sobre o mapa, um branco
+   a 0,82 sem blur seria um borrão. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .map-status-pill,
+  .map-alert,
+  .map-sub-banner {
+    background: var(--site-glass-solid);
   }
 }

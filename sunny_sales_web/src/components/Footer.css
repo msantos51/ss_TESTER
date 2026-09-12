@@ -1,16 +1,22 @@
 .footer-wrapper {
   position: fixed;
   z-index: 500;
-  bottom: 0;
+  /* Em telemóvel o fundo do ecrã é da tab bar: o rodapé assenta em cima
+     dela, nunca por baixo (--tabbar-h é 0 em desktop). */
+  bottom: var(--tabbar-h);
   left: 0;
   width: 100%;
   overflow: hidden;
-  /* Barra translúcida (par do header), sem linha dura sobre a tela */
-  background: rgba(255, 255, 255, 0.7);
-  -webkit-backdrop-filter: saturate(180%) blur(18px);
-  backdrop-filter: saturate(180%) blur(18px);
-  border-top: 1.5px solid rgba(195, 231, 241, 0.7);
+  /* Barra translúcida (par da cápsula), sem linha dura sobre a tela */
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-top: 1px solid var(--border);
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .footer-wrapper { background: var(--glass-solid); }
 }
 
 .footer-content {
@@ -30,7 +36,7 @@
   gap: 8px;
   flex: 1;
   color: var(--text-muted, #9ca3af);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-body);
   font-weight: 400;
   font-size: 0.8125rem;
   text-align: center;
@@ -61,14 +67,14 @@
 }
 
 .footer-link:hover {
-  color: var(--palette-moonstone, #519CAB);
+  color: var(--accent-text);
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-thickness: 1px;
 }
 
 .footer-link:focus-visible {
-  outline: 2px solid var(--text, #0f0f0f);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
   border-radius: 3px;
 }
@@ -89,11 +95,38 @@
 }
 
 @media (max-width: 768px) {
+  /* Em telemóvel o rodapé deixa de ser barra fixa e passa a fechar a
+     página: 58px de rodapé fixo mais 76px de tab bar gastavam um quinto do
+     ecrã em cromo permanente. A margem inferior afasta-o da tab bar, que
+     continua fixa por cima. */
+  .footer-wrapper {
+    position: static;
+    margin-top: var(--space-xl);
+    /* Folga para a tab bar em PADDING e não em margem: a margem inferior
+       colapsava para fora do .wrapper e o rodapé acabava por baixo da
+       barra, sem forma de rolar até ele. */
+    padding-bottom: var(--tabbar-h);
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
   .footer-content {
     flex-direction: column;
     gap: 6px;
     padding: 12px 0.75rem;
     min-height: auto;
+  }
+
+  /* O rodapé já não é uma barra fixa a roubar altura, por isso os links
+     podem ter o alvo de toque completo em vez do truque do padding
+     negativo. */
+  .footer-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 4px;
+    margin: 0;
   }
 
   .footer-message {
