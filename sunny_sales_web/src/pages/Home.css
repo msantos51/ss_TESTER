@@ -296,13 +296,15 @@
    vezes e o utilizador não deve ter de reaprender onde olhar. Ancorada acima
    do botão de localização, em texto branco sobre petróleo (15,8:1) — a
    pílula branca com texto cinzento que aqui estava era um borrão claro sobre
-   fundo claro num ecrã ao sol. */
+   fundo claro num ecrã ao sol. À direita fica mais afastada da margem: os
+   controlos de zoom do Leaflet ficam nesse canto (ver .leaflet-top.leaflet-left
+   mais abaixo) e, sem este espaço, o botão de "−" tapava o fim do texto. */
 
 .map-status {
   position: absolute;
   bottom: 96px;
   left: 16px;
-  right: 16px;
+  right: 70px;
   z-index: 600;
   margin: 0;
   padding: 16px 20px;
@@ -879,10 +881,11 @@
 .map-toolbar {
   position: absolute;
   top: 14px;
-  left: 14px;
-  z-index: 700;
+  right: 14px;
+  left: auto;
+  z-index: 600;
   display: flex;
-  gap: 2px;
+  gap: 4px;
   padding: 4px;
   background: var(--glass-strong);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -898,14 +901,14 @@
 .map-toolbar-btn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  min-height: 38px;
-  padding: 0 15px;
+  gap: 6px;
+  min-height: 44px;
+  padding: 9px 16px;
   border: none;
   border-radius: var(--radius-full);
   background: transparent;
   color: var(--text-secondary);
-  font-size: 0.82rem;
+  font-size: var(--fs-caption);
   font-weight: 600;
   cursor: pointer;
   transition: background var(--transition), color var(--transition);
@@ -1529,32 +1532,29 @@
    garante a separação do fundo seja qual for o tile por baixo — ao sol, o que
    falha primeiro é a diferença de luminância contra o mapa, não o rácio da
    cor contra o branco. */
-.locate-btn,
-.vendor-locate-btn {
+.locate-btn {
   position: absolute;
-  bottom: 20px;
-  right: 14px;
+  bottom: 22px;
+  right: 18px;
   width: 48px;
   height: 48px;
   background: var(--blue);
   border: none;
-  border-radius: 20px;
+  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-md);
   transition: background var(--transition), box-shadow var(--transition);
   z-index: 500;
   -webkit-tap-highlight-color: transparent;
   min-height: auto;
   padding: 0;
   color: var(--on-accent);
-  box-shadow: 0 0 0 3px #fff, 0 4px 14px rgba(16, 26, 30, 0.45);
+  box-shadow: 0 0 0 3px #fff, var(--shadow-float);
 }
 
-.locate-btn .locate-icon,
-.vendor-locate-btn .locate-icon {
+.locate-btn .locate-icon {
   width: 22px;
   height: 22px;
   stroke-width: 2.6;
@@ -1562,23 +1562,20 @@
 
 /* As quatro pontas do alvo (N/S/E/O) ficam a dourado, os anéis mantêm-se
    brancos — é o par de cores da paleta que sobra para um detalhe pequeno. */
-.locate-btn .locate-icon-line,
-.vendor-locate-btn .locate-icon-line {
+.locate-btn .locate-icon-line {
   stroke: var(--gold);
 }
 
-.locate-btn:hover,
-.vendor-locate-btn:hover {
+.locate-btn:hover {
   background: var(--blue-hover);
-  box-shadow: 0 0 0 3px #fff, 0 6px 18px rgba(16, 26, 30, 0.5);
+  box-shadow: 0 0 0 3px #fff, 0 6px 18px rgba(6, 39, 47, 0.5);
   transform: none;
 }
 
-.locate-btn:active,
-.vendor-locate-btn:active {
+.locate-btn:active {
   transform: none;
   background: var(--blue-hover);
-  box-shadow: 0 0 0 3px #fff, 0 2px 8px rgba(16, 26, 30, 0.4);
+  box-shadow: 0 0 0 3px #fff, 0 2px 8px rgba(6, 39, 47, 0.4);
 }
 
 .locate-btn .loader {
@@ -1601,13 +1598,15 @@
 /* Botão do norte: aparece assim que o mapa está torto — pela bússola ou pelos
    dois dedos do utilizador — e endireita-o. A agulha roda com o mapa, por isso
    aponta sempre para o norte real: é ela que diz para onde o mapa está virado
-   sem ser preciso ler nada. */
+   sem ser preciso ler nada. Fica ao lado do botão de localizar, na mesma
+   linha e com o mesmo tamanho e anel branco — são o par que desfaz o que os
+   dedos fizeram ao mapa, um endireita-o e o outro recentra-o. */
 .compass-btn {
   position: absolute;
-  bottom: 74px;
-  right: 14px;
-  width: 46px;
-  height: 46px;
+  bottom: 22px;
+  right: 88px;
+  width: 48px;
+  height: 48px;
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-full);
@@ -1615,8 +1614,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-md);
-  transition: background var(--transition), box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+  box-shadow: 0 0 0 3px #fff, var(--shadow-float);
+  transition: background var(--transition), box-shadow var(--transition), border-color var(--transition);
   z-index: 500;
   -webkit-tap-highlight-color: transparent;
   min-height: auto;
@@ -1627,8 +1626,7 @@
 .compass-btn:hover {
   background: var(--primary-light-solid);
   border-color: var(--primary);
-  box-shadow: var(--shadow-warm);
-  transform: scale(1.06);
+  box-shadow: 0 0 0 3px #fff, var(--shadow-float);
 }
 
 .compass-btn .compass-icon {
@@ -1828,8 +1826,8 @@
 
   .map-toolbar {
     top: 12px;
-    left: 12px;
-    padding: 3px;
+    right: 12px;
+    left: auto;
   }
 
   .map-toolbar-btn {
@@ -1933,44 +1931,6 @@
 @keyframes map-live-blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.25; }
-}
-
-/* --- Alternador de vista --- */
-
-.map-toolbar {
-  position: absolute;
-  z-index: 600;
-  top: 14px;
-  right: 14px;
-  left: auto;
-  display: flex;
-  gap: 4px;
-  padding: 4px;
-  border-radius: var(--radius-full);
-  background: var(--glass-strong);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: var(--glass-ring), var(--shadow-float);
-}
-
-.map-toolbar-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  padding: 9px 16px;
-  border: 0;
-  border-radius: var(--radius-full);
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: var(--fs-caption);
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.map-toolbar-btn.active {
-  background: var(--accent);
-  color: var(--on-accent);
 }
 
 /* --- Painel de pesquisa --- */
@@ -2262,34 +2222,6 @@
   cursor: pointer;
 }
 
-/* --- Botão de localização --- */
-
-.locate-btn {
-  bottom: 22px;
-  right: 18px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--blue);
-  color: #fff;
-  /* O anel branco fica: ao sol o que falha primeiro é a diferença de
-     luminância contra o tile, não o rácio da cor contra o branco. */
-  box-shadow: 0 0 0 3px #fff, var(--shadow-float);
-}
-
-.locate-btn:hover {
-  background: var(--blue-hover);
-}
-
-/* O norte fica ao lado do botão de localizar, na mesma linha: são o par que
-   desfaz o que os dedos fizeram ao mapa — um endireita-o, o outro recentra-o.
-   À esquerda e não por cima porque a coluna acima já é do zoom. */
-.compass-btn {
-  bottom: 30px;
-  right: 88px;
-  box-shadow: 0 0 0 2px #fff, var(--shadow-float);
-}
-
 /* --- Telemóvel: mapa a ecrã cheio, painéis por cima --- */
 
 @media (max-width: 768px) {
@@ -2339,7 +2271,7 @@
   }
 
   .compass-btn {
-    bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(22px + env(safe-area-inset-bottom, 0px));
   }
 
   .filter-fab {
@@ -2361,11 +2293,6 @@
   .map-live {
     top: 12px;
     left: 12px;
-  }
-
-  .map-toolbar {
-    top: 12px;
-    right: 12px;
   }
 }
 
