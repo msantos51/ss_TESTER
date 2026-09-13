@@ -689,6 +689,7 @@
   color: var(--text-muted);
   margin: 2px 0 0;
   line-height: 1.45;
+  text-align: justify;
 }
 
 /* ── Painel de vendedores (coluna direita) ────────────── */
@@ -1270,6 +1271,7 @@
   color: var(--text-muted);
   margin: 8px 0 0;
   line-height: 1.4;
+  text-align: justify;
 }
 
 /* ── Filter sheet footer ──────────────────────────────── */

@@ -61,6 +61,7 @@
   position: relative;
   z-index: 1;
   text-wrap: pretty;
+  text-align: justify;
 }
 
 .info-hero-lead strong {
@@ -189,6 +190,7 @@
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
+  text-align: justify;
 }
 
 .info-card-list {
@@ -279,7 +281,7 @@
   color: var(--text-secondary);
   line-height: 1.7;
   margin-bottom: 12px;
-  text-align: left;
+  text-align: justify;
 }
 
 /* ── Standard list ─────────────────────────────────────── */
@@ -301,7 +303,7 @@
   border: none;
   position: relative;
   line-height: 1.5;
-  text-align: left;
+  text-align: justify;
   box-shadow: var(--shadow-xs);
   transition: box-shadow var(--transition);
 }
@@ -381,7 +383,7 @@
   min-height: 44px;
   display: flex;
   align-items: center;
-  text-align: left;
+  text-align: justify;
   transition: box-shadow var(--transition);
 }
 
@@ -460,6 +462,7 @@
   font-weight: 400;
   z-index: 1;
   opacity: 0.85;
+  text-align: justify;
 }
 
 .info-banner-text strong {
@@ -523,7 +526,7 @@
   opacity: 0.8;
   margin: 0 0 20px;
   line-height: 1.65;
-  text-align: left;
+  text-align: justify;
 }
 
 /* Sobre o bloco teal o botão inverte: pílula branca com texto teal */
@@ -554,7 +557,7 @@
 
 /* ── Footer text ───────────────────────────────────────── */
 .info-footer-text {
-  text-align: left;
+  text-align: justify;
   font-size: 0.95rem;
   color: var(--text-secondary);
   background: var(--surface);
@@ -577,7 +580,7 @@
 }
 
 .info-page-lead {
-  text-align: left;
+  text-align: justify;
   color: var(--text-secondary);
   font-size: 1rem;
   margin-bottom: 2.5rem;
@@ -667,6 +670,7 @@
   font-size: 0.9rem;
   color: var(--text-secondary);
   line-height: 1.55;
+  text-align: justify;
   box-shadow: var(--shadow-xs);
   transition: box-shadow var(--transition), transform var(--transition);
 }
@@ -705,7 +709,7 @@
   border: none;
   border-radius: var(--radius-panel);
   padding: 26px 30px;
-  text-align: left;
+  text-align: justify;
   color: var(--text-secondary);
   display: flex;
   gap: 20px;

@@ -214,6 +214,7 @@
   max-width: 400px;
   line-height: 1.6;
   margin: 0;
+  text-align: justify;
 }
 
 /* ── Responsive ─────────────────────────────────────────── */
@@ -232,5 +233,5 @@
 }
 
 .contacto-submit-error {
-  text-align: center;
+  text-align: justify;
 }
