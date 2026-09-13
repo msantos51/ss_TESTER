@@ -108,7 +108,7 @@ export default function Landing() {
   return (
     <div className="landing">
       <section className="landing-hero">
-        <div className="landing-hero-text">
+        <div className="landing-hero-top">
           <span className="landing-live">
             <span className="landing-live-dot" aria-hidden="true" />
             {activeLabel}
@@ -116,6 +116,22 @@ export default function Landing() {
           <h1 className="landing-title">
             Encontra vendedores de praia perto de ti, em tempo real
           </h1>
+        </div>
+
+        {/* Em telemóvel esta pré-visualização fica logo a seguir ao título;
+            em desktop passa para a coluna ao lado (ver .landing-hero em
+            Landing.css). */}
+        <div className="landing-hero-visual">
+          <div className="landing-hero-frame">
+            <HeroMap vendors={vendors} />
+            <Link to="/mapa" className="landing-hero-cta">
+              Explorar o mapa completo
+              <FiArrowUpRight size={18} aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="landing-hero-bottom">
           <p className="landing-lead">
             Bolas de Berlim, gelados e acessórios de praia. Vês onde estão agora,
             sem instalar nada e sem sair da toalha.
@@ -142,16 +158,6 @@ export default function Landing() {
               <dd>para quem está na praia</dd>
             </div>
           </dl>
-        </div>
-
-        <div className="landing-hero-visual">
-          <div className="landing-hero-frame">
-            <HeroMap vendors={vendors} />
-            <Link to="/mapa" className="landing-hero-cta">
-              Explorar o mapa completo
-              <FiArrowUpRight size={18} aria-hidden="true" />
-            </Link>
-          </div>
         </div>
       </section>
 

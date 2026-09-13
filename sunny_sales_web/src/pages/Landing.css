@@ -10,14 +10,40 @@
 
 /* ---------- Hero ---------- */
 
+/* Mobile-first: uma coluna, com o mapa entre o título e o resto do texto
+   (ver ordem das áreas). Em desktop (≥769px, o mesmo corte usado no resto
+   do site) passa a duas colunas, com o texto empilhado à esquerda e o mapa
+   a ocupar as duas linhas à direita — ver o media query abaixo. */
 .landing-hero {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: clamp(24px, 4vw, 56px);
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "top"
+    "visual"
+    "bottom";
+  row-gap: 0;
+  column-gap: clamp(24px, 4vw, 56px);
   align-items: center;
   max-width: 1240px;
   margin: 0 auto;
   padding: clamp(24px, 5vw, 64px) 0;
+}
+
+.landing-hero-top {
+  grid-area: top;
+}
+
+.landing-hero-bottom {
+  grid-area: bottom;
+}
+
+@media (min-width: 769px) {
+  .landing-hero {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "top    visual"
+      "bottom visual";
+  }
 }
 
 /* Pastilha de vidro: o mesmo material da cápsula de navegação, em pequeno. */
@@ -138,6 +164,17 @@
 }
 
 /* Pré-visualização do mapa */
+
+.landing-hero-visual {
+  grid-area: visual;
+  margin-top: var(--space-lg);
+}
+
+@media (min-width: 769px) {
+  .landing-hero-visual {
+    margin-top: 0;
+  }
+}
 
 /* O mapa é um painel de vidro: aresta interior clara, sombra longa. */
 .landing-hero-frame {
