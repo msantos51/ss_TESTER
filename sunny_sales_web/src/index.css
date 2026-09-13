@@ -641,24 +641,40 @@ body {
    coisa que o visitante que chega por QR code veio ver. Aqui o rodapé sai do
    fluxo e a navbar encolhe para 52px translúcidos. Em desktop nada muda. */
 
+/* Em /mapa o rodapé fica sem os links legais (ver `minimal` em Footer.jsx),
+   só com a mensagem a rodar — uma única linha, mais baixa que o rodapé
+   completo do resto do site. --footer-h aqui reflete essa altura real (a
+   fórmula partilhada por index.css/Home.css é a mesma, só o valor muda). */
+.wrapper--map {
+  --footer-h: 58px;
+}
+
 @media (max-width: 768px) {
+  /* Em /mapa o rodapé mantém-se uma barra fixa mesmo em telemóvel — ao
+     contrário do resto do site, onde passa a estático (ver .footer-wrapper
+     em Footer.css): o mapa não tem um "fim de página" para onde rolar, por
+     isso as mensagens sobrepõem-se ao mapa em vez de fechar o ecrã. */
   .wrapper--map {
-    --footer-h: 0px;
+    --footer-h: 48px;
   }
 
   .wrapper--map .footer-wrapper {
-    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    margin-top: 0;
+    background: var(--glass);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
   }
 
-  /* O mapa encosta às margens laterais e ao fundo do ecrã, mas nunca por
+  /* O mapa encosta às margens laterais e ao topo do ecrã, mas nunca por
      baixo da cápsula: o que flutua sobre o mapa é posicionado dentro desta
-     caixa. */
+     caixa. O rodapé fixo fica por cima (ver .map-area em Home.css, que
+     reserva --footer-h na sua própria altura). */
   .wrapper--map .container {
     padding: var(--navbar-h) 0 0;
-  }
-
-  .wrapper--map .modern-layout {
-    height: calc(100svh - var(--navbar-h));
   }
 }
 

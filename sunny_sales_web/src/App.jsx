@@ -232,9 +232,12 @@ function AppLayout() {
         </Routes>
         </Suspense>
       </div>
-      {/* Em /mapa o mapa é ecrã cheio: o rodapé sairia de qualquer forma em
-          telemóvel e em desktop só roubava altura ao mapa. */}
-      {!isMapRoute && <Footer />}
+      {/* O rodapé com as mensagens de consciencialização é uma secção fixa
+          em todo o site, incluindo /mapa (ver regras .wrapper--map em
+          index.css e Home.css, que reservam o espaço correspondente). Em
+          /mapa fica só a mensagem (sem os links legais), para se sobrepor
+          ao mapa com uma altura previsível em qualquer ecrã. */}
+      <Footer minimal={isMapRoute} />
     </div>
   );
 }

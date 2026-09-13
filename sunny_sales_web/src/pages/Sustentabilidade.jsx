@@ -56,7 +56,7 @@ export default function Sustentabilidade() {
 
       <div className="info-section">
         <div className="info-section-head">
-          <span className="info-section-icon">
+          <span className="info-section-icon sustainability-head-icon">
             <MdEco />
           </span>
           <h2 className="info-section-title">Consciencialização dos Banhistas</h2>
