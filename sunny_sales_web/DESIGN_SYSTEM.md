@@ -77,7 +77,7 @@ telemóvel ao sol.
 | `--accent-soft` | `rgba(10,147,150,.12)` | Tinte de teal: item de navegação ativo, item de lista ativo, chips. |
 | `--gold` / `--amber` | `#EE9B00` | **Summer Sun** — informação e "ao vivo", nunca ação. **Sempre como fundo**, com `--gold-ink` (`#2A1A00`, 8,1:1) por cima. Nunca com texto branco: daria 2,26:1. |
 | `--gold-strong` | `#8A5A00` | A variante para usar como **texto** dourado sobre branco (5,9:1). |
-| `--coral` / `--coral-hover` | `#BB3E03` / `#9A3303` | **Só o que é acionável e urgente** (5,58:1 com branco): o botão de localização do mapa e o botão de filtros quando há um filtro ativo. Em mais nenhum sítio. |
+| `--coral` / `--coral-hover` | `#BB3E03` / `#9A3303` | **Só o que é acionável e urgente** (5,58:1 com branco): o botão de filtros quando há um filtro ativo. Em mais nenhum sítio. |
 | `--forest` | `#1D5C3A` | **Presença de vendedores** (7,94:1): cor por omissão dos pins do mapa. Não muda com a paleta — é lida contra os tiles, não contra a tela. |
 | `--glass` / `--glass-strong` / `--glass-thick` | `rgba(255,255,255,.72/.82)` / `rgba(255,253,250,.93)` | **Vidro.** `--glass` para a cápsula e o rodapé, `--glass-strong` para o que flutua sobre o mapa, `--glass-thick` para a folha do menu (por baixo dela passa o conteúdo da página). |
 | `--glass-blur` / `--glass-ring` / `--glass-solid` | `saturate(180%) blur(18px)` / anel interior branco / `#FFFDFB` | O blur, a aresta de vidro e o **plano B opaco** obrigatório. |
@@ -86,7 +86,7 @@ telemóvel ao sol.
 | `--text-secondary` | `#3E6A72` | Parágrafos de apoio (5,7:1). |
 | `--text-muted` | `#55767D` | Legendas, contadores e metadados (4,7:1). |
 | `--border` / `--border-strong` | `rgba(6,39,47,.08)` / `.15` | Hairlines. Só onde a sombra não chega (divisórias internas, contorno de checkbox). |
-| `--blue` / `--sky` | `#1078a0` | Apenas funcional: links utilitários e "a tua posição" no mapa (AA sobre branco). |
+| `--blue` / `--sky` | `#1078a0` | Apenas funcional: links utilitários, "a tua posição" no mapa e o botão de localização — o mesmo azul do pin que ele recentra (AA sobre branco). |
 | `--success` / `--warning` / `--error` | `#15803d` / `#b45309` / `#b91c1c` | Apenas estados funcionais (validação, avisos), com fundos rgba translúcidos; todos AA sobre branco. |
 
 **Regra de ouro:** Sky Blue = "a ação desta página" (um botão cheio por ecrã) e
@@ -186,8 +186,9 @@ apenas com texto e badges; o único `<img>` do layout é o logótipo da navbar
   qual um pin é lido. Não adicionar cores sem verificar isso, e note-se que a
   mudança de paleta **não** lhes tocou: são a identidade de vendedores que já
   escolheram a sua cor.
-- Alvos de toque no mapa: ≥48px; o botão de localização é de 64px por ser a
-  única ação da página e ter de ser acertado com o polegar, de pé, com uma mão.
+- Alvos de toque no mapa: ≥48px; o botão de localização usa exatamente esse
+  mínimo — as pontas do alvo no seu ícone são douradas (`--gold`) sobre o
+  azul funcional (`--blue`), os anéis mantêm-se brancos.
 - Ícones sem texto visível têm sempre `aria-label`; decorativos usam
   `aria-hidden="true"`.
 - `color-scheme: light` ativo — controlos nativos (selects, scrollbars)
