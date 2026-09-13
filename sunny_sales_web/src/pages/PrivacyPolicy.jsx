@@ -1,13 +1,38 @@
+import { FiShield, FiClock } from 'react-icons/fi';
+
 export default function PrivacyPolicy() {
   return (
     <div className="legal-page">
       <div className="legal-container">
-        <div className="legal-header">
+        <section className="legal-hero">
+          <span className="legal-hero-icon" aria-hidden="true"><FiShield /></span>
           <h1>Política de Privacidade</h1>
-          <p className="last-updated">Última atualização: 25 de junho de 2026</p>
-        </div>
+          <p className="legal-hero-lead">
+            Como recolhemos, utilizamos e protegemos os teus dados pessoais
+            quando usas o Sunny Sales.
+          </p>
+          <div className="legal-badges">
+            <span className="legal-badge"><FiClock /> Última atualização: 25 de junho de 2026</span>
+            <span className="legal-badge"><FiShield /> Conforme o RGPD</span>
+          </div>
+        </section>
 
-        <section>
+        <nav className="legal-toc" aria-label="Secções desta página">
+          <span className="legal-toc-label">Nesta página</span>
+          <a href="#intro">1. Introdução</a>
+          <a href="#dados-recolhidos">2. Informações que Recolhemos</a>
+          <a href="#como-utilizamos">3. Como Utilizamos as Suas Informações</a>
+          <a href="#partilha">4. Partilha de Informações</a>
+          <a href="#retencao">5. Retenção de Dados</a>
+          <a href="#seguranca">6. Segurança de Dados</a>
+          <a href="#direitos-rgpd">7. Os Seus Direitos (RGPD)</a>
+          <a href="#cookies">8. Cookies</a>
+          <a href="#responsavel-contacto">9. Responsável e Contacto</a>
+          <a href="#cnpd">10. Autoridade de Proteção de Dados</a>
+          <a href="#alteracoes">11. Alterações a Esta Política</a>
+        </nav>
+
+        <section id="intro">
           <h2>1. Introdução</h2>
           <p>
             A Sunny Sales ("nós", "nos", "nosso(a)" ou "Empresa") está comprometida
@@ -21,7 +46,7 @@ export default function PrivacyPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="dados-recolhidos">
           <h2>2. Informações que Recolhemos</h2>
           <p>Podemos recolher informações sobre si das seguintes formas:</p>
           <h3>2.1 Informações que Nos Fornece Diretamente</h3>
@@ -68,7 +93,7 @@ export default function PrivacyPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="como-utilizamos">
           <h2>3. Como Utilizamos as Suas Informações</h2>
           <p>Utilizamos as informações recolhidas para:</p>
           <ul>
@@ -88,7 +113,7 @@ export default function PrivacyPolicy() {
           </ul>
         </section>
 
-        <section>
+        <section id="partilha">
           <h2>4. Partilha de Informações</h2>
           <p>
             Não vendemos, alugamos ou partilhamos as suas informações pessoais com
@@ -120,7 +145,7 @@ export default function PrivacyPolicy() {
           </ul>
         </section>
 
-        <section>
+        <section id="retencao">
           <h2>5. Retenção de Dados</h2>
           <p>
             Retemos as suas informações pessoais apenas pelo período necessário para
@@ -150,7 +175,7 @@ export default function PrivacyPolicy() {
           <p>Após os prazos aplicáveis, os dados são eliminados de forma segura.</p>
         </section>
 
-        <section>
+        <section id="seguranca">
           <h2>6. Segurança de Dados</h2>
           <p>
             Implementamos medidas de segurança técnicas, administrativas e físicas
@@ -160,7 +185,7 @@ export default function PrivacyPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="direitos-rgpd">
           <h2>7. Os Seus Direitos (RGPD)</h2>
           <p>
             De acordo com o Regulamento Geral de Proteção de Dados (RGPD) da União
@@ -205,7 +230,7 @@ export default function PrivacyPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="cookies">
           <h2>8. Cookies</h2>
           <p>
             Utilizamos cookies para melhorar a sua experiência no nosso website.
@@ -213,7 +238,7 @@ export default function PrivacyPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="responsavel-contacto">
           <h2>9. Responsável pelo Tratamento e Contacto</h2>
           <p>
             O responsável pelo tratamento dos seus dados pessoais é:
@@ -235,7 +260,7 @@ export default function PrivacyPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="cnpd">
           <h2>10. Autoridade de Proteção de Dados</h2>
           <p>
             Se considerar que os seus direitos foram violados, tem o direito de
@@ -245,7 +270,7 @@ export default function PrivacyPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="alteracoes">
           <h2>11. Alterações a Esta Política</h2>
           <p>
             Podemos atualizar esta Política de Privacidade periodicamente. As

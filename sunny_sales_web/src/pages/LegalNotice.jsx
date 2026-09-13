@@ -1,13 +1,41 @@
+import { FiBookOpen, FiClock, FiInfo } from 'react-icons/fi';
+
 export default function LegalNotice() {
   return (
     <div className="legal-page">
       <div className="legal-container">
-        <div className="legal-header">
+        <section className="legal-hero">
+          <span className="legal-hero-icon" aria-hidden="true"><FiBookOpen /></span>
           <h1>Aviso Legal</h1>
-          <p className="last-updated">Última atualização: 25 de junho de 2026</p>
-        </div>
+          <p className="legal-hero-lead">
+            Identificação da entidade responsável pelo site e as condições
+            legais da sua utilização.
+          </p>
+          <div className="legal-badges">
+            <span className="legal-badge"><FiClock /> Última atualização: 25 de junho de 2026</span>
+            <span className="legal-badge"><FiInfo /> Informação legal</span>
+          </div>
+        </section>
 
-        <section>
+        <nav className="legal-toc" aria-label="Secções desta página">
+          <span className="legal-toc-label">Nesta página</span>
+          <a href="#identificacao">1. Identificação do Proprietário</a>
+          <a href="#limitacoes-responsabilidade">2. Limitações de Responsabilidade</a>
+          <a href="#disponibilidade">3. Disponibilidade do Website</a>
+          <a href="#terceiros-links">4. Conteúdo de Terceiros e Links Externos</a>
+          <a href="#propriedade-intelectual">5. Propriedade Intelectual</a>
+          <a href="#uso-aceitavel">6. Uso Aceitável do Website</a>
+          <a href="#protecao-dados">7. Proteção de Dados Pessoais</a>
+          <a href="#jurisdicao">8. Jurisdição e Lei Aplicável</a>
+          <a href="#alteracoes">9. Alterações a Este Aviso</a>
+          <a href="#indemnizacao">10. Indenização</a>
+          <a href="#resolucao-disputas">11. Resolução de Disputas</a>
+          <a href="#contacto">12. Contacto para Notificações Legais</a>
+          <a href="#divisibilidade">13. Divisibilidade</a>
+          <a href="#acordo-integral">14. Acordo Integral</a>
+        </nav>
+
+        <section id="identificacao">
           <h2>1. Identificação do Proprietário</h2>
           <h3>Entidade Proprietária</h3>
           {/* A PREENCHER antes do lançamento: denominação social, NIF/NIPC,
@@ -29,7 +57,7 @@ export default function LegalNotice() {
           </p>
         </section>
 
-        <section>
+        <section id="limitacoes-responsabilidade">
           <h2>2. Limitações de Responsabilidade</h2>
           <h3>2.1 Conteúdo do Website</h3>
           <p>
@@ -69,7 +97,7 @@ export default function LegalNotice() {
           </p>
         </section>
 
-        <section>
+        <section id="disponibilidade">
           <h2>3. Disponibilidade do Website</h2>
           <p>
             A Sunny Sales não garante disponibilidade ininterrupta ou sem erros do
@@ -86,7 +114,7 @@ export default function LegalNotice() {
           </p>
         </section>
 
-        <section>
+        <section id="terceiros-links">
           <h2>4. Conteúdo de Terceiros e Links Externos</h2>
           <p>
             Este website pode conter links para websites de terceiros. A Sunny Sales
@@ -103,7 +131,7 @@ export default function LegalNotice() {
           </p>
         </section>
 
-        <section>
+        <section id="propriedade-intelectual">
           <h2>5. Propriedade Intelectual</h2>
           <p>
             Todos os direitos autorais, marcas registadas, logos, design e conteúdo
@@ -113,7 +141,7 @@ export default function LegalNotice() {
           </p>
         </section>
 
-        <section>
+        <section id="uso-aceitavel">
           <h2>6. Uso Aceitável do Website</h2>
           <p>
             Concorda em não utilizar este website para:
@@ -130,7 +158,7 @@ export default function LegalNotice() {
           </ul>
         </section>
 
-        <section>
+        <section id="protecao-dados">
           <h2>7. Proteção de Dados Pessoais</h2>
           <p>
             A Sunny Sales está comprometida em proteger os seus dados pessoais de
@@ -140,7 +168,7 @@ export default function LegalNotice() {
           </p>
         </section>
 
-        <section>
+        <section id="jurisdicao">
           <h2>8. Jurisdição e Lei Aplicável</h2>
           <p>
             Este Aviso Legal é regido e interpretado de acordo com as leis de
@@ -152,7 +180,7 @@ export default function LegalNotice() {
           </p>
         </section>
 
-        <section>
+        <section id="alteracoes">
           <h2>9. Alterações a Este Aviso</h2>
           <p>
             A Sunny Sales reserva-se o direito de modificar este Aviso Legal a
@@ -162,7 +190,7 @@ export default function LegalNotice() {
           </p>
         </section>
 
-        <section>
+        <section id="indemnizacao">
           <h2>10. Indenização</h2>
           <p>
             Concorda em indemnizar, defender e compensar a Sunny Sales, seus
@@ -172,7 +200,7 @@ export default function LegalNotice() {
           </p>
         </section>
 
-        <section>
+        <section id="resolucao-disputas">
           <h2>11. Resolução de Disputas</h2>
           <p>
             Qualquer disputa decorrente deste website será resolvida de acordo com
@@ -181,7 +209,7 @@ export default function LegalNotice() {
           </p>
         </section>
 
-        <section>
+        <section id="contacto">
           <h2>12. Contacto para Notificações Legais</h2>
           <p>
             Para notificações legais relacionadas com este website, contacte:
@@ -193,7 +221,7 @@ export default function LegalNotice() {
           </p>
         </section>
 
-        <section>
+        <section id="divisibilidade">
           <h2>13. Divisibilidade</h2>
           <p>
             Se qualquer provisão deste Aviso Legal for considerada inválida ou
@@ -202,7 +230,7 @@ export default function LegalNotice() {
           </p>
         </section>
 
-        <section>
+        <section id="acordo-integral">
           <h2>14. Acordo Integral</h2>
           <p>
             Este Aviso Legal, juntamente com a Política de Privacidade e Termos e
