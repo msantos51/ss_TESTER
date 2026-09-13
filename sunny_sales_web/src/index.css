@@ -26,20 +26,16 @@
    Sunny Sales — Design System "Vidro & Maré"
 
    CONCEITO (navegação ao estilo iOS sobre cores de verão):
-   · A página é uma TELA cor de areia (--canvas, White Cloud).
-     Sobre ela flutuam PAINÉIS brancos arredondados
-     (--radius-panel) com sombra difusa e sem contornos
-     duros — a profundidade vem da sombra, não da borda.
+   · A página é uma TELA branca lisa (--canvas). Sobre ela
+     flutuam PAINÉIS brancos arredondados (--radius-panel)
+     com sombra difusa e sem contornos duros — a profundidade
+     vem da sombra, não da borda nem de um tom de fundo
+     diferente.
    · A navegação não toca as margens: é uma CÁPSULA DE VIDRO
      centrada (--glass + --glass-blur), que encolhe ao rolar.
      Em telemóvel a cápsula fica com a marca, o atalho do
      mapa e um BOTÃO DE MENU: os destinos abrem numa folha
      de vidro por baixo dela.
-   · Por baixo de tudo, em todas as páginas, está a
-     DIAGONAL MAR → SOL fixa ao ecrã (--grad-site): azul
-     no canto superior esquerdo, areia a atravessar o meio,
-     amarelo no canto inferior direito. É a cor do fundo do
-     site e é ela que dá cor para o vidro filtrar.
    · O mapa é ele próprio um painel arredondado; todos os
      controlos (zoom, localizar, vista) flutuam por cima
      em pastilhas de vidro.
@@ -59,7 +55,7 @@
    · --gold = SUMMER SUN #EE9B00 — 2,3:1 com branco, logo
      SEMPRE como fundo com texto escuro (--gold-ink).
      Significa uma coisa só: há vendedores ativos agora.
-   · --canvas = WHITE CLOUD #FFF9F4, a tela de todo o site.
+   · --canvas = branco #FFFFFF, a tela de todo o site.
    · --coral = única ação urgente do mapa (localizar-me).
    · --forest = presença de vendedores (pins) — mantém-se
      escuro e saturado para ler contra os tiles do mapa.
@@ -166,13 +162,14 @@
   --navy-light: #0A9396;
   --navy-border: rgba(6, 39, 47, 0.2);
 
-  /* ── Superfícies: tela de areia + painéis brancos ──
-     A tela (--canvas) recua e os painéis brancos ganham relevo. O cinzento
-     azulado anterior lia a frio num site de praia. */
-  --canvas: #FFF9F4;
-  --canvas-deep: #F7EFE7;
-  --bg-deep: #F7EFE7;
-  --bg: #FFF9F4;
+  /* ── Superfícies: tela branca + painéis brancos ──
+     A tela (--canvas) e os painéis (--surface) são o mesmo branco; o relevo
+     dos painéis vem só da sombra (--shadow-*), não de um tom de fundo
+     diferente. */
+  --canvas: #ffffff;
+  --canvas-deep: #F0F0F0;
+  --bg-deep: #F0F0F0;
+  --bg: #ffffff;
   --bg-raised: #ffffff;
   --surface: #ffffff;
   /* Preenchimento neutro de chips, segmentos e hovers */
@@ -181,9 +178,8 @@
   --surface-warm: #FFFCF9;
 
   /* ── Vidro (cápsula de navegação, menu de telemóvel, pastilhas do mapa) ──
-     O vidro precisa de cor por baixo para ler como vidro: daí o gradiente do
-     site (--grad-site) e o ambiente aguarela do hero. Onde o blur não é
-     suportado, --glass-solid entra no lugar através de @supports. */
+     Onde o blur não é suportado (telemóveis antigos, Firefox sem a flag),
+     --glass-solid entra no lugar através de @supports. */
   --glass: rgba(255, 255, 255, 0.72);
   --glass-strong: rgba(255, 255, 255, 0.82);
   /* Material espesso da folha do menu: por baixo dela passa o conteúdo da
@@ -221,40 +217,6 @@
   --grad-dusk: linear-gradient(135deg, #005F73, #001219);
   /* Blocos de destaque: Sky Blue a descer para a noite (texto branco) */
   --grad-dark: linear-gradient(155deg, #005F73 0%, #00323F 100%);
-  /* ── Fundo do site: NASCER DO SOL ──
-     Fixa ao ecrã (ver `body::before`) e presente em todas as páginas.
-     Versão "quente" da diagonal original: o Sky Blue deixa de abrir a
-     diagonal e passa a ser só uma mancha compacta no vértice superior
-     esquerdo (o radial-gradient); todo o resto do ecrã é a progressão
-     quente — Teal Ocean muito ténue, a tela a descansar ao centro, depois
-     duna, Summer Sun, e a fechar em Amber/Terracota (as mesmas cores de
-     --grad-sun e --palette-sunset) no canto inferior direito. Existe por
-     duas razões: dá cor para o vidro da cápsula e do rodapé filtrarem e
-     fecha o ecrã em vez de o deixar num bege liso. É a ÚNICA camada de
-     ambiente — ver a nota sobre --grad-ambient no ficheiro Landing.css.
-     A faixa do meio (34%→46%) continua canvas puro de propósito: sem ela o
-     azul do canto e o quente do resto lavavam-se um no outro.
-     TETO DE CONTRASTE: o gradiente é fixo ao ECRÃ, por isso qualquer linha
-     de texto passa por qualquer ponto dele ao rolar — não há cantos
-     "seguros". Há dois pontos que travam os alfas, um de cada lado:
-     o vértice azul (radial 0,08 + diagonal 0,06, combinados ≈0,135) dá
-     4,64:1, e o canto quente mais carregado (entre o amber a 88% e o
-     terracota a 100%, ≈0,18) dá 4,57:1 — ambos acima de 4,5:1 a
-     --text-secondary, a tinta mais clara autorizada em cima do fundo (ver
-     secção 5 do DESIGN_SYSTEM). Subir um alfa de qualquer um dos dois lados
-     sem refazer essa conta parte o AA. */
-  --grad-site:
-    radial-gradient(64% 55% at 8% 6%, rgba(0, 95, 115, 0.08), transparent 66%),
-    linear-gradient(
-      150deg,
-      rgba(0, 95, 115, 0.06) 0%,
-      rgba(10, 147, 150, 0.10) 18%,
-      rgba(255, 249, 244, 0) 34%,
-      rgba(233, 216, 166, 0.26) 52%,
-      rgba(238, 155, 0, 0.26) 74%,
-      rgba(202, 103, 2, 0.19) 88%,
-      rgba(187, 62, 3, 0.15) 100%
-    );
 
   /* ── Sombras (difusas, de baixa opacidade) ──
      Duas camadas: um contacto curto que substitui a borda
@@ -357,8 +319,6 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
-  /* Tela cinzenta muito clara: é o que faz os painéis brancos
-     ler como painéis e não como pedaços de página */
   background-color: var(--canvas);
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
@@ -366,20 +326,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-}
-
-/* O gradiente do site. Fixo ao ecrã (e não à página) por três razões: não
-   estica nem deixa costuras em páginas longas, não depende da altura do
-   conteúdo e o foco de baixo fica sempre no fundo do ecrã. Fica atrás de tudo
-   (z-index: -1, por cima da cor da tela, que é pintada na canvas) e não apanha
-   cliques. */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: var(--grad-site);
-  pointer-events: none;
 }
 
 ::selection {
