@@ -91,6 +91,7 @@
   font-size: var(--fs-lead);
   line-height: 1.55;
   color: var(--text-secondary);
+  text-align: justify;
 }
 
 .landing-actions {
@@ -312,6 +313,7 @@
   font-size: var(--fs-body-sm);
   line-height: 1.55;
   color: var(--text-secondary);
+  text-align: justify;
 }
 
 /* ---------- Banner teal ---------- */
@@ -341,6 +343,7 @@
   font-size: var(--fs-body);
   line-height: 1.6;
   color: var(--on-accent);
+  text-align: justify;
 }
 
 .landing-banner-btn {

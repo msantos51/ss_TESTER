@@ -1047,6 +1047,7 @@ h2 {
   font-size: var(--fs-body);
   color: var(--text-secondary);
   line-height: 1.6;
+  text-align: justify;
 }
 
 .legal-badges {
@@ -1248,6 +1249,7 @@ h2 {
 .legal-container p {
   margin-bottom: 1rem;
   color: var(--text-secondary);
+  text-align: justify;
 }
 
 .legal-container ul {

@@ -92,6 +92,6 @@
   color: var(--text-secondary);
   line-height: 1.65;
   margin: 0;
-  text-align: left;
+  text-align: justify;
   animation: fadeIn 0.25s var(--ease-out);
 }
