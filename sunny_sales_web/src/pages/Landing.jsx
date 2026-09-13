@@ -143,20 +143,6 @@ export default function Landing() {
               Como funciona
             </a>
           </div>
-          <dl className="landing-stats">
-            <div>
-              <dt>Tempo real</dt>
-              <dd>posições atualizadas ao segundo</dd>
-            </div>
-            <div>
-              <dt>Sem instalar</dt>
-              <dd>abre no browser do telemóvel</dd>
-            </div>
-            <div>
-              <dt>Grátis</dt>
-              <dd>para quem está na praia</dd>
-            </div>
-          </dl>
         </div>
       </section>
 
