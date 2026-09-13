@@ -42,13 +42,13 @@ export default function Sustentabilidade() {
         </p>
 
         <div className="info-badges">
-          <div className="info-badge">
+          <div className="info-badge info-badge-gold">
             <MdDelete /> Emissões reduzidas
           </div>
-          <div className="info-badge">
+          <div className="info-badge info-badge-gold">
             <MdRecycling /> Embalagens eco-friendly
           </div>
-          <div className="info-badge">
+          <div className="info-badge info-badge-gold">
             <MdWaves /> Praias mais limpas
           </div>
         </div>
