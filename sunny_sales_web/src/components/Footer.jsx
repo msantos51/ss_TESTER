@@ -85,7 +85,14 @@ const messages = [
   "Reduz o uso de plástico descartável na praia."
 ];
 
-export default function Footer() {
+/**
+ * Props:
+ *  - minimal: esconde a linha de links legais, mostrando só a mensagem a
+ *    rodar. Usado em /mapa, onde o rodapé se sobrepõe ao mapa em vez de
+ *    reservar altura no fluxo — uma única linha mantém essa altura previsível
+ *    em qualquer largura de ecrã.
+ */
+export default function Footer({ minimal = false }) {
   const [index, setIndex] = useState(0);
 
   // (em português) A cada 10 segundos muda para a próxima mensagem
@@ -97,7 +104,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="footer-wrapper">
+    <footer className={`footer-wrapper${minimal ? ' footer-wrapper--minimal' : ''}`}>
       <div className="footer-content">
         <div className="footer-message">
           <span className="footer-message-pill">
@@ -105,17 +112,19 @@ export default function Footer() {
             {messages[index]}
           </span>
         </div>
-        <div className="footer-links">
-          <Link to="/privacy-policy" className="footer-link">Privacidade</Link>
-          <span className="footer-link-divider">•</span>
-          <Link to="/terms-and-conditions" className="footer-link">Termos</Link>
-          <span className="footer-link-divider">•</span>
-          <Link to="/legal-notice" className="footer-link">Aviso Legal</Link>
-          <span className="footer-link-divider">•</span>
-          <Link to="/cookies-policy" className="footer-link">Cookies</Link>
-          <span className="footer-link-divider">•</span>
-          <Link to="/eliminar-conta" className="footer-link">Eliminar conta</Link>
-        </div>
+        {!minimal && (
+          <div className="footer-links">
+            <Link to="/privacy-policy" className="footer-link">Privacidade</Link>
+            <span className="footer-link-divider">•</span>
+            <Link to="/terms-and-conditions" className="footer-link">Termos</Link>
+            <span className="footer-link-divider">•</span>
+            <Link to="/legal-notice" className="footer-link">Aviso Legal</Link>
+            <span className="footer-link-divider">•</span>
+            <Link to="/cookies-policy" className="footer-link">Cookies</Link>
+            <span className="footer-link-divider">•</span>
+            <Link to="/eliminar-conta" className="footer-link">Eliminar conta</Link>
+          </div>
+        )}
       </div>
     </footer>
   );
