@@ -1522,7 +1522,8 @@
 
 /* ── Locate buttons ───────────────────────────────────── */
 
-/* A única ação real desta página, por isso é a única a coral. O anel branco
+/* A ação de recentrar no "estás aqui" reutiliza o azul funcional desse pin
+   (ver --blue), em vez do coral reservado a alertas urgentes. O anel branco
    garante a separação do fundo seja qual for o tile por baixo — ao sol, o que
    falha primeiro é a diferença de luminância contra o mapa, não o rácio da
    cor contra o branco. */
@@ -1531,9 +1532,9 @@
   position: absolute;
   bottom: 20px;
   right: 14px;
-  width: 64px;
-  height: 64px;
-  background: var(--coral);
+  width: 48px;
+  height: 48px;
+  background: var(--blue);
   border: none;
   border-radius: 20px;
   cursor: pointer;
@@ -1552,14 +1553,21 @@
 
 .locate-btn .locate-icon,
 .vendor-locate-btn .locate-icon {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   stroke-width: 2.6;
+}
+
+/* As quatro pontas do alvo (N/S/E/O) ficam a dourado, os anéis mantêm-se
+   brancos — é o par de cores da paleta que sobra para um detalhe pequeno. */
+.locate-btn .locate-icon-line,
+.vendor-locate-btn .locate-icon-line {
+  stroke: var(--gold);
 }
 
 .locate-btn:hover,
 .vendor-locate-btn:hover {
-  background: var(--coral-hover);
+  background: var(--blue-hover);
   box-shadow: 0 0 0 3px #fff, 0 6px 18px rgba(16, 26, 30, 0.5);
   transform: none;
 }
@@ -1567,7 +1575,7 @@
 .locate-btn:active,
 .vendor-locate-btn:active {
   transform: none;
-  background: var(--coral-hover);
+  background: var(--blue-hover);
   box-shadow: 0 0 0 3px #fff, 0 2px 8px rgba(16, 26, 30, 0.4);
 }
 
@@ -2158,7 +2166,7 @@
   border-radius: var(--radius-panel);
   background: var(--surface);
   box-shadow: var(--shadow-float);
-  text-align: left;
+  text-align: justify;
   animation: vendor-card-rise 0.22s ease-out;
 }
 
@@ -2257,10 +2265,10 @@
 .locate-btn {
   bottom: 22px;
   right: 18px;
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: var(--coral);
+  background: var(--blue);
   color: #fff;
   /* O anel branco fica: ao sol o que falha primeiro é a diferença de
      luminância contra o tile, não o rácio da cor contra o branco. */
@@ -2268,7 +2276,7 @@
 }
 
 .locate-btn:hover {
-  background: var(--coral-hover);
+  background: var(--blue-hover);
 }
 
 /* O norte fica ao lado do botão de localizar, na mesma linha: são o par que
