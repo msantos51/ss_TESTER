@@ -114,7 +114,7 @@ export default function Landing() {
             {activeLabel}
           </span>
           <h1 className="landing-title">
-            Encontra vendedores de praia perto de ti, em tempo real
+            Vendedores de praia, em tempo real.
           </h1>
         </div>
 
@@ -133,8 +133,7 @@ export default function Landing() {
 
         <div className="landing-hero-bottom">
           <p className="landing-lead">
-            Bolas de Berlim, gelados e acessórios de praia. Vês onde estão agora,
-            sem instalar nada e sem sair da toalha.
+            Vês onde estão agora, sem instalar nada e sem sair da toalha.
           </p>
           <div className="landing-actions">
             <Link to="/mapa" className="landing-btn landing-btn--primary">
