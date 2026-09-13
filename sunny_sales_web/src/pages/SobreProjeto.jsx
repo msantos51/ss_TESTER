@@ -47,13 +47,13 @@ export default function SobreProjeto() {
         </p>
 
         <div className="info-badges">
-          <span className="info-badge">
+          <span className="info-badge info-badge-gold">
             <FiMapPin /> Praias portuguesas
           </span>
-          <span className="info-badge">
+          <span className="info-badge info-badge-gold">
             <FiClock /> Localização em tempo real
           </span>
-          <span className="info-badge">
+          <span className="info-badge info-badge-gold">
             <FiSmartphone /> Web &amp; Mobile
           </span>
         </div>

@@ -127,41 +127,16 @@
   color: #fff;
 }
 
-/* A ação secundária é vidro, não um painel branco: assenta no ambiente
-   em vez de o tapar. */
+/* Ação secundária: fundo amarelo com texto branco. */
 .landing-btn--ghost {
-  background: var(--glass);
-  -webkit-backdrop-filter: saturate(180%) blur(10px);
-  backdrop-filter: saturate(180%) blur(10px);
-  color: var(--text);
-  box-shadow: var(--glass-ring), var(--shadow-sm);
+  background: var(--gold);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
 }
 
 .landing-btn--ghost:hover {
-  background: var(--glass-strong);
-  color: var(--text);
-}
-
-.landing-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-lg) var(--space-2xl);
-  margin: var(--space-2xl) 0 0;
-}
-
-.landing-stats dt {
-  font-size: var(--fs-h3);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  /* --teal-text e não --teal: a 20px isto ainda é texto, e o teal cheio
-     sobre a tela daria 3,6:1. */
-  color: var(--teal-text);
-}
-
-.landing-stats dd {
-  margin: 2px 0 0;
-  font-size: var(--fs-caption);
-  color: var(--text-muted);
+  background: var(--gold-strong);
+  color: #fff;
 }
 
 /* Pré-visualização do mapa */

@@ -65,20 +65,15 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: var(--surface-alt);
+  background: var(--gold);
   font-size: 1.15rem;
-  color: var(--text-secondary);
+  color: #fff;
   font-weight: 500;
   flex-shrink: 0;
   line-height: 1;
   /* Rotação suave ao expandir/colapsar */
   transition: transform var(--transition-slow), background var(--transition),
     color var(--transition);
-}
-
-.faq-item[open] .faq-q::after {
-  background: var(--accent);
-  color: var(--on-accent);
 }
 
 .faq-item[open] .faq-q::after {
