@@ -728,28 +728,17 @@
   justify-content: center;
   min-width: 42px;
   height: 42px;
-  background: var(--gold-soft);
+  background: var(--gold);
   border-radius: var(--radius-control);
   flex-shrink: 0;
-  color: var(--success);
-}
-
-/* Cabeçalho "Consciencialização dos Banhistas": mesmo fundo dourado dos
-   restantes ícones de secção, mas ícone verde para condizer com os da
-   lista abaixo. */
-.sustainability-head-icon {
-  color: var(--success);
-}
-
-.sustainability-head-icon svg {
-  stroke: var(--success);
+  color: #fff;
 }
 
 .sustainability-icon svg {
   width: 24px;
   height: 24px;
-  stroke: var(--success);
-  color: var(--success);
+  stroke: #fff;
+  color: #fff;
 }
 
 .sustainability-text {
@@ -778,8 +767,8 @@
   justify-content: center;
   min-width: 48px;
   height: 48px;
-  background: rgba(20, 122, 61, 0.1);
-  color: var(--success);
+  background: var(--gold);
+  color: #fff;
   border-radius: var(--radius-md);
   flex-shrink: 0;
 }
