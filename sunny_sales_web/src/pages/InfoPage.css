@@ -50,6 +50,20 @@
   position: relative;
   z-index: 1;
   text-wrap: balance;
+  display: inline-block;
+}
+
+/* Mesmo pormenor dourado do "Como funciona" da entrada (ver .landing-h2 em
+   Landing.css): identifica o título principal também nas páginas internas. */
+.info-hero-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--gold);
 }
 
 .info-hero-lead {
@@ -264,11 +278,25 @@
   color: var(--text);
   margin: 0;
   display: block;
+  position: relative;
   /* Palavras longas em PT ("Consciencialização") hifenizam em ecrãs
      estreitos em vez de causarem scroll horizontal. */
   hyphens: auto;
   overflow-wrap: break-word;
   min-width: 0;
+}
+
+/* Mesmo pormenor dourado do "Como funciona" da entrada (ver .landing-h2 em
+   Landing.css), repetido nos títulos de secção das páginas internas. */
+.info-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 32px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--gold);
 }
 
 /* When the title stands alone (no icon-chip header) keep spacing tidy */
