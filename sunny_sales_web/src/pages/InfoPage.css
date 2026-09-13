@@ -143,6 +143,20 @@
   stroke: var(--primary);
 }
 
+.info-badge.info-badge-gold {
+  background: var(--gold);
+  color: #fff;
+}
+
+.info-badge.info-badge-gold svg {
+  color: #fff;
+  stroke: #fff;
+}
+
+.info-badge.info-badge-gold:hover {
+  background: var(--gold-strong);
+}
+
 .info-badge-value {
   font-size: 0.95rem;
   font-weight: 700;
@@ -259,8 +273,8 @@
   width: 46px;
   height: 46px;
   border-radius: var(--radius-control);
-  background: var(--accent-soft);
-  color: var(--primary);
+  background: var(--gold);
+  color: #fff;
   border: none;
   flex-shrink: 0;
 }
@@ -268,7 +282,7 @@
 .info-section-icon svg {
   width: 22px;
   height: 22px;
-  stroke: var(--primary);
+  stroke: #fff;
 }
 
 .info-section-title {
