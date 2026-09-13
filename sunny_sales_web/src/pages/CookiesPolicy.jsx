@@ -1,13 +1,36 @@
+import { MdCookie } from 'react-icons/md';
+import { FiClock, FiSlash } from 'react-icons/fi';
+
 export default function CookiesPolicy() {
   return (
     <div className="legal-page">
       <div className="legal-container">
-        <div className="legal-header">
+        <section className="legal-hero">
+          <span className="legal-hero-icon" aria-hidden="true"><MdCookie /></span>
           <h1>Política de Cookies</h1>
-          <p className="last-updated">Última atualização: 22 de julho de 2026</p>
-        </div>
+          <p className="legal-hero-lead">
+            O que guardamos no teu navegador para o mapa funcionar — e o que
+            não guardamos.
+          </p>
+          <div className="legal-badges">
+            <span className="legal-badge"><FiClock /> Última atualização: 22 de julho de 2026</span>
+            <span className="legal-badge"><FiSlash /> Sem cookies de terceiros</span>
+          </div>
+        </section>
 
-        <section>
+        <nav className="legal-toc" aria-label="Secções desta página">
+          <span className="legal-toc-label">Nesta página</span>
+          <a href="#o-que-sao">1. O que são Cookies?</a>
+          <a href="#o-que-utilizamos">2. O que a Sunny Sales Utiliza</a>
+          <a href="#o-que-nao-utilizamos">3. O que Não Utiliza</a>
+          <a href="#terceiros-pagamentos">4. Cookies de Terceiros</a>
+          <a href="#localizacao">5. Localização</a>
+          <a href="#gerir-eliminar">6. Como Gerir e Eliminar</a>
+          <a href="#contacto">7. Contacto</a>
+          <a href="#alteracoes">8. Alterações a Esta Política</a>
+        </nav>
+
+        <section id="o-que-sao">
           <h2>1. O que são Cookies e Armazenamento Local?</h2>
           <p>
             Cookies são pequenos ficheiros de texto guardados no seu dispositivo
@@ -19,7 +42,7 @@ export default function CookiesPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="o-que-utilizamos">
           <h2>2. O que a Sunny Sales Utiliza</h2>
           <p>
             Este site é dedicado ao banhista e não tem contas nem início de sessão,
@@ -46,7 +69,7 @@ export default function CookiesPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="o-que-nao-utilizamos">
           <h2>3. O que a Sunny Sales NÃO Utiliza (atualmente)</h2>
           <p>
             Para sermos claros, e ao contrário de muitos sites, a Sunny Sales
@@ -65,7 +88,7 @@ export default function CookiesPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="terceiros-pagamentos">
           <h2>4. Cookies de Terceiros (Pagamentos)</h2>
           <p>
             Este site não processa pagamentos: a compra é feita diretamente ao
@@ -74,7 +97,7 @@ export default function CookiesPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="localizacao">
           <h2>5. Localização</h2>
           <p>
             As funcionalidades de mapa podem pedir acesso à sua localização. Esse
@@ -84,7 +107,7 @@ export default function CookiesPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="gerir-eliminar">
           <h2>6. Como Gerir e Eliminar</h2>
           <p>
             Pode limpar o armazenamento local e os cookies a qualquer momento nas
@@ -99,7 +122,7 @@ export default function CookiesPolicy() {
           </ul>
         </section>
 
-        <section>
+        <section id="contacto">
           <h2>7. Contacto</h2>
           <p>
             Para qualquer questão sobre esta Política de Cookies, contacte-nos:
@@ -111,7 +134,7 @@ export default function CookiesPolicy() {
           </p>
         </section>
 
-        <section>
+        <section id="alteracoes">
           <h2>8. Alterações a Esta Política</h2>
           <p>
             Podemos atualizar esta Política de Cookies periodicamente. A data de

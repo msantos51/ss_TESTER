@@ -1000,14 +1000,37 @@ h2 {
   animation: fadeIn 0.35s var(--ease-out);
 }
 
-/* Cabeçalho de página legal: título simples, sem painel decorativo. */
-.legal-header {
-  border-bottom: none;
-  padding: 20px 4px 22px;
-  margin-bottom: 1rem;
+/* Cabeçalho de página legal: mesma linguagem visual do .info-hero das
+   páginas internas (painel branco, chip de ícone, badges) — antes disto
+   as páginas legais eram só um título solto, inconsistente com o resto
+   do site. */
+.legal-hero {
+  background: var(--surface);
+  border-radius: var(--radius-2xl);
+  padding: 44px 44px 40px;
+  margin: 1.5rem 0 1.5rem;
+  box-shadow: var(--shadow-sm);
+  text-align: left;
 }
 
-.legal-header h1,
+.legal-hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-control);
+  background: var(--accent-soft);
+  color: var(--primary);
+  margin-bottom: 18px;
+}
+
+.legal-hero-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--primary);
+}
+
 .legal-container h1 {
   font-family: var(--font-display);
   font-size: var(--fs-h1);
@@ -1018,18 +1041,93 @@ h2 {
   color: var(--text);
 }
 
-.legal-header .last-updated {
-  margin: 14px 0 0;
-  font-size: 0.9rem;
+.legal-hero-lead {
+  margin: 12px 0 0;
+  max-width: 60ch;
+  font-size: var(--fs-body);
   color: var(--text-secondary);
-  font-style: normal;
+  line-height: 1.6;
 }
 
-.legal-container .last-updated {
-  font-size: 0.9rem;
+.legal-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 22px 0 0;
+}
+
+.legal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 15px;
+  border-radius: var(--radius-full);
+  background: var(--surface-alt);
   color: var(--text-secondary);
-  margin-bottom: 2rem;
-  font-style: normal;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.legal-badge svg {
+  color: var(--primary);
+  stroke: var(--primary);
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* ── Navegação rápida por secções ──────────────────────────
+   Só vale a pena nos documentos longos (Privacidade, Termos, Aviso
+   Legal, Cookies): uma fila de pastilhas que salta para cada secção,
+   em vez de obrigar a rolar um muro de texto às cegas. */
+.legal-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 1.5rem;
+  padding: 18px 20px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+.legal-toc-label {
+  width: 100%;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 6px;
+}
+
+.legal-toc a {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background var(--transition), color var(--transition);
+}
+
+.legal-toc a:hover {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.legal-toc a:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* O alvo do salto do TOC não pode ficar escondido atrás da cápsula fixa. */
+.legal-container section[id] {
+  scroll-margin-top: calc(var(--navbar-h) + var(--gutter) + 12px);
 }
 
 
@@ -1168,8 +1266,14 @@ h2 {
 }
 
 @media (max-width: 768px) {
-  .legal-header {
-    padding: 16px 0 14px;
+  .legal-hero {
+    padding: 30px 24px 28px;
+    border-radius: var(--radius-xl);
+    margin: 1rem 0 1rem;
+  }
+
+  .legal-toc {
+    padding: 14px 16px;
   }
 
   .legal-container section {

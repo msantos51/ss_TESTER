@@ -1,13 +1,44 @@
+import { FiFileText, FiClock, FiMapPin } from 'react-icons/fi';
+
 export default function TermsAndConditions() {
   return (
     <div className="legal-page">
       <div className="legal-container">
-        <div className="legal-header">
+        <section className="legal-hero">
+          <span className="legal-hero-icon" aria-hidden="true"><FiFileText /></span>
           <h1>Termos e Condições</h1>
-          <p className="last-updated">Última atualização: 25 de junho de 2026</p>
-        </div>
+          <p className="legal-hero-lead">
+            As regras que regem o acesso e a utilização da plataforma Sunny
+            Sales.
+          </p>
+          <div className="legal-badges">
+            <span className="legal-badge"><FiClock /> Última atualização: 25 de junho de 2026</span>
+            <span className="legal-badge"><FiMapPin /> Lei portuguesa</span>
+          </div>
+        </section>
 
-        <section>
+        <nav className="legal-toc" aria-label="Secções desta página">
+          <span className="legal-toc-label">Nesta página</span>
+          <a href="#aceitacao">1. Aceitação dos Termos</a>
+          <a href="#descricao-servico">2. Descrição do Serviço</a>
+          <a href="#elegibilidade">3. Elegibilidade</a>
+          <a href="#conta-utilizador">4. Conta de Utilizador</a>
+          <a href="#propriedade-intelectual">5. Propriedade Intelectual</a>
+          <a href="#uso-aceitavel">6. Uso Aceitável</a>
+          <a href="#pagamentos">7. Processamento de Pagamentos</a>
+          <a href="#isencao-responsabilidade">8. Isenção de Responsabilidade</a>
+          <a href="#limitacao-responsabilidade">9. Limitação de Responsabilidade</a>
+          <a href="#indemnizacao">10. Indenização</a>
+          <a href="#links-externos">11. Links Externos</a>
+          <a href="#rescisao">12. Rescisão</a>
+          <a href="#lei-aplicavel">13. Lei Aplicável e Jurisdição</a>
+          <a href="#disputas">14. Disputas e Resolução de Conflitos</a>
+          <a href="#modificacoes">15. Modificações aos Termos</a>
+          <a href="#integridade-contrato">16. Integridade do Contrato</a>
+          <a href="#contacto">17. Contacto</a>
+        </nav>
+
+        <section id="aceitacao">
           <h2>1. Aceitação dos Termos</h2>
           <p>
             Ao aceder e utilizar a plataforma Sunny Sales, concorda em estar vinculado
@@ -16,7 +47,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="descricao-servico">
           <h2>2. Descrição do Serviço</h2>
           <p>
             A Sunny Sales é uma plataforma que permite vendedores autónomos (vendedores
@@ -26,7 +57,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="elegibilidade">
           <h2>3. Elegibilidade</h2>
           <p>
             Deve ter pelo menos 18 anos de idade e ser legalmente capaz de celebrar
@@ -35,7 +66,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="conta-utilizador">
           <h2>4. Conta de Utilizador</h2>
           <h3>4.1 Registo</h3>
           <p>
@@ -58,7 +89,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="propriedade-intelectual">
           <h2>5. Direitos de Propriedade Intelectual</h2>
           <p>
             Todos os conteúdos, funcionalidades e funcionalidade da plataforma Sunny
@@ -71,7 +102,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="uso-aceitavel">
           <h2>6. Uso Aceitável</h2>
           <p>
             Concorda em não utilizar a plataforma para:
@@ -90,7 +121,7 @@ export default function TermsAndConditions() {
           </ul>
         </section>
 
-        <section>
+        <section id="pagamentos">
           <h2>7. Processamento de Pagamentos</h2>
           <h3>7.1 Tarifas e Pagamentos</h3>
           <p>
@@ -113,7 +144,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="isencao-responsabilidade">
           <h2>8. Isenção de Responsabilidade</h2>
           <p>
             A plataforma Sunny Sales é fornecida "tal como está" e "conforme
@@ -142,7 +173,7 @@ export default function TermsAndConditions() {
           </ul>
         </section>
 
-        <section>
+        <section id="limitacao-responsabilidade">
           <h2>9. Limitação de Responsabilidade</h2>
           <p>
             Em nenhuma circunstância a responsabilidade total da Sunny Sales
@@ -150,7 +181,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="indemnizacao">
           <h2>10. Indenização</h2>
           <p>
             Concorda em indemnizar, defender e compensar a Sunny Sales, seus
@@ -160,7 +191,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="links-externos">
           <h2>11. Links Externos</h2>
           <p>
             A nossa plataforma pode conter links para websites de terceiros. Não
@@ -169,7 +200,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="rescisao">
           <h2>12. Rescisão</h2>
           <p>
             Podemos rescindir ou suspender o acesso à sua conta e aos serviços
@@ -183,7 +214,7 @@ export default function TermsAndConditions() {
           </ul>
         </section>
 
-        <section>
+        <section id="lei-aplicavel">
           <h2>13. Lei Aplicável e Jurisdição</h2>
           <p>
             Estes Termos e Condições são regidos pelas leis de Portugal, sem
@@ -193,7 +224,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="disputas">
           <h2>14. Disputas e Resolução de Conflitos</h2>
           <p>
             Antes de iniciar qualquer ação legal, os utilizadores e a Sunny Sales
@@ -202,7 +233,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="modificacoes">
           <h2>15. Modificações aos Termos</h2>
           <p>
             Reservamo-nos o direito de modificar estes Termos a qualquer momento. As
@@ -211,7 +242,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="integridade-contrato">
           <h2>16. Integridade do Contrato</h2>
           <p>
             Estes Termos, juntamente com a Política de Privacidade e Política de
@@ -219,7 +250,7 @@ export default function TermsAndConditions() {
           </p>
         </section>
 
-        <section>
+        <section id="contacto">
           <h2>17. Contacto</h2>
           <p>
             Se tiver perguntas sobre estes Termos e Condições, contacte-nos:

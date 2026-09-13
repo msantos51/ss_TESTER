@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FiUserX, FiUsers } from 'react-icons/fi';
 import { BASE_URL } from '../config';
 
 // (em português) Página pública de gestão de dados da conta de vendedor.
@@ -130,10 +131,17 @@ export default function AccountDeletion() {
   return (
     <div className="legal-page">
       <div className="legal-container">
-        <div className="legal-header">
+        <section className="legal-hero">
+          <span className="legal-hero-icon" aria-hidden="true"><FiUserX /></span>
           <h1>Os teus dados e a tua conta</h1>
-          <p className="last-updated">Vendedores Sunny Sales</p>
-        </div>
+          <p className="legal-hero-lead">
+            Exporta o que guardamos sobre ti ou elimina a tua conta de
+            vendedor em definitivo.
+          </p>
+          <div className="legal-badges">
+            <span className="legal-badge"><FiUsers /> Vendedores Sunny Sales</span>
+          </div>
+        </section>
 
         {done ? (
           <section>
