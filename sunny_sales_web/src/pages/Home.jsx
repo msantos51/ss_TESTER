@@ -155,6 +155,26 @@ function getVendorPinHtml(color) {
   return `<div class="vendor-pin-marker" style="--pin-color: ${safeColor};"><span class="vendor-pin-core"></span></div>`;
 }
 
+// (em português) A bússola do banhista faz o mapa render dezenas de vezes por
+// segundo. Um ícone novo a cada render levava o Leaflet a deitar fora e a
+// refazer o elemento do pin, cortando a meio a animação que leva o vendedor de
+// uma posição à seguinte. Como o desenho só depende da cor, guarda-se por cor —
+// instâncias de `L.divIcon` podem ser partilhadas por vários marcadores.
+const vendorIconCache = new Map();
+function getVendorIcon(color) {
+  let icon = vendorIconCache.get(color);
+  if (!icon) {
+    icon = L.divIcon({
+      className: 'vendor-pin',
+      html: getVendorPinHtml(color),
+      iconSize: [40, 48],
+      iconAnchor: [20, 47],
+    });
+    vendorIconCache.set(color, icon);
+  }
+  return icon;
+}
+
 function MapZoomA11y() {
   const map = useMap();
   useEffect(() => {
@@ -923,12 +943,7 @@ export default function Home() {
                   <AnimatedVendorMarker
                     key={v.id}
                     position={[v.current_lat, v.current_lng]}
-                    icon={L.divIcon({
-                      className: 'vendor-pin',
-                      html: getVendorPinHtml(pinColor),
-                      iconSize: [40, 48],
-                      iconAnchor: [20, 47],
-                    })}
+                    icon={getVendorIcon(pinColor)}
                     eventHandlers={{
                       click: () => focusVendor(v),
                     }}

@@ -31,8 +31,14 @@ public class LocationForegroundService extends Service {
     // Distância mínima (m) entre leituras para serem aceites como movimento real,
     // e precisão máxima (m) aceitável — leituras piores são ruído e descartadas,
     // evitando que o pin "mexa" estando o vendedor parado.
+    //
+    // O tecto de precisão é generoso de propósito: num telemóvel na mão, na
+    // praia, o GPS anda muitas vezes nos 20–40 m e um tecto de 15 m descartava
+    // todas as leituras — o pin nunca chegava a mexer no mapa do banhista. O
+    // que trava o tremer é o filtro de distância abaixo, que cresce com a
+    // incerteza da própria leitura.
     private static final float MIN_UPDATE_DISTANCE_METERS = 8f;
-    private static final float MAX_ACCEPTABLE_ACCURACY_METERS = 15f;
+    private static final float MAX_ACCEPTABLE_ACCURACY_METERS = 50f;
 
     private FusedLocationProviderClient fusedClient;
     private LocationCallback locationCallback;
@@ -105,10 +111,22 @@ public class LocationForegroundService extends Service {
     }
 
     private void startLocationUpdates() {
+        // Arrancar duas vezes (o Android relança o serviço, o vendedor volta a
+        // carregar em partilhar) deixaria dois pedidos ativos a duplicar cada
+        // leitura, e só um deles seria cancelado ao parar.
+        if (locationCallback != null) {
+            fusedClient.removeLocationUpdates(locationCallback);
+            locationCallback = null;
+        }
+
+        // `setMaxUpdateDelayMillis(0)` desliga o agrupamento de leituras: o
+        // Android podia guardar até 30 s de posições e entregá-las de uma vez,
+        // e no mapa do banhista isso via-se como um pin parado que só de vez em
+        // quando dava um salto. Aqui a posição tem de sair assim que existe.
         LocationRequest request = new LocationRequest.Builder(5000)
                 .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
                 .setMinUpdateIntervalMillis(2000)
-                .setMaxUpdateDelayMillis(30000)
+                .setMaxUpdateDelayMillis(0)
                 .setMinUpdateDistanceMeters(MIN_UPDATE_DISTANCE_METERS)
                 .build();
 
@@ -186,7 +204,9 @@ public class LocationForegroundService extends Service {
         if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
         }
-        listener = null;
+        // O ouvinte não é limpo aqui: com START_STICKY o Android pode matar e
+        // relançar o serviço sem a app saber, e limpá-lo deixava a partilha
+        // viva mas muda. Quem o limpa é o plugin, ao parar a partilha.
     }
 
     @Nullable

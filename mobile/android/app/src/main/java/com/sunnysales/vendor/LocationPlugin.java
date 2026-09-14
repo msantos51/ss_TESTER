@@ -1,5 +1,6 @@
 package com.sunnysales.vendor;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Build;
 
@@ -10,32 +11,115 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
 
-@CapacitorPlugin(name = "LocationTracker", permissions = {
-        @Permission(alias = "ACCESS_FINE_LOCATION", strings = { android.Manifest.permission.ACCESS_FINE_LOCATION }),
-        @Permission(alias = "ACCESS_COARSE_LOCATION", strings = { android.Manifest.permission.ACCESS_COARSE_LOCATION }),
-        @Permission(alias = "ACCESS_BACKGROUND_LOCATION", strings = { android.Manifest.permission.ACCESS_BACKGROUND_LOCATION })
-})
+/**
+ * Ponte entre o ecrã do mapa e o serviço em primeiro plano que segue o GPS.
+ *
+ * As permissões são pedidas pela API atual do Capacitor (@PermissionCallback).
+ * A localização de fundo (ACCESS_BACKGROUND_LOCATION) NUNCA é pedida em
+ * conjunto com a de primeiro plano: a partir do Android 11 o sistema descarta
+ * o pedido inteiro quando as duas vêm juntas, o que deixava o vendedor sem
+ * qualquer permissão — e, por isso, sem atualizações de posição. Também não é
+ * necessária: um serviço em primeiro plano do tipo `location`, arrancado com a
+ * app visível, continua a receber posições com o ecrã desligado.
+ */
+@CapacitorPlugin(
+    name = "LocationTracker",
+    permissions = {
+        @Permission(
+            alias = LocationPlugin.LOCATION,
+            strings = { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }
+        ),
+        @Permission(alias = LocationPlugin.COARSE_LOCATION, strings = { Manifest.permission.ACCESS_COARSE_LOCATION }),
+        @Permission(alias = LocationPlugin.NOTIFICATIONS, strings = { Manifest.permission.POST_NOTIFICATIONS })
+    }
+)
 public class LocationPlugin extends Plugin {
+
+    static final String LOCATION = "location";
+    static final String COARSE_LOCATION = "coarseLocation";
+    static final String NOTIFICATIONS = "notifications";
 
     @PluginMethod
     public void startTracking(PluginCall call) {
-        requestPermissions(call);
-    }
-
-    @Override
-    protected void handleRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.handleRequestPermissionsResult(requestCode, permissions, grantResults);
-        PluginCall savedCall = getSavedCall();
-        if (savedCall == null) {
+        if (hasLocationPermission()) {
+            ensureNotificationPermission(call);
             return;
         }
+        requestPermissionForAlias(LOCATION, call, "locationPermissionCallback");
+    }
 
-        if (getPermissionState("ACCESS_FINE_LOCATION") == PermissionState.GRANTED) {
-            startLocationTracking(savedCall);
-        } else {
-            savedCall.reject("Permissão de localização negada");
+    /**
+     * Só pede a localização. O pedido automático do Capacitor abrangeria todos
+     * os aliases declarados — incluindo a localização de fundo, que tem de ser
+     * pedida à parte.
+     */
+    @PluginMethod
+    @Override
+    public void requestPermissions(PluginCall call) {
+        if (hasLocationPermission()) {
+            call.resolve(permissionStates());
+            return;
         }
+        requestPermissionForAlias(LOCATION, call, "permissionsRequestCallback");
+    }
+
+    @PermissionCallback
+    private void permissionsRequestCallback(PluginCall call) {
+        call.resolve(permissionStates());
+    }
+
+    @PermissionCallback
+    private void locationPermissionCallback(PluginCall call) {
+        if (!hasLocationPermission()) {
+            call.reject("Permissão de localização negada");
+            return;
+        }
+        ensureNotificationPermission(call);
+    }
+
+    /**
+     * A partir do Android 13 a notificação do serviço fica escondida sem
+     * POST_NOTIFICATIONS. É pedida porque a notificação é o que diz ao
+     * vendedor que está a partilhar, mas a recusa não trava o seguimento.
+     */
+    private void ensureNotificationPermission(PluginCall call) {
+        if (
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            getPermissionState(NOTIFICATIONS) == PermissionState.GRANTED
+        ) {
+            startLocationTracking(call);
+            return;
+        }
+        requestPermissionForAlias(NOTIFICATIONS, call, "notificationPermissionCallback");
+    }
+
+    @PermissionCallback
+    private void notificationPermissionCallback(PluginCall call) {
+        startLocationTracking(call);
+    }
+
+    /**
+     * Basta uma das duas: com "Aproximada" o Android concede apenas a grossa,
+     * e o vendedor continua a poder partilhar (com menos precisão).
+     */
+    private boolean hasLocationPermission() {
+        return (
+            getPermissionState(LOCATION) == PermissionState.GRANTED ||
+            getPermissionState(COARSE_LOCATION) == PermissionState.GRANTED
+        );
+    }
+
+    private JSObject permissionStates() {
+        JSObject result = new JSObject();
+        result.put(LOCATION, stateName(hasLocationPermission() ? PermissionState.GRANTED : getPermissionState(LOCATION)));
+        result.put(NOTIFICATIONS, stateName(getPermissionState(NOTIFICATIONS)));
+        return result;
+    }
+
+    private String stateName(PermissionState state) {
+        return (state == null ? PermissionState.PROMPT : state).toString();
     }
 
     private void startLocationTracking(PluginCall call) {
@@ -47,10 +131,16 @@ public class LocationPlugin extends Plugin {
         });
 
         Intent intent = new Intent(getContext(), LocationForegroundService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            getContext().startForegroundService(intent);
-        } else {
-            getContext().startService(intent);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                getContext().startForegroundService(intent);
+            } else {
+                getContext().startService(intent);
+            }
+        } catch (Exception e) {
+            LocationForegroundService.setLocationListener(null);
+            call.reject("Não foi possível iniciar o seguimento de localização", e);
+            return;
         }
         call.resolve();
     }
@@ -59,6 +149,7 @@ public class LocationPlugin extends Plugin {
     public void stopTracking(PluginCall call) {
         Intent intent = new Intent(getContext(), LocationForegroundService.class);
         getContext().stopService(intent);
+        LocationForegroundService.setLocationListener(null);
         call.resolve();
     }
 }
