@@ -346,19 +346,24 @@ def send_email(to: str, subject: str, body: str, html: str | None = None) -> boo
 # Configuração do Stripe
 stripe.api_key = os.getenv("STRIPE_API_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
-# Destinos após o checkout. Apontam por omissão para páginas reais da app
-# (o vendedor volta ao painel em caso de sucesso, ou aos planos se cancelar).
+# Destinos após o checkout. Apontam por omissão para páginas reais da app (o
+# vendedor volta ao painel em caso de sucesso, ou ao Premium se cancelar).
 SUCCESS_URL = os.getenv("SUCCESS_URL", f"{BASE_APP_URL}/dashboard")
-CANCEL_URL = os.getenv("CANCEL_URL", f"{BASE_APP_URL}/planos")
+CANCEL_URL = os.getenv("CANCEL_URL", f"{BASE_APP_URL}/premium")
 
 # --------------------------
-# Planos de subscrição — fonte única de verdade.
+# Premium — a única compra da plataforma.
 # --------------------------
-# Cada plano é vendido como PAGAMENTO ÚNICO (mode="payment" no Stripe): o
-# vendedor compra um bloco pré-pago de visibilidade e NÃO há renovação
-# automática (evita cobranças-surpresa e chargebacks). `days` = duração do
-# bloco; `amount_cents` = preço em cêntimos de euro. Os montantes podem ser
-# ajustados por variáveis de ambiente sem alterar o código nem tocar no Stripe.
+# Há dois estados possíveis para um vendedor: GRATUITO ou PREMIUM. O plano
+# gratuito põe toda a gente no mapa — não há nada a pagar para aparecer. O
+# Premium é um PAGAMENTO ÚNICO de 30 dias (mode="payment" no Stripe, sem
+# renovação automática, para não haver cobranças-surpresa nem chargebacks) e
+# acrescenta ao vendedor
+#   · estrela no pin, para se distinguir no mapa;
+#   · alcance de PREMIUM_REACH_RADIUS_M em vez de FREE_REACH_RADIUS_M;
+#   · fotografias nos produtos (sem Premium ficam-se pelo nome e preço).
+# O montante pode ser ajustado por variável de ambiente sem alterar o código
+# nem tocar no Stripe.
 def _plan_amount(env_name: str, default_cents: int) -> int:
     raw = os.getenv(env_name)
     if not raw:
@@ -369,23 +374,6 @@ def _plan_amount(env_name: str, default_cents: int) -> int:
         return default_cents
 
 
-PLAN_CONFIG = {
-    "semanal":   {"days": 7,  "amount_cents": _plan_amount("PLAN_PRICE_SEMANAL_EUR", 999),   "label": "Plano Semanal"},
-    "quinzenal": {"days": 15, "amount_cents": _plan_amount("PLAN_PRICE_QUINZENAL_EUR", 1699), "label": "Plano Quinzenal"},
-    "mensal":    {"days": 30, "amount_cents": _plan_amount("PLAN_PRICE_MENSAL_EUR", 2499),   "label": "Plano Mensal"},
-}
-
-# Mantido por compatibilidade com o resto do código (cálculo de validade).
-SUBSCRIPTION_PLAN_DURATIONS_DAYS = {plan: cfg["days"] for plan, cfg in PLAN_CONFIG.items()}
-
-# --------------------------
-# Premium — camada paga por cima da subscrição de visibilidade.
-# --------------------------
-# O Premium não substitui o plano de visibilidade: é um extra que se compra à
-# parte, também como pagamento único de 30 dias, e que dá ao vendedor
-#   · estrela no pin, para se distinguir no mapa;
-#   · alcance de PREMIUM_REACH_RADIUS_M em vez de FREE_REACH_RADIUS_M;
-#   · fotografias nos produtos (sem Premium ficam-se pelo nome e preço).
 PREMIUM_PLAN_ID = "premium"
 PREMIUM_PLAN = {
     "days": 30,
@@ -585,60 +573,6 @@ def get_admin(request: Request):
     return True
 
 # --------------------------
-# Subscrição
-# --------------------------
-def refresh_subscription_status(vendor: models.Vendor, db: Session) -> models.Vendor:
-    """Atualiza o estado da subscrição caso a data de validade já tenha passado."""
-    if (
-        vendor.subscription_active
-        and vendor.subscription_valid_until
-        and vendor.subscription_valid_until <= utcnow()
-    ):
-        vendor.subscription_active = False
-        db.commit()
-        db.refresh(vendor)
-    return vendor
-
-
-def apply_subscription_payment(vendor: models.Vendor, plan: str, db: Session) -> models.PaidWeek:
-    """Aplica um pagamento e calcula a validade com base no plano comprado."""
-    duration_days = SUBSCRIPTION_PLAN_DURATIONS_DAYS.get(plan)
-    if duration_days is None:
-        raise HTTPException(status_code=400, detail="Invalid plan")
-
-    now = utcnow()
-    # Se a subscrição ainda estiver ativa, o novo período é acumulado no fim da validade atual.
-    starts_at = (
-        vendor.subscription_valid_until
-        if (
-            vendor.subscription_active
-            and vendor.subscription_valid_until
-            and vendor.subscription_valid_until > now
-        )
-        else now
-    )
-    ends_at = starts_at + timedelta(days=duration_days)
-
-    vendor.subscription_active = True
-    vendor.subscription_valid_until = ends_at
-    paid = models.PaidWeek(
-        vendor_id=vendor.id,
-        start_date=starts_at,
-        end_date=ends_at,
-        plan=plan,
-    )
-    db.add(paid)
-    return paid
-
-
-def verify_active_subscription(vendor: models.Vendor, db: Session):
-    """Confirma que a subscrição está ativa e ainda dentro da validade."""
-    refresh_subscription_status(vendor, db)
-    if not vendor.subscription_active:
-        raise HTTPException(status_code=403, detail="Subscription inactive")
-
-
-# --------------------------
 # Premium
 # --------------------------
 def refresh_premium_status(vendor: models.Vendor, db: Session) -> models.Vendor:
@@ -657,8 +591,8 @@ def refresh_premium_status(vendor: models.Vendor, db: Session) -> models.Vendor:
 def apply_premium_payment(vendor: models.Vendor, db: Session) -> models.PaidWeek:
     """Credita 30 dias de Premium e regista o pagamento.
 
-    Como nos planos de visibilidade, comprar com o Premium ainda em vigor
-    acumula o período novo no fim do atual em vez de o deitar fora.
+    Comprar com o Premium ainda em vigor acumula o período novo no fim do
+    atual em vez de o deitar fora.
     """
     now = utcnow()
     starts_at = (
@@ -1275,8 +1209,6 @@ async def update_vendor_location(
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    verify_active_subscription(current_vendor, db)
-
     # only allow updates if the vendor has an active route
     active_route = (
         db.query(models.Route)
@@ -1321,8 +1253,6 @@ def start_route(
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    verify_active_subscription(current_vendor, db)
-
     # close any previously active routes to avoid duplicates
     active_routes = (
         db.query(models.Route)
@@ -1359,7 +1289,6 @@ async def stop_route(
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    verify_active_subscription(current_vendor, db)
     routes = (
         db.query(models.Route)
         .filter(models.Route.vendor_id == vendor_id, models.Route.end_time == None)
@@ -1764,20 +1693,24 @@ async def show_password_reset_form(token: str):
 @app.post("/vendors/{vendor_id}/create-checkout-session")
 def create_checkout_session(
     vendor_id: int,
-    plan: str = "mensal",
+    plan: str = PREMIUM_PLAN_ID,
     db: Session = Depends(get_db),
     current_vendor: models.Vendor = Depends(get_current_vendor),
 ):
+    """Abre o checkout do Premium — a única compra da plataforma.
+
+    O parâmetro `plan` sobrevive para que clientes antigos não recebam um erro
+    de assinatura, mas só aceita "premium": os planos de visibilidade
+    deixaram de existir e aparecer no mapa é gratuito.
+    """
     vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found")
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
-    # O Premium é vendido pelo mesmo checkout dos planos de visibilidade: é
-    # igualmente um pagamento único, só muda o que é creditado no webhook.
-    plan_cfg = PREMIUM_PLAN if plan == PREMIUM_PLAN_ID else PLAN_CONFIG.get(plan)
-    if not plan_cfg:
+    if plan != PREMIUM_PLAN_ID:
         raise HTTPException(status_code=400, detail="Invalid plan")
+    plan_cfg = PREMIUM_PLAN
     try:
         # Pagamento único (sem renovação automática). O preço é definido em
         # linha (price_data), pelo que não depende de price IDs pré-criados.
@@ -1838,8 +1771,6 @@ async def create_story(
 ):
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
-
-    verify_active_subscription(current_vendor, db)
 
     max_size = MAX_VIDEO_SIZE if file.content_type and "video" in file.content_type else MAX_IMAGE_SIZE
     validate_upload(file, ALLOWED_STORY_TYPES, ALLOWED_STORY_EXTENSIONS, "story", max_size)
@@ -2086,8 +2017,8 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
             security_logger.warning(f"Invalid vendor_id in webhook from {request.client.host}")
             return {"status": "ignored"}
 
-        plan = metadata.get("plan", "semanal")
-        if plan != PREMIUM_PLAN_ID and plan not in SUBSCRIPTION_PLAN_DURATIONS_DAYS:
+        plan = metadata.get("plan", PREMIUM_PLAN_ID)
+        if plan != PREMIUM_PLAN_ID:
             security_logger.warning(f"Invalid plan in webhook: {plan}")
             return {"status": "ignored"}
 
@@ -2098,17 +2029,11 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         )
         if vendor:
             try:
-                if plan == PREMIUM_PLAN_ID:
-                    paid = apply_premium_payment(vendor, db)
-                else:
-                    paid = apply_subscription_payment(vendor, plan, db)
+                paid = apply_premium_payment(vendor, db)
                 paid.stripe_session_id = session_id
                 paid.receipt_url = _extract_receipt_url(session)
                 db.commit()
-                security_logger.info(
-                    f"{'Premium' if plan == PREMIUM_PLAN_ID else 'Subscription'}"
-                    f" activated for vendor {vendor_id}"
-                )
+                security_logger.info(f"Premium activated for vendor {vendor_id}")
             except Exception as exc:
                 security_logger.error(f"Error processing webhook for vendor {vendor_id}: {exc}")
                 db.rollback()
@@ -2119,11 +2044,11 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 
 
 # --------------------------
-# Endpoint para ativar pagamento manualmente (ex.: pagamento por transferência)
+# Endpoint para creditar Premium manualmente (ex.: pagamento por transferência)
 # Apenas acessível por administradores - nunca pelo próprio vendedor.
 # --------------------------
-@app.post("/vendors/{vendor_id}/activate-subscription")
-def activate_subscription_manual(
+@app.post("/vendors/{vendor_id}/activate-premium")
+def activate_premium_manual(
     vendor_id: int,
     db: Session = Depends(get_db),
     admin: bool = Depends(get_admin),
@@ -2136,7 +2061,7 @@ def activate_subscription_manual(
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found")
 
-    apply_subscription_payment(vendor, "semanal", db)
+    apply_premium_payment(vendor, db)
     db.commit()
     return {"status": "activated"}
 
@@ -2148,21 +2073,23 @@ def admin_list_vendors(db: Session = Depends(get_db), admin: bool = Depends(get_
     vendors = db.query(models.Vendor).filter(models.Vendor.deleted_at == None).all()
     return vendors
 
-@app.post("/admin/vendors/{vendor_id}/deactivate")
-def admin_deactivate_vendor(vendor_id: int, db: Session = Depends(get_db), admin: bool = Depends(get_admin)):
+# Revoga o Premium de um vendedor — o contrário de activate-premium, para
+# devoluções e estornos. Não tira ninguém do mapa: aparecer é gratuito.
+@app.post("/admin/vendors/{vendor_id}/revoke-premium")
+def admin_revoke_premium(vendor_id: int, db: Session = Depends(get_db), admin: bool = Depends(get_admin)):
     vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found")
-    vendor.subscription_active = False
+    vendor.premium_active = False
+    vendor.premium_valid_until = None
     db.commit()
-    return {"status": "deactivated"}
+    return {"status": "revoked"}
 
 @app.get("/vendors/me", response_model=schemas.VendorOut)
 def get_my_vendor_profile(
     current_vendor: models.Vendor = Depends(get_current_vendor),
     db: Session = Depends(get_db),
 ):
-    refresh_subscription_status(current_vendor, db)
     return refresh_premium_status(current_vendor, db)
 
 
@@ -2241,8 +2168,6 @@ def export_my_data(
             "nome_comercial": vendor.business_name,
             "termos_aceites": bool(vendor.terms_accepted),
             "termos_aceites_em": iso(vendor.terms_accepted_at),
-            "subscricao_ativa": bool(vendor.subscription_active),
-            "subscricao_valida_ate": iso(vendor.subscription_valid_until),
             "premium_ativo": bool(vendor.premium_active),
             "premium_valido_ate": iso(vendor.premium_valid_until),
         },
@@ -2394,8 +2319,6 @@ def delete_my_account(
     vendor.current_lat = None
     vendor.current_lng = None
     vendor.email_confirmed = False
-    vendor.subscription_active = False
-    vendor.subscription_valid_until = None
     vendor.premium_active = False
     vendor.premium_valid_until = None
     vendor.deleted_at = utcnow()

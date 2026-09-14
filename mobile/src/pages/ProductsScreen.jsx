@@ -229,7 +229,7 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
               {preview ? 'Trocar a foto é Premium' : 'Fotos são Premium'}
             </span>
             <span className="product-photo-locked-desc">
-              No plano gratuito o produto fica com nome e preço. Com Premium
+              No gratuito o produto fica com nome e preço. Com Premium
               cada produto leva a sua fotografia.
             </span>
             {typeof onGoPremium === 'function' && (

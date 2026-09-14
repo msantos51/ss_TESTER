@@ -63,8 +63,6 @@ class VendorOut(BaseModel):
     pin_color: Optional[str] = None
     current_lat: Optional[float] = None
     current_lng: Optional[float] = None
-    subscription_active: Optional[bool] = None
-    subscription_valid_until: Optional[datetime] = None
     premium_active: Optional[bool] = None
     premium_valid_until: Optional[datetime] = None
     # Propriedade do modelo: subscrição Premium comprada E dentro da validade.

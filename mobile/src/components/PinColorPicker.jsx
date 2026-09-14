@@ -1,15 +1,19 @@
 import React from 'react';
 import './PinColorPicker.css';
 
-// As seis cores do design. Quem já tiver guardada uma cor fora desta lista
-// continua a vê-la (e selecionada) como uma amostra extra.
+// As seis cores da paleta de verão do site (sunny_sales_web/src/index.css),
+// pela mesma ordem em que lá aparecem: o pin do vendedor é lido no mapa do
+// site, por isso não pode ser de outra família de cores. Verde floresta é o
+// primeiro por ser o que o site desenha a quem nunca escolheu cor nenhuma.
+// Quem já tiver guardada uma cor fora desta lista continua a vê-la (e
+// selecionada) como uma amostra extra.
 const PRESET_COLORS = [
+  { name: 'Verde floresta', value: '#1D5C3A' },
   { name: 'Sol', value: '#EE9B00' },
-  { name: 'Oceano', value: '#147B9E' },
-  { name: 'Coral', value: '#E63946' },
-  { name: 'Verde', value: '#16A34A' },
-  { name: 'Roxo', value: '#7B61FF' },
-  { name: 'Azul-escuro', value: '#0B2A3D' },
+  { name: 'Oceano', value: '#0A9396' },
+  { name: 'Azul-céu', value: '#005F73' },
+  { name: 'Coral', value: '#BB3E03' },
+  { name: 'Noite', value: '#001219' },
 ];
 
 export default function PinColorPicker({ value, onChange }) {

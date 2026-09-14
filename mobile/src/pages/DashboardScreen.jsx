@@ -1,30 +1,22 @@
 import React, { useState } from 'react';
 import {
-  FiUser, FiFileText, FiMail, FiLogOut, FiMapPin,
+  FiUser, FiFileText, FiMail, FiLogOut,
   FiChevronRight, FiExternalLink,
 } from 'react-icons/fi';
 import { WEB_URL, mediaUrl } from '../config.js';
 import { terminateCurrentSession } from '../sessionApi.js';
 import ProfileScreen from './ProfileScreen.jsx';
-import PlansScreen from './PlansScreen.jsx';
 import InvoicesScreen from './InvoicesScreen.jsx';
 
 export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUpdate }) {
   const { user } = auth;
   const [showProfile, setShowProfile] = useState(false);
-  const [showPlans, setShowPlans] = useState(false);
   const [showInvoices, setShowInvoices] = useState(false);
 
-  const subscriptionActive = user?.subscription_active;
-  const subscriptionDate = user?.subscription_valid_until
-    ? new Date(user.subscription_valid_until).toLocaleDateString('pt-PT')
-    : null;
-
-  // (em português) O cartão do topo da Conta é o do Premium: é a compra que o
-  // vendedor gere hoje, e "Gerir" leva-o ao separador onde está tudo — o que
-  // ganha, o preço e a renovação. O plano de visibilidade continua a existir,
-  // mas é uma linha da lista: quem o quer renovar sabe onde o procurar, e quem
-  // abre a Conta deixa de cair numa folha de planos que já não é o assunto.
+  // (em português) O cartão do topo da Conta é o do Premium, a única compra da
+  // plataforma: "Gerir" leva ao separador onde está tudo — o que ganha, o preço
+  // e a renovação. Estar no mapa é gratuito, por isso não há mais nada aqui
+  // para pagar nem folha de planos que abrir.
   const isPremium = Boolean(user?.is_premium);
   const premiumDate = user?.premium_valid_until
     ? new Date(user.premium_valid_until).toLocaleDateString('pt-PT')
@@ -51,15 +43,6 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
     {
       label: 'Negócio',
       items: [
-        {
-          icon: <FiMapPin />,
-          // "Visibilidade" e não "Plano de visibilidade": com a data ao lado,
-          // o rótulo mais longo parte-se em duas linhas num ecrã de 412 px e
-          // não sobra nada para os telemóveis estreitos.
-          label: 'Visibilidade',
-          value: subscriptionActive ? subscriptionDate || 'Ativo' : 'Inativo',
-          onClick: () => setShowPlans(true),
-        },
         { icon: <FiFileText />, label: 'Faturas', onClick: () => setShowInvoices(true) },
         {
           icon: <FiMail />,
@@ -111,7 +94,7 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
             <span className="account-sub-desc">
               {isPremium
                 ? `Válido até ${premiumDate || '—'}`
-                : 'Estrela no pin, 1 km de alcance e fotos nos produtos'}
+                : 'Estás no gratuito. Premium: estrela no pin, 1 km e fotos'}
             </span>
           </div>
           <button
@@ -155,8 +138,6 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
           onAccountDeleted={handleAccountDeleted}
         />
       )}
-
-      {showPlans && <PlansScreen auth={auth} onClose={() => setShowPlans(false)} />}
 
       {showInvoices && <InvoicesScreen auth={auth} onClose={() => setShowInvoices(false)} />}
     </div>

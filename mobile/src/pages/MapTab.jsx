@@ -8,10 +8,8 @@ import 'leaflet/dist/leaflet.css';
 // dois dedos, como qualquer mapa de telemóvel.
 import 'leaflet-rotate';
 import { BASE_URL, TILE_LAYER, mediaUrl } from '../config.js';
-import { terminateCurrentSession } from '../sessionApi.js';
 import AnimatedMarker from '../components/AnimatedMarker.jsx';
 import useDeviceHeading from '../hooks/useDeviceHeading.js';
-import PlansScreen from './PlansScreen.jsx';
 import '../styles/MapTab.css';
 
 const LocationTracker = registerPlugin('LocationTracker');
@@ -218,7 +216,6 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const [error, setError] = useState(null);
   const [position, setPosition] = useState(null);
   const [mapError, setMapError] = useState(null);
-  const [showPlans, setShowPlans] = useState(false);
   const [startedAt, setStartedAt] = useState(null);
   const [elapsed, setElapsed] = useState(0);
   const [distanceM, setDistanceM] = useState(0);
@@ -245,7 +242,6 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   }), [heading, pinColor, sharing, isPremium]);
 
   const authHeader = { Authorization: `Bearer ${token}` };
-  const subscriptionActive = user?.subscription_active;
 
   useEffect(() => {
     let active = true;
@@ -475,7 +471,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
 
   const status = sharing
     ? { label: 'A partilhar', className: 'is-sharing' }
-    : { label: subscriptionActive ? 'Offline' : 'Inativo', className: 'is-idle' };
+    : { label: 'Offline', className: 'is-idle' };
 
   return (
     <div className="map-screen">
@@ -587,24 +583,6 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
             </div>
           )}
 
-          {!subscriptionActive && (
-            <div className="map-sub-banner">
-              <span className="map-sub-icon">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="11" width="18" height="11" rx="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-              </span>
-              <div className="map-sub-text">
-                <span className="map-sub-title">Subscrição inativa</span>
-                <span className="map-sub-desc">Ativa um plano para apareceres no mapa.</span>
-              </div>
-              <button type="button" className="map-sub-btn" onClick={() => setShowPlans(true)}>
-                Ativar
-              </button>
-            </div>
-          )}
-
           <div className="share-card">
             {sharing && (
               <div className="share-metrics">
@@ -623,7 +601,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
               type="button"
               className={`share-btn${sharing ? ' is-sharing' : ''}`}
               onClick={sharing ? stopSharing : startSharing}
-              disabled={loading || !subscriptionActive}
+              disabled={loading}
             >
               <span className="share-btn-dot" />
               {loading
@@ -633,8 +611,6 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
           </div>
         </div>
       </div>
-
-      {showPlans && <PlansScreen auth={auth} onClose={() => setShowPlans(false)} />}
     </div>
   );
 }

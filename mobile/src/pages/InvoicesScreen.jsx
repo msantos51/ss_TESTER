@@ -17,6 +17,15 @@ const ReceiptIcon = ({ size = 14 }) => (
   </svg>
 );
 
+// O que cada linha do histórico foi. "premium" é o único que se vende hoje;
+// os restantes são períodos dos antigos planos de visibilidade.
+const PLAN_LABELS = {
+  premium: 'Premium — 30 dias',
+  semanal: 'Visibilidade — 7 dias',
+  quinzenal: 'Visibilidade — 15 dias',
+  mensal: 'Visibilidade — 30 dias',
+};
+
 export default function InvoicesScreen({ auth, onClose }) {
   const { token, vendorId } = auth;
   const [weeks, setWeeks] = useState([]);
@@ -26,8 +35,10 @@ export default function InvoicesScreen({ auth, onClose }) {
   useEffect(() => {
     const fetchPaidWeeks = async () => {
       try {
-        // (em português) O modelo de faturação do projeto são as "semanas pagas"
-        // (/vendors/{id}/paid-weeks), cada uma com o respetivo recibo do Stripe.
+        // (em português) O histórico de faturação vive em /vendors/{id}/paid-weeks,
+        // cada período com o respetivo recibo do Stripe. Hoje só há compras de
+        // Premium; os períodos dos antigos planos de visibilidade continuam
+        // listados, porque a fatura desses pagamentos também é do vendedor.
         const response = await fetch(`${BASE_URL}/vendors/${vendorId}/paid-weeks`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -95,7 +106,7 @@ export default function InvoicesScreen({ auth, onClose }) {
                   <div className="invoice-item-number">
                     {formatDate(week.start_date)} – {formatDate(week.end_date)}
                   </div>
-                  <div className="invoice-item-date">Semana de subscrição paga</div>
+                  <div className="invoice-item-date">{PLAN_LABELS[week.plan] || 'Período pago'}</div>
                 </div>
                 {week.receipt_url && (
                   <button

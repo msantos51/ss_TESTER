@@ -44,6 +44,24 @@ def get_db():
     finally:
         db.close()
 
+# Colunas de `vendors` que o modelo já não tem e cujo conteúdo deixou de ter
+# significado: `subscription_active` e `subscription_valid_until` (o modelo de
+# planos de visibilidade, substituído pelo Premium) e os cinco campos
+# `license_*`, que nunca chegaram a ser usados. O ORM ignora-as e nada as lê;
+# ficam nas bases de dados existentes até serem largadas à mão, porque um DROP
+# automático no arranque destruiria dados sem retorno se um deploy fosse
+# revertido. O histórico de pagamentos não está aqui — vive em `paid_weeks`.
+OBSOLETE_VENDOR_COLUMNS = (
+    "subscription_active",
+    "subscription_valid_until",
+    "license_number",
+    "license_municipality",
+    "license_expiry",
+    "license_type",
+    "license_document",
+)
+
+
 # Pequena migração automática para adicionar colunas recentes
 def ensure_latest_schema():
     inspector = inspect(engine)
@@ -66,11 +84,6 @@ def ensure_latest_schema():
             ("password_reset_token", "ALTER TABLE vendors ADD COLUMN password_reset_token TEXT"),
             ("password_reset_expires", "ALTER TABLE vendors ADD COLUMN password_reset_expires TIMESTAMP"),
             ("payment_methods", "ALTER TABLE vendors ADD COLUMN payment_methods TEXT"),
-            ("license_number", "ALTER TABLE vendors ADD COLUMN license_number TEXT"),
-            ("license_municipality", "ALTER TABLE vendors ADD COLUMN license_municipality TEXT"),
-            ("license_expiry", "ALTER TABLE vendors ADD COLUMN license_expiry TIMESTAMP"),
-            ("license_type", "ALTER TABLE vendors ADD COLUMN license_type TEXT"),
-            ("license_document", "ALTER TABLE vendors ADD COLUMN license_document TEXT"),
             ("nif", "ALTER TABLE vendors ADD COLUMN nif TEXT"),
             ("id_document_number", "ALTER TABLE vendors ADD COLUMN id_document_number TEXT"),
             ("phone", "ALTER TABLE vendors ADD COLUMN phone TEXT"),

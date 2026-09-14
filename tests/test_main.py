@@ -78,10 +78,11 @@ def register_vendor(client, email="vendor@example.com", password="Secret123", na
     return client.post("/vendors/", data=data, files=files)
 
 
-def activate_subscription(client, vendor_id):
+def activate_premium(client, vendor_id):
+    """Credita Premium a mão de admin e devolve o token do vendedor."""
     token = get_token(client)
     resp = client.post(
-        f"/vendors/{vendor_id}/activate-subscription",
+        f"/vendors/{vendor_id}/activate-premium",
         headers={"X-Admin-Token": os.environ["ADMIN_TOKEN"]},
     )
     assert resp.status_code == 200
@@ -279,7 +280,7 @@ def test_protected_routes(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
-    token = activate_subscription(client, vendor_id)
+    token = activate_premium(client, vendor_id)
 
     # update profile with auth
     resp = client.patch(
@@ -413,7 +414,7 @@ def test_location_update_fields(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
-    token = activate_subscription(client, vendor_id)
+    token = activate_premium(client, vendor_id)
 
     client.post(
         f"/vendors/{vendor_id}/routes/start",
@@ -438,7 +439,7 @@ def test_websocket_location_broadcast(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
-    token = activate_subscription(client, vendor_id)
+    token = activate_premium(client, vendor_id)
 
     client.post(
         f"/vendors/{vendor_id}/routes/start",
@@ -461,7 +462,7 @@ def test_routes_flow(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
-    token = activate_subscription(client, vendor_id)
+    token = activate_premium(client, vendor_id)
 
     # start route
     resp = client.post(
@@ -555,18 +556,13 @@ def test_paid_weeks_listing(client):
     assert len(weeks) == 1
     assert weeks[0]["receipt_url"] == "http://r"
 
-def test_stripe_webhook_applies_plan_duration(client):
-    """Valida que cada plano pago fica ativo durante a duração contratada."""
+def test_stripe_webhook_rejects_the_old_visibility_plans(client):
+    """Os planos de visibilidade acabaram: um webhook com um deles não credita.
 
-    from backend.app import main
-
-    expected_days_by_plan = {
-        "semanal": 7,
-        "quinzenal": 15,
-        "mensal": 30,
-    }
-
-    for plan, expected_days in expected_days_by_plan.items():
+    Um checkout antigo que só agora conclua — ou um pedido forjado — não pode
+    ressuscitar um plano que a app já não vende.
+    """
+    for plan in ("semanal", "quinzenal", "mensal"):
         resp = register_vendor(client, email=f"{plan}@example.com")
         vendor_id = resp.json()["id"]
         confirm_latest_email(client)
@@ -576,27 +572,28 @@ def test_stripe_webhook_applies_plan_duration(client):
             "type": "checkout.session.completed",
             "data": {
                 "object": {
+                    "id": f"cs_test_{plan}",
                     "metadata": {"vendor_id": vendor_id, "plan": plan},
                     "payment_status": "paid",
                 }
             },
         }
-        before_payment = main.utcnow()
         resp = client.post(
             "/stripe/webhook", json=event, headers={"stripe-signature": "test-sig"}
         )
-        after_payment = main.utcnow()
         assert resp.status_code == 200
+        assert resp.json()["status"] == "ignored"
 
         resp = client.get("/vendors/me", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 200
-        vendor = resp.json()
-        valid_until = datetime.fromisoformat(vendor["subscription_valid_until"])
-        minimum_valid_until = before_payment + timedelta(days=expected_days)
-        maximum_valid_until = after_payment + timedelta(days=expected_days)
+        assert resp.json()["is_premium"] is False
 
-        assert vendor["subscription_active"] is True
-        assert minimum_valid_until <= valid_until <= maximum_valid_until
+        resp = client.get(
+            f"/vendors/{vendor_id}/paid-weeks",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert resp.json() == []
+
 
 def test_create_checkout_session_uses_one_time_payment(client):
     """O checkout deve ser criado em modo de PAGAMENTO ÚNICO (sem renovação)."""
@@ -615,34 +612,36 @@ def test_create_checkout_session_uses_one_time_payment(client):
     confirm_latest_email(client)
     token = get_token(client)
 
+    # Sem `plan`: o checkout abre no Premium, a única compra da plataforma.
     resp = client.post(
         f"/vendors/{vendor_id}/create-checkout-session",
-        params={"plan": "mensal"},
         headers={"Authorization": f"Bearer {token}"},
     )
     assert resp.status_code == 200
     assert resp.json()["checkout_url"] == "https://checkout.stripe.test/session_abc"
     # Garantir que NÃO é uma subscrição recorrente
     assert captured["mode"] == "payment"
-    # O montante do plano mensal é 24,99 € = 2499 cêntimos
-    assert captured["line_items"][0]["price_data"]["unit_amount"] == 2499
+    # O montante do Premium é 19,99 € = 1999 cêntimos
+    assert captured["line_items"][0]["price_data"]["unit_amount"] == 1999
     assert captured["line_items"][0]["price_data"]["currency"] == "eur"
-    assert captured["metadata"]["plan"] == "mensal"
+    assert captured["metadata"]["plan"] == "premium"
 
 
 def test_create_checkout_session_rejects_invalid_plan(client):
+    """Só "premium" é aceite — incluindo contra os nomes dos planos antigos."""
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
     token = get_token(client)
 
-    resp = client.post(
-        f"/vendors/{vendor_id}/create-checkout-session",
-        params={"plan": "anual"},
-        headers={"Authorization": f"Bearer {token}"},
-    )
-    assert resp.status_code == 400
-    assert resp.json()["detail"] == "Invalid plan"
+    for plan in ("anual", "semanal", "quinzenal", "mensal"):
+        resp = client.post(
+            f"/vendors/{vendor_id}/create-checkout-session",
+            params={"plan": plan},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert resp.status_code == 400
+        assert resp.json()["detail"] == "Invalid plan"
 
 
 def test_stripe_webhook_is_idempotent(client):
@@ -657,7 +656,7 @@ def test_stripe_webhook_is_idempotent(client):
         "data": {
             "object": {
                 "id": "cs_test_dup_1",
-                "metadata": {"vendor_id": vendor_id, "plan": "mensal"},
+                "metadata": {"vendor_id": vendor_id, "plan": "premium"},
                 "payment_status": "paid",
             }
         },
@@ -696,7 +695,7 @@ def test_stripe_webhook_receipt_from_payment_intent(client):
         "data": {
             "object": {
                 "id": "cs_test_pi_1",
-                "metadata": {"vendor_id": vendor_id, "plan": "semanal"},
+                "metadata": {"vendor_id": vendor_id, "plan": "premium"},
                 "payment_intent": "pi_test_1",
                 "payment_status": "paid",
             }
@@ -720,7 +719,7 @@ def test_websocket_open_to_anonymous_visitors(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
-    token = activate_subscription(client, vendor_id)
+    token = activate_premium(client, vendor_id)
 
     client.post(
         f"/vendors/{vendor_id}/routes/start",
@@ -738,36 +737,36 @@ def test_websocket_open_to_anonymous_visitors(client):
         assert data == {"vendor_id": vendor_id, "lat": 6.6, "lng": -8.2}
 
 
-def test_subscription_expires_when_validity_passes(client):
-    """Valida que uma subscrição vencida é desativada antes de devolver o perfil."""
+def test_free_vendor_can_share_location(client):
+    """Estar no mapa é gratuito: sem Premium, a partilha funciona na mesma.
 
-    from backend.app import database, main, models
-
+    Era aqui que vivia o antigo bloqueio por subscrição inativa. Agora não há
+    nada a pagar para aparecer, por isso um vendedor que nunca comprou tem de
+    conseguir abrir um trajeto e enviar posição.
+    """
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
-    token = activate_subscription(client, vendor_id)
+    token = get_token(client)
+    headers = {"Authorization": f"Bearer {token}"}
 
-    db = database.SessionLocal()
-    try:
-        vendor = db.query(models.Vendor).filter(models.Vendor.id == vendor_id).first()
-        vendor.subscription_active = True
-        vendor.subscription_valid_until = main.utcnow() - timedelta(seconds=1)
-        db.commit()
-    finally:
-        db.close()
-
-    resp = client.get("/vendors/me", headers={"Authorization": f"Bearer {token}"})
+    # Nunca comprou nada.
+    resp = client.get("/vendors/me", headers=headers)
     assert resp.status_code == 200
-    vendor = resp.json()
-    assert vendor["subscription_active"] is False
+    assert resp.json()["is_premium"] is False
 
-    resp = client.post(
-        f"/vendors/{vendor_id}/routes/start",
-        headers={"Authorization": f"Bearer {token}"},
+    resp = client.post(f"/vendors/{vendor_id}/routes/start", headers=headers)
+    assert resp.status_code == 200
+
+    resp = client.put(
+        f"/vendors/{vendor_id}/location",
+        json={"lat": 38.68, "lng": -9.33},
+        headers=headers,
     )
-    assert resp.status_code == 403
-    assert resp.json()["detail"] == "Subscription inactive"
+    assert resp.status_code == 200
+
+    resp = client.post(f"/vendors/{vendor_id}/routes/stop", headers=headers)
+    assert resp.status_code == 200
 
 
 def test_cors_allows_capacitor_mobile_origin(client):
@@ -814,7 +813,7 @@ def _vendor_with_data(client):
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
-    token = activate_subscription(client, vendor_id)
+    token = activate_premium(client, vendor_id)
     headers = {"Authorization": f"Bearer {token}"}
 
     client.post(f"/vendors/{vendor_id}/routes/start", headers=headers)
@@ -910,7 +909,7 @@ def test_delete_account_erases_personal_data(client):
         assert vendor.deleted_at is not None
         assert vendor.email == f"apagado+{vendor_id}@sunnysales.invalid"
         assert vendor.name == "Conta eliminada"
-        assert vendor.subscription_active is False
+        assert vendor.premium_active is False
         for field in (
             "nif",
             "phone",
@@ -951,7 +950,7 @@ def test_stripe_webhook_ignores_deleted_account(client):
                 "id": "cs_test_apos_eliminacao",
                 "payment_status": "paid",
                 "client_reference_id": str(vendor_id),
-                "metadata": {"vendor_id": str(vendor_id), "plan": "mensal"},
+                "metadata": {"vendor_id": str(vendor_id), "plan": "premium"},
             }
         },
     }
@@ -965,7 +964,7 @@ def test_stripe_webhook_ignores_deleted_account(client):
     db = database.SessionLocal()
     try:
         vendor = db.query(models.Vendor).filter_by(id=vendor_id).first()
-        assert vendor.subscription_active is False
+        assert vendor.premium_active is False
         # Continua a existir apenas o pagamento anterior à eliminação.
         assert db.query(models.PaidWeek).filter_by(vendor_id=vendor_id).count() == 1
     finally:
@@ -992,7 +991,8 @@ def test_password_reset_ignores_deleted_account(client):
 
 
 # ══════════════════════════════════════════════════════════════════
-# Premium — a camada paga por cima da subscrição de visibilidade.
+# Premium — a única compra da plataforma. Sem ele o vendedor fica no
+# gratuito, que já o põe no mapa.
 # ══════════════════════════════════════════════════════════════════
 def grant_premium(client, vendor_id):
     """Credita Premium pelo caminho real: o webhook do Stripe."""
@@ -1012,18 +1012,11 @@ def grant_premium(client, vendor_id):
 
 
 def premium_vendor_sharing(client, email="premium@example.com", premium=True):
-    """Vendedor confirmado, com subscrição, Premium opcional e trajeto a decorrer."""
+    """Vendedor confirmado, Premium opcional e trajeto a decorrer."""
     resp = register_vendor(client, email=email)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
     token = get_token(client, email=email)
-    # `activate_subscription` só serve o vendedor do email por omissão; aqui há
-    # vários vendedores em jogo, por isso ativa-se diretamente pelo admin.
-    resp = client.post(
-        f"/vendors/{vendor_id}/activate-subscription",
-        headers={"X-Admin-Token": os.environ["ADMIN_TOKEN"]},
-    )
-    assert resp.status_code == 200
     if premium:
         grant_premium(client, vendor_id)
     resp = client.post(
@@ -1042,8 +1035,8 @@ def send_location(client, vendor_id, token, lat, lng):
     )
 
 
-def test_premium_webhook_credits_thirty_days_without_touching_subscription(client):
-    """O Premium é uma compra à parte: dá 30 dias e não mexe na visibilidade."""
+def test_premium_webhook_credits_thirty_days(client):
+    """O Premium dá 30 dias e fica registado nas faturas como tal."""
     from backend.app import main
 
     resp = register_vendor(client)
@@ -1063,10 +1056,6 @@ def test_premium_webhook_credits_thirty_days_without_touching_subscription(clien
     assert vendor["is_premium"] is True
     valid_until = datetime.fromisoformat(vendor["premium_valid_until"])
     assert before + timedelta(days=30) <= valid_until <= after + timedelta(days=30)
-
-    # A subscrição de visibilidade continua intocada — são compras distintas.
-    assert not vendor["subscription_active"]
-    assert vendor["subscription_valid_until"] is None
 
     # O pagamento fica registado nas faturas, identificado como Premium.
     resp = client.get(

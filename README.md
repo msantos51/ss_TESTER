@@ -11,7 +11,7 @@ Plataforma que liga **vendedores de praia** a **banhistas** em praias portuguesa
 O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma aplicação móvel (Capacitor + React) e um backend FastAPI. Destina-se a:
 
 - **Banhistas** — encontram vendedores de praia no mapa em tempo real, filtram por produto ou distância e acedem ao perfil do vendedor.
-- **Vendedores** — ativam a partilha de localização, gerem rotas, veem estatísticas e gerem a subscrição paga.
+- **Vendedores** — ativam a partilha de localização, gerem rotas, veem estatísticas e, se quiserem, compram Premium.
 - **Municípios / Gestão de praias** — solução B2B para organizar e digitalizar o comércio de praia com acesso via QR code público.
 
 ---
@@ -33,17 +33,17 @@ O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma a
 #### Para vendedores
 | Funcionalidade | Descrição |
 |---|---|
-| Dashboard | Saudação personalizada, estado da subscrição, toggle de partilha de localização |
-| Partilha de localização | Requer subscrição ativa; envia coordenadas GPS para o servidor em tempo real |
+| Dashboard | Saudação personalizada, estado do Premium, toggle de partilha de localização |
+| Partilha de localização | Gratuita e sem pré-requisitos; envia coordenadas GPS para o servidor em tempo real |
 | Histórico de rotas | Lista de sessões com duração, distância e mapa do percurso |
 | Estatísticas | Gráfico de barras com quilómetros percorridos por dia (Recharts) |
 | Gestão de conta | Nome, email, foto de perfil com cropper, cor do pin, alteração de password |
 | Sessões ativas | Ver e terminar sessões em outros dispositivos |
-| Subscrição e faturação | Integração com Stripe; histórico de semanas pagas com links de recibo |
-| Premium (19,99 €/mês) | Separador próprio na app: estrela no pin, alcance de 1 km e fotografias nos produtos |
+| Faturação | Integração com Stripe; histórico dos períodos pagos com links de recibo |
+| Premium (19,99 €/30 dias) | A única compra da plataforma, com separador próprio na app: estrela no pin, alcance de 1 km e fotografias nos produtos |
 | Stories | Publicar fotos/vídeos efémeros visíveis no perfil |
 | Os teus dados (RGPD) | Descarregar todos os dados pessoais em JSON e eliminar a conta em definitivo, na app ou em `/eliminar-conta` |
-| App móvel | App Android (Capacitor + React) dedicada ao vendedor: registo de conta, partilha de localização em tempo real (serviço nativo), gestão de conta, produtos, subscrição e faturas |
+| App móvel | App Android (Capacitor + React) dedicada ao vendedor: registo de conta, partilha de localização em tempo real (serviço nativo), gestão de conta, produtos, Premium e faturas |
 
 ---
 
@@ -91,9 +91,9 @@ ss_TESTER/
 
 ### Modelos de Dados (principais)
 
-- **Vendor** — conta do vendedor (nome, email, produto, foto, cor do pin, coordenadas atuais, subscrição, `deleted_at` para contas eliminadas)
+- **Vendor** — conta do vendedor (nome, email, produto, foto, cor do pin, coordenadas atuais, estado do Premium, `deleted_at` para contas eliminadas)
 - **Route** — sessão de rastreio (pontos GPS, duração, distância em metros)
-- **PaidWeek** — registo de pagamento (intervalo de datas, plano comprado, URL do recibo Stripe)
+- **PaidWeek** — registo de pagamento (intervalo de datas, o que foi comprado, URL do recibo Stripe). Conserva também os pagamentos dos antigos planos de visibilidade, por obrigação fiscal
 - **Story** — media efémero do vendedor (foto/vídeo com expiração)
 - **VendorSession** — sessões ativas por dispositivo (token, user-agent)
 
@@ -101,11 +101,18 @@ ss_TESTER/
 
 ## Premium
 
-O **Premium** é uma camada paga **por cima** do plano de visibilidade, não um
-substituto: o plano de visibilidade é o que põe o vendedor no mapa, o Premium é
-o que o faz destacar-se lá dentro. Custa **19,99 €** e, como os restantes
-planos, é um **pagamento único** de 30 dias (sem renovação automática); comprar
-com o Premium ainda ativo soma os dias ao período em curso.
+Há **dois estados** possíveis para um vendedor: **gratuito** ou **Premium**.
+
+O plano gratuito é o que põe o vendedor no mapa — aparecer não se paga. O
+**Premium** é opcional e é o que o faz destacar-se lá dentro: custa
+**19,99 €** num **pagamento único** de 30 dias (sem renovação automática), e
+comprar com o Premium ainda ativo soma os dias ao período em curso.
+
+> Os antigos planos de visibilidade (semanal / quinzenal / mensal) foram
+> descontinuados. O checkout e o webhook só aceitam `premium`, e as colunas
+> `subscription_*` saíram do modelo `Vendor` — ver `OBSOLETE_VENDOR_COLUMNS`
+> em `backend/app/database.py` para as largar de uma base de dados existente.
+> O histórico de faturação desses planos mantém-se em `paid_weeks`.
 
 | Vantagem | Sem Premium | Com Premium |
 |---|---|---|
@@ -120,8 +127,10 @@ vazio para quem recusou a geolocalização.
 
 | Endpoint | Descrição |
 |---|---|
-| `POST /vendors/{id}/create-checkout-session?plan=premium` | Compra 30 dias de Premium (Stripe Checkout) |
+| `POST /vendors/{id}/create-checkout-session` | Compra 30 dias de Premium (Stripe Checkout). `plan` é opcional e só aceita `premium` |
 | `GET /vendors/?lat=&lng=` | Mapa com o raio de alcance aplicado; cada vendedor traz `is_premium` |
+| `POST /vendors/{id}/activate-premium` | **Admin.** Credita 30 dias sem passar pelo Stripe (ex.: transferência bancária) |
+| `POST /admin/vendors/{id}/revoke-premium` | **Admin.** Retira o Premium (devoluções e estornos). Não tira ninguém do mapa |
 
 Os limites e o preço são ajustáveis por variáveis de ambiente
 (`PREMIUM_PRICE_EUR`, `FREE_REACH_RADIUS_M`, `PREMIUM_REACH_RADIUS_M`) — ver
@@ -145,7 +154,7 @@ chamado de volta.
    - `SECRET_KEY` — chave para assinar tokens JWT
    - `RESEND_API_KEY` e `RESEND_FROM` — envio de emails via Resend (opcional)
    - `STRIPE_API_KEY` — pagamentos (opcional)
-   - `STRIPE_PRICE_ID_SEMANAL`, `STRIPE_PRICE_ID_QUINZENAL`, `STRIPE_PRICE_ID_MENSAL` — price IDs dos planos de subscrição (opcional, têm valores por omissão)
+   - `PREMIUM_PRICE_EUR` — preço do Premium em euros (opcional; por omissão 19,99). Não são precisos price IDs: o montante é definido no backend
 4. Execute o servidor:
    ```bash
    uvicorn backend.app.main:app --reload
