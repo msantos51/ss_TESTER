@@ -2,7 +2,7 @@
    Sunny Sales — Mapa "Painéis sobre a tela"
 
    O ecrã do mapa é uma aplicação: três painéis brancos
-   arredondados a flutuar sobre a tela cor de areia —
+   arredondados a flutuar sobre a tela branca —
    pesquisa à esquerda, mapa ao centro, vendedores à direita.
    Todos os controlos do mapa flutuam por cima dele em
    pastilhas de VIDRO (--glass-strong + --glass-blur), nunca
@@ -309,7 +309,7 @@
   margin: 0;
   padding: 16px 20px;
   border-radius: var(--radius-lg);
-  background: rgba(6, 39, 47, 0.92);
+  background: rgba(11, 49, 61, 0.92);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   color: #fbfcfc;
@@ -341,7 +341,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #EFE7DA;
+  background-color: #E6EDEF;
   background-image:
     linear-gradient(to right, rgba(15, 15, 15, 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(15, 15, 15, 0.04) 1px, transparent 1px);
@@ -417,7 +417,7 @@
 }
 
 .leaflet-container {
-  background: #EFE7DA;
+  background: #E6EDEF;
   font-family: var(--font-body);
 }
 
@@ -1589,14 +1589,14 @@
 
 .locate-btn:hover {
   background: var(--blue-hover);
-  box-shadow: 0 0 0 3px #fff, 0 6px 18px rgba(6, 39, 47, 0.5);
+  box-shadow: 0 0 0 3px #fff, 0 6px 18px rgba(11, 49, 61, 0.5);
   transform: none;
 }
 
 .locate-btn:active {
   transform: none;
   background: var(--blue-hover);
-  box-shadow: 0 0 0 3px #fff, 0 2px 8px rgba(6, 39, 47, 0.4);
+  box-shadow: 0 0 0 3px #fff, 0 2px 8px rgba(11, 49, 61, 0.4);
 }
 
 .locate-btn .loader {
@@ -1742,7 +1742,7 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: rgba(43, 124, 109, 0.2);
+  background: rgba(26, 118, 147, 0.2);
   animation: user-pulse 2s ease-out infinite;
   pointer-events: none;
 }
@@ -1758,16 +1758,16 @@
   transform: rotate(calc(var(--pin-heading, 0deg) + var(--map-bearing, 0deg)));
 }
 
-/* A cor mantém-se: #1078a0 dá 4,98:1 e já passava AA. Cresce apenas para não
-   se perder ao lado dos pins de vendedor, agora de 40px. */
+/* Azul utilitário da nova paleta: #1A7693 dá 5,18:1 e passa AA. O tamanho
+   mantém-se para não se perder ao lado dos pins de vendedor, de 40px. */
 .user-location-dot {
   position: relative;
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: var(--blue, #1078a0);
+  background: var(--blue, #1A7693);
   border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(43, 124, 109, 0.45);
+  box-shadow: 0 2px 8px rgba(26, 118, 147, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;

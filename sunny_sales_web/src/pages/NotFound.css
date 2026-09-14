@@ -15,7 +15,7 @@
   animation: fadeInUp 0.45s var(--ease-out);
 }
 
-/* Mancha de cor suave atrás do ícone — a mesma paleta de verão, sem foto
+/* Mancha de cor suave atrás do ícone — a mesma paleta da marca, sem foto
    nem textura, só para o ecrã não ficar todo branco. */
 .notfound-glow {
   position: absolute;
