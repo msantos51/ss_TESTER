@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdDelete, MdRecycling, MdWaves, MdCleaningServices, MdWbSunny, MdLocalDrink, MdPeople, MdEco } from 'react-icons/md';
+import { MdDelete, MdRecycling, MdWaves, MdCleaningServices, MdWbSunny, MdLocalDrink, MdPeople } from 'react-icons/md';
 import { FiHeart } from 'react-icons/fi';
 import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
@@ -55,12 +55,7 @@ export default function Sustentabilidade() {
       </div>
 
       <div className="info-section">
-        <div className="info-section-head">
-          <span className="info-section-icon">
-            <MdEco />
-          </span>
-          <h2 className="info-section-title">Consciencialização dos Banhistas</h2>
-        </div>
+        <h2 className="info-section-title">Consciencialização dos Banhistas</h2>
         <ul className="sustainability-list">
           {items.map((item, index) => (
             <li

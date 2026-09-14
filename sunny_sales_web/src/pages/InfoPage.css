@@ -258,33 +258,6 @@
   margin-bottom: 2.75rem;
 }
 
-/* Header with icon chip + underlined title (matches SobreProjeto) */
-.info-section-head {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 26px;
-}
-
-.info-section-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 46px;
-  height: 46px;
-  border-radius: var(--radius-control);
-  background: var(--gold);
-  color: #fff;
-  border: none;
-  flex-shrink: 0;
-}
-
-.info-section-icon svg {
-  width: 22px;
-  height: 22px;
-  stroke: #fff;
-}
-
 .info-section-title {
   font-size: var(--fs-h2);
   font-weight: 700;
@@ -313,7 +286,7 @@
   background: var(--gold);
 }
 
-/* When the title stands alone (no icon-chip header) keep spacing tidy */
+/* Espaço entre o título da secção e o conteúdo que se lhe segue. */
 .info-section > .info-section-title {
   margin-bottom: 26px;
 }
