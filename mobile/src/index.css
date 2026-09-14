@@ -419,6 +419,12 @@ body {
   backdrop-filter: blur(8px);
 }
 
+.logo-circle-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
 .app-title {
   font-size: 28px;
   font-weight: 800;
