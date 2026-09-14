@@ -46,37 +46,9 @@
   }
 }
 
-/* Pastilha de vidro: o mesmo material da cápsula de navegação, em pequeno. */
-.landing-live {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: 8px 15px;
-  border-radius: var(--radius-full);
-  background: var(--glass);
-  -webkit-backdrop-filter: saturate(180%) blur(10px);
-  backdrop-filter: saturate(180%) blur(10px);
-  box-shadow: var(--glass-ring), 0 4px 12px -6px rgba(11, 49, 61, 0.35);
-  color: var(--accent-text);
-  font-size: var(--fs-caption);
-  font-weight: 600;
-}
-
-.landing-live-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--gold);
-  animation: landing-blink 1.8s ease-in-out infinite;
-}
-
-@keyframes landing-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.25; }
-}
-
+/* O título é agora o primeiro elemento do herói: sem margem por cima. */
 .landing-title {
-  margin: var(--space-lg) 0 0;
+  margin: 0;
   font-size: var(--fs-display);
   line-height: 1.03;
   font-weight: 800;
@@ -204,8 +176,7 @@
 
 .landing-btn:focus-visible,
 .landing-hero-cta:focus-visible,
-.landing-banner-btn:focus-visible,
-.nav-cta-map:focus-visible {
+.landing-banner-btn:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
@@ -339,57 +310,6 @@
 .landing-banner-btn:hover {
   background: #F2D850;
   color: var(--gold-ink);
-}
-
-/* ---------- Cápsula: CTA "Abrir mapa" ---------- */
-
-.nav-cta-map {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  min-height: 42px;
-  margin-left: 6px;
-  padding: 10px 18px;
-  border-radius: var(--radius-btn);
-  background: var(--ink);
-  color: #fff;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-  box-shadow: 0 6px 14px -8px rgba(23, 104, 130, 0.9);
-  transition: background var(--transition);
-}
-
-.nav-cta-map:hover {
-  background: var(--ink-hover);
-  color: #fff;
-}
-
-.nav-cta-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--gold);
-  animation: landing-blink 1.8s ease-in-out infinite;
-}
-
-/* Em telemóvel o CTA fica — o mapa é a razão de ser do site e quem chega por
-   QR code não o deve ir buscar dentro de um menu. Só encolhe e é ele que
-   empurra o botão do menu para a direita da cápsula. */
-@media (max-width: 768px) {
-  .nav-cta-map {
-    margin-left: auto;
-    min-height: 38px;
-    padding: 8px 14px;
-    gap: 7px;
-    font-size: 0.8125rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .landing-live-dot,
-  .nav-cta-dot { animation: none; }
 }
 
 /* ---------- Pins da pré-visualização ----------

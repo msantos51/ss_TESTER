@@ -914,14 +914,17 @@ h2 {
   }
 
   /* Os destinos e o Instagram deixam a cápsula e passam para a folha do
-     menu; fica a marca, o atalho do mapa e o botão que a abre. */
+     menu; fica a marca e o botão que a abre. */
   .nav-links,
   .nav-icons {
     display: none;
   }
 
+  /* Sem mais nada entre a marca e o menu, é o botão que se encosta à direita
+     da cápsula. */
   .nav-burger {
     display: inline-flex;
+    margin-left: auto;
   }
 
   .container {

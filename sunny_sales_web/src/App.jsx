@@ -45,9 +45,9 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const HIDE_BACK_ROUTES = ['/', '/mapa'];
 
 // Os destinos do site, numa lista só: em desktop vivem dentro da cápsula de
-// vidro, em telemóvel na folha do menu hamburger. O mapa não está aqui porque
-// tem o seu próprio CTA na cápsula, visível em qualquer largura. O ícone só é
-// usado na folha do menu (na cápsula o rótulo chega).
+// vidro, em telemóvel na folha do menu hamburger. O mapa não está aqui: chega-se
+// lá pelos CTA da página de entrada. O ícone só é usado na folha do menu (na
+// cápsula o rótulo chega).
 const DESTINATIONS = [
   { to: '/sustentabilidade', label: 'Praia Sustentável', Icon: FiSun },
   { to: '/sobre-projeto', label: 'Sobre o Projeto', Icon: FiInfo },
@@ -163,11 +163,6 @@ function AppLayout() {
             </NavLink>
           ))}
         </div>
-
-        <Link to="/mapa" className="nav-cta-map">
-          <span className="nav-cta-dot" aria-hidden="true" />
-          Abrir mapa
-        </Link>
 
         {/* Em telemóvel o Instagram passa para a folha do menu (index.css). */}
         <div className="nav-icons">

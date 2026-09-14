@@ -49,6 +49,10 @@ function FitVendors({ vendors }) {
   return null;
 }
 
+// `rotateControl={false}`: o leaflet-rotate acrescenta uma bússola no canto
+// superior esquerdo de qualquer mapa assim que o seu módulo carrega — é uma
+// opção global do L.Map. Aqui não há rotação nenhuma para desfazer, por isso
+// sai.
 function HeroMap({ vendors }) {
   return (
     <MapContainer
@@ -57,6 +61,7 @@ function HeroMap({ vendors }) {
       className="landing-hero-map"
       zoomControl={false}
       attributionControl={false}
+      rotateControl={false}
       dragging={false}
       scrollWheelZoom={false}
       doubleClickZoom={false}
@@ -103,16 +108,10 @@ export default function Landing() {
     return () => { alive = false; clearInterval(t); };
   }, []);
 
-  const activeLabel = `${vendors.length} ${vendors.length === 1 ? 'vendedor ativo' : 'vendedores ativos'}`;
-
   return (
     <div className="landing">
       <section className="landing-hero">
         <div className="landing-hero-top">
-          <span className="landing-live">
-            <span className="landing-live-dot" aria-hidden="true" />
-            {activeLabel}
-          </span>
           <h1 className="landing-title">
             Vendedores de praia, em tempo real.
           </h1>
@@ -125,7 +124,7 @@ export default function Landing() {
           <div className="landing-hero-frame">
             <HeroMap vendors={vendors} />
             <Link to="/mapa" className="landing-hero-cta">
-              Explorar o mapa completo
+              Ver mapa com vendedores
               <FiArrowUpRight size={18} aria-hidden="true" />
             </Link>
           </div>
