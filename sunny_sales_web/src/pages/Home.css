@@ -1816,6 +1816,12 @@
   .modern-layout {
     flex-direction: column;
     gap: 0;
+    /* `100vh` primeiro como recurso: nalguns motores de navegador o `calc()`
+       com `svh` combinado com `var()` falha em silêncio e a propriedade
+       fica sem valor nenhum, encolhendo o mapa para o mínimo de outra regra
+       (ver o `min-height: 560px` mais abaixo). Com o `vh` antes, há sempre
+       uma altura válida, e onde o `svh` funciona é ele que prevalece. */
+    height: calc(100vh - var(--navbar-h) - var(--footer-h));
     height: calc(100svh - var(--navbar-h) - var(--footer-h));
   }
 
@@ -1947,8 +1953,13 @@
 }
 
 /* Na faixa em que os painéis passam para baixo uns dos outros, o mapa deixa de
-   ter altura vinda do pai: aqui o mínimo é mesmo o que lhe dá corpo. */
-@media (max-width: 1060px) {
+   ter altura vinda do pai: aqui o mínimo é mesmo o que lhe dá corpo. Só até
+   aos 769px — abaixo disso é telemóvel, que tem a sua própria regra (ver o
+   breakpoint de 768px mais abaixo) e não pode herdar este mínimo fixo: se o
+   `calc()` com `svh` dessa regra alguma vez falhar num motor de navegador
+   mais limitado, era este o valor que sobrava, encolhendo o mapa para 560px
+   fixos e deixando o resto do ecrã em branco por baixo. */
+@media (min-width: 769px) and (max-width: 1060px) {
   .map-area {
     min-height: 560px;
   }
@@ -2295,7 +2306,9 @@
   .map-area {
     /* O mapa vai de baixo da cápsula até ao rodapé fixo das mensagens.
        Tudo o que flutua sobre ele (localizar, bússola, filtros, cartão) é
-       posicionado dentro desta caixa. */
+       posicionado dentro desta caixa. `vh` primeiro como recurso — ver a
+       nota junto ao `.modern-layout` no breakpoint de 768px. */
+    min-height: calc(100vh - var(--navbar-h) - var(--footer-h));
     min-height: calc(100svh - var(--navbar-h) - var(--footer-h));
     border-radius: 0;
   }
