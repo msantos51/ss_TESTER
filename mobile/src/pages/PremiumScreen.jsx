@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  FiStar, FiRadio, FiBell, FiImage, FiCheck, FiAlertTriangle, FiRefreshCw,
+  FiStar, FiRadio, FiImage, FiCheck, FiAlertTriangle, FiRefreshCw,
 } from 'react-icons/fi';
 import { BASE_URL } from '../config.js';
 import '../styles/PremiumScreen.css';
@@ -11,7 +11,7 @@ import '../styles/PremiumScreen.css';
 const PRICE_LABEL = '19,99 €';
 const PERIOD_LABEL = 'por mês';
 
-// As quatro vantagens, cada uma com o que o vendedor tem sem Premium e o que
+// As três vantagens, cada uma com o que o vendedor tem sem Premium e o que
 // passa a ter com ele. A comparação é o argumento: sem ela isto seria uma
 // lista de promessas soltas.
 const BENEFITS = [
@@ -32,14 +32,6 @@ const BENEFITS = [
     premium: '1 km',
   },
   {
-    id: 'aviso',
-    icon: FiBell,
-    title: 'Notificação de proximidade',
-    description: 'O banhista que marcou interesse em ti recebe um aviso quando entras na zona dele. No máximo dois por dia, para o aviso continuar a ser bem-vindo.',
-    free: 'Sem avisos',
-    premium: 'Até 2 avisos por dia',
-  },
-  {
     id: 'fotos',
     icon: FiImage,
     title: 'Fotos dos produtos',
@@ -52,7 +44,7 @@ const BENEFITS = [
 const FAQS = [
   {
     q: 'O Premium substitui o meu plano de visibilidade?',
-    a: 'Não. O plano de visibilidade é o que te põe no mapa; o Premium acrescenta-lhe o destaque, o alcance, os avisos e as fotos. São compras separadas.',
+    a: 'Não. O plano de visibilidade é o que te põe no mapa; o Premium acrescenta-lhe o destaque, o alcance e as fotos. São compras separadas.',
   },
   {
     q: 'É cobrado automaticamente todos os meses?',
@@ -133,7 +125,7 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
         <h1 className="premium-title">Sê o vendedor que se vê primeiro</h1>
         <p className="premium-lead">
           O plano de visibilidade põe-te no mapa. O Premium faz com que te
-          encontrem de longe — e que saibam que chegaste.
+          encontrem de longe — e que vejam o que estás a vender.
         </p>
       </header>
 

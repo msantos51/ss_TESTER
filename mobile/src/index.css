@@ -767,6 +767,8 @@ body {
 }
 
 .ss-row-value {
+  flex-shrink: 0;
+  white-space: nowrap;
   font-size: var(--fs-sm);
   font-weight: 700;
   color: var(--text-muted);

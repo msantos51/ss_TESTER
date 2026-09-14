@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  FiUser, FiFileText, FiMail, FiLogOut,
+  FiUser, FiFileText, FiMail, FiLogOut, FiMapPin,
   FiChevronRight, FiExternalLink,
 } from 'react-icons/fi';
 import { WEB_URL, mediaUrl } from '../config.js';
@@ -9,7 +9,7 @@ import ProfileScreen from './ProfileScreen.jsx';
 import PlansScreen from './PlansScreen.jsx';
 import InvoicesScreen from './InvoicesScreen.jsx';
 
-export default function DashboardScreen({ auth, onLogout, onUserUpdate }) {
+export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUpdate }) {
   const { user } = auth;
   const [showProfile, setShowProfile] = useState(false);
   const [showPlans, setShowPlans] = useState(false);
@@ -18,6 +18,16 @@ export default function DashboardScreen({ auth, onLogout, onUserUpdate }) {
   const subscriptionActive = user?.subscription_active;
   const subscriptionDate = user?.subscription_valid_until
     ? new Date(user.subscription_valid_until).toLocaleDateString('pt-PT')
+    : null;
+
+  // (em português) O cartão do topo da Conta é o do Premium: é a compra que o
+  // vendedor gere hoje, e "Gerir" leva-o ao separador onde está tudo — o que
+  // ganha, o preço e a renovação. O plano de visibilidade continua a existir,
+  // mas é uma linha da lista: quem o quer renovar sabe onde o procurar, e quem
+  // abre a Conta deixa de cair numa folha de planos que já não é o assunto.
+  const isPremium = Boolean(user?.is_premium);
+  const premiumDate = user?.premium_valid_until
+    ? new Date(user.premium_valid_until).toLocaleDateString('pt-PT')
     : null;
 
   const handleLogout = async () => {
@@ -41,6 +51,15 @@ export default function DashboardScreen({ auth, onLogout, onUserUpdate }) {
     {
       label: 'Negócio',
       items: [
+        {
+          icon: <FiMapPin />,
+          // "Visibilidade" e não "Plano de visibilidade": com a data ao lado,
+          // o rótulo mais longo parte-se em duas linhas num ecrã de 412 px e
+          // não sobra nada para os telemóveis estreitos.
+          label: 'Visibilidade',
+          value: subscriptionActive ? subscriptionDate || 'Ativo' : 'Inativo',
+          onClick: () => setShowPlans(true),
+        },
         { icon: <FiFileText />, label: 'Faturas', onClick: () => setShowInvoices(true) },
         {
           icon: <FiMail />,
@@ -83,20 +102,24 @@ export default function DashboardScreen({ auth, onLogout, onUserUpdate }) {
       </header>
 
       <div className="account-body">
-        {/* Cartão de subscrição */}
-        <div className={`account-sub-card${subscriptionActive ? ' is-active' : ''}`}>
+        {/* Cartão do Premium */}
+        <div className={`account-sub-card${isPremium ? ' is-active' : ''}`}>
           <div className="account-sub-text">
             <span className="account-sub-title">
-              {subscriptionActive ? 'Subscrição ativa' : 'Subscrição inativa'}
+              {isPremium ? 'Premium ativo' : 'Ainda sem Premium'}
             </span>
             <span className="account-sub-desc">
-              {subscriptionActive
-                ? `Válida até ${subscriptionDate || '—'}`
-                : 'Ativa um plano para apareceres no mapa'}
+              {isPremium
+                ? `Válido até ${premiumDate || '—'}`
+                : 'Estrela no pin, 1 km de alcance e fotos nos produtos'}
             </span>
           </div>
-          <button type="button" className="account-sub-btn" onClick={() => setShowPlans(true)}>
-            {subscriptionActive ? 'Gerir' : 'Ativar'}
+          <button
+            type="button"
+            className="account-sub-btn"
+            onClick={() => onChangePage?.('premium')}
+          >
+            {isPremium ? 'Gerir' : 'Ativar'}
           </button>
         </div>
 
