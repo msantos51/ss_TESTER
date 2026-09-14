@@ -119,10 +119,8 @@ export default function Login({ onLogin, onBack, onRegister, initialEmail = '' }
 
       <div className="login-header">
         <div className="logo-circle">
-          <svg viewBox="0 0 64 64" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="32" cy="32" r="32" fill="white" fillOpacity="0.15" />
-            <path d="M32 16 L20 40 L32 34 L44 40 Z" fill="white" />
-          </svg>
+          {/* alt vazio: o título "Sunny Sales" logo abaixo já nomeia o ecrã. */}
+          <img src="/logo-icon.png" alt="" className="logo-circle-img" />
         </div>
         <h1 className="app-title">Sunny Sales</h1>
         <p className="app-subtitle">App do Vendedor</p>
