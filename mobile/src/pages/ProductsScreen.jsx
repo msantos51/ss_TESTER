@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   FiPlus, FiX, FiTrash2, FiEdit2, FiCheck, FiImage, FiCamera, FiAlertTriangle,
+  FiStar,
 } from 'react-icons/fi';
 import { BASE_URL, mediaUrl } from '../config.js';
 import ImageCropper from '../components/ImageCropper';
@@ -8,11 +9,14 @@ import '../styles/ProductsScreen.css';
 
 const MAX_PRODUCTS = 10;
 
-export default function ProductsScreen({ auth, onClose }) {
+export default function ProductsScreen({ auth, onClose, onGoPremium }) {
   // Sem `onClose` o ecrã é um separador de página inteira; com ele mantém-se
   // como bottom sheet (usado a partir de outros ecrãs).
   const asTab = typeof onClose !== 'function';
-  const { token, vendorId } = auth;
+  const { token, vendorId, user } = auth;
+  // A fotografia é uma vantagem Premium (o servidor recusa o upload sem ele):
+  // sem Premium o formulário mostra o convite em vez dos botões de foto.
+  const canUploadPhotos = Boolean(user?.is_premium);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -209,25 +213,55 @@ export default function ProductsScreen({ auth, onClose }) {
   const formatPrice = (value) => `${parseFloat(value).toFixed(2).replace('.', ',')} €`;
   const atLimit = products.length >= MAX_PRODUCTS;
 
-  const photoFields = (preview, cameraRef, fileRef, onChange) => (
-    <div className="product-form-photo">
-      {preview ? (
-        <img src={preview} alt="" className="product-form-thumb" />
-      ) : (
-        <span className="product-form-thumb is-placeholder"><FiImage size={22} /></span>
-      )}
-      <div className="product-form-photo-btns">
-        <button type="button" className="product-photo-btn" onClick={() => cameraRef.current?.click()}>
-          <FiCamera size={14} /> Tirar foto
-        </button>
-        <button type="button" className="product-photo-btn is-ghost" onClick={() => fileRef.current?.click()}>
-          <FiImage size={14} /> Galeria
-        </button>
+  const photoFields = (preview, cameraRef, fileRef, onChange) => {
+    if (!canUploadPhotos) {
+      // A foto que já lá está (de um período com Premium) continua a mostrar-se
+      // e a ser guardada: o que fica bloqueado é trocá-la ou pôr uma nova.
+      return (
+        <div className="product-photo-locked">
+          {preview ? (
+            <img src={preview} alt="" className="product-form-thumb" />
+          ) : (
+            <span className="product-photo-locked-icon"><FiStar size={18} /></span>
+          )}
+          <div className="product-photo-locked-text">
+            <span className="product-photo-locked-title">
+              {preview ? 'Trocar a foto é Premium' : 'Fotos são Premium'}
+            </span>
+            <span className="product-photo-locked-desc">
+              No plano gratuito o produto fica com nome e preço. Com Premium
+              cada produto leva a sua fotografia.
+            </span>
+            {typeof onGoPremium === 'function' && (
+              <button type="button" className="product-photo-locked-cta" onClick={onGoPremium}>
+                Ver Premium
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="product-form-photo">
+        {preview ? (
+          <img src={preview} alt="" className="product-form-thumb" />
+        ) : (
+          <span className="product-form-thumb is-placeholder"><FiImage size={22} /></span>
+        )}
+        <div className="product-form-photo-btns">
+          <button type="button" className="product-photo-btn" onClick={() => cameraRef.current?.click()}>
+            <FiCamera size={14} /> Tirar foto
+          </button>
+          <button type="button" className="product-photo-btn is-ghost" onClick={() => fileRef.current?.click()}>
+            <FiImage size={14} /> Galeria
+          </button>
+        </div>
+        <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={onChange} style={{ display: 'none' }} />
+        <input ref={fileRef} type="file" accept="image/*" onChange={onChange} style={{ display: 'none' }} />
       </div>
-      <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={onChange} style={{ display: 'none' }} />
-      <input ref={fileRef} type="file" accept="image/*" onChange={onChange} style={{ display: 'none' }} />
-    </div>
-  );
+    );
+  };
 
   return (
     <div className={asTab ? 'products-screen' : 'products-overlay'}>

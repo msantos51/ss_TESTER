@@ -70,7 +70,9 @@ function formatKm(meters) {
 // direção lá dentro. O halo só pulsa enquanto a partilha está ligada.
 // A seta aponta para o rumo geográfico; como o marcador vive no painel que não
 // roda com o mapa, é o CSS que lhe soma o bearing atual (`--map-bearing`).
-function getVendorLocationHtml(heading, color, sharing) {
+// Com Premium leva ainda a estrela ao canto — a mesma que o banhista vê no
+// mapa do site, para o vendedor confirmar aqui que a vantagem está a pegar.
+function getVendorLocationHtml(heading, color, sharing, premium) {
   const hasHeading = heading !== null && !isNaN(heading);
   const arrow = hasHeading
     ? `<svg viewBox="0 0 20 20" width="12" height="12" class="user-location-arrow" style="--pin-heading:${heading.toFixed(1)}deg;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="#fff"/></svg>`
@@ -80,7 +82,10 @@ function getVendorLocationHtml(heading, color, sharing) {
   const pulse = sharing
     ? `<div class="user-location-pulse" style="background:${hexToRgba(pinColor, 0.2)};"></div>`
     : '';
-  return `<div class="user-location-marker">${pulse}<div class="user-location-dot" style="background:${safeColor};box-shadow:0 2px 8px ${hexToRgba(pinColor, 0.45)};">${arrow}</div></div>`;
+  const star = premium
+    ? '<span class="pin-premium-star" aria-hidden="true"><svg viewBox="0 0 24 24" width="10" height="10"><polygon points="12 2 15.09 9.26 23 9.27 16.5 14.14 19 21.5 12 17 5 21.5 7.5 14.14 1 9.27 8.91 9.26" fill="currentColor"/></svg></span>'
+    : '';
+  return `<div class="user-location-marker">${pulse}<div class="user-location-dot" style="background:${safeColor};box-shadow:0 2px 8px ${hexToRgba(pinColor, 0.45)};">${arrow}</div>${star}</div>`;
 }
 
 function FollowPosition({ position }) {
@@ -169,12 +174,13 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const shareFromWatchRef = useRef(null);
   const { heading, reportGpsHeading } = useDeviceHeading();
   const pinColor = user?.pin_color || DEFAULT_PIN;
+  const isPremium = Boolean(user?.is_premium);
   const vendorIcon = useMemo(() => L.divIcon({
     className: 'vendor-location-pin',
-    html: getVendorLocationHtml(heading, pinColor, sharing),
+    html: getVendorLocationHtml(heading, pinColor, sharing, isPremium),
     iconSize: [54, 54],
     iconAnchor: [27, 27],
-  }), [heading, pinColor, sharing]);
+  }), [heading, pinColor, sharing, isPremium]);
 
   const authHeader = { Authorization: `Bearer ${token}` };
   const subscriptionActive = user?.subscription_active;

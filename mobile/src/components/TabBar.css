@@ -1,6 +1,7 @@
 /* Barra de separadores: o material passou a vidro (mesma barra do site),
-   mas a estrutura é a de sempre — os mesmos quatro separadores, a mesma
-   pílula no ativo, o mesmo comportamento. */
+   mas a estrutura é a de sempre — a mesma pílula no ativo, o mesmo
+   comportamento. Com a entrada do Premium são cinco separadores, por isso a
+   pílula deixou de ter largura fixa (ver .ss-tab-pill). */
 .ss-tabbar {
   flex-shrink: 0;
   display: flex;
@@ -19,6 +20,9 @@
 
 .ss-tab {
   flex: 1;
+  /* Sem isto o rótulo mais comprido ("Trajetos") esticava o seu separador e
+     comia o espaço dos vizinhos num ecrã de 320px. */
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -43,7 +47,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
+  /* 52px é a largura desenhada; com cinco separadores num ecrã estreito a
+     pílula encolhe até caber em vez de empurrar a barra. */
+  width: min(52px, 100%);
   height: 30px;
   border-radius: var(--r-pill);
   background: transparent;
@@ -55,9 +61,13 @@
 }
 
 .ss-tab-label {
+  max-width: 100%;
   font-size: var(--fs-label);
   font-weight: 700;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ss-tab:active .ss-tab-pill {

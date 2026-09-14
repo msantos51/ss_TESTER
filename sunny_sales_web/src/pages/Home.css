@@ -1420,12 +1420,33 @@
 }
 
 .card-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
   margin: 0 0 8px;
   font-family: var(--font-display);
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text);
+}
+
+/* Selo Premium ao lado do nome: diz por palavras o que a estrela do pin já
+   disse por desenho, para quem abriu o cartão sem reparar no mapa. */
+.card-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--gold);
+  color: var(--gold-ink);
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .card-payments {
@@ -1675,6 +1696,23 @@
   border-radius: 50%;
   background: #fff;
   z-index: 1;
+}
+
+/* Vendedor Premium: o miolo passa a estrela branca. Fica centrado na mesma
+   gota (a estrela é maior do que o ponto, daí o recuo), sem fundo próprio,
+   para não engordar o pin quando há muitos juntos. */
+.vendor-pin-core--premium {
+  top: 11px;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  background: none;
+  color: #fff;
+  filter: drop-shadow(0 1px 2px rgba(16, 24, 40, 0.45));
 }
 
 .vendor-pin-marker::before {

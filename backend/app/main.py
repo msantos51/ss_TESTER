@@ -378,6 +378,39 @@ PLAN_CONFIG = {
 # Mantido por compatibilidade com o resto do código (cálculo de validade).
 SUBSCRIPTION_PLAN_DURATIONS_DAYS = {plan: cfg["days"] for plan, cfg in PLAN_CONFIG.items()}
 
+# --------------------------
+# Premium — camada paga por cima da subscrição de visibilidade.
+# --------------------------
+# O Premium não substitui o plano de visibilidade: é um extra que se compra à
+# parte, também como pagamento único de 30 dias, e que dá ao vendedor
+#   · estrela no pin, para se distinguir no mapa;
+#   · alcance de PREMIUM_REACH_RADIUS_M em vez de FREE_REACH_RADIUS_M;
+#   · avisos de proximidade aos banhistas que marcaram interesse;
+#   · fotografias nos produtos (sem Premium ficam-se pelo nome e preço).
+PREMIUM_PLAN_ID = "premium"
+PREMIUM_PLAN = {
+    "days": 30,
+    "amount_cents": _plan_amount("PREMIUM_PRICE_EUR", 1999),
+    "label": "Premium",
+}
+
+# Raio a que o vendedor é encontrado no mapa do banhista. Sem Premium o
+# vendedor só aparece a quem já está ao pé dele; com Premium alcança
+# praticamente toda a praia.
+FREE_REACH_RADIUS_M = int(os.getenv("FREE_REACH_RADIUS_M", "300"))
+PREMIUM_REACH_RADIUS_M = int(os.getenv("PREMIUM_REACH_RADIUS_M", "1000"))
+
+# Aviso de proximidade: raio da "zona" do banhista e travão diário. Duas
+# notificações por dia por vendedor são o limite — acima disso a app é
+# desinstalada, e o aviso deixa de valer o que quer que seja.
+PROXIMITY_NOTIFICATION_RADIUS_M = int(os.getenv("PROXIMITY_NOTIFICATION_RADIUS_M", "300"))
+MAX_PROXIMITY_NOTIFICATIONS_PER_DAY = int(os.getenv("MAX_PROXIMITY_NOTIFICATIONS_PER_DAY", "2"))
+
+PREMIUM_PRODUCT_PHOTO_DETAIL = (
+    "As fotografias nos produtos são uma vantagem Premium. "
+    "Sem Premium podes guardar o nome e o preço."
+)
+
 
 def validate_password(password: str):
     if len(password) < 8 or password.lower() == password or not any(c.isdigit() for c in password):
@@ -599,6 +632,7 @@ def apply_subscription_payment(vendor: models.Vendor, plan: str, db: Session) ->
         vendor_id=vendor.id,
         start_date=starts_at,
         end_date=ends_at,
+        plan=plan,
     )
     db.add(paid)
     return paid
@@ -609,6 +643,76 @@ def verify_active_subscription(vendor: models.Vendor, db: Session):
     refresh_subscription_status(vendor, db)
     if not vendor.subscription_active:
         raise HTTPException(status_code=403, detail="Subscription inactive")
+
+
+# --------------------------
+# Premium
+# --------------------------
+def refresh_premium_status(vendor: models.Vendor, db: Session) -> models.Vendor:
+    """Desliga a flag do Premium quando a validade já passou."""
+    if (
+        vendor.premium_active
+        and vendor.premium_valid_until
+        and vendor.premium_valid_until <= utcnow()
+    ):
+        vendor.premium_active = False
+        db.commit()
+        db.refresh(vendor)
+    return vendor
+
+
+def apply_premium_payment(vendor: models.Vendor, db: Session) -> models.PaidWeek:
+    """Credita 30 dias de Premium e regista o pagamento.
+
+    Como nos planos de visibilidade, comprar com o Premium ainda em vigor
+    acumula o período novo no fim do atual em vez de o deitar fora.
+    """
+    now = utcnow()
+    starts_at = (
+        vendor.premium_valid_until
+        if (
+            vendor.premium_active
+            and vendor.premium_valid_until
+            and vendor.premium_valid_until > now
+        )
+        else now
+    )
+    ends_at = starts_at + timedelta(days=PREMIUM_PLAN["days"])
+
+    vendor.premium_active = True
+    vendor.premium_valid_until = ends_at
+    paid = models.PaidWeek(
+        vendor_id=vendor.id,
+        start_date=starts_at,
+        end_date=ends_at,
+        plan=PREMIUM_PLAN_ID,
+    )
+    db.add(paid)
+    return paid
+
+
+def reach_radius_m(vendor: models.Vendor) -> int:
+    """Distância a que este vendedor é encontrado no mapa do banhista."""
+    return PREMIUM_REACH_RADIUS_M if vendor.is_premium else FREE_REACH_RADIUS_M
+
+
+def _within_reach(vendor: models.Vendor, lat: float, lng: float) -> bool:
+    """O banhista em (lat, lng) está dentro do alcance deste vendedor?
+
+    Um vendedor sem posição no mapa (partilha desligada) continua na lista —
+    quem o filtra é o cliente, que já trata os pins sem coordenadas.
+    """
+    if vendor.current_lat is None or vendor.current_lng is None:
+        return True
+    distance = haversine(lat, lng, vendor.current_lat, vendor.current_lng)
+    return distance <= reach_radius_m(vendor)
+
+
+def verify_premium(vendor: models.Vendor, db: Session, detail: str):
+    """Exige Premium em vigor, com a mensagem certa para o ecrã que chamou."""
+    refresh_premium_status(vendor, db)
+    if not vendor.is_premium:
+        raise HTTPException(status_code=403, detail=detail)
 
 # --------------------------
 # Login do vendedor
@@ -988,9 +1092,19 @@ async def create_vendor(
 # --------------------------
 @app.get("/vendors/", response_model=list[schemas.VendorPublicOut])
 def list_vendors(
+    lat: float | None = None,
+    lng: float | None = None,
     current_vendor: models.Vendor | None = Depends(get_current_vendor_optional),
     db: Session = Depends(get_db),
 ):
+    """Vendedores visíveis no mapa.
+
+    `lat`/`lng` são a posição do banhista. Com ela é aplicado o raio de
+    alcance: sem Premium o vendedor só é devolvido a quem está a menos de
+    FREE_REACH_RADIUS_M, com Premium até PREMIUM_REACH_RADIUS_M. Sem posição
+    não há distância que se possa medir, por isso não se filtra nada — é
+    preferível a um mapa vazio para quem recusou a geolocalização.
+    """
     if current_vendor:
         vendors = [current_vendor]
     else:
@@ -1011,7 +1125,12 @@ def list_vendors(
             v.current_lat = None
             v.current_lng = None
 
-    return vendors
+    # O vendedor autenticado vê-se sempre a si próprio, esteja onde estiver: o
+    # raio é sobre quem o procura, não sobre quem se vê a si mesmo na app.
+    if current_vendor or lat is None or lng is None:
+        return vendors
+
+    return [v for v in vendors if _within_reach(v, lat, lng)]
 
 
 # --------------------------
@@ -1152,6 +1271,7 @@ async def update_vendor_profile(
 @app.put("/vendors/{vendor_id}/location")
 async def update_vendor_location(
     vendor_id: int,
+    background_tasks: BackgroundTasks,
     lat: float = Body(...),
     lng: float = Body(...),
     db: Session = Depends(get_db),
@@ -1193,6 +1313,10 @@ async def update_vendor_location(
     points.append({"lat": lat, "lng": lng, "t": utcnow().isoformat()})
     active_route.points = json.dumps(points)
     db.commit()
+
+    # Vantagem Premium: quem marcou interesse é avisado quando o vendedor entra
+    # na sua zona. Os emails saem em segundo plano para não atrasar a resposta.
+    _notify_nearby_interests(vendor, lat, lng, db, background_tasks)
 
     await manager.broadcast({"vendor_id": vendor_id, "lat": lat, "lng": lng})
     return {"message": "Localização atualizada com sucesso"}
@@ -1661,7 +1785,9 @@ def create_checkout_session(
         raise HTTPException(status_code=404, detail="Vendor not found")
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
-    plan_cfg = PLAN_CONFIG.get(plan)
+    # O Premium é vendido pelo mesmo checkout dos planos de visibilidade: é
+    # igualmente um pagamento único, só muda o que é creditado no webhook.
+    plan_cfg = PREMIUM_PLAN if plan == PREMIUM_PLAN_ID else PLAN_CONFIG.get(plan)
     if not plan_cfg:
         raise HTTPException(status_code=400, detail="Invalid plan")
     try:
@@ -1779,6 +1905,222 @@ def list_stories(vendor_id: int, db: Session = Depends(get_db)):
 
 
 # --------------------------
+# Interesse do banhista e aviso de proximidade (vantagem Premium)
+# --------------------------
+def _send_proximity_email(vendor_name: str, product: str, email: str, cancel_token: str) -> bool:
+    """Avisa o banhista de que o vendedor acabou de entrar na sua zona."""
+    cancel_url = f"{BASE_APP_URL}/interest/cancel/{cancel_token}"
+    safe_vendor = escape(vendor_name or "Um vendedor")
+    safe_product = escape(product or "")
+    what = f" com {safe_product}" if safe_product else ""
+    html = f"""
+    <div style="font-family:Arial,sans-serif;max-width:520px;margin:auto">
+      <h2 style="color:#005F73">{safe_vendor} está a chegar</h2>
+      <p style="color:#555;font-size:15px;line-height:1.6">
+        O vendedor{what} que estavas à espera acabou de entrar na tua zona da praia.
+      </p>
+      <p style="color:#888;font-size:12px;line-height:1.6">
+        Não queres mais avisos deste vendedor?
+        <a href="{cancel_url}" style="color:#0A9396">Cancela aqui</a>.
+      </p>
+    </div>
+    """
+    return send_email(
+        to=email,
+        subject=f"{vendor_name} está perto de ti",
+        body=(
+            f"{vendor_name} acabou de entrar na tua zona da praia.\n\n"
+            f"Para deixar de receber avisos deste vendedor: {cancel_url}"
+        ),
+        html=html,
+    )
+
+
+def _notify_nearby_interests(
+    vendor: models.Vendor,
+    lat: float,
+    lng: float,
+    db: Session,
+    background_tasks: BackgroundTasks,
+) -> None:
+    """Avisa quem marcou interesse quando o vendedor Premium entra na zona.
+
+    O aviso sai apenas na transição de fora para dentro da zona — dentro dela
+    o vendedor pode andar às voltas sem gerar um único email — e ainda assim
+    está travado em MAX_PROXIMITY_NOTIFICATIONS_PER_DAY por dia. Sem esse
+    travão o banhista desinstalava a app ao fim do primeiro dia, e o aviso é a
+    vantagem Premium que mais depende de ser bem-vindo.
+
+    Nunca levanta exceções: uma falha a avisar não pode fazer cair o envio da
+    localização, que é o que põe o vendedor no mapa.
+    """
+    try:
+        if not vendor.is_premium:
+            return
+
+        interests = (
+            db.query(models.VendorInterest)
+            .filter(models.VendorInterest.vendor_id == vendor.id)
+            .all()
+        )
+        if not interests:
+            return
+
+        now = utcnow()
+        today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        changed = False
+        # Os emails só são postos na fila depois de o contador ficar gravado:
+        # de outro modo uma gravação falhada deixava o aviso enviado e o
+        # travão diário por contar.
+        to_notify = []
+
+        for interest in interests:
+            inside = haversine(interest.lat, interest.lng, lat, lng) <= PROXIMITY_NOTIFICATION_RADIUS_M
+
+            if not inside:
+                if interest.in_zone:
+                    interest.in_zone = False
+                    changed = True
+                continue
+
+            if interest.in_zone:
+                continue
+
+            interest.in_zone = True
+            changed = True
+
+            # O contador é por dia: a primeira entrada de cada dia reinicia-o.
+            if interest.notifications_day != today:
+                interest.notifications_day = today
+                interest.notifications_today = 0
+
+            if (interest.notifications_today or 0) >= MAX_PROXIMITY_NOTIFICATIONS_PER_DAY:
+                continue
+
+            interest.notifications_today = (interest.notifications_today or 0) + 1
+            interest.last_notified_at = now
+            to_notify.append((interest.email, interest.cancel_token))
+
+        if changed:
+            db.commit()
+
+        for email, cancel_token in to_notify:
+            background_tasks.add_task(
+                _send_proximity_email, vendor.name, vendor.product, email, cancel_token
+            )
+    except Exception as exc:
+        security_logger.error(f"Erro ao avisar interessados do vendedor {vendor.id}: {exc}")
+        db.rollback()
+
+
+@app.post("/vendors/{vendor_id}/interest")
+@limiter.limit("10/minute")
+def create_vendor_interest(
+    vendor_id: int,
+    request: Request,
+    payload: schemas.VendorInterestCreate,
+    db: Session = Depends(get_db),
+):
+    """O banhista pede para ser avisado quando este vendedor chegar perto.
+
+    Não há conta de banhista: o pedido é anónimo e identifica-se pelo email.
+    Repetir o pedido para o mesmo vendedor atualiza a posição em vez de criar
+    um segundo registo — de outro modo cada abertura do mapa duplicava avisos.
+    """
+    email = payload.email.strip().lower()[:255]
+    if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", email):
+        raise HTTPException(status_code=400, detail="Email inválido")
+    if not (-90 <= payload.lat <= 90) or not (-180 <= payload.lng <= 180):
+        raise HTTPException(status_code=400, detail="Coordenadas inválidas")
+
+    vendor = (
+        db.query(models.Vendor)
+        .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
+        .first()
+    )
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendedor não encontrado")
+
+    refresh_premium_status(vendor, db)
+    if not vendor.is_premium:
+        raise HTTPException(
+            status_code=403,
+            detail="Este vendedor não tem avisos de proximidade. É uma vantagem Premium.",
+        )
+
+    interest = (
+        db.query(models.VendorInterest)
+        .filter(
+            models.VendorInterest.vendor_id == vendor_id,
+            models.VendorInterest.email == email,
+        )
+        .first()
+    )
+    if interest:
+        interest.lat = payload.lat
+        interest.lng = payload.lng
+        # A zona mudou de sítio: o vendedor volta a poder "entrar" nela.
+        interest.in_zone = False
+    else:
+        interest = models.VendorInterest(
+            vendor_id=vendor_id,
+            email=email,
+            lat=payload.lat,
+            lng=payload.lng,
+            cancel_token=uuid4().hex,
+            in_zone=False,
+            notifications_today=0,
+        )
+        db.add(interest)
+    db.commit()
+
+    return {
+        "status": "ok",
+        "detail": (
+            f"Avisamos-te quando {vendor.name} entrar na tua zona. "
+            f"No máximo {MAX_PROXIMITY_NOTIFICATIONS_PER_DAY} avisos por dia."
+        ),
+        "radius_m": PROXIMITY_NOTIFICATION_RADIUS_M,
+        "max_per_day": MAX_PROXIMITY_NOTIFICATIONS_PER_DAY,
+    }
+
+
+@app.get("/interest/cancel/{token}", response_class=HTMLResponse)
+def cancel_vendor_interest(token: str, db: Session = Depends(get_db)):
+    """Link de cancelamento que segue em cada aviso de proximidade."""
+    interest = (
+        db.query(models.VendorInterest)
+        .filter(models.VendorInterest.cancel_token == token)
+        .first()
+    )
+    if not interest:
+        return HTMLResponse(
+            status_code=404,
+            content=_status_page(
+                title="Aviso não encontrado",
+                icon="&#128533;",
+                heading="Este pedido já não existe",
+                heading_color="#AE2012",
+                message="O link já foi usado ou o aviso foi cancelado antes.",
+                button_label="Ir para o mapa",
+            ),
+        )
+
+    db.delete(interest)
+    db.commit()
+    return HTMLResponse(
+        content=_status_page(
+            title="Avisos cancelados",
+            icon="&#9989;",
+            heading="Deixaste de receber avisos",
+            heading_color="#0A9396",
+            message="Não voltamos a avisar-te da chegada deste vendedor.",
+            button_label="Ir para o mapa",
+        )
+    )
+
+
+# --------------------------
 # Produtos do vendedor
 # --------------------------
 @app.post("/vendors/{vendor_id}/products", response_model=schemas.ProductOut)
@@ -1802,6 +2144,9 @@ async def create_product(
 
     photo_path = None
     if photo:
+        # A fotografia é uma vantagem Premium; sem ele o produto fica-se pelo
+        # nome e pelo preço, que é o que o plano gratuito promete.
+        verify_premium(current_vendor, db, PREMIUM_PRODUCT_PHOTO_DETAIL)
         validate_upload(photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto do produto")
         photo_path = _upload_file(photo, PRODUCT_PHOTO_DIR)
 
@@ -1849,6 +2194,7 @@ async def update_product(
         raise HTTPException(status_code=404, detail="Produto não encontrado")
 
     if photo:
+        verify_premium(current_vendor, db, PREMIUM_PRODUCT_PHOTO_DETAIL)
         validate_upload(photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto do produto")
         new_photo_path = _upload_file(photo, PRODUCT_PHOTO_DIR)
         if product.photo:
@@ -1969,7 +2315,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
             return {"status": "ignored"}
 
         plan = metadata.get("plan", "semanal")
-        if plan not in SUBSCRIPTION_PLAN_DURATIONS_DAYS:
+        if plan != PREMIUM_PLAN_ID and plan not in SUBSCRIPTION_PLAN_DURATIONS_DAYS:
             security_logger.warning(f"Invalid plan in webhook: {plan}")
             return {"status": "ignored"}
 
@@ -1980,11 +2326,17 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         )
         if vendor:
             try:
-                paid = apply_subscription_payment(vendor, plan, db)
+                if plan == PREMIUM_PLAN_ID:
+                    paid = apply_premium_payment(vendor, db)
+                else:
+                    paid = apply_subscription_payment(vendor, plan, db)
                 paid.stripe_session_id = session_id
                 paid.receipt_url = _extract_receipt_url(session)
                 db.commit()
-                security_logger.info(f"Subscription activated for vendor {vendor_id}")
+                security_logger.info(
+                    f"{'Premium' if plan == PREMIUM_PLAN_ID else 'Subscription'}"
+                    f" activated for vendor {vendor_id}"
+                )
             except Exception as exc:
                 security_logger.error(f"Error processing webhook for vendor {vendor_id}: {exc}")
                 db.rollback()
@@ -2038,7 +2390,8 @@ def get_my_vendor_profile(
     current_vendor: models.Vendor = Depends(get_current_vendor),
     db: Session = Depends(get_db),
 ):
-    return refresh_subscription_status(current_vendor, db)
+    refresh_subscription_status(current_vendor, db)
+    return refresh_premium_status(current_vendor, db)
 
 
 # --------------------------
@@ -2118,6 +2471,8 @@ def export_my_data(
             "termos_aceites_em": iso(vendor.terms_accepted_at),
             "subscricao_ativa": bool(vendor.subscription_active),
             "subscricao_valida_ate": iso(vendor.subscription_valid_until),
+            "premium_ativo": bool(vendor.premium_active),
+            "premium_valido_ate": iso(vendor.premium_valid_until),
         },
         "trajetos": [
             {
@@ -2153,6 +2508,7 @@ def export_my_data(
                 "id": pw.id,
                 "inicio": iso(pw.start_date),
                 "fim": iso(pw.end_date),
+                "plano": pw.plan,
                 "recibo": pw.receipt_url,
             }
             for pw in paid_weeks
@@ -2239,6 +2595,12 @@ def delete_my_account(
         models.VendorSession.vendor_id == vendor_id
     ).delete(synchronize_session=False)
 
+    # 4.b. Pedidos de aviso de proximidade. Guardam o email de banhistas que
+    # nunca mais vão ser avisados — não há razão para os conservar.
+    db.query(models.VendorInterest).filter(
+        models.VendorInterest.vendor_id == vendor_id
+    ).delete(synchronize_session=False)
+
     # 5. Anonimização do perfil. O email passa a um endereço no domínio
     # reservado `.invalid` (RFC 2606), que nunca pode existir, mantendo a
     # restrição de unicidade satisfeita e libertando o email real.
@@ -2268,6 +2630,8 @@ def delete_my_account(
     vendor.email_confirmed = False
     vendor.subscription_active = False
     vendor.subscription_valid_until = None
+    vendor.premium_active = False
+    vendor.premium_valid_until = None
     vendor.deleted_at = utcnow()
 
     db.commit()

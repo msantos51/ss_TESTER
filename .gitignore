@@ -5,6 +5,7 @@ __pycache__/
 .env.*
 !.env.example
 profile_photos/
+product_photos/
 stories/
 license_docs/
 

@@ -565,6 +565,26 @@
   100% { transform: scale(1.4); opacity: 0; }
 }
 
+/* Estrela do Premium: encostada ao canto do ponto, com anel branco para se
+   ler tanto sobre mar como sobre areia. Fica por cima do halo que pulsa. */
+.pin-premium-star {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: var(--sun, #EE9B00);
+  color: var(--sun-ink, #2A1A00);
+  box-shadow: 0 1px 4px rgba(6, 39, 47, 0.35);
+  pointer-events: none;
+}
+
 /* ── Leaflet ──────────────────────────────────────────
    A atribuição do OSM é obrigatória, mas não pode competir com o cartão
    de partilha: fica discreta no canto, com a forma que tem no site. */

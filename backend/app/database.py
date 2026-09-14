@@ -50,9 +50,11 @@ def ensure_latest_schema():
     tables = inspector.get_table_names()
     if "paid_weeks" in tables:
         pw_columns = {c["name"] for c in inspector.get_columns("paid_weeks")}
-        if "stripe_session_id" not in pw_columns:
-            with engine.begin() as conn:
+        with engine.begin() as conn:
+            if "stripe_session_id" not in pw_columns:
                 conn.execute(text("ALTER TABLE paid_weeks ADD COLUMN stripe_session_id TEXT"))
+            if "plan" not in pw_columns:
+                conn.execute(text("ALTER TABLE paid_weeks ADD COLUMN plan TEXT"))
     if "vendors" in tables:
         columns = {c["name"] for c in inspector.get_columns("vendors")}
         migrations = [
@@ -80,6 +82,8 @@ def ensure_latest_schema():
             ("terms_accepted", "ALTER TABLE vendors ADD COLUMN terms_accepted BOOLEAN DEFAULT false"),
             ("terms_accepted_at", "ALTER TABLE vendors ADD COLUMN terms_accepted_at TIMESTAMP"),
             ("deleted_at", "ALTER TABLE vendors ADD COLUMN deleted_at TIMESTAMP"),
+            ("premium_active", "ALTER TABLE vendors ADD COLUMN premium_active BOOLEAN DEFAULT false"),
+            ("premium_valid_until", "ALTER TABLE vendors ADD COLUMN premium_valid_until TIMESTAMP"),
         ]
         with engine.begin() as conn:
             for col, stmt in migrations:

@@ -6,6 +6,7 @@ import Login from './pages/Login.jsx';
 import MapTab from './pages/MapTab.jsx';
 import DashboardScreen from './pages/DashboardScreen.jsx';
 import ProductsScreen from './pages/ProductsScreen.jsx';
+import PremiumScreen from './pages/PremiumScreen.jsx';
 import RoutesScreen from './pages/RoutesScreen.jsx';
 import TabBar from './components/TabBar.jsx';
 
@@ -105,14 +106,17 @@ export default function App() {
           />
         ),
       },
-      { id: 'products', node: <ProductsScreen auth={auth} /> },
+      { id: 'products', node: <ProductsScreen auth={auth} onGoPremium={() => goToTab('premium')} /> },
+      {
+        id: 'premium',
+        node: <PremiumScreen auth={auth} onUserUpdate={handleUserUpdate} />,
+      },
       { id: 'routes', node: <RoutesScreen auth={auth} /> },
       {
         id: 'account',
         node: (
           <DashboardScreen
             auth={auth}
-            onChangePage={goToTab}
             onLogout={handleLogout}
             onUserUpdate={handleUserUpdate}
           />

@@ -41,9 +41,10 @@ def client(tmp_path):
         c.sent_emails = sent_emails
         yield c
 
-    # cleanup created profile photos directory if it exists
-    if os.path.exists("profile_photos"):
-        shutil.rmtree("profile_photos")
+    # cleanup created upload directories if they exist
+    for upload_dir in ("profile_photos", "product_photos"):
+        if os.path.exists(upload_dir):
+            shutil.rmtree(upload_dir)
 
 _nif_counter = itertools.count(1)
 
@@ -986,5 +987,352 @@ def test_password_reset_ignores_deleted_account(client):
     try:
         vendor = db.query(models.Vendor).filter_by(id=vendor_id).first()
         assert vendor.password_reset_token is None
+    finally:
+        db.close()
+
+
+# ══════════════════════════════════════════════════════════════════
+# Premium — a camada paga por cima da subscrição de visibilidade.
+# ══════════════════════════════════════════════════════════════════
+def grant_premium(client, vendor_id):
+    """Credita Premium pelo caminho real: o webhook do Stripe."""
+    event = {
+        "type": "checkout.session.completed",
+        "data": {
+            "object": {
+                "metadata": {"vendor_id": vendor_id, "plan": "premium"},
+                "payment_status": "paid",
+            }
+        },
+    }
+    resp = client.post(
+        "/stripe/webhook", json=event, headers={"stripe-signature": "test-sig"}
+    )
+    assert resp.status_code == 200
+
+
+def premium_vendor_sharing(client, email="premium@example.com", premium=True):
+    """Vendedor confirmado, com subscrição, Premium opcional e trajeto a decorrer."""
+    resp = register_vendor(client, email=email)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client, email=email)
+    # `activate_subscription` só serve o vendedor do email por omissão; aqui há
+    # vários vendedores em jogo, por isso ativa-se diretamente pelo admin.
+    resp = client.post(
+        f"/vendors/{vendor_id}/activate-subscription",
+        headers={"X-Admin-Token": os.environ["ADMIN_TOKEN"]},
+    )
+    assert resp.status_code == 200
+    if premium:
+        grant_premium(client, vendor_id)
+    resp = client.post(
+        f"/vendors/{vendor_id}/routes/start",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+    return vendor_id, token
+
+
+def send_location(client, vendor_id, token, lat, lng):
+    return client.put(
+        f"/vendors/{vendor_id}/location",
+        json={"lat": lat, "lng": lng},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+
+def test_premium_webhook_credits_thirty_days_without_touching_subscription(client):
+    """O Premium é uma compra à parte: dá 30 dias e não mexe na visibilidade."""
+    from backend.app import main
+
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+
+    before = main.utcnow()
+    grant_premium(client, vendor_id)
+    after = main.utcnow()
+
+    resp = client.get("/vendors/me", headers={"Authorization": f"Bearer {token}"})
+    assert resp.status_code == 200
+    vendor = resp.json()
+
+    assert vendor["premium_active"] is True
+    assert vendor["is_premium"] is True
+    valid_until = datetime.fromisoformat(vendor["premium_valid_until"])
+    assert before + timedelta(days=30) <= valid_until <= after + timedelta(days=30)
+
+    # A subscrição de visibilidade continua intocada — são compras distintas.
+    assert not vendor["subscription_active"]
+    assert vendor["subscription_valid_until"] is None
+
+    # O pagamento fica registado nas faturas, identificado como Premium.
+    resp = client.get(
+        f"/vendors/{vendor_id}/paid-weeks",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+    assert [w["plan"] for w in resp.json()] == ["premium"]
+
+
+def test_premium_checkout_charges_the_premium_price(client):
+    """O checkout do Premium cobra 19,99 € como pagamento único."""
+    from backend.app import main
+
+    captured = {}
+
+    def fake_create(**kwargs):
+        captured.update(kwargs)
+        return type("S", (), {"url": "https://checkout.stripe.test/premium"})()
+
+    main.stripe.checkout.Session.create = fake_create
+
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+
+    resp = client.post(
+        f"/vendors/{vendor_id}/create-checkout-session",
+        params={"plan": "premium"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+    assert captured["mode"] == "payment"
+    assert captured["line_items"][0]["price_data"]["unit_amount"] == 1999
+    assert captured["metadata"]["plan"] == "premium"
+
+
+def test_premium_expired_stops_giving_the_advantages(client):
+    """Premium fora da validade deixa de contar, mesmo com a flag ligada."""
+    from backend.app import database, models
+
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+    grant_premium(client, vendor_id)
+
+    db = database.SessionLocal()
+    try:
+        vendor = db.query(models.Vendor).filter_by(id=vendor_id).first()
+        vendor.premium_valid_until = models.utcnow() - timedelta(minutes=1)
+        db.commit()
+    finally:
+        db.close()
+
+    resp = client.get("/vendors/me", headers={"Authorization": f"Bearer {token}"})
+    assert resp.json()["is_premium"] is False
+    assert resp.json()["premium_active"] is False
+
+
+def test_reach_radius_is_300m_without_premium_and_1km_with_it(client):
+    """O raio de alcance é a vantagem Premium mais direta: 300 m contra 1 km."""
+    free_id, free_token = premium_vendor_sharing(
+        client, email="free-reach@example.com", premium=False
+    )
+    premium_id, premium_token = premium_vendor_sharing(
+        client, email="premium-reach@example.com", premium=True
+    )
+
+    # Os dois vendedores na mesma posição; só muda quem tem Premium.
+    send_location(client, free_id, free_token, 38.7000, -9.4000)
+    send_location(client, premium_id, premium_token, 38.7000, -9.4000)
+
+    def visible_ids(lat, lng):
+        resp = client.get("/vendors/", params={"lat": lat, "lng": lng})
+        assert resp.status_code == 200
+        return {v["id"] for v in resp.json()}
+
+    # Banhista em cima dos dois: vê ambos.
+    near = visible_ids(38.7000, -9.4000)
+    assert {free_id, premium_id} <= near
+
+    # ~550 m a norte: fora dos 300 m do gratuito, dentro do 1 km do Premium.
+    middle = visible_ids(38.7050, -9.4000)
+    assert free_id not in middle
+    assert premium_id in middle
+
+    # ~1,7 km: fora do alcance de ambos.
+    far = visible_ids(38.7150, -9.4000)
+    assert free_id not in far
+    assert premium_id not in far
+
+    # Sem posição não há distância a medir: devolvem-se todos, como antes.
+    resp = client.get("/vendors/")
+    assert {free_id, premium_id} <= {v["id"] for v in resp.json()}
+
+
+def test_vendor_listing_exposes_is_premium(client):
+    """O mapa precisa de saber quem é Premium para desenhar a estrela."""
+    vendor_id, token = premium_vendor_sharing(client, email="star@example.com")
+    send_location(client, vendor_id, token, 38.7000, -9.4000)
+
+    resp = client.get("/vendors/")
+    assert resp.status_code == 200
+    vendor = next(v for v in resp.json() if v["id"] == vendor_id)
+    assert vendor["is_premium"] is True
+    # O subconjunto público continua sem dados pessoais.
+    assert "email" not in vendor and "nif" not in vendor
+
+
+def test_product_photo_requires_premium(client):
+    """Sem Premium o produto guarda-se com nome e preço, mas sem fotografia."""
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    photo = {"photo": ("p.png", b"fakeimage", "image/png")}
+
+    resp = client.post(
+        f"/vendors/{vendor_id}/products",
+        data={"name": "Bola de Berlim", "price": "1.50"},
+        files=photo,
+        headers=headers,
+    )
+    assert resp.status_code == 403
+    assert "Premium" in resp.json()["detail"]
+
+    # Sem foto passa: é o que o plano gratuito promete.
+    resp = client.post(
+        f"/vendors/{vendor_id}/products",
+        data={"name": "Bola de Berlim", "price": "1.50"},
+        headers=headers,
+    )
+    assert resp.status_code == 200
+    product_id = resp.json()["id"]
+    assert resp.json()["photo"] is None
+
+    # Trocar a foto de um produto existente está igualmente fechado.
+    resp = client.put(
+        f"/vendors/{vendor_id}/products/{product_id}",
+        data={"name": "Bola de Berlim", "price": "1.60"},
+        files=photo,
+        headers=headers,
+    )
+    assert resp.status_code == 403
+
+    # Com Premium, a mesma chamada passa.
+    grant_premium(client, vendor_id)
+    resp = client.post(
+        f"/vendors/{vendor_id}/products",
+        data={"name": "Gelado", "price": "2.00"},
+        files=photo,
+        headers=headers,
+    )
+    assert resp.status_code == 200
+    assert resp.json()["photo"]
+
+
+def test_proximity_interest_is_refused_for_vendors_without_premium(client):
+    """Só se promete o aviso onde ele vai mesmo acontecer."""
+    vendor_id, _token = premium_vendor_sharing(
+        client, email="no-premium@example.com", premium=False
+    )
+    resp = client.post(
+        f"/vendors/{vendor_id}/interest",
+        json={"email": "banhista@example.com", "lat": 38.7, "lng": -9.4},
+    )
+    assert resp.status_code == 403
+    assert "Premium" in resp.json()["detail"]
+
+
+def test_proximity_notification_fires_on_entry_and_stops_at_the_daily_cap(client):
+    """O aviso sai à entrada na zona e nunca passa de dois por dia."""
+    from backend.app import main
+
+    vendor_id, token = premium_vendor_sharing(client, email="proximo@example.com")
+
+    # Vendedor longe da zona do banhista antes de este marcar interesse.
+    send_location(client, vendor_id, token, 38.7100, -9.4000)
+
+    resp = client.post(
+        f"/vendors/{vendor_id}/interest",
+        json={"email": "banhista@example.com", "lat": 38.7000, "lng": -9.4000},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["max_per_day"] == main.MAX_PROXIMITY_NOTIFICATIONS_PER_DAY
+
+    def proximity_emails():
+        return [e for e in client.sent_emails if e["to"] == "banhista@example.com"]
+
+    assert proximity_emails() == []
+
+    # 1.ª entrada na zona → um aviso.
+    send_location(client, vendor_id, token, 38.7000, -9.4000)
+    assert len(proximity_emails()) == 1
+    assert "cancel" in proximity_emails()[-1]["body"]
+
+    # Continuar a andar DENTRO da zona não gera avisos novos.
+    send_location(client, vendor_id, token, 38.7010, -9.4000)
+    send_location(client, vendor_id, token, 38.7015, -9.4000)
+    assert len(proximity_emails()) == 1
+
+    # Sair e voltar a entrar → segundo aviso.
+    send_location(client, vendor_id, token, 38.7100, -9.4000)
+    send_location(client, vendor_id, token, 38.7000, -9.4000)
+    assert len(proximity_emails()) == 2
+
+    # Terceira entrada no mesmo dia: o travão diário segura o aviso.
+    send_location(client, vendor_id, token, 38.7100, -9.4000)
+    send_location(client, vendor_id, token, 38.7000, -9.4000)
+    assert len(proximity_emails()) == 2
+
+
+def test_proximity_interest_can_be_cancelled_from_the_email_link(client):
+    """O link que segue em cada aviso apaga o pedido de vez."""
+    from backend.app import database, models
+
+    vendor_id, token = premium_vendor_sharing(client, email="cancelavel@example.com")
+    send_location(client, vendor_id, token, 38.7100, -9.4000)
+    client.post(
+        f"/vendors/{vendor_id}/interest",
+        json={"email": "banhista@example.com", "lat": 38.7000, "lng": -9.4000},
+    )
+    send_location(client, vendor_id, token, 38.7000, -9.4000)
+
+    email_body = [e for e in client.sent_emails if e["to"] == "banhista@example.com"][-1]["body"]
+    cancel_token = email_body.split("/interest/cancel/")[1].split()[0].strip()
+
+    resp = client.get(f"/interest/cancel/{cancel_token}")
+    assert resp.status_code == 200
+
+    db = database.SessionLocal()
+    try:
+        assert db.query(models.VendorInterest).count() == 0
+    finally:
+        db.close()
+
+
+def test_deleting_the_account_removes_the_interests_of_bathers(client):
+    """Os emails dos banhistas não sobrevivem à conta que os justificava."""
+    from backend.app import database, models
+
+    vendor_id, token = premium_vendor_sharing(client, email="apagavel@example.com")
+    send_location(client, vendor_id, token, 38.7100, -9.4000)
+    resp = client.post(
+        f"/vendors/{vendor_id}/interest",
+        json={"email": "banhista@example.com", "lat": 38.7000, "lng": -9.4000},
+    )
+    assert resp.status_code == 200
+
+    resp = client.request(
+        "DELETE",
+        "/vendors/me",
+        json={"password": "Secret123"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+
+    db = database.SessionLocal()
+    try:
+        assert db.query(models.VendorInterest).count() == 0
+        vendor = db.query(models.Vendor).filter_by(id=vendor_id).first()
+        assert vendor.premium_active is False
+        assert vendor.premium_valid_until is None
     finally:
         db.close()
