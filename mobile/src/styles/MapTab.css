@@ -5,8 +5,9 @@
    descrito em sunny_sales_web/DESIGN_SYSTEM.md): o mapa é o fundo e tudo
    o que lhe fica por cima flutua em pastilhas e painéis de VIDRO de cantos
    grandes com sombra difusa (--site-shadow-float), tipografia Inter,
-   Teal Ocean nos estados e uma única ação âncora por ecrã — Sky Blue
-   quando é a ação normal, coral quando é urgente (parar a partilha).
+   o azul da marca nos estados e uma única ação âncora por ecrã —
+   azul-profundo quando é a ação normal, coral quando é urgente
+   (parar a partilha).
 
    É o ecrã que o vendedor vê espelhado no site: quem está na praia com a
    app e quem abre o mapa público passam a ver a mesma linguagem visual,
@@ -15,43 +16,44 @@
    Os tokens do site são reproduzidos aqui com o prefixo `--site-` em vez
    de reescreverem os tokens da app: os restantes separadores (Produtos,
    Trajetos, Conta) e a folha de planos — que é filha deste ecrã —
-   continuam com a paleta areia/oceano da app.
+   continuam com os tokens da app.
    ═══════════════════════════════════════════════════════════════════ */
 
 .map-screen {
   /* ── Paleta (sunny_sales_web/src/index.css · :root) ── */
   --site-surface: #ffffff;
-  --site-surface-alt: #F4EDE6;
-  --site-accent: #005F73;          /* Sky Blue: ação, seleção, texto pequeno */
-  --site-accent-hover: #00485A;
-  --site-teal: #0A9396;            /* Teal Ocean: estados e ícones */
-  --site-ink: #005F73;             /* a ação principal do ecrã */
-  --site-ink-hover: #00485A;
+  --site-surface-alt: #ECF2F4;
+  --site-accent: #176882;          /* azul-profundo: ação, seleção, texto pequeno */
+  --site-accent-hover: #135468;
+  --site-brand-blue: #37B4DB;      /* o azul da marca: tintes e superfícies */
+  --site-teal: #1F8BAD;            /* azul médio: estados e ícones (3,92:1) */
+  --site-ink: #176882;             /* a ação principal do ecrã */
+  --site-ink-hover: #135468;
   --site-coral: #BB3E03;           /* só o que é urgente: parar a partilha */
   --site-coral-hover: #9A3303;
   --site-forest: #1D5C3A;          /* presença de vendedores (pins) */
-  --site-gold: #EE9B00;            /* informação, nunca ação; sempre fundo */
-  --site-gold-ink: #2A1A00;        /* texto por cima do dourado */
-  --site-text: #06272F;
-  --site-text-secondary: #3E6A72;
-  --site-text-muted: #55767D;
-  --site-border: rgba(6, 39, 47, 0.08);
+  --site-gold: #EAC928;            /* amarelo da marca: informação, nunca ação; sempre fundo */
+  --site-gold-ink: #2E2705;        /* texto por cima do dourado */
+  --site-text: #0B313D;
+  --site-text-secondary: #44616A;
+  --site-text-muted: #547783;
+  --site-border: rgba(11, 49, 61, 0.08);
   --site-error: #b91c1c;
   --site-error-border: rgba(185, 28, 28, 0.35);
   /* Fundo do mapa enquanto os tiles não chegam (igual ao do site) */
-  --site-map-bg: #EFE7DA;
+  --site-map-bg: #E6EDEF;
 
   /* ── Vidro: o material de tudo o que flutua sobre o mapa ── */
   --site-glass: rgba(255, 255, 255, 0.82);
-  --site-glass-solid: #FFFDFB;
+  --site-glass-solid: #FDFEFF;
   --site-glass-blur: saturate(180%) blur(18px);
   --site-glass-ring: inset 0 0 0 1px rgba(255, 255, 255, 0.85);
 
   /* ── Sombras: contacto curto + difusão longa ── */
-  --site-shadow-sm: 0 1px 2px rgba(6, 39, 47, 0.05), 0 6px 16px -8px rgba(6, 39, 47, 0.14);
-  --site-shadow-lg: 0 4px 10px -4px rgba(6, 39, 47, 0.08), 0 26px 60px -20px rgba(6, 39, 47, 0.24);
+  --site-shadow-sm: 0 1px 2px rgba(11, 49, 61, 0.05), 0 6px 16px -8px rgba(11, 49, 61, 0.14);
+  --site-shadow-lg: 0 4px 10px -4px rgba(11, 49, 61, 0.08), 0 26px 60px -20px rgba(11, 49, 61, 0.24);
   /* Para o que flutua sobre o mapa, onde o fundo é imprevisível */
-  --site-shadow-float: 0 1px 2px rgba(6, 39, 47, 0.16), 0 8px 20px -6px rgba(6, 39, 47, 0.26);
+  --site-shadow-float: 0 1px 2px rgba(11, 49, 61, 0.16), 0 8px 20px -6px rgba(11, 49, 61, 0.26);
 
   /* ── Raios: painéis 22, controlos 14, botões em pílula ── */
   --site-radius-control: 14px;
@@ -313,7 +315,7 @@
   margin: 0;
   padding: 16px 20px;
   border-radius: var(--site-radius-lg);
-  background: rgba(6, 39, 47, 0.92);
+  background: rgba(11, 49, 61, 0.92);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   color: #fbfcfc;
@@ -508,9 +510,9 @@
   height: 16px;
   border-radius: 50%;
   border: 2px solid #fff;
-  background: var(--sun, #EE9B00);
-  color: var(--sun-ink, #2A1A00);
-  box-shadow: 0 1px 4px rgba(6, 39, 47, 0.35);
+  background: var(--sun, #EAC928);
+  color: var(--sun-ink, #2E2705);
+  box-shadow: 0 1px 4px rgba(11, 49, 61, 0.35);
   pointer-events: none;
 }
 

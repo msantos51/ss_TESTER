@@ -56,7 +56,7 @@
   background: var(--glass);
   -webkit-backdrop-filter: saturate(180%) blur(10px);
   backdrop-filter: saturate(180%) blur(10px);
-  box-shadow: var(--glass-ring), 0 4px 12px -6px rgba(6, 39, 47, 0.35);
+  box-shadow: var(--glass-ring), 0 4px 12px -6px rgba(11, 49, 61, 0.35);
   color: var(--accent-text);
   font-size: var(--fs-caption);
   font-weight: 600;
@@ -158,8 +158,8 @@
   border-radius: var(--radius-2xl);
   overflow: hidden;
   box-shadow:
-    0 2px 4px rgba(6, 39, 47, 0.1),
-    0 40px 70px -34px rgba(6, 39, 47, 0.55),
+    0 2px 4px rgba(11, 49, 61, 0.1),
+    0 40px 70px -34px rgba(11, 49, 61, 0.55),
     inset 0 0 0 1px rgba(255, 255, 255, 0.6);
   aspect-ratio: 4 / 3.4;
   min-height: 300px;
@@ -170,7 +170,7 @@
   inset: 0;
   height: 100%;
   width: 100%;
-  background: #E7EDEA;
+  background: #E6EDEF;
 }
 
 /* Folha de vidro sobre o mapa, como a da app Mapas. */
@@ -190,7 +190,7 @@
   background: var(--glass-strong);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
-  box-shadow: var(--glass-ring), 0 10px 26px -14px rgba(6, 39, 47, 0.5);
+  box-shadow: var(--glass-ring), 0 10px 26px -14px rgba(11, 49, 61, 0.5);
   font-size: var(--fs-body-sm);
   font-weight: 600;
   text-decoration: none;
@@ -262,7 +262,7 @@
 }
 
 /* Os passos são mesmo uma sequência: o número é informação, por isso leva
-   Summer Sun — com tinta escura por cima, que é a única forma de o usar. */
+   o amarelo da marca — com tinta escura por cima, que é a única forma de o usar. */
 .landing-step-n {
   display: grid;
   place-items: center;
@@ -337,7 +337,7 @@
 }
 
 .landing-banner-btn:hover {
-  background: #FFB22E;
+  background: #F2D850;
   color: var(--gold-ink);
 }
 
@@ -357,7 +357,7 @@
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
-  box-shadow: 0 6px 14px -8px rgba(0, 95, 115, 0.9);
+  box-shadow: 0 6px 14px -8px rgba(23, 104, 130, 0.9);
   transition: background var(--transition);
 }
 

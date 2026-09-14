@@ -12,7 +12,7 @@
   /* Por baixo da cápsula (1100), que continua a ver-se e a levar o botão de
      fechar, e por cima de tudo o que é conteúdo e controlos de página. */
   z-index: 1050;
-  background: rgba(6, 39, 47, 0.32);
+  background: rgba(11, 49, 61, 0.32);
   -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
   animation: navMenuFade 0.2s var(--ease-out);
@@ -50,7 +50,7 @@
    translúcido com o texto da página a ler-se através dela. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .nav-menu { background: var(--glass-solid); }
-  .nav-menu-backdrop { background: rgba(6, 39, 47, 0.42); }
+  .nav-menu-backdrop { background: rgba(11, 49, 61, 0.42); }
 }
 
 /* Linha de 52px: alvo de toque folgado para a navegação principal. */
@@ -75,11 +75,11 @@
 }
 
 .nav-menu-link:hover {
-  background: rgba(6, 39, 47, 0.05);
+  background: rgba(11, 49, 61, 0.05);
 }
 
 .nav-menu-link:active {
-  background: rgba(6, 39, 47, 0.08);
+  background: rgba(11, 49, 61, 0.08);
 }
 
 .nav-menu-link:focus-visible {
@@ -87,7 +87,7 @@
   outline-offset: -2px;
 }
 
-/* Destino atual: a mesma pastilha de tinte teal com texto Sky Blue do menu de
+/* Destino atual: a mesma pastilha de tinte azul com texto azul-profundo do menu de
    desktop — teal cheio com texto branco daria 3,7:1. */
 .nav-menu-link.active {
   color: var(--accent-text);
@@ -103,7 +103,7 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
-  background: rgba(6, 39, 47, 0.05);
+  background: rgba(11, 49, 61, 0.05);
   color: var(--teal-text);
   transition: background var(--transition), color var(--transition);
 }

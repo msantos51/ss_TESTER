@@ -25,7 +25,7 @@
 /* ════════════════════════════════════════════════════════
    Sunny Sales — Design System "Vidro & Maré"
 
-   CONCEITO (navegação ao estilo iOS sobre cores de verão):
+   CONCEITO (navegação ao estilo iOS sobre azul e amarelo):
    · A página é uma TELA branca lisa (--canvas). Sobre ela
      flutuam PAINÉIS brancos arredondados (--radius-panel)
      com sombra difusa e sem contornos duros — a profundidade
@@ -40,23 +40,37 @@
      controlos (zoom, localizar, vista) flutuam por cima
      em pastilhas de vidro.
    · Controlos de escolha: segmentos e pastilhas. O estado
-     selecionado é um tinte TEAL com texto Sky Blue; o
-     não selecionado é areia clara sem borda.
-   · A ação principal de cada ecrã é um botão SKY BLUE
+     selecionado é um tinte AZUL com texto azul-profundo; o
+     não selecionado é um neutro frio claro sem borda.
+   · A ação principal de cada ecrã é um botão AZUL-PROFUNDO
      (--ink) em pílula — âncora visual única.
 
-   PALETA (regras de uso e contraste real):
-   · --ink / --accent = SKY BLUE #005F73 — 7,3:1 com branco.
-     É a única das quatro que aguenta texto pequeno, por isso
-     é a tinta das ações e dos links.
-   · --teal = TEAL OCEAN #0A9396 — 3,7:1 com branco: chega
-     para estados, ícones e texto grande, nunca para corpo.
-     Como texto usa-se --teal-text (#077C80, 4,8:1).
-   · --gold = SUMMER SUN #EE9B00 — 2,3:1 com branco, logo
-     SEMPRE como fundo com texto escuro (--gold-ink).
-     Significa uma coisa só: há vendedores ativos agora.
-   · --canvas = branco #FFFFFF, a tela de todo o site.
+   PALETA — duas cores de marca: AZUL #37B4DB e AMARELO
+   #EAC928. Nenhuma das duas aguenta texto pequeno por cima
+   de branco (2,41:1 e 1,63:1), por isso a marca vive nas
+   SUPERFÍCIES e cada uma tem uma variante escurecida da
+   mesma matiz para quando é preciso TINTA:
+   · --brand-blue = AZUL #37B4DB — a cor da marca: fundos,
+     tintes, gradientes, pins, realces sobre escuro. Nunca
+     texto pequeno sobre branco.
+   · --blue-mid = #1F8BAD (3,92:1) — ícones, contornos e
+     texto grande sobre a tela.
+   · --accent-text / --blue-text = #1A7693 (5,18:1) — o azul
+     como TEXTO pequeno sobre branco.
+   · --ink / --accent = #176882 (6,29:1 com branco) — a tinta
+     das ações: botões, links, item ativo. É o azul da marca
+     escurecido até passar AA com texto branco por cima.
+   · --gold = AMARELO #EAC928 — informação, nunca ação.
+     SEMPRE como fundo com --gold-ink (#2E2705, 9,15:1) por
+     cima; nunca com texto branco (1,63:1). Significa uma
+     coisa só: há vendedores ativos agora.
+     Como TEXTO usa-se --gold-strong (#79660C, 5,65:1).
+   · --canvas = branco #FFFFFF, a tela de todo o site. Os
+     neutros (chips, campos, hovers) são cinzentos frios
+     tirados da mesma matiz do azul, não areia.
    · --coral = única ação urgente do mapa (localizar-me).
+     Não é cor de marca: é o sinal de urgência, e continua
+     distinto do amarelo novo.
    · --forest = presença de vendedores (pins) — mantém-se
      escuro e saturado para ler contra os tiles do mapa.
 
@@ -79,42 +93,52 @@
    ════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Paleta de verão ──
-     As quatro cores da marca, com o papel de cada uma fixado pelo
-     contraste que conseguem aguentar (ver cabeçalho). */
-  --palette-sky: #005F73;
-  --palette-teal: #0A9396;
-  --palette-sun: #EE9B00;
-  --palette-cloud: #FFF9F4;
+  /* ── Paleta da marca ──
+     Duas cores: AZUL #37B4DB e AMARELO #EAC928. Abaixo delas ficam as
+     variantes escurecidas da mesma matiz, porque nenhuma das duas aguenta
+     texto pequeno sobre branco (2,41:1 e 1,63:1 — ver cabeçalho). */
+  --brand-blue: #37B4DB;
+  --brand-yellow: #EAC928;
+  /* Escala do azul (matiz 194°), da marca até à tinta */
+  --blue-bright: #37B4DB;   /* 2,41:1 — só superfície e tinte */
+  --blue-mid: #1F8BAD;      /* 3,92:1 — ícones, contornos, texto grande */
+  --blue-text: #1A7693;     /* 5,18:1 — texto pequeno sobre branco */
+  --blue-deep: #176882;     /* 6,29:1 — botões com texto branco */
+  --blue-deeper: #135468;   /* 8,41:1 — hover dos botões */
+  --blue-darkest: #0E3F4E;  /* 11,4:1 — blocos escuros */
+  --palette-sky: #37B4DB;
+  --palette-sun: #EAC928;
+  --palette-cloud: #F7FAFB;
   /* Tons de apoio das mesmas famílias */
-  --palette-foam: #94D2BD;
-  --palette-dune: #E9D8A6;
+  --palette-foam: #8FD6EC;
+  --palette-dune: #F2E29A;
   --palette-sunset: #BB3E03;
-  --palette-night: #001219;
+  --palette-night: #08232B;
 
-  /* ── Acento = Sky Blue ──
-     #005F73 dá 7,28:1 com texto branco, por isso é ele que carrega
-     botões, links e tudo o que leva texto pequeno por cima. */
-  --accent: #005F73;
-  --accent-hover: #00485A;
-  --accent-soft: rgba(10, 147, 150, 0.12);
+  /* ── Acento = o azul da marca escurecido ──
+     #176882 dá 6,29:1 com texto branco, por isso é ele que carrega
+     botões, links e tudo o que leva texto pequeno por cima. O #37B4DB
+     puro fica para as superfícies (--brand-blue / --teal). */
+  --accent: #176882;
+  --accent-hover: #135468;
+  --accent-soft: rgba(55, 180, 219, 0.12);
   /* Ícones/realces "de acento" sobre fundo claro */
-  --accent-text: #005F73;
-  /* Texto sobre superfícies Sky Blue (botões, badges, blocos) */
+  --accent-text: #176882;
+  /* Texto sobre superfícies azul-profundo (botões, badges, blocos) */
   --on-accent: #ffffff;
 
   /* ── Cor primária (alias do acento, compatibilidade) ── */
-  --primary: #005F73;
-  --primary-hover: #00485A;
-  --primary-dark: #00384A;
-  --primary-bright: #0A9396;
-  --primary-light: rgba(10, 147, 150, 0.1);
-  --primary-light-solid: #D6EEEC;
+  --primary: #176882;
+  --primary-hover: #135468;
+  --primary-dark: #0E3F4E;
+  --primary-bright: #37B4DB;
+  --primary-light: rgba(55, 180, 219, 0.1);
+  --primary-light-solid: #D8EFF8;
 
   /* ── Ação primária (CTAs sólidos) ── */
-  --secondary: #005F73;
-  --secondary-hover: #00485A;
-  --secondary-light: rgba(10, 147, 150, 0.12);
+  --secondary: #176882;
+  --secondary-hover: #135468;
+  --secondary-light: rgba(55, 180, 219, 0.12);
 
   /* ── Coral: reservado ao que é acionável ──
      5,58:1 com texto branco. Regra: só o botão de localização do mapa e o
@@ -129,53 +153,58 @@
   --forest: #1D5C3A;
   --forest-light: rgba(29, 92, 58, 0.12);
 
-  /* ── Summer Sun: informação, nunca ação ──
-     Usar sempre como FUNDO com --gold-ink por cima (8,1:1). Nunca com
-     texto branco, que daria 2,3:1. */
-  --gold: #EE9B00;
-  --gold-ink: #2A1A00;
-  --gold-soft: rgba(238, 155, 0, 0.18);
-  --gold-strong: #8A5A00;
-  --amber: #EE9B00;
-  --amber-strong: #8A5A00;
+  /* ── Amarelo da marca: informação, nunca ação ──
+     Usar sempre como FUNDO com --gold-ink por cima (9,15:1). Nunca com
+     texto branco, que daria 1,63:1. Como TEXTO sobre branco usa-se
+     --gold-strong (#79660C, 5,65:1). */
+  --gold: #EAC928;
+  --gold-ink: #2E2705;
+  --gold-soft: rgba(234, 201, 40, 0.18);
+  --gold-strong: #79660C;
+  --amber: #EAC928;
+  --amber-strong: #79660C;
 
-  /* ── Teal Ocean: estado ativo, seleção, ícones ──
-     3,7:1 com branco — serve para superfícies e texto grande. Como texto
-     sobre a tela usa-se --teal-text, que passa AA. */
-  --blue: #1078a0;
-  --blue-hover: #0d5d8a;
-  --teal: #0A9396;
-  --teal-text: #077C80;
-  --teal-strong: #087E81;
-  --teal-light: rgba(10, 147, 150, 0.12);
-  --sky: #1078a0;
+  /* ── Azul médio: estado ativo, seleção, ícones ──
+     Os nomes `--teal-*` mantêm-se por compatibilidade com os ecrãs que já
+     os usam, mas são agora tons do azul da marca. #1F8BAD dá 3,92:1 com
+     branco — serve para ícones, contornos e texto grande, nunca para
+     corpo. Como texto sobre a tela usa-se --teal-text, que passa AA. */
+  --blue: #1A7693;
+  --blue-hover: #135468;
+  --teal: #1F8BAD;
+  --teal-text: #1A7693;
+  --teal-strong: #176882;
+  --teal-light: rgba(55, 180, 219, 0.12);
+  --sky: #1A7693;
 
   /* ── "Ink" — a ação principal do ecrã ──
-     Um único botão Sky Blue por ecrã (o "Ver o mapa agora" da entrada,
+     Um único botão azul-profundo por ecrã (o "Ver o mapa agora" da entrada,
      o "Voltar ao início" do 404). Se houver dois, deixa de haver âncora. */
-  --ink: #005F73;
-  --ink-hover: #00485A;
+  --ink: #176882;
+  --ink-hover: #135468;
   /* Texto escuro para fundos claros */
-  --ink-on-light: #06272F;
+  --ink-on-light: #0B313D;
   /* ── Painéis institucionais (petróleo profundo) ── */
-  --navy: #06272F;
-  --navy-light: #0A9396;
-  --navy-border: rgba(6, 39, 47, 0.2);
+  --navy: #0B313D;
+  --navy-light: #37B4DB;
+  --navy-border: rgba(11, 49, 61, 0.2);
 
   /* ── Superfícies: tela branca + painéis brancos ──
+     Os neutros (chips, campos, hovers) são cinzentos frios tirados da
+     matiz do azul da marca — a areia quente foi-se com a paleta antiga.
      A tela (--canvas) e os painéis (--surface) são o mesmo branco; o relevo
      dos painéis vem só da sombra (--shadow-*), não de um tom de fundo
      diferente. */
   --canvas: #ffffff;
-  --canvas-deep: #F0F0F0;
-  --bg-deep: #F0F0F0;
+  --canvas-deep: #ECF2F4;
+  --bg-deep: #ECF2F4;
   --bg: #ffffff;
   --bg-raised: #ffffff;
   --surface: #ffffff;
   /* Preenchimento neutro de chips, segmentos e hovers */
-  --surface-alt: #F4EDE6;
-  --surface-hover: #EBE1D7;
-  --surface-warm: #FFFCF9;
+  --surface-alt: #ECF2F4;
+  --surface-hover: #E0EAEE;
+  --surface-warm: #F9FCFD;
 
   /* ── Vidro (cápsula de navegação, menu de telemóvel, pastilhas do mapa) ──
      Onde o blur não é suportado (telemóveis antigos, Firefox sem a flag),
@@ -184,19 +213,19 @@
   --glass-strong: rgba(255, 255, 255, 0.82);
   /* Material espesso da folha do menu: por baixo dela passa o conteúdo da
      página, e a 0,82 de opacidade lia-se o texto através da folha. */
-  --glass-thick: rgba(255, 253, 250, 0.93);
-  --glass-solid: #FFFDFB;
+  --glass-thick: rgba(253, 254, 255, 0.93);
+  --glass-solid: #FDFEFF;
   --glass-blur: saturate(180%) blur(18px);
   --glass-ring: inset 0 0 0 1px rgba(255, 255, 255, 0.85);
 
   /* ── Texto (todos AA sobre a tela e sobre branco) ── */
-  --text: #06272F;
-  --text-secondary: #3E6A72;
-  --text-muted: #55767D;
+  --text: #0B313D;
+  --text-secondary: #44616A;
+  --text-muted: #547783;
 
   /* ── Bordas (hairlines; a profundidade vem da sombra) ── */
-  --border: rgba(6, 39, 47, 0.08);
-  --border-strong: rgba(6, 39, 47, 0.15);
+  --border: rgba(11, 49, 61, 0.08);
+  --border-strong: rgba(11, 49, 61, 0.15);
 
   /* ── Cores semânticas (só em contexto funcional) ── */
   --success: #15803d;
@@ -210,32 +239,32 @@
   --error-border: rgba(185, 28, 28, 0.35);
   --danger: #b91c1c;
 
-  /* ── Gradientes — paleta de verão ── */
-  --grad-sun: linear-gradient(135deg, #EE9B00, #CA6702);
-  --grad-gold: linear-gradient(135deg, #EE9B00, #CA6702);
-  --grad-sea: linear-gradient(135deg, #0A9396, #005F73);
-  --grad-dusk: linear-gradient(135deg, #005F73, #001219);
-  /* Blocos de destaque: Sky Blue a descer para a noite (texto branco) */
-  --grad-dark: linear-gradient(155deg, #005F73 0%, #00323F 100%);
+  /* ── Gradientes — azul e amarelo da marca ── */
+  --grad-sun: linear-gradient(135deg, #EAC928, #C3A513);
+  --grad-gold: linear-gradient(135deg, #EAC928, #C3A513);
+  --grad-sea: linear-gradient(135deg, #37B4DB, #176882);
+  --grad-dusk: linear-gradient(135deg, #176882, #08232B);
+  /* Blocos de destaque: azul-profundo a descer para a noite (texto branco) */
+  --grad-dark: linear-gradient(155deg, #176882 0%, #0E3F4E 100%);
 
   /* ── Sombras (difusas, de baixa opacidade) ──
      Duas camadas: um contacto curto que substitui a borda
      de 1px e uma difusão longa que levanta o painel. */
-  --shadow-xs: 0 1px 2px rgba(6, 39, 47, 0.05);
-  --shadow-sm: 0 1px 2px rgba(6, 39, 47, 0.05), 0 6px 16px -8px rgba(6, 39, 47, 0.14);
-  --shadow-md: 0 2px 6px -2px rgba(6, 39, 47, 0.07), 0 14px 34px -12px rgba(6, 39, 47, 0.18);
-  --shadow-lg: 0 4px 10px -4px rgba(6, 39, 47, 0.08), 0 26px 60px -20px rgba(6, 39, 47, 0.24);
+  --shadow-xs: 0 1px 2px rgba(11, 49, 61, 0.05);
+  --shadow-sm: 0 1px 2px rgba(11, 49, 61, 0.05), 0 6px 16px -8px rgba(11, 49, 61, 0.14);
+  --shadow-md: 0 2px 6px -2px rgba(11, 49, 61, 0.07), 0 14px 34px -12px rgba(11, 49, 61, 0.18);
+  --shadow-lg: 0 4px 10px -4px rgba(11, 49, 61, 0.08), 0 26px 60px -20px rgba(11, 49, 61, 0.24);
   /* Pastilhas que flutuam sobre o mapa (fundo imprevisível) */
-  --shadow-float: 0 1px 2px rgba(6, 39, 47, 0.16), 0 8px 20px -6px rgba(6, 39, 47, 0.26);
+  --shadow-float: 0 1px 2px rgba(11, 49, 61, 0.16), 0 8px 20px -6px rgba(11, 49, 61, 0.26);
   /* Cápsula de navegação e folha do menu: contacto curto + difusão longa,
      mais o anel interior que dá a aresta de vidro. */
-  --shadow-glass: 0 1px 1px rgba(6, 39, 47, 0.06), 0 14px 30px -16px rgba(6, 39, 47, 0.4);
+  --shadow-glass: 0 1px 1px rgba(11, 49, 61, 0.06), 0 14px 30px -16px rgba(11, 49, 61, 0.4);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
-  --shadow-primary: 0 10px 24px -12px rgba(0, 95, 115, 0.5);
-  --shadow-ink: 0 10px 24px -12px rgba(0, 95, 115, 0.5);
-  --shadow-gold: 0 10px 24px -12px rgba(238, 155, 0, 0.4);
-  --shadow-accent: 0 12px 28px -12px rgba(10, 147, 150, 0.5);
+  --shadow-primary: 0 10px 24px -12px rgba(23, 104, 130, 0.5);
+  --shadow-ink: 0 10px 24px -12px rgba(23, 104, 130, 0.5);
+  --shadow-gold: 0 10px 24px -12px rgba(234, 201, 40, 0.4);
+  --shadow-accent: 0 12px 28px -12px rgba(55, 180, 219, 0.5);
 
   /* ── Raios (generosos; controlos em pílula) ── */
   --radius-xs: 10px;
@@ -272,7 +301,7 @@
   --section-pad: clamp(4rem, 8vw, 7rem);
 
   /* ── Foco visível (teclado): teal escuro, ≥3:1 sobre branco ── */
-  --focus-ring: #1078a0;
+  --focus-ring: #1A7693;
 
   /* ── Movimento (200ms, ease-out, nada mais) ── */
   --transition: 0.2s cubic-bezier(0, 0, 0.2, 1);
@@ -508,13 +537,13 @@ body {
 }
 .nav-link:hover {
   color: var(--text);
-  background: rgba(6, 39, 47, 0.06);
+  background: rgba(11, 49, 61, 0.06);
 }
 .nav-link:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
-/* Item ativo: tinte teal com texto Sky Blue. Teal cheio com texto branco
+/* Item ativo: tinte azul com texto azul-profundo. Azul cheio com texto branco
    daria 3,7:1 — chumba em texto de 14px. */
 .nav-link.active {
   color: var(--accent-text);
@@ -548,12 +577,12 @@ body {
   height: 40px;
   border-radius: var(--radius-full);
   border: none;
-  background: rgba(6, 39, 47, 0.06);
+  background: rgba(11, 49, 61, 0.06);
   transition: color var(--transition), background var(--transition);
 }
 .profile-icon:hover {
   color: var(--text);
-  background: rgba(6, 39, 47, 0.11);
+  background: rgba(11, 49, 61, 0.11);
   transform: none;
   box-shadow: none;
 }
@@ -606,13 +635,13 @@ body {
   min-height: 0;
   padding: 0;
   border-radius: var(--radius-full);
-  background: rgba(6, 39, 47, 0.06);
+  background: rgba(11, 49, 61, 0.06);
   color: var(--text-secondary);
   transition: color var(--transition), background var(--transition);
 }
 .nav-burger:where(:enabled):hover {
   color: var(--text);
-  background: rgba(6, 39, 47, 0.11);
+  background: rgba(11, 49, 61, 0.11);
 }
 /* Aberto: a mesma pastilha de tinte teal que marca o destino ativo — o botão
    passou a ser o estado "menu aberto" e não apenas uma ação. */
