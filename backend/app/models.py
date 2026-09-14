@@ -20,13 +20,14 @@ class Vendor(Base):
     hashed_password = Column(String)
     product = Column(String)
     profile_photo = Column(String)
-    pin_color = Column(String, default="#7B61FF")
+    # Verde floresta — a mesma cor com que o site desenha um pin sem cor
+    # escolhida (ver --forest no design system).
+    pin_color = Column(String, default="#1D5C3A")
     current_lat = Column(Float, nullable=True)
     current_lng = Column(Float, nullable=True)
-    subscription_active = Column(Boolean, default=False)
-    subscription_valid_until = Column(DateTime, nullable=True)
-    # Premium — camada paga adicional (ver PREMIUM_PLAN em main.py). Dá estrela
-    # no pin, alcance de 1 km em vez de 300 m e fotos nos produtos.
+    # Premium — a única compra da plataforma (ver PREMIUM_PLAN em main.py). Dá
+    # estrela no pin, alcance de 1 km em vez de 300 m e fotos nos produtos.
+    # Sem ele o vendedor fica no plano gratuito: aparece na mesma no mapa.
     premium_active = Column(Boolean, default=False)
     premium_valid_until = Column(DateTime, nullable=True)
     email_confirmed = Column(Boolean, default=False)
@@ -131,7 +132,12 @@ class Route(Base):
 
 
 class PaidWeek(Base):
-    """Registo de semanas pagas pelos vendedores."""
+    """Registo dos períodos pagos pelos vendedores.
+
+    Hoje só o Premium é vendido, mas a tabela conserva também os pagamentos
+    dos antigos planos de visibilidade: a lei fiscal obriga a guardar os
+    documentos de faturação, e o ecrã de faturas continua a mostrá-los.
+    """
 
     __tablename__ = "paid_weeks"
 
@@ -140,8 +146,8 @@ class PaidWeek(Base):
     start_date = Column(DateTime, default=utcnow)
     end_date = Column(DateTime)
     receipt_url = Column(String, nullable=True)
-    # Plano comprado ("semanal", "quinzenal", "mensal" ou "premium"). Serve
-    # para o ecrã de faturas distinguir a visibilidade do Premium.
+    # O que foi comprado. Nos pagamentos novos é sempre "premium"; nos
+    # históricos pode ser "semanal", "quinzenal" ou "mensal".
     plan = Column(String, nullable=True)
     # Identificador da sessão de checkout Stripe que originou este pagamento.
     # Usado para garantir idempotência: um webhook reenviado pelo Stripe não

@@ -6,13 +6,21 @@
    está — os mesmos quatro separadores, o mesmo comportamento; só o
    material da barra muda (ver components/TabBar.css).
 
+   NENHUMA cor desta app é inventada aqui: todos os valores abaixo são os
+   mesmos hexadecimais do :root de sunny_sales_web/src/index.css, incluindo
+   as cores funcionais (sucesso, aviso, erro) e o azul utilitário. Se uma
+   cor mudar no site, muda aqui com o mesmo valor — é o que faz a app e o
+   site parecerem a mesma marca.
+
    Regras de contraste herdadas do site:
    · --ink (Sky Blue #005F73) é a única cor de marca que aguenta texto
      pequeno branco por cima (7,3:1) — daí ser a dos botões e dos fundos
      escuros.
    · --ocean (Teal Ocean #0A9396) dá 3,7:1: serve para ícones, tintes e
-     texto grande, nunca para corpo sobre branco.
-   · --sun (#EE9B00) é sempre fundo com --sun-ink por cima.
+     texto grande, nunca para corpo sobre branco. Como TEXTO usa-se
+     --ocean-text (#077C80, o --teal-text do site).
+   · --sun (#EE9B00) é sempre fundo com --sun-ink por cima; como TEXTO
+     usa-se --sun-text (#8A5A00, o --gold-strong do site).
 
    A Manrope é carregada em index.html (Google Fonts, 400/500/600/700/800)
    e mantém-se: é a letra da app, e o mapa — que é o ecrã partilhado com o
@@ -22,10 +30,16 @@
   /* ── Paleta de verão ──────────────────────── */
   --ink: #005F73;              /* Sky Blue: fundo escuro, botões primários */
   --ocean: #0A9396;            /* Teal Ocean: ícones de lista, tintes */
-  --ocean-tint: #D9EFEE;       /* fundo de ícones, pílula do separador ativo */
-  --ocean-ink: #06696D;        /* o teal escurecido para glifos sobre o tinte */
+  --ocean-tint: #D6EEEC;       /* fundo de ícones, pílula do separador ativo */
+  --ocean-ink: #087E81;        /* o teal escurecido para glifos sobre o tinte */
+  --ocean-text: #077C80;       /* o teal como texto sobre a areia (4,8:1) */
   --sun: #EE9B00;              /* acento: CTA, avatar, pin do mapa */
   --sun-ink: #2A1A00;          /* texto sobre o acento */
+  --sun-text: #8A5A00;         /* o dourado como texto sobre a areia (5,9:1) */
+  --coral: #BB3E03;            /* só o que é urgente (parar a partilha) */
+  --coral-hover: #9A3303;
+  --forest: #1D5C3A;           /* presença de vendedores: pins do mapa */
+  --blue: #1078a0;             /* azul utilitário: "a tua posição", avisos */
   --sand: #FFF9F4;             /* White Cloud: fundo geral dos ecrãs */
   --sand-alt: #F4EDE6;         /* areia mais escura (puxadores, chips) */
   --surface: #FFFFFF;          /* cartões, linhas de lista, tab bar */
@@ -49,22 +63,24 @@
   --icon-faint: #A8BEC2;       /* chevrons */
   --tab-inactive: #8AA5AA;
 
-  --success: #16A34A;
-  --success-ink: #16794A;
-  --success-soft: #3E7A57;
-  --success-bg: #E9F7EF;
-  --success-line: #BFE5CF;
+  /* As três cores funcionais do site (--success / --warning / --error),
+     com os fundos e contornos derivados delas em rgba, como lá. */
+  --success: #15803d;
+  --success-ink: #15803d;
+  --success-soft: #15803d;
+  --success-bg: rgba(21, 128, 61, 0.08);
+  --success-line: rgba(21, 128, 61, 0.35);
 
-  --warn-bg: #FDF0DA;
-  --warn-line: #F2D5A0;
-  --warn-ink: #6B4A00;
-  --warn-soft: #8A6A22;
+  --warn-bg: rgba(180, 83, 9, 0.08);
+  --warn-line: rgba(180, 83, 9, 0.35);
+  --warn-ink: #b45309;
+  --warn-soft: #b45309;
 
-  --danger: #AE2012;           /* terminar sessão, apagar produto */
-  --danger-bg: #FDF4F2;
-  --danger-bg-alt: #FBEDEA;
-  --danger-line: #F0D6D0;
-  --stop: #BB3E03;             /* botão "Parar partilha" */
+  --danger: #b91c1c;           /* terminar sessão, apagar produto */
+  --danger-bg: rgba(185, 28, 28, 0.07);
+  --danger-bg-alt: rgba(185, 28, 28, 0.10);
+  --danger-line: rgba(185, 28, 28, 0.35);
+  --stop: var(--coral);        /* botão "Parar partilha" */
 
   --skeleton: #F4ECE2;         /* fundo dos skeletons de carregamento */
 
@@ -114,10 +130,10 @@
   --primary-hover: #00485A;
   --primary-dark: #00384A;
   --primary-light: var(--ocean-tint);
-  --primary-light-solid: #C9E8E6;
+  --primary-light-solid: #D6EEEC;
   --secondary: var(--sun);
   --secondary-hover: #CA6702;
-  --danger-dark: #8C1A0E;
+  --danger-dark: #991b1b;
   --gold: var(--sun);
   --gold-hover: #CA6702;
   --navy: var(--ink);
@@ -543,12 +559,12 @@ body {
   background: var(--danger);
   color: white;
   width: 100%;
-  box-shadow: 0 4px 14px rgba(187, 62, 3, 0.28);
+  box-shadow: 0 4px 14px rgba(185, 28, 28, 0.28);
 }
 
 .btn-danger:active:not(:disabled) {
   background: var(--danger-dark);
-  box-shadow: 0 2px 8px rgba(187, 62, 3, 0.18);
+  box-shadow: 0 2px 8px rgba(185, 28, 28, 0.18);
 }
 
 .btn-secondary {
@@ -594,14 +610,14 @@ body {
 }
 
 .btn-danger.location-toggle-btn {
-  box-shadow: 0 8px 28px rgba(187, 62, 3, 0.32);
+  box-shadow: 0 8px 28px rgba(185, 28, 28, 0.32);
 }
 
 /* ── Error ─────────────────────────────────── */
 .error-msg {
-  background: #fef2f2;
+  background: var(--danger-bg);
   color: var(--danger);
-  border: 1px solid #fecaca;
+  border: 1px solid var(--danger-line);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
   font-size: 14px;
@@ -609,9 +625,9 @@ body {
 }
 
 .info-msg {
-  background: #eff6ff;
-  color: #1d4ed8;
-  border: 1px solid #bfdbfe;
+  background: rgba(16, 120, 160, 0.08);
+  color: var(--blue);
+  border: 1px solid rgba(16, 120, 160, 0.35);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
   font-size: 14px;
@@ -621,7 +637,7 @@ body {
 .input-hint {
   display: block;
   font-size: 12px;
-  color: var(--text-muted, #6b7280);
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
@@ -657,8 +673,8 @@ body {
 }
 
 .status-dot.active {
-  background: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+  background: var(--success);
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.2);
   animation: pulse 2s infinite;
 }
 
@@ -667,8 +683,8 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2); }
-  50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.1); }
+  0%, 100% { box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.2); }
+  50% { box-shadow: 0 0 0 6px rgba(21, 128, 61, 0.1); }
 }
 
 @keyframes slideInOverlay {

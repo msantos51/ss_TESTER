@@ -5,9 +5,9 @@ import {
 import { BASE_URL } from '../config.js';
 import '../styles/PremiumScreen.css';
 
-// (em português) Preço do Premium. É um pagamento único de 30 dias, como os
-// planos de visibilidade — não há renovação automática, para não haver
-// cobranças-surpresa. O valor tem de acompanhar PREMIUM_PLAN no backend.
+// (em português) Preço do Premium, a única compra da app: um pagamento único
+// de 30 dias, sem renovação automática, para não haver cobranças-surpresa.
+// O valor tem de acompanhar PREMIUM_PLAN no backend.
 const PRICE_LABEL = '19,99 €';
 const PERIOD_LABEL = 'por mês';
 
@@ -43,8 +43,8 @@ const BENEFITS = [
 
 const FAQS = [
   {
-    q: 'O Premium substitui o meu plano de visibilidade?',
-    a: 'Não. O plano de visibilidade é o que te põe no mapa; o Premium acrescenta-lhe o destaque, o alcance e as fotos. São compras separadas.',
+    q: 'Tenho de pagar para aparecer no mapa?',
+    a: 'Não. Estar no mapa é gratuito e sempre foi o suficiente para vender. O Premium é opcional: acrescenta o destaque, o alcance e as fotos.',
   },
   {
     q: 'É cobrado automaticamente todos os meses?',
@@ -124,7 +124,7 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
         </span>
         <h1 className="premium-title">Sê o vendedor que se vê primeiro</h1>
         <p className="premium-lead">
-          O plano de visibilidade põe-te no mapa. O Premium faz com que te
+          No plano gratuito já estás no mapa. O Premium faz com que te
           encontrem de longe — e que vejam o que estás a vender.
         </p>
       </header>
