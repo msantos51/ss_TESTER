@@ -21,6 +21,12 @@ const LocationTracker = registerPlugin('LocationTracker');
 // como os banhistas o veem no mapa do site.
 const DEFAULT_PIN = '#1D5C3A';
 
+// (em português) Limiares do reenvio de posição a partir do GPS do WebView.
+// A distância é a mesma que o servidor exige para aceitar uma leitura nova
+// (15 m), por isso quase nenhum pedido sai para ser descartado do outro lado.
+const MIN_SHARE_DISTANCE_M = 15;
+const MIN_SHARE_INTERVAL_MS = 3000;
+
 function hexToRgba(hex, alpha) {
   const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
   if (!match) return `rgba(29, 92, 58, ${alpha})`;
@@ -158,6 +164,9 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const listenerRef = useRef(null);
   const watchIdRef = useRef(null);
   const lastTrackedRef = useRef(null);
+  const sharingRef = useRef(false);
+  const lastSentRef = useRef(null);
+  const shareFromWatchRef = useRef(null);
   const { heading, reportGpsHeading } = useDeviceHeading();
   const pinColor = user?.pin_color || DEFAULT_PIN;
   const vendorIcon = useMemo(() => L.divIcon({
@@ -190,6 +199,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
               setMapError(null);
               setPosition([pos.coords.latitude, pos.coords.longitude]);
               reportGpsHeading(pos.coords.heading, pos.coords.speed);
+              shareFromWatchRef.current?.(pos.coords.latitude, pos.coords.longitude);
             }
           }
         );
@@ -241,6 +251,9 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
       if (step > 1) setDistanceM((total) => total + step);
     }
     lastTrackedRef.current = [lat, lng];
+    // Marcado antes do pedido: os dois GPS que alimentam a partilha partilham
+    // esta trava, e um envio falhado não fica a repetir-se a cada leitura.
+    lastSentRef.current = { lat, lng, t: Date.now() };
 
     const response = await fetch(`${BASE_URL}/vendors/${vendorId}/location`, {
       method: 'PUT',
@@ -253,6 +266,34 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
       throw new Error(message);
     }
   }, [vendorId, token]);
+
+  // Caminho comum aos dois GPS que alimentam a partilha.
+  const pushLocation = useCallback(async (lat, lng) => {
+    try {
+      await sendLocation(lat, lng);
+    } catch (err) {
+      console.error('Erro ao enviar localização:', err);
+      setError(err.message);
+    }
+  }, [sendLocation]);
+
+  // (em português) Quem segue o vendedor com o ecrã desligado é o serviço
+  // nativo, mas com a app aberta — o telemóvel na mão, a andar pela praia — o
+  // GPS do WebView já está a correr para desenhar este mapa. Aproveitá-lo como
+  // segunda fonte é o que garante que o pin mexe no mapa do banhista mal o
+  // vendedor se desloque, mesmo que o serviço nativo esteja a demorar a
+  // entregar a leitura seguinte ou tenha sido travado pelo sistema.
+  const shareFromWatch = useCallback((lat, lng) => {
+    if (!sharingRef.current) return;
+    const last = lastSentRef.current;
+    if (last) {
+      if (Date.now() - last.t < MIN_SHARE_INTERVAL_MS) return;
+      if (metersBetween([last.lat, last.lng], [lat, lng]) < MIN_SHARE_DISTANCE_M) return;
+    }
+    pushLocation(lat, lng);
+  }, [pushLocation]);
+
+  shareFromWatchRef.current = shareFromWatch;
 
   const startSharing = async () => {
     setLoading(true);
@@ -284,20 +325,17 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
         : currentPosition.coords.longitude;
 
       lastTrackedRef.current = null;
+      lastSentRef.current = null;
       setDistanceM(0);
       setStartedAt(Number.isNaN(startTime) ? Date.now() : startTime);
       setElapsed(0);
 
       await sendLocation(currentLat, currentLng);
 
-      listenerRef.current = await LocationTracker.addListener('locationUpdate', async ({ lat, lng }) => {
-        try {
-          await sendLocation(lat, lng);
-        } catch (err) {
-          console.error('Erro ao enviar localização:', err);
-          setError(err.message);
-        }
-      });
+      listenerRef.current = await LocationTracker.addListener(
+        'locationUpdate',
+        ({ lat, lng }) => pushLocation(lat, lng)
+      );
       await LocationTracker.startTracking();
       setSharing(true);
     } catch (err) {
@@ -332,6 +370,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
       setElapsed(0);
       setDistanceM(0);
       lastTrackedRef.current = null;
+      lastSentRef.current = null;
       setLoading(false);
     }
   };
@@ -339,7 +378,6 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   // A app deixou de ter o botão de sair no mapa (passou para a Conta), por
   // isso é o App que precisa de conseguir parar a partilha antes de limpar
   // a sessão.
-  const sharingRef = useRef(false);
   const stopSharingRef = useRef(stopSharing);
   sharingRef.current = sharing;
   stopSharingRef.current = stopSharing;
