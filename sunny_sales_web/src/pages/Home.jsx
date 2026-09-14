@@ -7,10 +7,11 @@ import axios from 'axios';
 import { BASE_URL, mediaUrl, TILE_LAYER } from '../config';
 import LocateButton from '../components/LocateButton';
 import WeatherCard from '../components/WeatherCard';
+import ProximityAlert from '../components/ProximityAlert';
 import {
   FiMapPin, FiShoppingBag,
   FiSmartphone, FiCreditCard,
-  FiSliders, FiCheck, FiX, FiMap, FiList,
+  FiSliders, FiCheck, FiX, FiMap, FiList, FiStar,
 } from 'react-icons/fi';
 import { TbCurrencyEuro } from 'react-icons/tb';
 import './Home.css';
@@ -150,27 +151,34 @@ function escapeHtml(str) {
 // A gota deixa de ser um anel grosso e passa a ser sólida com um miolo
 // branco — a mesma leitura à distância, menos ruído quando há muitos pins
 // juntos, e a cor do vendedor ocupa mais área (é o que se procura no mapa).
-function getVendorPinHtml(color) {
+// O vendedor Premium troca o miolo branco por uma estrela: é o destaque que
+// paga, e continua a ler-se num pin de 40px porque ocupa o mesmo sítio.
+function getVendorPinHtml(color, premium) {
   const safeColor = escapeHtml(color);
-  return `<div class="vendor-pin-marker" style="--pin-color: ${safeColor};"><span class="vendor-pin-core"></span></div>`;
+  const core = premium
+    ? '<span class="vendor-pin-core vendor-pin-core--premium"><svg viewBox="0 0 24 24" width="16" height="16"><polygon points="12 2 15.09 9.26 23 9.27 16.5 14.14 19 21.5 12 17 5 21.5 7.5 14.14 1 9.27 8.91 9.26" fill="currentColor"/></svg></span>'
+    : '<span class="vendor-pin-core"></span>';
+  return `<div class="vendor-pin-marker" style="--pin-color: ${safeColor};">${core}</div>`;
 }
 
 // (em português) A bússola do banhista faz o mapa render dezenas de vezes por
 // segundo. Um ícone novo a cada render levava o Leaflet a deitar fora e a
 // refazer o elemento do pin, cortando a meio a animação que leva o vendedor de
-// uma posição à seguinte. Como o desenho só depende da cor, guarda-se por cor —
-// instâncias de `L.divIcon` podem ser partilhadas por vários marcadores.
+// uma posição à seguinte. Como o desenho só depende da cor e do Premium,
+// guarda-se por essa combinação — instâncias de `L.divIcon` podem ser
+// partilhadas por vários marcadores.
 const vendorIconCache = new Map();
-function getVendorIcon(color) {
-  let icon = vendorIconCache.get(color);
+function getVendorIcon(color, premium) {
+  const key = `${color}|${premium ? 'premium' : 'free'}`;
+  let icon = vendorIconCache.get(key);
   if (!icon) {
     icon = L.divIcon({
       className: 'vendor-pin',
-      html: getVendorPinHtml(color),
+      html: getVendorPinHtml(color, premium),
       iconSize: [40, 48],
       iconAnchor: [20, 47],
     });
-    vendorIconCache.set(color, icon);
+    vendorIconCache.set(key, icon);
   }
   return icon;
 }
@@ -521,11 +529,21 @@ export default function Home() {
     setShowFilterSheet(false);
   };
 
+  // (em português) O servidor aplica o raio de alcance a partir da posição do
+  // banhista: um vendedor sem Premium só é devolvido a 300 m, com Premium a
+  // 1 km. Arredondar a três casas (~100 m) evita refazer o pedido a cada
+  // leitura de GPS — o ruído da bússola não muda quem está ao alcance.
+  const reachKey = clientPos
+    ? `${clientPos.lat.toFixed(3)},${clientPos.lng.toFixed(3)}`
+    : null;
+
   useEffect(() => {
     let interval;
+    const [reachLat, reachLng] = reachKey ? reachKey.split(',') : [];
+    const params = reachKey ? { lat: reachLat, lng: reachLng } : undefined;
     const fetchVendors = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/vendors/`);
+        const res = await axios.get(`${BASE_URL}/vendors/`, { params });
         setVendors(res.data);
       } catch (err) {
         console.error('Erro ao carregar vendedores:', err);
@@ -540,7 +558,7 @@ export default function Home() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, []);
+  }, [reachKey]);
 
   // Canal em tempo real (WebSocket): recebe as atualizações de posição dos
   // vendedores sem necessidade de polling constante. Está aberto a qualquer
@@ -943,7 +961,7 @@ export default function Home() {
                   <AnimatedVendorMarker
                     key={v.id}
                     position={[v.current_lat, v.current_lng]}
-                    icon={getVendorIcon(pinColor)}
+                    icon={getVendorIcon(pinColor, v.is_premium)}
                     eventHandlers={{
                       click: () => focusVendor(v),
                     }}
@@ -1040,7 +1058,14 @@ export default function Home() {
                     />
                   )}
                   <div className="card-head-text">
-                    <h4 className="card-name">{selected.name}</h4>
+                    <h4 className="card-name">
+                      {selected.name}
+                      {selected.is_premium && (
+                        <span className="card-premium" title="Vendedor Premium">
+                          <FiStar size={11} aria-hidden="true" /> Premium
+                        </span>
+                      )}
+                    </h4>
                     {selected.product && (
                       <p className="card-sub">{selected.product}</p>
                     )}
@@ -1083,6 +1108,10 @@ export default function Home() {
                     </div>
                   </div>
                 )}
+                {/* A chave remonta o bloco por vendedor: sem ela, o "aviso
+                    ativo" de um vendedor aparecia ao abrir o cartão do
+                    seguinte, que ainda não tinha aviso nenhum. */}
+                <ProximityAlert key={selected.id} vendor={selected} clientPos={clientPos} />
               </div>
             )}
 

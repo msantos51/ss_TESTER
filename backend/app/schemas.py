@@ -65,6 +65,10 @@ class VendorOut(BaseModel):
     current_lng: Optional[float] = None
     subscription_active: Optional[bool] = None
     subscription_valid_until: Optional[datetime] = None
+    premium_active: Optional[bool] = None
+    premium_valid_until: Optional[datetime] = None
+    # Propriedade do modelo: subscrição Premium comprada E dentro da validade.
+    is_premium: bool = False
     last_seen: Optional[str] = None
     payment_methods: Optional[str] = None
     nif: Optional[str] = None
@@ -95,6 +99,8 @@ class VendorPublicOut(BaseModel):
     beaches: Optional[str] = None
     product_categories: Optional[str] = None
     payment_methods: Optional[str] = None
+    # Marca o vendedor como Premium: é o que põe a estrela no pin do mapa.
+    is_premium: bool = False
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -121,6 +127,7 @@ class PaidWeekOut(BaseModel):
     start_date: datetime
     end_date: datetime
     receipt_url: Optional[str] = None
+    plan: Optional[str] = None
 
     # Configuração para permitir criação a partir de objetos ORM
     model_config = ConfigDict(from_attributes=True)
@@ -143,3 +150,15 @@ class StoryOut(BaseModel):
 
     # Configuração para permitir criação a partir de objetos ORM
     model_config = ConfigDict(from_attributes=True)
+
+
+class VendorInterestCreate(BaseModel):
+    """Banhista a pedir aviso de proximidade de um vendedor Premium.
+
+    Não há conta de banhista: o email é o destino do aviso e a posição é o
+    sítio na praia a partir do qual a zona de proximidade é medida.
+    """
+
+    email: str
+    lat: float
+    lng: float

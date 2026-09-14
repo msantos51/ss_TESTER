@@ -1,37 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  FiUser, FiFileText, FiMail, FiLogOut, FiShoppingBag,
+  FiUser, FiFileText, FiMail, FiLogOut,
   FiChevronRight, FiExternalLink,
 } from 'react-icons/fi';
-import { BASE_URL, WEB_URL, mediaUrl } from '../config.js';
+import { WEB_URL, mediaUrl } from '../config.js';
 import { terminateCurrentSession } from '../sessionApi.js';
 import ProfileScreen from './ProfileScreen.jsx';
 import PlansScreen from './PlansScreen.jsx';
 import InvoicesScreen from './InvoicesScreen.jsx';
 
-export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUpdate }) {
-  const { user, token, vendorId } = auth;
+export default function DashboardScreen({ auth, onLogout, onUserUpdate }) {
+  const { user } = auth;
   const [showProfile, setShowProfile] = useState(false);
   const [showPlans, setShowPlans] = useState(false);
   const [showInvoices, setShowInvoices] = useState(false);
-  const [productCount, setProductCount] = useState(null);
 
   const subscriptionActive = user?.subscription_active;
   const subscriptionDate = user?.subscription_valid_until
     ? new Date(user.subscription_valid_until).toLocaleDateString('pt-PT')
     : null;
-
-  // A linha "Produtos" mostra a contagem à direita, como no design.
-  useEffect(() => {
-    let active = true;
-    fetch(`${BASE_URL}/vendors/${vendorId}/products`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => { if (active) setProductCount(Array.isArray(data) ? data.length : 0); })
-      .catch(() => { if (active) setProductCount(null); });
-    return () => { active = false; };
-  }, [vendorId, token]);
 
   const handleLogout = async () => {
     await terminateCurrentSession(auth.token);
@@ -54,12 +41,6 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
     {
       label: 'Negócio',
       items: [
-        {
-          icon: <FiShoppingBag />,
-          label: 'Produtos',
-          value: productCount === null ? null : String(productCount),
-          onClick: () => onChangePage('products'),
-        },
         { icon: <FiFileText />, label: 'Faturas', onClick: () => setShowInvoices(true) },
         {
           icon: <FiMail />,

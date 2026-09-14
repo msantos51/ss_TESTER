@@ -1,0 +1,422 @@
+/* ═══ Premium ═══════════════════════════════════
+   O separador vende uma decisão, por isso segue a mesma estrutura da Conta —
+   cabeçalho escuro com a identidade do ecrã, corpo em areia com cartões — mas
+   troca o azul pelo sol (--sun), que é a cor de acento da app e a mesma que
+   marca a estrela no pin do mapa. */
+.premium-screen {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--sand);
+}
+
+.premium-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) 20px 26px;
+  background: var(--ink);
+  position: relative;
+  overflow: hidden;
+}
+
+/* O halo cor de sol é o que distingue este cabeçalho do da Conta sem mudar
+   a estrutura. Fica atrás do texto e nunca apanha toques. */
+.premium-header::after {
+  content: '';
+  position: absolute;
+  top: -90px;
+  right: -60px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: rgba(238, 155, 0, 0.28);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.premium-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--r-pill);
+  background: var(--sun);
+  color: var(--sun-ink);
+  font-size: var(--fs-label);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  position: relative;
+  z-index: 1;
+}
+
+.premium-title {
+  font-size: var(--fs-title);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.premium-lead {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+  position: relative;
+  z-index: 1;
+}
+
+.premium-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 16px 16px 24px;
+}
+
+.premium-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Estado ─────────────────────────────────── */
+.premium-status {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: var(--r-card-lg);
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-line);
+}
+
+.premium-status.is-active {
+  background: var(--success-bg);
+  border-color: var(--success-line);
+}
+
+.premium-status-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--r-icon);
+  background: var(--sun);
+  color: var(--sun-ink);
+}
+
+.premium-status-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.premium-status-title {
+  font-size: var(--fs-body);
+  font-weight: 800;
+  color: var(--warn-ink);
+}
+
+.premium-status.is-active .premium-status-title {
+  color: var(--success-ink);
+}
+
+.premium-status-desc {
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--warn-soft);
+}
+
+.premium-status.is-active .premium-status-desc {
+  color: var(--success-soft);
+}
+
+.premium-status-refresh {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--warn-soft);
+  cursor: pointer;
+}
+
+.premium-status.is-active .premium-status-refresh {
+  color: var(--success-soft);
+}
+
+.premium-status-refresh:disabled {
+  opacity: 0.6;
+}
+
+.is-spinning {
+  animation: premium-spin 0.9s linear infinite;
+}
+
+@keyframes premium-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Vantagens ──────────────────────────────── */
+.premium-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.premium-benefit {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+}
+
+.premium-benefit-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.premium-benefit-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: var(--r-icon);
+  background: var(--ocean-tint);
+  color: var(--ocean-ink);
+}
+
+.premium-benefit-title {
+  font-size: var(--fs-row);
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.premium-benefit-desc {
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+/* A comparação lado a lado é o que torna a vantagem concreta. */
+.premium-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.premium-compare-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: var(--r-input);
+  background: var(--field-bg);
+  border: 1px solid var(--line-field);
+}
+
+.premium-compare-col.is-premium {
+  background: var(--warn-bg);
+  border-color: var(--warn-line);
+}
+
+.premium-compare-label {
+  font-size: var(--fs-label);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.premium-compare-col.is-premium .premium-compare-label {
+  color: var(--warn-soft);
+}
+
+.premium-compare-value {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text-secondary);
+}
+
+.premium-compare-col.is-premium .premium-compare-value {
+  color: var(--warn-ink);
+}
+
+/* ── Preço ──────────────────────────────────── */
+.premium-price-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 18px;
+  border-radius: var(--r-card-lg);
+  background: var(--ink);
+  box-shadow: var(--shadow-share);
+  text-align: center;
+}
+
+.premium-price-eyebrow {
+  font-size: var(--fs-label);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--sun);
+}
+
+.premium-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.premium-price-amount {
+  font-size: var(--fs-display);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  color: #fff;
+}
+
+.premium-price-period {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.premium-price-list {
+  list-style: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 4px;
+  text-align: left;
+}
+
+.premium-price-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.premium-price-list svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--sun);
+}
+
+.premium-price-list strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.premium-cta {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 4px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--sun);
+  color: var(--sun-ink);
+  font-family: inherit;
+  font-size: var(--fs-btn);
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform var(--transition);
+}
+
+.premium-cta:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.premium-cta:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.premium-price-note {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── FAQ ────────────────────────────────────── */
+.premium-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.premium-faq-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+
+.premium-faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 13px 16px;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.premium-faq-q::-webkit-details-marker { display: none; }
+
+.premium-faq-q::after {
+  content: '+';
+  flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ocean);
+}
+
+.premium-faq-item[open] .premium-faq-q::after { content: '−'; }
+
+.premium-faq-a {
+  padding: 0 16px 14px;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--text-muted);
+}

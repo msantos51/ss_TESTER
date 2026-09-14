@@ -25,6 +25,11 @@ class Vendor(Base):
     current_lng = Column(Float, nullable=True)
     subscription_active = Column(Boolean, default=False)
     subscription_valid_until = Column(DateTime, nullable=True)
+    # Premium — camada paga adicional (ver PREMIUM_PLAN em main.py). Dá estrela
+    # no pin, alcance de 1 km em vez de 300 m, avisos de proximidade aos
+    # banhistas interessados e fotos nos produtos.
+    premium_active = Column(Boolean, default=False)
+    premium_valid_until = Column(DateTime, nullable=True)
     email_confirmed = Column(Boolean, default=False)
     confirmation_token = Column(String, nullable=True, index=True)
     # Alteração de email: guarda o novo email até este ser confirmado por link
@@ -61,6 +66,20 @@ class Vendor(Base):
     sessions = relationship(
         "VendorSession", back_populates="vendor", cascade="all, delete-orphan"
     )
+
+    @property
+    def is_premium(self) -> bool:
+        """Premium em vigor: comprado e ainda dentro da validade.
+
+        É esta propriedade — e não a coluna `premium_active` — que decide as
+        vantagens, para que um Premium expirado deixe de as dar mesmo antes de
+        alguém passar por `refresh_premium_status`.
+        """
+        return bool(
+            self.premium_active
+            and self.premium_valid_until
+            and self.premium_valid_until > utcnow()
+        )
 
 
 class VendorSession(Base):
@@ -122,6 +141,9 @@ class PaidWeek(Base):
     start_date = Column(DateTime, default=utcnow)
     end_date = Column(DateTime)
     receipt_url = Column(String, nullable=True)
+    # Plano comprado ("semanal", "quinzenal", "mensal" ou "premium"). Serve
+    # para o ecrã de faturas distinguir a visibilidade do Premium.
+    plan = Column(String, nullable=True)
     # Identificador da sessão de checkout Stripe que originou este pagamento.
     # Usado para garantir idempotência: um webhook reenviado pelo Stripe não
     # pode creditar o mesmo período duas vezes.
@@ -158,3 +180,35 @@ class Story(Base):
 
     vendor = relationship("Vendor")
 
+
+class VendorInterest(Base):
+    """Banhista que pediu para ser avisado quando um vendedor chegar perto.
+
+    É uma vantagem Premium: só se aceita o registo — e só se envia o aviso —
+    para vendedores com Premium em vigor. O contacto é um email, que é o único
+    canal de notificação que a plataforma tem; não há conta de banhista.
+
+    `in_zone` guarda se, na última leitura de GPS, o vendedor já estava dentro
+    da zona. O aviso sai apenas na transição de fora para dentro (a "entrada na
+    zona"), e mesmo essa está limitada a MAX_PROXIMITY_NOTIFICATIONS_PER_DAY
+    por dia — uma app que avisa de mais é uma app desinstalada.
+    """
+
+    __tablename__ = "vendor_interests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vendor_id = Column(Integer, ForeignKey("vendors.id"), index=True)
+    email = Column(String, index=True)
+    lat = Column(Float)
+    lng = Column(Float)
+    created_at = Column(DateTime, default=utcnow)
+    # Token do link "não quero mais avisos" incluído em cada email.
+    cancel_token = Column(String, unique=True, index=True)
+
+    in_zone = Column(Boolean, default=False)
+    last_notified_at = Column(DateTime, nullable=True)
+    notifications_today = Column(Integer, default=0)
+    # Dia (à meia-noite UTC) a que `notifications_today` diz respeito.
+    notifications_day = Column(DateTime, nullable=True)
+
+    vendor = relationship("Vendor")

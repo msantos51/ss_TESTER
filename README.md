@@ -26,6 +26,8 @@ O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma a
 | Filtros | Por tipo de produto (Bolas de Berlim, Gelados, Acessórios de Praia) e por distância (500 m a 5 km) |
 | Mapa rotativo | Roda com dois dedos no telemóvel (ou shift + roda do rato no computador) e, sem ninguém lhe tocar, segue a orientação do dispositivo (iOS 13+ e Android). O botão do norte endireita-o |
 | Perfil do vendedor | Foto, produto, e stories efémeros (fotos/vídeos com expiração) |
+| Vendedores Premium | Pin com estrela no mapa e alcance maior (1 km, contra 300 m dos restantes) |
+| Aviso de proximidade | Deixar o email num vendedor Premium e ser avisado quando ele entra na zona — no máximo 2 avisos por dia, cada email com link de cancelamento |
 | Páginas informativas | Sobre o projeto, Sustentabilidade, Implementação para municípios |
 | Páginas legais | Privacidade, Termos, Aviso Legal, Cookies e gestão da conta de vendedor (`/eliminar-conta`) |
 
@@ -39,6 +41,7 @@ O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma a
 | Gestão de conta | Nome, email, foto de perfil com cropper, cor do pin, alteração de password |
 | Sessões ativas | Ver e terminar sessões em outros dispositivos |
 | Subscrição e faturação | Integração com Stripe; histórico de semanas pagas com links de recibo |
+| Premium (19,99 €/mês) | Separador próprio na app: estrela no pin, alcance de 1 km, avisos de proximidade aos interessados e fotografias nos produtos |
 | Stories | Publicar fotos/vídeos efémeros visíveis no perfil |
 | Os teus dados (RGPD) | Descarregar todos os dados pessoais em JSON e eliminar a conta em definitivo, na app ou em `/eliminar-conta` |
 | App móvel | App Android (Capacitor + React) dedicada ao vendedor: registo de conta, partilha de localização em tempo real (serviço nativo), gestão de conta, produtos, subscrição e faturas |
@@ -52,7 +55,7 @@ ss_TESTER/
 ├── backend/                  # FastAPI + SQLAlchemy
 │   └── app/
 │       ├── main.py           # Endpoints REST e WebSocket
-│       ├── models.py         # Modelos: Vendor, Route, PaidWeek, Story, VendorSession
+│       ├── models.py         # Modelos: Vendor, Route, PaidWeek, Story, VendorSession, VendorInterest
 │       ├── schemas.py        # Schemas Pydantic
 │       └── database.py       # Configuração da BD
 ├── sunny_sales_web/          # React 19 + Vite (web, para banhistas)
@@ -62,7 +65,7 @@ ss_TESTER/
 │       └── config.js         # BASE_URL do backend
 ├── mobile/                   # Capacitor + React + Vite (móvel Android, para vendedores)
 │   └── src/
-│       ├── pages/            # Welcome, Registo, Login, MapTab (partilha), Dashboard, ...
+│       ├── pages/            # Welcome, Registo, Login, MapTab (partilha), Produtos, Premium, Trajetos, Conta
 │       ├── components/       # AnimatedMarker, cropper de imagem, seletor de cor
 │       └── hooks/            # useDeviceHeading (bússola)
 ├── scripts/                  # Utilitários (simulação de movimento, ...)
@@ -91,9 +94,44 @@ ss_TESTER/
 
 - **Vendor** — conta do vendedor (nome, email, produto, foto, cor do pin, coordenadas atuais, subscrição, `deleted_at` para contas eliminadas)
 - **Route** — sessão de rastreio (pontos GPS, duração, distância em metros)
-- **PaidWeek** — registo de pagamento (intervalo de datas, URL do recibo Stripe)
+- **PaidWeek** — registo de pagamento (intervalo de datas, plano comprado, URL do recibo Stripe)
 - **Story** — media efémero do vendedor (foto/vídeo com expiração)
 - **VendorSession** — sessões ativas por dispositivo (token, user-agent)
+- **VendorInterest** — banhista que pediu aviso de proximidade de um vendedor Premium (email, posição da zona, travão diário)
+
+---
+
+## Premium
+
+O **Premium** é uma camada paga **por cima** do plano de visibilidade, não um
+substituto: o plano de visibilidade é o que põe o vendedor no mapa, o Premium é
+o que o faz destacar-se lá dentro. Custa **19,99 €** e, como os restantes
+planos, é um **pagamento único** de 30 dias (sem renovação automática); comprar
+com o Premium ainda ativo soma os dias ao período em curso.
+
+| Vantagem | Sem Premium | Com Premium |
+|---|---|---|
+| Destaque no mapa | Pin normal | Pin com estrela, na app e no site |
+| Raio de alcance | 300 m | 1 km |
+| Aviso de proximidade | — | O banhista que marcou interesse é avisado quando o vendedor entra na sua zona (raio de 300 m), até 2 vezes por dia |
+| Produtos | Nome e preço | Nome, preço e fotografia |
+
+O raio de alcance é aplicado pelo servidor: `GET /vendors/?lat=&lng=` devolve
+apenas os vendedores ao alcance de quem procura. Sem `lat`/`lng` não há
+distância que se possa medir e não se filtra nada — é preferível a um mapa
+vazio para quem recusou a geolocalização.
+
+| Endpoint | Descrição |
+|---|---|
+| `POST /vendors/{id}/create-checkout-session?plan=premium` | Compra 30 dias de Premium (Stripe Checkout) |
+| `GET /vendors/?lat=&lng=` | Mapa com o raio de alcance aplicado; cada vendedor traz `is_premium` |
+| `POST /vendors/{id}/interest` | Banhista pede aviso de proximidade (`email`, `lat`, `lng`); só aceite para vendedores Premium |
+| `GET /interest/cancel/{token}` | Cancela o aviso — é o link que segue em cada email |
+
+Os limites e o preço são ajustáveis por variáveis de ambiente
+(`PREMIUM_PRICE_EUR`, `FREE_REACH_RADIUS_M`, `PREMIUM_REACH_RADIUS_M`,
+`PROXIMITY_NOTIFICATION_RADIUS_M`, `MAX_PROXIMITY_NOTIFICATIONS_PER_DAY`) — ver
+`.env.example`.
 
 ---
 
