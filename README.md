@@ -27,7 +27,6 @@ O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma a
 | Mapa rotativo | Roda com dois dedos no telemóvel (ou shift + roda do rato no computador) e, sem ninguém lhe tocar, segue a orientação do dispositivo (iOS 13+ e Android). O botão do norte endireita-o |
 | Perfil do vendedor | Foto, produto, e stories efémeros (fotos/vídeos com expiração) |
 | Vendedores Premium | Pin com estrela no mapa e alcance maior (1 km, contra 300 m dos restantes) |
-| Aviso de proximidade | Deixar o email num vendedor Premium e ser avisado quando ele entra na zona — no máximo 2 avisos por dia, cada email com link de cancelamento |
 | Páginas informativas | Sobre o projeto, Sustentabilidade, Implementação para municípios |
 | Páginas legais | Privacidade, Termos, Aviso Legal, Cookies e gestão da conta de vendedor (`/eliminar-conta`) |
 
@@ -41,7 +40,7 @@ O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma a
 | Gestão de conta | Nome, email, foto de perfil com cropper, cor do pin, alteração de password |
 | Sessões ativas | Ver e terminar sessões em outros dispositivos |
 | Subscrição e faturação | Integração com Stripe; histórico de semanas pagas com links de recibo |
-| Premium (19,99 €/mês) | Separador próprio na app: estrela no pin, alcance de 1 km, avisos de proximidade aos interessados e fotografias nos produtos |
+| Premium (19,99 €/mês) | Separador próprio na app: estrela no pin, alcance de 1 km e fotografias nos produtos |
 | Stories | Publicar fotos/vídeos efémeros visíveis no perfil |
 | Os teus dados (RGPD) | Descarregar todos os dados pessoais em JSON e eliminar a conta em definitivo, na app ou em `/eliminar-conta` |
 | App móvel | App Android (Capacitor + React) dedicada ao vendedor: registo de conta, partilha de localização em tempo real (serviço nativo), gestão de conta, produtos, subscrição e faturas |
@@ -55,7 +54,7 @@ ss_TESTER/
 ├── backend/                  # FastAPI + SQLAlchemy
 │   └── app/
 │       ├── main.py           # Endpoints REST e WebSocket
-│       ├── models.py         # Modelos: Vendor, Route, PaidWeek, Story, VendorSession, VendorInterest
+│       ├── models.py         # Modelos: Vendor, Route, PaidWeek, Story, VendorSession
 │       ├── schemas.py        # Schemas Pydantic
 │       └── database.py       # Configuração da BD
 ├── sunny_sales_web/          # React 19 + Vite (web, para banhistas)
@@ -97,7 +96,6 @@ ss_TESTER/
 - **PaidWeek** — registo de pagamento (intervalo de datas, plano comprado, URL do recibo Stripe)
 - **Story** — media efémero do vendedor (foto/vídeo com expiração)
 - **VendorSession** — sessões ativas por dispositivo (token, user-agent)
-- **VendorInterest** — banhista que pediu aviso de proximidade de um vendedor Premium (email, posição da zona, travão diário)
 
 ---
 
@@ -113,7 +111,6 @@ com o Premium ainda ativo soma os dias ao período em curso.
 |---|---|---|
 | Destaque no mapa | Pin normal | Pin com estrela, na app e no site |
 | Raio de alcance | 300 m | 1 km |
-| Aviso de proximidade | — | O banhista que marcou interesse é avisado quando o vendedor entra na sua zona (raio de 300 m), até 2 vezes por dia |
 | Produtos | Nome e preço | Nome, preço e fotografia |
 
 O raio de alcance é aplicado pelo servidor: `GET /vendors/?lat=&lng=` devolve
@@ -125,13 +122,14 @@ vazio para quem recusou a geolocalização.
 |---|---|
 | `POST /vendors/{id}/create-checkout-session?plan=premium` | Compra 30 dias de Premium (Stripe Checkout) |
 | `GET /vendors/?lat=&lng=` | Mapa com o raio de alcance aplicado; cada vendedor traz `is_premium` |
-| `POST /vendors/{id}/interest` | Banhista pede aviso de proximidade (`email`, `lat`, `lng`); só aceite para vendedores Premium |
-| `GET /interest/cancel/{token}` | Cancela o aviso — é o link que segue em cada email |
 
 Os limites e o preço são ajustáveis por variáveis de ambiente
-(`PREMIUM_PRICE_EUR`, `FREE_REACH_RADIUS_M`, `PREMIUM_REACH_RADIUS_M`,
-`PROXIMITY_NOTIFICATION_RADIUS_M`, `MAX_PROXIMITY_NOTIFICATIONS_PER_DAY`) — ver
+(`PREMIUM_PRICE_EUR`, `FREE_REACH_RADIUS_M`, `PREMIUM_REACH_RADIUS_M`) — ver
 `.env.example`.
+
+O Premium não inclui avisos de proximidade por email: quem procura vendedores
+está no site, com o mapa aberto e os vendedores à vista, e não precisa de ser
+chamado de volta.
 
 ---
 

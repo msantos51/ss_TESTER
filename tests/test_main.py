@@ -1228,97 +1228,11 @@ def test_product_photo_requires_premium(client):
     assert resp.json()["photo"]
 
 
-def test_proximity_interest_is_refused_for_vendors_without_premium(client):
-    """Só se promete o aviso onde ele vai mesmo acontecer."""
-    vendor_id, _token = premium_vendor_sharing(
-        client, email="no-premium@example.com", premium=False
-    )
-    resp = client.post(
-        f"/vendors/{vendor_id}/interest",
-        json={"email": "banhista@example.com", "lat": 38.7, "lng": -9.4},
-    )
-    assert resp.status_code == 403
-    assert "Premium" in resp.json()["detail"]
-
-
-def test_proximity_notification_fires_on_entry_and_stops_at_the_daily_cap(client):
-    """O aviso sai à entrada na zona e nunca passa de dois por dia."""
-    from backend.app import main
-
-    vendor_id, token = premium_vendor_sharing(client, email="proximo@example.com")
-
-    # Vendedor longe da zona do banhista antes de este marcar interesse.
-    send_location(client, vendor_id, token, 38.7100, -9.4000)
-
-    resp = client.post(
-        f"/vendors/{vendor_id}/interest",
-        json={"email": "banhista@example.com", "lat": 38.7000, "lng": -9.4000},
-    )
-    assert resp.status_code == 200
-    assert resp.json()["max_per_day"] == main.MAX_PROXIMITY_NOTIFICATIONS_PER_DAY
-
-    def proximity_emails():
-        return [e for e in client.sent_emails if e["to"] == "banhista@example.com"]
-
-    assert proximity_emails() == []
-
-    # 1.ª entrada na zona → um aviso.
-    send_location(client, vendor_id, token, 38.7000, -9.4000)
-    assert len(proximity_emails()) == 1
-    assert "cancel" in proximity_emails()[-1]["body"]
-
-    # Continuar a andar DENTRO da zona não gera avisos novos.
-    send_location(client, vendor_id, token, 38.7010, -9.4000)
-    send_location(client, vendor_id, token, 38.7015, -9.4000)
-    assert len(proximity_emails()) == 1
-
-    # Sair e voltar a entrar → segundo aviso.
-    send_location(client, vendor_id, token, 38.7100, -9.4000)
-    send_location(client, vendor_id, token, 38.7000, -9.4000)
-    assert len(proximity_emails()) == 2
-
-    # Terceira entrada no mesmo dia: o travão diário segura o aviso.
-    send_location(client, vendor_id, token, 38.7100, -9.4000)
-    send_location(client, vendor_id, token, 38.7000, -9.4000)
-    assert len(proximity_emails()) == 2
-
-
-def test_proximity_interest_can_be_cancelled_from_the_email_link(client):
-    """O link que segue em cada aviso apaga o pedido de vez."""
-    from backend.app import database, models
-
-    vendor_id, token = premium_vendor_sharing(client, email="cancelavel@example.com")
-    send_location(client, vendor_id, token, 38.7100, -9.4000)
-    client.post(
-        f"/vendors/{vendor_id}/interest",
-        json={"email": "banhista@example.com", "lat": 38.7000, "lng": -9.4000},
-    )
-    send_location(client, vendor_id, token, 38.7000, -9.4000)
-
-    email_body = [e for e in client.sent_emails if e["to"] == "banhista@example.com"][-1]["body"]
-    cancel_token = email_body.split("/interest/cancel/")[1].split()[0].strip()
-
-    resp = client.get(f"/interest/cancel/{cancel_token}")
-    assert resp.status_code == 200
-
-    db = database.SessionLocal()
-    try:
-        assert db.query(models.VendorInterest).count() == 0
-    finally:
-        db.close()
-
-
-def test_deleting_the_account_removes_the_interests_of_bathers(client):
-    """Os emails dos banhistas não sobrevivem à conta que os justificava."""
+def test_deleting_the_account_clears_the_premium_it_had(client):
+    """O Premium morre com a conta: apagá-la não deixa a vantagem de pé."""
     from backend.app import database, models
 
     vendor_id, token = premium_vendor_sharing(client, email="apagavel@example.com")
-    send_location(client, vendor_id, token, 38.7100, -9.4000)
-    resp = client.post(
-        f"/vendors/{vendor_id}/interest",
-        json={"email": "banhista@example.com", "lat": 38.7000, "lng": -9.4000},
-    )
-    assert resp.status_code == 200
 
     resp = client.request(
         "DELETE",
@@ -1330,7 +1244,6 @@ def test_deleting_the_account_removes_the_interests_of_bathers(client):
 
     db = database.SessionLocal()
     try:
-        assert db.query(models.VendorInterest).count() == 0
         vendor = db.query(models.Vendor).filter_by(id=vendor_id).first()
         assert vendor.premium_active is False
         assert vendor.premium_valid_until is None

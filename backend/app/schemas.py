@@ -151,14 +151,3 @@ class StoryOut(BaseModel):
     # Configuração para permitir criação a partir de objetos ORM
     model_config = ConfigDict(from_attributes=True)
 
-
-class VendorInterestCreate(BaseModel):
-    """Banhista a pedir aviso de proximidade de um vendedor Premium.
-
-    Não há conta de banhista: o email é o destino do aviso e a posição é o
-    sítio na praia a partir do qual a zona de proximidade é medida.
-    """
-
-    email: str
-    lat: float
-    lng: float

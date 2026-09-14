@@ -26,8 +26,7 @@ class Vendor(Base):
     subscription_active = Column(Boolean, default=False)
     subscription_valid_until = Column(DateTime, nullable=True)
     # Premium — camada paga adicional (ver PREMIUM_PLAN em main.py). Dá estrela
-    # no pin, alcance de 1 km em vez de 300 m, avisos de proximidade aos
-    # banhistas interessados e fotos nos produtos.
+    # no pin, alcance de 1 km em vez de 300 m e fotos nos produtos.
     premium_active = Column(Boolean, default=False)
     premium_valid_until = Column(DateTime, nullable=True)
     email_confirmed = Column(Boolean, default=False)
@@ -177,38 +176,5 @@ class Story(Base):
     media_path = Column(String)
     created_at = Column(DateTime, default=utcnow)
     expires_at = Column(DateTime)
-
-    vendor = relationship("Vendor")
-
-
-class VendorInterest(Base):
-    """Banhista que pediu para ser avisado quando um vendedor chegar perto.
-
-    É uma vantagem Premium: só se aceita o registo — e só se envia o aviso —
-    para vendedores com Premium em vigor. O contacto é um email, que é o único
-    canal de notificação que a plataforma tem; não há conta de banhista.
-
-    `in_zone` guarda se, na última leitura de GPS, o vendedor já estava dentro
-    da zona. O aviso sai apenas na transição de fora para dentro (a "entrada na
-    zona"), e mesmo essa está limitada a MAX_PROXIMITY_NOTIFICATIONS_PER_DAY
-    por dia — uma app que avisa de mais é uma app desinstalada.
-    """
-
-    __tablename__ = "vendor_interests"
-
-    id = Column(Integer, primary_key=True, index=True)
-    vendor_id = Column(Integer, ForeignKey("vendors.id"), index=True)
-    email = Column(String, index=True)
-    lat = Column(Float)
-    lng = Column(Float)
-    created_at = Column(DateTime, default=utcnow)
-    # Token do link "não quero mais avisos" incluído em cada email.
-    cancel_token = Column(String, unique=True, index=True)
-
-    in_zone = Column(Boolean, default=False)
-    last_notified_at = Column(DateTime, nullable=True)
-    notifications_today = Column(Integer, default=0)
-    # Dia (à meia-noite UTC) a que `notifications_today` diz respeito.
-    notifications_day = Column(DateTime, nullable=True)
 
     vendor = relationship("Vendor")

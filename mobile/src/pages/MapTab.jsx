@@ -27,6 +27,33 @@ const DEFAULT_PIN = '#1D5C3A';
 const MIN_SHARE_DISTANCE_M = 15;
 const MIN_SHARE_INTERVAL_MS = 3000;
 
+// (em português) Última posição conhecida do vendedor, guardada entre
+// arranques. O mapa abre nela — a praia onde esteve ontem — em vez de esperar
+// pelo primeiro fix de GPS, que ao sol e em 4G congestionada pode demorar
+// vários segundos. Sem nada guardado abre em Lisboa, como o mapa do site.
+const LAST_POS_KEY = 'last_vendor_pos';
+const FALLBACK_CENTER = [38.7169, -9.1399];
+
+function readLastPos() {
+  try {
+    const raw = localStorage.getItem(LAST_POS_KEY);
+    if (!raw) return null;
+    const { lat, lng } = JSON.parse(raw);
+    if (typeof lat !== 'number' || typeof lng !== 'number') return null;
+    return [lat, lng];
+  } catch {
+    return null;
+  }
+}
+
+function writeLastPos(lat, lng) {
+  try {
+    localStorage.setItem(LAST_POS_KEY, JSON.stringify({ lat, lng }));
+  } catch {
+    /* localStorage indisponível: abrir em Lisboa não é crítico */
+  }
+}
+
 function hexToRgba(hex, alpha) {
   const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
   if (!match) return `rgba(29, 92, 58, ${alpha})`;
@@ -125,6 +152,38 @@ function MapBearingPublisher({ onRotatedChange }) {
   return null;
 }
 
+// (em português) O Leaflet mede a caixa do mapa uma vez e só volta a medir no
+// `resize` da JANELA — que aqui nunca chega. A caixa, essa, muda: os painéis
+// dos separadores são irmãos escondidos com `hidden` (display:none), por isso
+// o mapa montado enquanto o vendedor espreita outro separador nasce com 0×0 e
+// fica-se por um tile; o teclado do Android e a rotação do ecrã mexem-lhe da
+// mesma maneira. Volta a medir-se sempre que a caixa muda, como no site.
+function MapResizeWatcher() {
+  const map = useMap();
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const container = map.getContainer();
+    let frame = null;
+    const observer = new ResizeObserver(() => {
+      // Fora do ciclo do observador: `invalidateSize` volta a ler a caixa e o
+      // navegador avisaria de um ciclo de observação por entregar.
+      if (frame) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        // Painel escondido: não há caixa que se meça, e medir zero só faria o
+        // mapa perder a vista. A medida certa vem quando ele voltar à frente.
+        if (!container.offsetWidth || !container.offsetHeight) return;
+        map.invalidateSize({ animate: false });
+      });
+    });
+    observer.observe(container);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [map]);
+  return null;
+}
+
 // Endireita o mapa para norte, com a mesma suavidade do resto do ecrã.
 function animateToNorth(map) {
   if (!map) return;
@@ -166,6 +225,9 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const [tilesLoaded, setTilesLoaded] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const mapRef = useRef(null);
+  // Lido uma única vez: o Leaflet só olha para `center` quando cria o mapa, e
+  // este ecrã volta a desenhar-se a cada leitura de GPS.
+  const [initialCenter] = useState(() => readLastPos() || FALLBACK_CENTER);
   const listenerRef = useRef(null);
   const watchIdRef = useRef(null);
   const lastTrackedRef = useRef(null);
@@ -220,14 +282,19 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
     };
   }, []);
 
+  // Guardada para o arranque seguinte abrir já na praia do vendedor.
+  useEffect(() => {
+    if (position) writeLastPos(position[0], position[1]);
+  }, [position]);
+
   // Como no site: numa 4G de praia congestionada é melhor mostrar o mapa
   // meio carregado do que segurar a grelha cinzenta à espera do evento
   // `load` dos tiles, que pode nunca chegar.
   useEffect(() => {
-    if (tilesLoaded || !position) return undefined;
+    if (tilesLoaded) return undefined;
     const t = setTimeout(() => setTilesLoaded(true), 2500);
     return () => clearTimeout(t);
-  }, [tilesLoaded, position]);
+  }, [tilesLoaded]);
 
   // O tempo decorrido vem do instante em que a sessão começou, não de um
   // contador local: assim sobrevive a app ir para segundo plano.
@@ -414,35 +481,38 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
     <div className="map-screen">
       {/* O mapa ocupa todo o fundo; o resto é sobreposto. */}
       <div className="map-canvas">
-        {position && (
-          /* `rotate` + `touchRotate`: o mesmo gesto de dois dedos faz zoom e
-             roda o mapa, como no site e como em qualquer mapa de telemóvel. O
-             controlo de rotação do plugin fica desligado — quem endireita o
-             mapa é o botão do norte, desenhado como o resto do ecrã. */
-          <MapContainer
-            ref={mapRef}
-            center={position}
-            zoom={16}
-            className="map-container"
-            zoomControl={false}
-            rotate={true}
-            bearing={0}
-            touchRotate={true}
-            rotateControl={false}
-          >
-            <TileLayer
-              {...TILE_LAYER}
-              eventHandlers={{ load: () => setTilesLoaded(true) }}
-            />
-            <AnimatedMarker position={position} icon={vendorIcon} />
-            <FollowPosition position={position} />
-            <MapBearingPublisher onRotatedChange={setIsRotated} />
-          </MapContainer>
-        )}
+        {/* O mapa é desenhado de imediato, na última posição conhecida: à
+            espera do primeiro fix de GPS ficava uma grelha cinzenta, e o mapa
+            criado mais tarde podia nascer num painel escondido — sem caixa que
+            medir e, por isso, sem tiles. O pin é que espera pela posição real.
+            `rotate` + `touchRotate`: o mesmo gesto de dois dedos faz zoom e
+            roda o mapa, como no site e como em qualquer mapa de telemóvel. O
+            controlo de rotação do plugin fica desligado — quem endireita o
+            mapa é o botão do norte, desenhado como o resto do ecrã. */}
+        <MapContainer
+          ref={mapRef}
+          center={initialCenter}
+          zoom={16}
+          className="map-container"
+          zoomControl={false}
+          rotate={true}
+          bearing={0}
+          touchRotate={true}
+          rotateControl={false}
+        >
+          <TileLayer
+            {...TILE_LAYER}
+            eventHandlers={{ load: () => setTilesLoaded(true) }}
+          />
+          {position && <AnimatedMarker position={position} icon={vendorIcon} />}
+          <FollowPosition position={position} />
+          <MapBearingPublisher onRotatedChange={setIsRotated} />
+          <MapResizeWatcher />
+        </MapContainer>
         {/* Grelha com brilho a atravessar, como no mapa do site, enquanto
-            não há posição ou os tiles ainda não pintaram. */}
+            os tiles ainda não pintaram. */}
         <div
-          className={`map-skeleton${position && tilesLoaded ? ' map-skeleton--hidden' : ''}`}
+          className={`map-skeleton${tilesLoaded ? ' map-skeleton--hidden' : ''}`}
           aria-hidden="true"
         />
       </div>

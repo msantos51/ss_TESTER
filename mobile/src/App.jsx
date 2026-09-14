@@ -117,6 +117,7 @@ export default function App() {
         node: (
           <DashboardScreen
             auth={auth}
+            onChangePage={goToTab}
             onLogout={handleLogout}
             onUserUpdate={handleUserUpdate}
           />

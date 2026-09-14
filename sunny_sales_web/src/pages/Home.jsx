@@ -7,7 +7,6 @@ import axios from 'axios';
 import { BASE_URL, mediaUrl, TILE_LAYER } from '../config';
 import LocateButton from '../components/LocateButton';
 import WeatherCard from '../components/WeatherCard';
-import ProximityAlert from '../components/ProximityAlert';
 import {
   FiMapPin, FiShoppingBag,
   FiSmartphone, FiCreditCard,
@@ -1108,10 +1107,6 @@ export default function Home() {
                     </div>
                   </div>
                 )}
-                {/* A chave remonta o bloco por vendedor: sem ela, o "aviso
-                    ativo" de um vendedor aparecia ao abrir o cartão do
-                    seguinte, que ainda não tinha aviso nenhum. */}
-                <ProximityAlert key={selected.id} vendor={selected} clientPos={clientPos} />
               </div>
             )}
 

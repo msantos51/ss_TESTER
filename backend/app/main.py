@@ -385,7 +385,6 @@ SUBSCRIPTION_PLAN_DURATIONS_DAYS = {plan: cfg["days"] for plan, cfg in PLAN_CONF
 # parte, também como pagamento único de 30 dias, e que dá ao vendedor
 #   · estrela no pin, para se distinguir no mapa;
 #   · alcance de PREMIUM_REACH_RADIUS_M em vez de FREE_REACH_RADIUS_M;
-#   · avisos de proximidade aos banhistas que marcaram interesse;
 #   · fotografias nos produtos (sem Premium ficam-se pelo nome e preço).
 PREMIUM_PLAN_ID = "premium"
 PREMIUM_PLAN = {
@@ -399,12 +398,6 @@ PREMIUM_PLAN = {
 # praticamente toda a praia.
 FREE_REACH_RADIUS_M = int(os.getenv("FREE_REACH_RADIUS_M", "300"))
 PREMIUM_REACH_RADIUS_M = int(os.getenv("PREMIUM_REACH_RADIUS_M", "1000"))
-
-# Aviso de proximidade: raio da "zona" do banhista e travão diário. Duas
-# notificações por dia por vendedor são o limite — acima disso a app é
-# desinstalada, e o aviso deixa de valer o que quer que seja.
-PROXIMITY_NOTIFICATION_RADIUS_M = int(os.getenv("PROXIMITY_NOTIFICATION_RADIUS_M", "300"))
-MAX_PROXIMITY_NOTIFICATIONS_PER_DAY = int(os.getenv("MAX_PROXIMITY_NOTIFICATIONS_PER_DAY", "2"))
 
 PREMIUM_PRODUCT_PHOTO_DETAIL = (
     "As fotografias nos produtos são uma vantagem Premium. "
@@ -1271,7 +1264,6 @@ async def update_vendor_profile(
 @app.put("/vendors/{vendor_id}/location")
 async def update_vendor_location(
     vendor_id: int,
-    background_tasks: BackgroundTasks,
     lat: float = Body(...),
     lng: float = Body(...),
     db: Session = Depends(get_db),
@@ -1313,10 +1305,6 @@ async def update_vendor_location(
     points.append({"lat": lat, "lng": lng, "t": utcnow().isoformat()})
     active_route.points = json.dumps(points)
     db.commit()
-
-    # Vantagem Premium: quem marcou interesse é avisado quando o vendedor entra
-    # na sua zona. Os emails saem em segundo plano para não atrasar a resposta.
-    _notify_nearby_interests(vendor, lat, lng, db, background_tasks)
 
     await manager.broadcast({"vendor_id": vendor_id, "lat": lat, "lng": lng})
     return {"message": "Localização atualizada com sucesso"}
@@ -1905,222 +1893,6 @@ def list_stories(vendor_id: int, db: Session = Depends(get_db)):
 
 
 # --------------------------
-# Interesse do banhista e aviso de proximidade (vantagem Premium)
-# --------------------------
-def _send_proximity_email(vendor_name: str, product: str, email: str, cancel_token: str) -> bool:
-    """Avisa o banhista de que o vendedor acabou de entrar na sua zona."""
-    cancel_url = f"{BASE_APP_URL}/interest/cancel/{cancel_token}"
-    safe_vendor = escape(vendor_name or "Um vendedor")
-    safe_product = escape(product or "")
-    what = f" com {safe_product}" if safe_product else ""
-    html = f"""
-    <div style="font-family:Arial,sans-serif;max-width:520px;margin:auto">
-      <h2 style="color:#005F73">{safe_vendor} está a chegar</h2>
-      <p style="color:#555;font-size:15px;line-height:1.6">
-        O vendedor{what} que estavas à espera acabou de entrar na tua zona da praia.
-      </p>
-      <p style="color:#888;font-size:12px;line-height:1.6">
-        Não queres mais avisos deste vendedor?
-        <a href="{cancel_url}" style="color:#0A9396">Cancela aqui</a>.
-      </p>
-    </div>
-    """
-    return send_email(
-        to=email,
-        subject=f"{vendor_name} está perto de ti",
-        body=(
-            f"{vendor_name} acabou de entrar na tua zona da praia.\n\n"
-            f"Para deixar de receber avisos deste vendedor: {cancel_url}"
-        ),
-        html=html,
-    )
-
-
-def _notify_nearby_interests(
-    vendor: models.Vendor,
-    lat: float,
-    lng: float,
-    db: Session,
-    background_tasks: BackgroundTasks,
-) -> None:
-    """Avisa quem marcou interesse quando o vendedor Premium entra na zona.
-
-    O aviso sai apenas na transição de fora para dentro da zona — dentro dela
-    o vendedor pode andar às voltas sem gerar um único email — e ainda assim
-    está travado em MAX_PROXIMITY_NOTIFICATIONS_PER_DAY por dia. Sem esse
-    travão o banhista desinstalava a app ao fim do primeiro dia, e o aviso é a
-    vantagem Premium que mais depende de ser bem-vindo.
-
-    Nunca levanta exceções: uma falha a avisar não pode fazer cair o envio da
-    localização, que é o que põe o vendedor no mapa.
-    """
-    try:
-        if not vendor.is_premium:
-            return
-
-        interests = (
-            db.query(models.VendorInterest)
-            .filter(models.VendorInterest.vendor_id == vendor.id)
-            .all()
-        )
-        if not interests:
-            return
-
-        now = utcnow()
-        today = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        changed = False
-        # Os emails só são postos na fila depois de o contador ficar gravado:
-        # de outro modo uma gravação falhada deixava o aviso enviado e o
-        # travão diário por contar.
-        to_notify = []
-
-        for interest in interests:
-            inside = haversine(interest.lat, interest.lng, lat, lng) <= PROXIMITY_NOTIFICATION_RADIUS_M
-
-            if not inside:
-                if interest.in_zone:
-                    interest.in_zone = False
-                    changed = True
-                continue
-
-            if interest.in_zone:
-                continue
-
-            interest.in_zone = True
-            changed = True
-
-            # O contador é por dia: a primeira entrada de cada dia reinicia-o.
-            if interest.notifications_day != today:
-                interest.notifications_day = today
-                interest.notifications_today = 0
-
-            if (interest.notifications_today or 0) >= MAX_PROXIMITY_NOTIFICATIONS_PER_DAY:
-                continue
-
-            interest.notifications_today = (interest.notifications_today or 0) + 1
-            interest.last_notified_at = now
-            to_notify.append((interest.email, interest.cancel_token))
-
-        if changed:
-            db.commit()
-
-        for email, cancel_token in to_notify:
-            background_tasks.add_task(
-                _send_proximity_email, vendor.name, vendor.product, email, cancel_token
-            )
-    except Exception as exc:
-        security_logger.error(f"Erro ao avisar interessados do vendedor {vendor.id}: {exc}")
-        db.rollback()
-
-
-@app.post("/vendors/{vendor_id}/interest")
-@limiter.limit("10/minute")
-def create_vendor_interest(
-    vendor_id: int,
-    request: Request,
-    payload: schemas.VendorInterestCreate,
-    db: Session = Depends(get_db),
-):
-    """O banhista pede para ser avisado quando este vendedor chegar perto.
-
-    Não há conta de banhista: o pedido é anónimo e identifica-se pelo email.
-    Repetir o pedido para o mesmo vendedor atualiza a posição em vez de criar
-    um segundo registo — de outro modo cada abertura do mapa duplicava avisos.
-    """
-    email = payload.email.strip().lower()[:255]
-    if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", email):
-        raise HTTPException(status_code=400, detail="Email inválido")
-    if not (-90 <= payload.lat <= 90) or not (-180 <= payload.lng <= 180):
-        raise HTTPException(status_code=400, detail="Coordenadas inválidas")
-
-    vendor = (
-        db.query(models.Vendor)
-        .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
-        .first()
-    )
-    if not vendor:
-        raise HTTPException(status_code=404, detail="Vendedor não encontrado")
-
-    refresh_premium_status(vendor, db)
-    if not vendor.is_premium:
-        raise HTTPException(
-            status_code=403,
-            detail="Este vendedor não tem avisos de proximidade. É uma vantagem Premium.",
-        )
-
-    interest = (
-        db.query(models.VendorInterest)
-        .filter(
-            models.VendorInterest.vendor_id == vendor_id,
-            models.VendorInterest.email == email,
-        )
-        .first()
-    )
-    if interest:
-        interest.lat = payload.lat
-        interest.lng = payload.lng
-        # A zona mudou de sítio: o vendedor volta a poder "entrar" nela.
-        interest.in_zone = False
-    else:
-        interest = models.VendorInterest(
-            vendor_id=vendor_id,
-            email=email,
-            lat=payload.lat,
-            lng=payload.lng,
-            cancel_token=uuid4().hex,
-            in_zone=False,
-            notifications_today=0,
-        )
-        db.add(interest)
-    db.commit()
-
-    return {
-        "status": "ok",
-        "detail": (
-            f"Avisamos-te quando {vendor.name} entrar na tua zona. "
-            f"No máximo {MAX_PROXIMITY_NOTIFICATIONS_PER_DAY} avisos por dia."
-        ),
-        "radius_m": PROXIMITY_NOTIFICATION_RADIUS_M,
-        "max_per_day": MAX_PROXIMITY_NOTIFICATIONS_PER_DAY,
-    }
-
-
-@app.get("/interest/cancel/{token}", response_class=HTMLResponse)
-def cancel_vendor_interest(token: str, db: Session = Depends(get_db)):
-    """Link de cancelamento que segue em cada aviso de proximidade."""
-    interest = (
-        db.query(models.VendorInterest)
-        .filter(models.VendorInterest.cancel_token == token)
-        .first()
-    )
-    if not interest:
-        return HTMLResponse(
-            status_code=404,
-            content=_status_page(
-                title="Aviso não encontrado",
-                icon="&#128533;",
-                heading="Este pedido já não existe",
-                heading_color="#AE2012",
-                message="O link já foi usado ou o aviso foi cancelado antes.",
-                button_label="Ir para o mapa",
-            ),
-        )
-
-    db.delete(interest)
-    db.commit()
-    return HTMLResponse(
-        content=_status_page(
-            title="Avisos cancelados",
-            icon="&#9989;",
-            heading="Deixaste de receber avisos",
-            heading_color="#0A9396",
-            message="Não voltamos a avisar-te da chegada deste vendedor.",
-            button_label="Ir para o mapa",
-        )
-    )
-
-
-# --------------------------
 # Produtos do vendedor
 # --------------------------
 @app.post("/vendors/{vendor_id}/products", response_model=schemas.ProductOut)
@@ -2593,12 +2365,6 @@ def delete_my_account(
     # 4. Sessões — termina imediatamente o acesso em todos os dispositivos.
     db.query(models.VendorSession).filter(
         models.VendorSession.vendor_id == vendor_id
-    ).delete(synchronize_session=False)
-
-    # 4.b. Pedidos de aviso de proximidade. Guardam o email de banhistas que
-    # nunca mais vão ser avisados — não há razão para os conservar.
-    db.query(models.VendorInterest).filter(
-        models.VendorInterest.vendor_id == vendor_id
     ).delete(synchronize_session=False)
 
     # 5. Anonimização do perfil. O email passa a um endereço no domínio
