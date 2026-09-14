@@ -115,9 +115,9 @@ export default function Contacto() {
         </p>
 
         <div className="info-badges">
-          <div className="info-badge info-badge-sky"><FiMail size={13} /> sunnysales.geral@gmail.com</div>
-          <div className="info-badge info-badge-sky">Resposta em 24–48 h</div>
-          <div className="info-badge info-badge-sky">Segunda a Sexta</div>
+          <div className="info-badge info-badge-gold"><FiMail size={13} /> sunnysales.geral@gmail.com</div>
+          <div className="info-badge info-badge-gold">Resposta em 24–48 h</div>
+          <div className="info-badge info-badge-gold">Segunda a Sexta</div>
         </div>
       </div>
 

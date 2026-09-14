@@ -4,7 +4,6 @@ import {
   FiClock,
   FiSmartphone,
   FiHeart,
-  FiCompass,
 } from 'react-icons/fi';
 import InfoBanner from '../components/InfoBanner';
 import './InfoPage.css';
@@ -61,12 +60,7 @@ export default function SobreProjeto() {
 
       {/* ── Como Funciona ────────────────────────────────── */}
       <section className="info-section">
-        <div className="info-section-head">
-          <span className="info-section-icon">
-            <FiCompass />
-          </span>
-          <h2 className="info-section-title">Como Funciona</h2>
-        </div>
+        <h2 className="info-section-title">Como Funciona</h2>
 
         <ol className="info-timeline">
           {steps.map((text, index) => (
