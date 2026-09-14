@@ -112,7 +112,7 @@ export default function HomeMapPreview() {
             </MapContainer>
             <div className="home-map-overlay">
               <div className="home-map-cta">
-                <span>Explorar Mapa Completo</span>
+                <span>Ver mapa com vendedores</span>
                 <FiArrowUpRight size={18} />
               </div>
             </div>
