@@ -1876,6 +1876,20 @@
   max-width: 360px;
 }
 
+/* Com os três painéis lado a lado a linha do flex não pode ser mais alta do
+   que a tela: o `wrap` torna o `.modern-layout` multilinha e a altura da linha
+   passa a ser a do painel mais alto — o dos filtros, que em janelas baixas
+   (um portátil de 768px de ecrã dá ~660px de tela) é bem mais alto do que a
+   tela e empurrava o mapa para debaixo do rodapé fixo. Sem wrap, a linha fica
+   pela altura da tela e são os painéis que rolam por dentro, como já fazem em
+   ecrãs altos. O wrap continua a servir a faixa estreita (ver abaixo), onde os
+   painéis não cabem mesmo lado a lado. */
+@media (min-width: 1061px) {
+  .modern-layout {
+    flex-wrap: nowrap;
+  }
+}
+
 /* Sem altura fixa no `.modern-layout`, o mapa precisa de um mínimo próprio,
    senão os painéis encolhem para o conteúdo e sobra tela morta por baixo.
    São três goteiras: a do topo (dentro do padding do container) e as duas do
@@ -1884,10 +1898,22 @@
 .map-area {
   position: relative;
   height: 100%;
-  min-height: max(560px, calc(100svh - var(--navbar-h) - var(--footer-h) - var(--gutter) * 3));
+  /* Lado a lado o mapa já recebe a altura da tela pelo `height: 100%`; o
+     mínimo só tem de o impedir de encolher, nunca de passar o que sobra do
+     ecrã — com `max(560px, …)` uma janela baixa levava 560px de mapa à força,
+     a página ganhava scroll e o rodapé fixo flutuava por cima do mapa. */
+  min-height: min(560px, calc(100svh - var(--navbar-h) - var(--footer-h) - var(--gutter) * 4));
   border-radius: var(--radius-panel);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
+}
+
+/* Na faixa em que os painéis passam para baixo uns dos outros, o mapa deixa de
+   ter altura vinda do pai: aqui o mínimo é mesmo o que lhe dá corpo. */
+@media (max-width: 1060px) {
+  .map-area {
+    min-height: 560px;
+  }
 }
 
 /* --- Pastilha de estado em tempo real --- */

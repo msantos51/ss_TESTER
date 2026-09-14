@@ -10,6 +10,10 @@
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
   border-top: 1px solid var(--border);
+  /* A faixa do indicador de home entra aqui, e só aqui: o rodapé mede-se a
+     si próprio (ver Footer.jsx) e é essa altura — barra + faixa + bordo —
+     que o conteúdo reserva em `--footer-h`. Somá-la também ao conteúdo
+     fazia o rodapé crescer o dobro do que se reservava. */
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -27,9 +31,11 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 14px 1.25rem;
-  padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   gap: 1rem;
-  min-height: calc(var(--footer-h, 48px) + env(safe-area-inset-bottom, 0px));
+  /* Altura mínima da barra em si. Não pode sair de `--footer-h`: esse valor
+     passou a ser a altura medida do rodapé e a barra ficaria a crescer atrás
+     da sua própria medição. */
+  min-height: 46px;
 }
 
 .footer-message {
