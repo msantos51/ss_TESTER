@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import './Footer.css';
@@ -88,12 +88,12 @@ const messages = [
 /**
  * Props:
  *  - minimal: esconde a linha de links legais, mostrando só a mensagem a
- *    rodar. Usado em /mapa, onde o rodapé se sobrepõe ao mapa em vez de
- *    reservar altura no fluxo — uma única linha mantém essa altura previsível
- *    em qualquer largura de ecrã.
+ *    rodar. Usado em /mapa, onde o rodapé é a única faixa de cromo por baixo
+ *    do mapa — uma única linha deixa-lhe o ecrã quase todo.
  */
 export default function Footer({ minimal = false }) {
   const [index, setIndex] = useState(0);
+  const wrapperRef = useRef(null);
 
   // (em português) A cada 10 segundos muda para a próxima mensagem
   useEffect(() => {
@@ -103,8 +103,54 @@ export default function Footer({ minimal = false }) {
     return () => clearInterval(interval);
   }, []);
 
+  // (em português) Enquanto é barra fixa, o rodapé tapa o que estiver por
+  // baixo dele: o conteúdo reserva `--footer-h` para lhe ficar acima (ver
+  // index.css). Esse valor era um número escrito à mão por breakpoint e ficava
+  // sempre a dever alguns pixels ao rodapé real — com o tipo de letra do
+  // sistema aumentado, ou numa janela entre os 481px e os 768px, o rodapé
+  // crescia e passava a tapar a base do mapa. Publica-se aqui a altura medida,
+  // para que o que se reserva seja sempre o que o rodapé ocupa; os valores no
+  // CSS ficam como recurso até esta primeira medição.
+  //
+  // Quando o rodapé sai do fluxo fixo (telemóvel fora de /mapa, onde fecha a
+  // página) não há nada a reservar: a medida é retirada para o site não
+  // descontar a altura de um rodapé que já não está por cima de nada.
+  useLayoutEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return undefined;
+    const root = document.documentElement;
+    const publish = () => {
+      if (getComputedStyle(el).position !== 'fixed') {
+        root.style.removeProperty('--footer-h-real');
+        return;
+      }
+      // Arredonda para cima: meio pixel a menos era meio pixel de mapa tapado.
+      const { height } = el.getBoundingClientRect();
+      root.style.setProperty('--footer-h-real', `${Math.ceil(height)}px`);
+    };
+    publish();
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', publish);
+      return () => {
+        window.removeEventListener('resize', publish);
+        root.style.removeProperty('--footer-h-real');
+      };
+    }
+
+    const observer = new ResizeObserver(publish);
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty('--footer-h-real');
+    };
+  }, [minimal]);
+
   return (
-    <footer className={`footer-wrapper${minimal ? ' footer-wrapper--minimal' : ''}`}>
+    <footer
+      ref={wrapperRef}
+      className={`footer-wrapper${minimal ? ' footer-wrapper--minimal' : ''}`}
+    >
       <div className="footer-content">
         <div className="footer-message">
           <span className="footer-message-pill">

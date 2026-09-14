@@ -172,6 +172,32 @@ function MapZoomA11y() {
   return null;
 }
 
+// (em português) O tamanho da caixa do mapa não depende só da janela: o
+// alternador Mapa/Lista devolve-lhe a coluna da direita, e a altura sai de
+// `--footer-h`, que acompanha a altura real do rodapé (ver Footer.jsx). O
+// Leaflet só ouve o `resize` da janela, por isso guardava a medida antiga e
+// deixava uma franja por pintar. Aqui volta a medir-se sempre que a caixa muda.
+function MapResizeWatcher() {
+  const map = useMap();
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const container = map.getContainer();
+    let frame = null;
+    const observer = new ResizeObserver(() => {
+      // Fora do ciclo do observador: `invalidateSize` volta a ler a caixa e o
+      // navegador avisaria de um ciclo de observação por entregar.
+      if (frame) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => map.invalidateSize({ animate: false }));
+    });
+    observer.observe(container);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [map]);
+  return null;
+}
+
 // (em português) Quantos graus é preciso rodar com os dois dedos para o mapa
 // deixar de seguir a bússola. Abaixo disto é o tremer das mãos durante um
 // pinch de zoom, que não deve custar ao utilizador a orientação automática.
@@ -867,6 +893,7 @@ export default function Home() {
               rotateControl={false}
             >
               <MapZoomA11y />
+              <MapResizeWatcher />
               <MapRotationController
                 targetBearingRef={targetBearingRef}
                 followCompass={followCompass}
