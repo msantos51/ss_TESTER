@@ -131,6 +131,11 @@ public class LocationPlugin extends Plugin {
         });
 
         Intent intent = new Intent(getContext(), LocationForegroundService.class);
+        // Dados de que o serviço precisa para enviar a posição ele próprio, sem
+        // depender do JavaScript da WebView (congelado em segundo plano).
+        intent.putExtra(LocationForegroundService.EXTRA_BASE_URL, call.getString("baseUrl"));
+        intent.putExtra(LocationForegroundService.EXTRA_VENDOR_ID, call.getString("vendorId"));
+        intent.putExtra(LocationForegroundService.EXTRA_TOKEN, call.getString("token"));
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 getContext().startForegroundService(intent);
@@ -147,6 +152,14 @@ public class LocationPlugin extends Plugin {
 
     @PluginMethod
     public void stopTracking(PluginCall call) {
+        // Apagar os dados de envio antes de parar o serviço: assim, se o sistema
+        // voltar a relançá-lo (START_STICKY), ele não retoma o envio de uma
+        // partilha que o vendedor já terminou.
+        getContext()
+            .getSharedPreferences(LocationForegroundService.PREFS_NAME, android.content.Context.MODE_PRIVATE)
+            .edit()
+            .clear()
+            .apply();
         Intent intent = new Intent(getContext(), LocationForegroundService.class);
         getContext().stopService(intent);
         LocationForegroundService.setLocationListener(null);
