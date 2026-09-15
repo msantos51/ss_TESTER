@@ -494,15 +494,11 @@ body {
   flex-shrink: 0;
 }
 
-/* O logótipo passa a viver dentro de uma pastilha arredondada com sombra —
-   lê como a marca do produto e não como uma imagem solta na barra. */
 .nav-logo-img {
   height: 36px;
   width: 36px;
   flex-shrink: 0;
-  border-radius: 11px;
   object-fit: contain;
-  box-shadow: 0 2px 6px -2px rgba(16, 24, 40, 0.3);
   transition: height var(--transition-slow), width var(--transition-slow);
 }
 .navbar--scrolled .nav-logo-img { width: 32px; }
