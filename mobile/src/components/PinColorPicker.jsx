@@ -9,11 +9,11 @@ import './PinColorPicker.css';
 // selecionada) como uma amostra extra.
 const PRESET_COLORS = [
   { name: 'Verde floresta', value: '#1D5C3A' },
-  { name: 'Amarelo', value: '#EAC928' },
-  { name: 'Azul', value: '#37B4DB' },
-  { name: 'Azul-profundo', value: '#176882' },
+  { name: 'Amarelo', value: '#FFA723' },
+  { name: 'Azul', value: '#2F8EE0' },
+  { name: 'Azul-profundo', value: '#1863A3' },
   { name: 'Coral', value: '#BB3E03' },
-  { name: 'Noite', value: '#08232B' },
+  { name: 'Noite', value: '#082137' },
 ];
 
 export default function PinColorPicker({ value, onChange }) {

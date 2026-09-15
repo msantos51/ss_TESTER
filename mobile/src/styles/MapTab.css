@@ -22,18 +22,18 @@
 .map-screen {
   /* ── Paleta (sunny_sales_web/src/index.css · :root) ── */
   --site-surface: #ffffff;
-  --site-surface-alt: #ECF2F4;
-  --site-accent: #176882;          /* azul-profundo: ação, seleção, texto pequeno */
-  --site-accent-hover: #135468;
-  --site-brand-blue: #37B4DB;      /* o azul da marca: tintes e superfícies */
-  --site-teal: #1F8BAD;            /* azul médio: estados e ícones (3,92:1) */
-  --site-ink: #176882;             /* a ação principal do ecrã */
-  --site-ink-hover: #135468;
+  --site-surface-alt: #DCEAF4;
+  --site-accent: #1863A3;          /* azul-profundo: ação, seleção, texto pequeno */
+  --site-accent-hover: #145083;
+  --site-brand-blue: #2F8EE0;      /* o azul da marca: tintes e superfícies */
+  --site-teal: #2084D9;            /* azul médio: estados e ícones (3,92:1) */
+  --site-ink: #1863A3;             /* a ação principal do ecrã */
+  --site-ink-hover: #145083;
   --site-coral: #BB3E03;           /* só o que é urgente: parar a partilha */
   --site-coral-hover: #9A3303;
   --site-forest: #1D5C3A;          /* presença de vendedores (pins) */
-  --site-gold: #EAC928;            /* amarelo da marca: informação, nunca ação; sempre fundo */
-  --site-gold-ink: #2E2705;        /* texto por cima do dourado */
+  --site-gold: #FFA723;            /* amarelo da marca: informação, nunca ação; sempre fundo */
+  --site-gold-ink: #241500;        /* texto por cima do dourado */
   --site-text: #0B313D;
   --site-text-secondary: #44616A;
   --site-text-muted: #547783;
@@ -510,8 +510,8 @@
   height: 16px;
   border-radius: 50%;
   border: 2px solid #fff;
-  background: var(--sun, #EAC928);
-  color: var(--sun-ink, #2E2705);
+  background: var(--sun, #FFA723);
+  color: var(--sun-ink, #241500);
   box-shadow: 0 1px 4px rgba(11, 49, 61, 0.35);
   pointer-events: none;
 }

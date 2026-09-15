@@ -8,7 +8,7 @@ import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
 
 const PAYMENT_METHODS = ['MB Way', 'Numerário', 'Cartão'];
-const DEFAULT_PIN = '#EAC928';
+const DEFAULT_PIN = '#FFA723';
 
 export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDeleted }) {
   const { token, user, vendorId } = auth;
