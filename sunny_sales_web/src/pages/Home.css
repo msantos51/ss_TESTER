@@ -1758,16 +1758,16 @@
   transform: rotate(calc(var(--pin-heading, 0deg) + var(--map-bearing, 0deg)));
 }
 
-/* Azul utilitário da nova paleta: #1A7693 dá 5,18:1 e passa AA. O tamanho
+/* Azul utilitário da nova paleta: #1B70B8 dá 5,18:1 e passa AA. O tamanho
    mantém-se para não se perder ao lado dos pins de vendedor, de 40px. */
 .user-location-dot {
   position: relative;
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: var(--blue, #1A7693);
+  background: var(--blue, #1B70B8);
   border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(26, 118, 147, 0.45);
+  box-shadow: 0 2px 8px rgba(27, 112, 184, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;

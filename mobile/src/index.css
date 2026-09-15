@@ -2,7 +2,7 @@
    Sunny Sales — tokens da app do vendedor
 
    A app segue a mesma direção do site ("Vidro & Maré"): a paleta da marca
-   — AZUL #37B4DB e AMARELO #EAC928 — superfícies de vidro e uma tela de
+   — AZUL #2F8EE0 e AMARELO #FFA723 — superfícies de vidro e uma tela de
    neutros frios. A NAVEGAÇÃO mantém-se como está — os mesmos quatro
    separadores, o mesmo comportamento; só o material da barra muda
    (ver components/TabBar.css).
@@ -16,16 +16,16 @@
    Regras de contraste herdadas do site — as duas cores da marca são claras
    demais para servirem de tinta, por isso cada uma tem a sua variante
    escurecida da mesma matiz:
-   · --brand-blue (#37B4DB) e --brand-yellow (#EAC928) são a marca, mas só
-     como SUPERFÍCIE: sobre branco dão 2,41:1 e 1,63:1.
-   · --ink (#176882, o azul da marca escurecido) aguanta texto pequeno
-     branco por cima (6,29:1) — daí ser a dos botões e dos fundos escuros.
-   · --ocean (#1A7693) dá 5,18:1 com branco: serve de fundo com texto
-     branco e de texto pequeno sobre a tela. --ocean-bright (#37B4DB) é o
+   · --brand-blue (#2F8EE0) e --brand-yellow (#FFA723) são a marca, mas só
+     como SUPERFÍCIE: sobre branco dão 3,46:1 e 1,94:1.
+   · --ink (#1863A3, o azul da marca escurecido) aguanta texto pequeno
+     branco por cima (6,26:1) — daí ser a dos botões e dos fundos escuros.
+   · --ocean (#1B70B8) dá 5,18:1 com branco: serve de fundo com texto
+     branco e de texto pequeno sobre a tela. --ocean-bright (#2F8EE0) é o
      azul da marca, para tintes, pins e realces sobre escuro.
-   · --sun (#EAC928) é sempre fundo com --sun-ink por cima (9,15:1); como
-     TEXTO sobre a tela usa-se --sun-text (#79660C, 5,65:1) e sobre os
-     painéis azul-profundo usa-se --sun-soft (#F2E29A, 4,83:1).
+   · --sun (#FFA723) é sempre fundo com --sun-ink por cima (9,14:1); como
+     TEXTO sobre a tela usa-se --sun-text (#955900, 5,67:1) e sobre os
+     painéis azul-profundo usa-se --sun-soft (#FFDBA4, 4,75:1).
 
    A Manrope é carregada em index.html (Google Fonts, 400/500/600/700/800)
    e mantém-se: é a letra da app, e o mapa — que é o ecrã partilhado com o
@@ -33,23 +33,23 @@
    ═══════════════════════════════════════════════════════════════════ */
 :root {
   /* ── Paleta da marca ──────────────────────── */
-  --brand-blue: #37B4DB;       /* AZUL da marca */
-  --brand-yellow: #EAC928;     /* AMARELO da marca */
-  --ink: #176882;              /* o azul escurecido: fundo escuro, botões primários */
-  --ink-hover: #135468;
-  --ocean: #1A7693;            /* azul de tinta: ícones de lista, preços, botões (5,18:1) */
-  --ocean-bright: #37B4DB;     /* o azul da marca: tintes, pins, realces sobre escuro */
-  --ocean-tint: #D8EFF8;       /* fundo de ícones, pílula do separador ativo */
-  --ocean-ink: #176882;        /* o azul escurecido para glifos sobre o tinte (5,28:1) */
-  --ocean-text: #1A7693;       /* o azul como texto sobre a tela (4,94:1) */
-  --sun: #EAC928;              /* acento: CTA, avatar, pin do mapa — sempre fundo */
-  --sun-ink: #2E2705;          /* texto sobre o acento (9,15:1) */
-  --sun-text: #79660C;         /* o amarelo como texto sobre a tela (5,38:1) */
-  --sun-soft: #F2E29A;         /* o amarelo como texto sobre os painéis --ink (4,83:1) */
+  --brand-blue: #2F8EE0;       /* AZUL da marca */
+  --brand-yellow: #FFA723;     /* AMARELO da marca */
+  --ink: #1863A3;              /* o azul escurecido: fundo escuro, botões primários */
+  --ink-hover: #145083;
+  --ocean: #1B70B8;            /* azul de tinta: ícones de lista, preços, botões (5,18:1) */
+  --ocean-bright: #2F8EE0;     /* o azul da marca: tintes, pins, realces sobre escuro */
+  --ocean-tint: #D3E7F8;       /* fundo de ícones, pílula do separador ativo */
+  --ocean-ink: #1863A3;        /* o azul escurecido para glifos sobre o tinte (5,28:1) */
+  --ocean-text: #1B70B8;       /* o azul como texto sobre a tela (4,94:1) */
+  --sun: #FFA723;              /* acento: CTA, avatar, pin do mapa — sempre fundo */
+  --sun-ink: #241500;          /* texto sobre o acento (9,14:1) */
+  --sun-text: #955900;         /* o amarelo como texto sobre a tela (5,67:1) */
+  --sun-soft: #FFDBA4;         /* o amarelo como texto sobre os painéis --ink (4,75:1) */
   --coral: #BB3E03;            /* só o que é urgente (parar a partilha) */
   --coral-hover: #9A3303;
   --forest: #1D5C3A;           /* presença de vendedores: pins do mapa */
-  --blue: #1A7693;             /* azul utilitário: "a tua posição", avisos */
+  --blue: #1B70B8;             /* azul utilitário: "a tua posição", avisos */
   --sand: #F7FAFB;             /* fundo geral dos ecrãs (neutro frio) */
   --sand-alt: #ECF2F4;         /* o neutro mais escuro (puxadores, chips) */
   --surface: #FFFFFF;          /* cartões, linhas de lista, tab bar */
@@ -135,18 +135,18 @@
      continuam a usar estes nomes; apontá-los para a paleta nova muda
      o tom da app toda de uma vez. */
   /* --primary carrega texto branco (.btn-primary), por isso é o azul
-     escurecido (--ink, 6,29:1) e não o #37B4DB da marca, que com branco
-     dá 2,41:1 e reprova AA. */
+     escurecido (--ink, 6,26:1) e não o #2F8EE0 da marca, que com branco
+     dá 3,46:1 e reprova AA. */
   --primary: var(--ink);
-  --primary-hover: #135468;
-  --primary-dark: #0E3F4E;
+  --primary-hover: #145083;
+  --primary-dark: #0F3C62;
   --primary-light: var(--ocean-tint);
-  --primary-light-solid: #D8EFF8;
+  --primary-light-solid: #D3E7F8;
   --secondary: var(--sun);
-  --secondary-hover: #C3A513;
+  --secondary-hover: #E28800;
   --danger-dark: #991b1b;
   --gold: var(--sun);
-  --gold-hover: #C3A513;
+  --gold-hover: #E28800;
   --navy: var(--ink);
   --bg: var(--sand);
   --surface-alt: var(--field-bg);
@@ -379,7 +379,7 @@ body {
   right: -20%;
   width: 400px;
   height: 400px;
-  background: rgba(234, 201, 40, 0.15);
+  background: rgba(255, 167, 35, 0.15);
   border-radius: 50%;
   filter: blur(80px);
   pointer-events: none;
@@ -480,7 +480,7 @@ body {
 .input-group input:focus {
   border-color: var(--primary);
   background: white;
-  box-shadow: 0 0 0 3px rgba(55, 180, 219, 0.14);
+  box-shadow: 0 0 0 3px rgba(47, 142, 224, 0.14);
 }
 
 .input-group select {
@@ -502,7 +502,7 @@ body {
 
 .input-group select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(55, 180, 219, 0.14);
+  box-shadow: 0 0 0 3px rgba(47, 142, 224, 0.14);
 }
 
 .force-confirm {
@@ -564,12 +564,12 @@ body {
   background: var(--primary);
   color: white;
   width: 100%;
-  box-shadow: 0 4px 14px rgba(23, 104, 130, 0.28);
+  box-shadow: 0 4px 14px rgba(24, 99, 163, 0.28);
 }
 
 .btn-primary:active:not(:disabled) {
   background: var(--primary-dark);
-  box-shadow: 0 2px 8px rgba(23, 104, 130, 0.18);
+  box-shadow: 0 2px 8px rgba(24, 99, 163, 0.18);
 }
 
 .btn-danger {
@@ -623,7 +623,7 @@ body {
   font-weight: 800;
   letter-spacing: -0.3px;
   border-radius: var(--radius-full);
-  box-shadow: 0 8px 28px rgba(23, 104, 130, 0.35);
+  box-shadow: 0 8px 28px rgba(24, 99, 163, 0.35);
 }
 
 .btn-danger.location-toggle-btn {
@@ -1341,7 +1341,7 @@ body {
   right: -70px;
   width: 320px;
   height: 320px;
-  background: rgba(242, 226, 154, 0.26);
+  background: rgba(255, 219, 164, 0.26);
   filter: blur(70px);
 }
 
@@ -1350,7 +1350,7 @@ body {
   left: -90px;
   width: 300px;
   height: 300px;
-  background: rgba(143, 214, 236, 0.24);
+  background: rgba(137, 191, 237, 0.24);
   filter: blur(80px);
 }
 

@@ -119,7 +119,7 @@
 .vendor-pin-marker {
   width: 100%;
   height: 100%;
-  background: var(--pin-color, #37B4DB);
+  background: var(--pin-color, #2F8EE0);
   border: 2px solid white;
   border-radius: 50%;
   box-shadow: 0 0 0 3px rgba(55, 180, 219, 0.1);

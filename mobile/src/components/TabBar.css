@@ -37,8 +37,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* O azul escurecido (--ink) e não o #37B4DB da marca: o rótulo tem 11px e
-   o azul claro não aguanta texto pequeno (2,41:1). */
+/* O azul escurecido (--ink) e não o #2F8EE0 da marca: o rótulo tem 11px e
+   o azul claro não aguanta texto pequeno (3,46:1). */
 .ss-tab.is-active {
   color: var(--ink);
 }
