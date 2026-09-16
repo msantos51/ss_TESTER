@@ -131,9 +131,6 @@ export default function Landing() {
         </div>
 
         <div className="landing-hero-bottom">
-          <p className="landing-lead">
-            Vês onde estão agora, sem instalar nada e sem sair da toalha.
-          </p>
           <div className="landing-actions">
             <Link to="/mapa" className="landing-btn landing-btn--primary">
               Ver o mapa agora

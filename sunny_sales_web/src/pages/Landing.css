@@ -57,18 +57,10 @@
   text-wrap: pretty;
 }
 
-.landing-lead {
-  margin: var(--space-lg) 0 0;
-  max-width: 46ch;
-  font-size: var(--fs-lead);
-  line-height: 1.55;
-  color: var(--text-secondary);
-  text-align: justify;
-}
-
 .landing-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
   margin-top: var(--space-xl);
 }
