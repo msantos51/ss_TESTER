@@ -8,11 +8,15 @@
     <link rel="icon" type="image/png" href="/logo-icon.png" />
     <link rel="apple-touch-icon" href="/logo-icon.png" />
     <title>Sunny Sales</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Manrope: tipografia da app. Inter: a do site, usada no ecrã do mapa
-         para o vendedor ver o mesmo desenho que os banhistas veem. -->
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Manrope (letra única da marca) self-hosted em /fonts — a mesma do
+         site, incluindo o ecrã do mapa. Sem ligação ao Google Fonts. -->
+    <link
+      rel="preload"
+      href="/fonts/manrope-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
   </head>
   <body>
     <div id="root"></div>
