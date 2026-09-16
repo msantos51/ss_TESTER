@@ -163,9 +163,14 @@ export default function AccountDeletion() {
               <h2>O que podes fazer aqui</h2>
               <p>
                 Esta página serve os vendedores registados na app Sunny Sales.
-                Depois de confirmares quem és, podes descarregar tudo o que
-                guardamos sobre ti, ou eliminar a conta em definitivo. Ambas as
-                ações também estão disponíveis dentro da app, em{' '}
+                A conta cria-se apenas na app — o site é dedicado aos banhistas
+                e não tem registo. Aqui usas o mesmo email e palavra-passe que
+                criaste na app para confirmares quem és.
+              </p>
+              <p>
+                Depois de confirmares a tua identidade, podes descarregar tudo o
+                que guardamos sobre ti, ou eliminar a conta em definitivo. Ambas
+                as ações também estão disponíveis dentro da app, em{' '}
                 <strong>Perfil → Os teus dados</strong>.
               </p>
             </section>
