@@ -24,7 +24,10 @@
   row-gap: 0;
   column-gap: clamp(24px, 4vw, 56px);
   align-items: center;
-  max-width: 1240px;
+  /* Mesmo limite lateral do cabeçalho (navbar): ambos usam --capsule-max e o
+     recuo lateral --gutter (a navbar via largura, o herói via padding do
+     .container), mantendo a coerência visual em desktop. */
+  max-width: var(--capsule-max);
   margin: 0 auto;
   padding: clamp(24px, 5vw, 64px) 0;
 }
@@ -44,6 +47,19 @@
       "top    visual"
       "bottom visual";
   }
+
+  /* O mapa (à direita) abrange as duas linhas e é alto, o que esticava as
+     linhas do texto e afastava o título dos botões. Aqui o título encosta ao
+     fundo da sua linha e os botões ao topo da linha seguinte, de modo a
+     ficarem agrupados junto ao centro vertical, alinhados com o mapa ao lado
+     (o espaço entre eles é o margin-top de .landing-actions). */
+  .landing-hero-top {
+    align-self: end;
+  }
+
+  .landing-hero-bottom {
+    align-self: start;
+  }
 }
 
 /* O título é agora o primeiro elemento do herói: sem margem por cima. */
@@ -57,11 +73,14 @@
   text-wrap: pretty;
 }
 
+/* Título e botões alinham à esquerda entre si; os dois botões ficam lado a
+   lado com um espaçamento uniforme (16px). O espaço que separa o texto dos
+   botões vem do margin-top (~32px), dentro do intervalo pedido de 24–32px. */
 .landing-actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
+  justify-content: flex-start;
+  gap: var(--space-md);
   margin-top: var(--space-xl);
 }
 
