@@ -71,15 +71,17 @@
   letter-spacing: -0.035em;
   color: var(--text);
   text-wrap: pretty;
+  text-align: center;
 }
 
-/* Título e botões alinham à esquerda entre si; os dois botões ficam lado a
-   lado com um espaçamento uniforme (16px). O espaço que separa o texto dos
-   botões vem do margin-top (~32px), dentro do intervalo pedido de 24–32px. */
+/* Título e botões ficam centrados e alinhados pelo mesmo eixo central; os
+   dois botões ficam lado a lado com um espaçamento uniforme (16px). O espaço
+   que separa o texto dos botões vem do margin-top (~32px), dentro do
+   intervalo pedido de 24–32px. */
 .landing-actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;
   gap: var(--space-md);
   margin-top: var(--space-xl);
 }
