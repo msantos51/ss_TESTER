@@ -280,8 +280,18 @@
    Encostado à direita, por cima do cartão de partilha: é o canto do polegar
    de quem segura o telemóvel com uma mão. A agulha roda com o mapa, por isso
    aponta sempre para o norte real. */
-.map-north-btn {
+/* Coluna de controlos flutuantes à direita (localização + norte), empilhados
+   sobre o cartão de partilha. */
+.map-side-controls {
   align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.map-north-btn,
+.map-locate-btn {
   width: 46px;
   height: 46px;
   padding: 0;
@@ -299,13 +309,25 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.map-north-btn:active {
+.map-north-btn:active,
+.map-locate-btn:active:not(:disabled) {
   background: var(--site-surface-alt);
 }
 
 .map-north-icon {
   display: block;
   transform: rotate(var(--map-bearing, 0deg));
+}
+
+/* Botão de localização: o alvo é o azul-profundo da ação do site. */
+.map-locate-icon {
+  display: block;
+  color: var(--site-ink);
+}
+
+.map-locate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ── Faixa de estado ──────────────────────────────────

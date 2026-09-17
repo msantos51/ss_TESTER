@@ -1039,13 +1039,19 @@ body {
   background: var(--sand);
 }
 
+/* Cabeçalho de identidade em painel branco sobre a tela clara (estilo site),
+   em vez da faixa azul-escura. */
 .account-header {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-shrink: 0;
-  padding: calc(24px + env(safe-area-inset-top, 0px)) 20px 26px;
-  background: var(--ink);
+  margin: 16px 16px 0;
+  padding: 18px;
+  border-radius: var(--r-card-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-card);
 }
 
 .account-avatar {
@@ -1077,7 +1083,7 @@ body {
   font-size: var(--fs-name);
   font-weight: 800;
   letter-spacing: -0.4px;
-  color: #fff;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1087,7 +1093,7 @@ body {
   margin-top: 2px;
   font-size: var(--fs-sm);
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1106,10 +1112,10 @@ body {
   flex-shrink: 0;
   min-height: 44px;
   padding: 10px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1.5px solid var(--line-field);
   border-radius: var(--r-pill);
-  background: transparent;
-  color: #fff;
+  background: var(--surface);
+  color: var(--ink);
   font-family: inherit;
   font-size: var(--fs-caption);
   font-weight: 700;
@@ -1117,7 +1123,7 @@ body {
 }
 
 .account-edit-btn:active {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--field-bg);
 }
 
 .account-body {
@@ -1352,7 +1358,10 @@ body {
   color: var(--primary);
 }
 
-/* ═══ Ecrã de boas-vindas ════════════════════ */
+/* ═══ Ecrã de boas-vindas ════════════════════
+   Estilo do site "Vidro & Maré": tela azul clara, título escuro, logótipo
+   num cartão branco e ações em pílula (a principal azul-profunda, a
+   secundária um contorno). Sem halos — a tela do site é lisa. */
 .welcome-screen {
   position: relative;
   display: flex;
@@ -1361,34 +1370,13 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   padding: calc(24px + env(safe-area-inset-top, 0px)) 26px calc(34px + env(safe-area-inset-bottom, 0px));
-  background: var(--ink);
+  background: var(--sand);
   overflow: hidden;
 }
 
+/* Halos desligados no estilo claro (a tela do site não tem gradientes). */
 .welcome-halo {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-/* Halos sobre o azul-profundo: um amarelo mais claro e o azul da marca
-   diluído leem como luz sobre o painel escuro. */
-.welcome-halo-sun {
-  top: -90px;
-  right: -70px;
-  width: 320px;
-  height: 320px;
-  background: rgba(255, 219, 164, 0.26);
-  filter: blur(70px);
-}
-
-.welcome-halo-ocean {
-  bottom: -120px;
-  left: -90px;
-  width: 300px;
-  height: 300px;
-  background: rgba(137, 191, 237, 0.24);
-  filter: blur(80px);
+  display: none;
 }
 
 .welcome-lead {
@@ -1402,9 +1390,13 @@ body {
 }
 
 .welcome-logo {
-  width: 60px;
-  height: 60px;
+  width: 76px;
+  height: 76px;
   object-fit: contain;
+  padding: 12px;
+  border-radius: var(--r-card-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card), inset 0 0 0 1px rgba(255, 255, 255, 0.9);
 }
 
 .welcome-title {
@@ -1412,7 +1404,7 @@ body {
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -1.4px;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .welcome-text {
@@ -1421,7 +1413,7 @@ body {
   font-size: var(--fs-body);
   font-weight: 500;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--text-secondary);
 }
 
 .welcome-foot {
@@ -1448,13 +1440,13 @@ body {
 .welcome-proof-value {
   font-size: var(--fs-metric);
   font-weight: 800;
-  color: var(--sun);
+  color: var(--ink);
 }
 
 .welcome-proof-label {
   font-size: 12px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.68);
+  color: var(--text-muted);
 }
 
 .welcome-actions {
@@ -1475,17 +1467,18 @@ body {
 
 .welcome-btn-primary {
   border: none;
-  background: var(--sun);
-  color: var(--sun-ink);
+  background: var(--ink);
+  color: #fff;
   font-size: var(--fs-btn);
   font-weight: 800;
   letter-spacing: -0.2px;
+  box-shadow: 0 6px 18px rgba(24, 99, 163, 0.28);
 }
 
 .welcome-btn-secondary {
-  border: 1.5px solid rgba(255, 255, 255, 0.28);
-  background: transparent;
-  color: #fff;
+  border: 1.5px solid var(--line-field);
+  background: var(--surface);
+  color: var(--ink);
   font-size: var(--fs-body);
   font-weight: 700;
 }
@@ -1499,7 +1492,7 @@ body {
   text-align: center;
   font-size: 12px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-muted);
 }
 
 /* ── Ecrã de registo ────────────────────────────── */
