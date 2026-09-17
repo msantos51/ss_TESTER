@@ -13,17 +13,40 @@ export default function useDeviceHeading() {
   const gpsMovingRef = useRef(false);
   const [compassReady, setCompassReady] = useState(false);
 
+  // Ativa a bússola. No iOS 13+ `requestPermission` TEM de ser chamado a
+  // partir de um gesto do utilizador (um toque), por isso não se pode pedir
+  // no arranque — é o botão de localização do mapa que chama isto. Nas
+  // plataformas sem esse requisito (Android, desktop) a bússola fica logo
+  // pronta no arranque, via o efeito abaixo.
+  const enableCompass = async () => {
+    if (
+      typeof DeviceOrientationEvent === 'undefined' ||
+      typeof DeviceOrientationEvent.requestPermission !== 'function'
+    ) {
+      setCompassReady(true);
+      return true;
+    }
+    try {
+      const result = await DeviceOrientationEvent.requestPermission();
+      const granted = result === 'granted';
+      setCompassReady(granted);
+      return granted;
+    } catch {
+      setCompassReady(false);
+      return false;
+    }
+  };
+
+  // Arranque: nas plataformas que não exigem permissão explícita (Android,
+  // desktop) liga logo a bússola. Onde `requestPermission` existe (iOS)
+  // espera-se pelo gesto — ver `enableCompass`.
   useEffect(() => {
     if (
       typeof DeviceOrientationEvent === 'undefined' ||
       typeof DeviceOrientationEvent.requestPermission !== 'function'
     ) {
       setCompassReady(true);
-      return;
     }
-    DeviceOrientationEvent.requestPermission()
-      .then((result) => setCompassReady(result === 'granted'))
-      .catch(() => setCompassReady(false));
   }, []);
 
   useEffect(() => {
@@ -72,5 +95,5 @@ export default function useDeviceHeading() {
     }
   };
 
-  return { heading, reportGpsHeading };
+  return { heading, reportGpsHeading, enableCompass };
 }

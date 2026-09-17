@@ -176,17 +176,18 @@ function MapResizeWatcher() {
   return null;
 }
 
-// Endireita o mapa para norte, com a mesma suavidade do resto do ecrã.
-function animateToNorth(map) {
+// Roda o mapa até um rumo alvo (graus), pelo caminho mais curto e com a
+// mesma suavidade do resto do ecrã. `to = 0` endireita para norte.
+function animateToBearing(map, to) {
   if (!map) return;
   const from = map.getBearing();
-  // Pelo caminho mais curto: acima de meia volta é mais perto dar a volta.
-  const to = from > 180 ? 360 : 0;
+  // Caminho mais curto: normaliza a diferença para o intervalo [-180, 180].
+  const delta = ((to - from + 540) % 360) - 180;
   const start = performance.now();
   const DURATION = 320;
   const step = (now) => {
     const t = Math.min(1, (now - start) / DURATION);
-    map.setBearing(from + (to - from) * (1 - (1 - t) ** 3));
+    map.setBearing(from + delta * (1 - (1 - t) ** 3));
     if (t < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
@@ -223,7 +224,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const watchIdRef = useRef(null);
   const lastTrackedRef = useRef(null);
   const sharingRef = useRef(false);
-  const { heading, reportGpsHeading } = useDeviceHeading();
+  const { heading, reportGpsHeading, enableCompass } = useDeviceHeading();
   const pinColor = user?.pin_color || DEFAULT_PIN;
   const isPremium = Boolean(user?.is_premium);
   const vendorIcon = useMemo(() => L.divIcon({
@@ -444,6 +445,26 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
     };
   }, []);
 
+  // (em português) Botão de localização, como o do site: leva o mapa à
+  // posição do vendedor e, quando há bússola, ALINHA o mapa com o seu rumo
+  // (a direção para onde está virado fica a apontar para cima — modo
+  // navegação). Ativa a bússola no toque, que no iOS é o único momento em
+  // que a permissão pode ser pedida. Sem posição ainda, só ativa a bússola.
+  const handleLocate = async () => {
+    await enableCompass();
+    const map = mapRef.current;
+    if (!map) return;
+    if (position) {
+      const zoom = map.getZoom() < 16 ? 17 : map.getZoom();
+      map.setView(position, zoom, { animate: true });
+    }
+    // Alinhar com o rumo: o mapa roda para -rumo, o que põe a direção do
+    // vendedor para cima e (com a soma --pin-heading + --map-bearing) deixa a
+    // seta do pin a apontar para cima. Sem rumo, endireita para norte.
+    const hasHeading = heading !== null && !isNaN(heading);
+    animateToBearing(map, hasHeading ? (360 - heading) % 360 : 0);
+  };
+
   const vendorName = user?.name || 'Vendedor';
   const initial = vendorName.charAt(0).toUpperCase();
   const photo = user?.profile_photo ? mediaUrl(user.profile_photo) : null;
@@ -515,22 +536,45 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
         </div>
 
         <div className="map-bottom">
-          {/* Botão do norte: só aparece com o mapa torto, isto é, depois de o
-              vendedor o ter rodado com os dois dedos. A agulha roda com o
-              mapa, por isso aponta sempre para o norte real. */}
-          {isRotated && (
+          {/* Controlos flutuantes à direita, empilhados sobre o cartão de
+              partilha — o canto do polegar de quem segura o telemóvel. */}
+          <div className="map-side-controls">
+            {/* Botão do norte: só aparece com o mapa torto, isto é, depois de o
+                vendedor o ter rodado com os dois dedos. A agulha roda com o
+                mapa, por isso aponta sempre para o norte real. */}
+            {isRotated && (
+              <button
+                type="button"
+                className="map-north-btn"
+                onClick={() => animateToBearing(mapRef.current, 0)}
+                aria-label="Virar o mapa para norte"
+              >
+                <svg className="map-north-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                  <polygon points="12,3 8.2,15 12,12.4 15.8,15" fill="var(--site-coral)" />
+                  <polygon points="12,21 8.2,15 12,17.6 15.8,15" fill="#9aa5b1" />
+                </svg>
+              </button>
+            )}
+
+            {/* Botão de localização: leva o mapa à posição do vendedor e alinha
+                com o seu rumo. Igual em forma ao botão "localizar-me" do site. */}
             <button
               type="button"
-              className="map-north-btn"
-              onClick={() => animateToNorth(mapRef.current)}
-              aria-label="Virar o mapa para norte"
+              className="map-locate-btn"
+              onClick={handleLocate}
+              disabled={!position}
+              aria-label="Ir para a minha localização e alinhar"
             >
-              <svg className="map-north-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-                <polygon points="12,3 8.2,15 12,12.4 15.8,15" fill="var(--site-coral)" />
-                <polygon points="12,21 8.2,15 12,17.6 15.8,15" fill="#9aa5b1" />
+              <svg className="map-locate-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" strokeWidth="2" />
+                <circle cx="12" cy="12" r="8.5" strokeWidth="1.6" />
+                <line x1="12" y1="1" x2="12" y2="4" strokeWidth="1.8" strokeLinecap="round" />
+                <line x1="12" y1="20" x2="12" y2="23" strokeWidth="1.8" strokeLinecap="round" />
+                <line x1="1" y1="12" x2="4" y2="12" strokeWidth="1.8" strokeLinecap="round" />
+                <line x1="20" y1="12" x2="23" y2="12" strokeWidth="1.8" strokeLinecap="round" />
               </svg>
             </button>
-          )}
+          </div>
 
           {/* GPS ainda por obter: a mesma faixa de estado do site — texto
               branco sobre petróleo, legível num ecrã ao sol. */}
