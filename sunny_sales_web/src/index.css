@@ -509,9 +509,8 @@ body {
   display: flex;
   gap: 2px;
   flex: 1;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  margin-left: 6px;
 }
 
 /* Caixa normal, peso médio, forma de pastilha: o menu deixa de gritar em
