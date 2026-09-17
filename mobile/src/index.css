@@ -105,6 +105,18 @@
   --success-bg: rgba(21, 128, 61, 0.08);
   --success-line: rgba(21, 128, 61, 0.35);
 
+  /* Verde de destaque do Premium — a mesma matiz do sucesso e dos pins de
+     vendedor (--forest), promovida a cor de acento dos cartões do separador.
+     --green (#15803d) dá 5,02:1 com branco e --green-deep (#1D5C3A) 7,9:1,
+     por isso o primeiro serve de texto e de fundo de botão (texto branco por
+     cima) e o segundo de glifo sobre o tinte claro. --green-soft é o verde
+     como texto sobre os painéis --ink (4,7:1). */
+  --green: #15803d;
+  --green-deep: #1D5C3A;
+  --green-tint: #DCEFE3;
+  --green-soft: #C9F2DA;
+  --green-line: rgba(21, 128, 61, 0.30);
+
   --warn-bg: rgba(180, 83, 9, 0.08);
   --warn-line: rgba(180, 83, 9, 0.35);
   --warn-ink: #b45309;

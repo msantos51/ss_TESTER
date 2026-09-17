@@ -1,8 +1,11 @@
 /* ═══ Premium ═══════════════════════════════════
    O separador vende uma decisão, por isso segue a mesma estrutura da Conta —
-   cabeçalho escuro com a identidade do ecrã, corpo na tela clara com cartões — mas
-   troca o azul pelo sol (--sun), que é a cor de acento da app e a mesma que
-   marca a estrela no pin do mapa. */
+   cabeçalho escuro com a identidade do ecrã, corpo na tela clara com cartões.
+   Segue a linguagem do site ("Vidro & Maré"): painéis brancos sem contorno,
+   com sombra suave em vez de aresta de 1px. A cor de acento dos cartões é o
+   VERDE (--green), a mesma matiz dos pins de vendedor; o amarelo (--sun)
+   fica reservado à estrela do badge, que é a identidade do pin Premium no
+   mapa. */
 .premium-screen {
   display: flex;
   flex-direction: column;
@@ -16,16 +19,16 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   flex-shrink: 0;
-  padding: calc(24px + env(safe-area-inset-top, 0px)) 20px 26px;
+  padding: calc(28px + env(safe-area-inset-top, 0px)) 22px 30px;
   background: var(--ink);
   position: relative;
   overflow: hidden;
 }
 
-/* O halo cor de sol é o que distingue este cabeçalho do da Conta sem mudar
-   a estrutura. Fica atrás do texto e nunca apanha toques. */
+/* Dois halos atrás do texto: o amarelo (identidade Premium) e um verde que
+   liga o cabeçalho aos cartões de acento em baixo. Nunca apanham toques. */
 .premium-header::after {
   content: '';
   position: absolute;
@@ -36,6 +39,19 @@
   border-radius: 50%;
   background: rgba(234, 201, 40, 0.28);
   filter: blur(60px);
+  pointer-events: none;
+}
+
+.premium-header::before {
+  content: '';
+  position: absolute;
+  left: -70px;
+  bottom: -110px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: rgba(29, 92, 58, 0.42);
+  filter: blur(70px);
   pointer-events: none;
 }
 
@@ -74,11 +90,38 @@
   z-index: 1;
 }
 
+/* Preço em vidro logo no cabeçalho: quem abre o separador vê o número antes
+   de rolar até ao cartão de preço. */
+.premium-hero-price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 2px;
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  position: relative;
+  z-index: 1;
+}
+
+.premium-hero-price strong {
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.premium-hero-price span {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.72);
+}
+
 .premium-body {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 16px 16px 24px;
+  gap: 22px;
+  padding: 18px 16px 26px;
 }
 
 .premium-group {
@@ -93,13 +136,22 @@
   gap: 14px;
   padding: 16px 18px;
   border-radius: var(--r-card-lg);
-  background: var(--warn-bg);
-  border: 1px solid var(--warn-line);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
 }
 
-.premium-status.is-active {
-  background: var(--success-bg);
-  border-color: var(--success-line);
+/* Barra de acento à esquerda em vez de um cartão inteiro colorido: mais
+   limpo e deixa o texto sobre branco. */
+.premium-status::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--green);
 }
 
 .premium-status-icon {
@@ -110,8 +162,8 @@
   height: 38px;
   flex-shrink: 0;
   border-radius: var(--r-icon);
-  background: var(--sun);
-  color: var(--sun-ink);
+  background: var(--green-tint);
+  color: var(--green-deep);
 }
 
 .premium-status-text {
@@ -125,22 +177,14 @@
 .premium-status-title {
   font-size: var(--fs-body);
   font-weight: 800;
-  color: var(--warn-ink);
-}
-
-.premium-status.is-active .premium-status-title {
-  color: var(--success-ink);
+  color: var(--text-primary);
 }
 
 .premium-status-desc {
   font-size: var(--fs-caption);
   font-weight: 500;
   line-height: 1.5;
-  color: var(--warn-soft);
-}
-
-.premium-status.is-active .premium-status-desc {
-  color: var(--success-soft);
+  color: var(--text-muted);
 }
 
 .premium-status-refresh {
@@ -153,12 +197,8 @@
   border: none;
   border-radius: var(--r-pill);
   background: transparent;
-  color: var(--warn-soft);
+  color: var(--text-muted);
   cursor: pointer;
-}
-
-.premium-status.is-active .premium-status-refresh {
-  color: var(--success-soft);
 }
 
 .premium-status-refresh:disabled {
@@ -183,36 +223,35 @@
 .premium-benefit {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 16px;
+  gap: 12px;
+  padding: 18px;
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r-card);
+  border-radius: var(--r-card-lg);
   box-shadow: var(--shadow-card);
 }
 
 .premium-benefit-head {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 13px;
 }
 
 .premium-benefit-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
-  border-radius: var(--r-icon);
-  background: var(--ocean-tint);
-  color: var(--ocean-ink);
+  border-radius: var(--r-input);
+  background: var(--green-tint);
+  color: var(--green-deep);
 }
 
 .premium-benefit-title {
-  font-size: var(--fs-row);
+  font-size: 15px;
   font-weight: 800;
-  color: var(--ink);
+  color: var(--text-primary);
 }
 
 .premium-benefit-desc {
@@ -222,75 +261,89 @@
   color: var(--text-muted);
 }
 
-/* A comparação lado a lado é o que torna a vantagem concreta. */
-.premium-compare {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.premium-compare-col {
+/* A comparação torna a vantagem concreta: o valor gratuito riscado, uma seta
+   e o valor Premium a verde. Mais leve do que dois cartões lado a lado. */
+.premium-flow {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 10px 12px;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
   border-radius: var(--r-input);
-  background: var(--field-bg);
-  border: 1px solid var(--line-field);
+  background: var(--green-tint);
 }
 
-.premium-compare-col.is-premium {
-  background: var(--warn-bg);
-  border-color: var(--warn-line);
-}
-
-.premium-compare-label {
-  font-size: var(--fs-label);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-faint);
-}
-
-.premium-compare-col.is-premium .premium-compare-label {
-  color: var(--warn-soft);
-}
-
-.premium-compare-value {
+.premium-flow-free {
   font-size: var(--fs-sm);
-  font-weight: 700;
-  line-height: 1.35;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--line-field);
 }
 
-.premium-compare-col.is-premium .premium-compare-value {
-  color: var(--warn-ink);
+.premium-flow-arrow {
+  flex-shrink: 0;
+  color: var(--green);
+}
+
+.premium-flow-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  color: var(--green);
+  text-align: right;
+}
+
+.premium-flow-premium svg {
+  flex-shrink: 0;
+  color: var(--green);
 }
 
 /* ── Preço ──────────────────────────────────── */
 .premium-price-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 22px 18px;
-  border-radius: var(--r-card-lg);
+  gap: 14px;
+  padding: 26px 20px;
+  border-radius: 28px;
   background: var(--ink);
   box-shadow: var(--shadow-share);
   text-align: center;
 }
 
+/* O mesmo brilho verde do cabeçalho, agora como acento do cartão-herói. */
+.premium-price-card::after {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(21, 128, 61, 0.42);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
 .premium-price-eyebrow {
+  position: relative;
+  z-index: 1;
   font-size: var(--fs-label);
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  /* 11px sobre o painel --ink: o amarelo puro daria 3,86:1, a variante
-     clara dá 4,83:1. */
-  color: var(--sun-soft);
+  letter-spacing: 0.14em;
+  /* 11px sobre o painel --ink: o verde claro (--green-soft) dá 4,7:1. */
+  color: var(--green-soft);
 }
 
 .premium-price {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -311,29 +364,41 @@
 }
 
 .premium-price-list {
+  position: relative;
+  z-index: 1;
   list-style: none;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 9px;
-  margin-top: 4px;
+  gap: 11px;
+  margin-top: 6px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
   text-align: left;
 }
 
 .premium-price-list li {
   display: flex;
   align-items: flex-start;
-  gap: 9px;
+  gap: 10px;
   font-size: var(--fs-caption);
   font-weight: 500;
   line-height: 1.45;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.premium-price-list svg {
+/* O visto vive num disco verde translúcido: o acento sem gritar. */
+.premium-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  margin-top: 2px;
-  color: var(--sun);
+  margin-top: 1px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(201, 242, 218, 0.22);
+  color: var(--green-soft);
 }
 
 .premium-price-list strong {
@@ -342,18 +407,21 @@
 }
 
 .premium-cta {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  min-height: 50px;
+  min-height: 52px;
   margin-top: 4px;
-  padding: 14px 20px;
+  padding: 15px 20px;
   border: none;
   border-radius: var(--r-pill);
-  background: var(--sun);
-  color: var(--sun-ink);
+  background: var(--green);
+  color: #fff;
   font-family: inherit;
   font-size: var(--fs-btn);
   font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 8px 22px rgba(21, 128, 61, 0.36);
   transition: transform var(--transition);
 }
 
@@ -367,10 +435,12 @@
 }
 
 .premium-price-note {
+  position: relative;
+  z-index: 1;
   font-size: var(--fs-label);
   font-weight: 500;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 /* ── FAQ ────────────────────────────────────── */
@@ -382,9 +452,13 @@
 
 .premium-faq-item {
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r-card);
+  border-radius: var(--r-input);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
+}
+
+.premium-faq-item[open] {
+  box-shadow: var(--shadow-banner);
 }
 
 .premium-faq-q {
@@ -410,7 +484,7 @@
   font-size: 18px;
   font-weight: 700;
   line-height: 1;
-  color: var(--ocean);
+  color: var(--green);
 }
 
 .premium-faq-item[open] .premium-faq-q::after { content: '−'; }

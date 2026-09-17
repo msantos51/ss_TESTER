@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  FiStar, FiRadio, FiImage, FiCheck, FiAlertTriangle, FiRefreshCw,
+  FiStar, FiRadio, FiImage, FiCheck, FiAlertTriangle, FiRefreshCw, FiArrowRight,
 } from 'react-icons/fi';
 import { BASE_URL } from '../config.js';
 import '../styles/PremiumScreen.css';
@@ -127,6 +127,10 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
           No plano gratuito já estás no mapa. O Premium faz com que te
           encontrem de longe — e que vejam o que estás a vender.
         </p>
+        <span className="premium-hero-price">
+          <strong>{PRICE_LABEL}</strong>
+          <span>/ 30 dias</span>
+        </span>
       </header>
 
       <div className="premium-body">
@@ -170,15 +174,13 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
                   <h3 className="premium-benefit-title">{title}</h3>
                 </div>
                 <p className="premium-benefit-desc">{description}</p>
-                <div className="premium-compare">
-                  <div className="premium-compare-col">
-                    <span className="premium-compare-label">Gratuito</span>
-                    <span className="premium-compare-value">{free}</span>
-                  </div>
-                  <div className="premium-compare-col is-premium">
-                    <span className="premium-compare-label">Premium</span>
-                    <span className="premium-compare-value">{premium}</span>
-                  </div>
+                <div className="premium-flow">
+                  <span className="premium-flow-free">{free}</span>
+                  <FiArrowRight className="premium-flow-arrow" size={15} aria-hidden="true" />
+                  <span className="premium-flow-premium">
+                    <FiCheck size={13} aria-hidden="true" />
+                    {premium}
+                  </span>
                 </div>
               </article>
             ))}
@@ -186,7 +188,7 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
         </section>
 
         <section className="premium-price-card">
-          <span className="premium-price-eyebrow">Premium</span>
+          <span className="premium-price-eyebrow">Premium · 30 dias</span>
           <div className="premium-price">
             <span className="premium-price-amount">{PRICE_LABEL}</span>
             <span className="premium-price-period">{PERIOD_LABEL}</span>
@@ -194,7 +196,7 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
           <ul className="premium-price-list">
             {BENEFITS.map(({ id, title, premium }) => (
               <li key={id}>
-                <FiCheck size={14} />
+                <span className="premium-check"><FiCheck size={12} /></span>
                 <span>{title} · <strong>{premium}</strong></span>
               </li>
             ))}
