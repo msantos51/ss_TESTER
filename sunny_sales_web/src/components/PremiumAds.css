@@ -1,0 +1,108 @@
+/* ---------- Publicidade Premium ----------
+   Secção da landing que destaca vendedores Premium ativos. Segue a mesma
+   linguagem das restantes secções (.landing-section): cartões brancos com
+   sombra suave e o amarelo da marca reservado à estrela Premium. */
+
+.premium-ads {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 56px) 0 0;
+}
+
+.premium-ads-inner {
+  padding: clamp(20px, 3vw, 32px);
+  border-radius: var(--radius-2xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.premium-ads-title {
+  margin: 0 0 4px;
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  position: relative;
+  display: inline-block;
+}
+
+.premium-ads-title::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 32px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--gold);
+}
+
+.premium-ads-lead {
+  margin: 0 0 var(--space-lg);
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+}
+
+.premium-ads-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.premium-ad {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 14px 16px;
+  border-radius: var(--radius-panel);
+  background: var(--bg, #fff);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  color: var(--text);
+  text-decoration: none;
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.premium-ad:hover {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06), var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.premium-ad:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* A estrela dourada é a marca do Premium — a mesma do pin no mapa. */
+.premium-ad-star {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--gold-ink);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.premium-ad-text {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.premium-ad-text strong {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.premium-ad-arrow {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}

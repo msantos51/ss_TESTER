@@ -64,6 +64,7 @@
   font-weight: 500;
   line-height: 1.6;
   color: var(--text-secondary);
+  text-align: justify;
   position: relative;
   z-index: 1;
 }
@@ -162,6 +163,7 @@
   font-weight: 500;
   line-height: 1.5;
   color: var(--text-muted);
+  text-align: justify;
 }
 
 .premium-status-refresh {
@@ -236,6 +238,7 @@
   font-weight: 500;
   line-height: 1.55;
   color: var(--text-muted);
+  text-align: justify;
 }
 
 /* A comparação torna a vantagem concreta: o valor gratuito riscado, uma seta
@@ -472,4 +475,5 @@
   font-weight: 500;
   line-height: 1.6;
   color: var(--text-muted);
+  text-align: justify;
 }
