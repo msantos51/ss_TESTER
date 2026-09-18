@@ -99,8 +99,9 @@ class VendorPublicOut(BaseModel):
     payment_methods: Optional[str] = None
     # Marca o vendedor como Premium: é o que põe a estrela no pin do mapa.
     is_premium: bool = False
-    # Média das avaliações (1 a 5) e número de votos. Só os vendedores Premium
-    # acumulam avaliações (têm QR code); nos restantes vem `None`/0.
+    # Média das avaliações (1 a 5) e número de votos acumulados. As avaliações
+    # só podem ser submetidas enquanto o vendedor for Premium (tem QR code), mas
+    # persistem e continuam a aparecer mesmo após a subscrição expirar.
     rating_average: Optional[float] = None
     rating_count: int = 0
     model_config = ConfigDict(from_attributes=True)
