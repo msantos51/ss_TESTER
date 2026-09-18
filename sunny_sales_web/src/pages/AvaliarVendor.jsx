@@ -1,22 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { FiStar, FiCheck } from 'react-icons/fi';
 import { BASE_URL, mediaUrl } from '../config';
 import './AvaliarVendor.css';
 
-// (em português) Página de avaliação — o destino do QR code pessoal de cada
-// vendedor Premium. O acesso exige um token de uso único (`?t=…`) gerado pelo
-// backend ao servir o qr.png. Sem token, ou com token já utilizado/expirado,
-// a página mostra um ecrã de erro — nunca o formulário.
+// (em português) Página de avaliação — destino do QR code pessoal de cada
+// vendedor Premium. O QR code impresso aponta para /avaliar/{id} (URL estático,
+// permanente). Ao abrir o URL, a página pede automaticamente um token de uso
+// único ao backend (POST /review-token, validade 20 min) e guarda-o em
+// sessionStorage. Assim:
+//   • Cada leitura do QR gera uma nova oportunidade de avaliação.
+//   • Refrescar a página antes de avaliar: usa o mesmo token (sessionStorage).
+//   • Refrescar depois de avaliar: token já consumido → "QR já utilizado".
+//   • Fechar o separador e abrir o URL de novo: novo token, pode avaliar.
+
+const SESSION_KEY = (vendorId) => `ss_review_token_${vendorId}`;
 
 export default function AvaliarVendor() {
   const { vendorId } = useParams();
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get('t');
 
   const [vendor, setVendor] = useState(null);
-  const [status, setStatus] = useState('loading'); // loading | ready | invalid | used | done
+  const [token, setToken] = useState(null);
+  const [status, setStatus] = useState('loading'); // loading | ready | used | invalid | done
   const [hover, setHover] = useState(0);
   const [chosen, setChosen] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -24,37 +30,42 @@ export default function AvaliarVendor() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Sem token no URL → não veio de um QR scan, bloquear imediatamente.
-    if (!token) {
-      setStatus('invalid');
-      return;
-    }
-
     let alive = true;
 
-    // Valida o token e carrega os dados do vendedor em paralelo.
-    Promise.all([
-      axios.get(`${BASE_URL}/vendors/${vendorId}/check-token`, { params: { t: token } }),
-      axios.get(`${BASE_URL}/vendors/${vendorId}`),
-    ])
-      .then(([, vendorRes]) => {
+    const init = async () => {
+      // Tentar reutilizar o token desta sessão de browser.
+      let sessionToken = null;
+      try { sessionToken = sessionStorage.getItem(SESSION_KEY(vendorId)); } catch { /* privado */ }
+
+      try {
+        // Carregar dados do vendedor em paralelo com a obtenção/validação do token.
+        const [vendorRes] = await Promise.all([
+          axios.get(`${BASE_URL}/vendors/${vendorId}`),
+        ]);
         if (!alive) return;
-        if (!vendorRes.data?.is_premium) {
-          setStatus('invalid');
-          return;
-        }
+        if (!vendorRes.data?.is_premium) { setStatus('invalid'); return; }
         setVendor(vendorRes.data);
+
+        if (!sessionToken) {
+          // Primeira abertura desta página neste separador: pedir token fresco.
+          const tokenRes = await axios.post(`${BASE_URL}/vendors/${vendorId}/review-token`);
+          if (!alive) return;
+          sessionToken = tokenRes.data.token;
+          try { sessionStorage.setItem(SESSION_KEY(vendorId), sessionToken); } catch { /* privado */ }
+        }
+
+        setToken(sessionToken);
         setStatus('ready');
-      })
-      .catch((err) => {
+      } catch (err) {
         if (!alive) return;
         const code = err?.response?.status;
-        // 410 = token já usado ou expirado
         setStatus(code === 410 ? 'used' : 'invalid');
-      });
+      }
+    };
 
+    init();
     return () => { alive = false; };
-  }, [vendorId, token]);
+  }, [vendorId]);
 
   const submit = async () => {
     if (!chosen || submitting) return;
@@ -66,11 +77,14 @@ export default function AvaliarVendor() {
         { rating: chosen },
         { params: { t: token } },
       );
+      // Token consumido — limpar da sessão para que uma próxima abertura peça um novo.
+      try { sessionStorage.removeItem(SESSION_KEY(vendorId)); } catch { /* privado */ }
       setSummary(res.data);
       setStatus('done');
     } catch (err) {
       const code = err?.response?.status;
       if (code === 410) {
+        try { sessionStorage.removeItem(SESSION_KEY(vendorId)); } catch { /* privado */ }
         setStatus('used');
       } else {
         setError(
@@ -96,10 +110,10 @@ export default function AvaliarVendor() {
     return (
       <div className="rate-page">
         <div className="rate-card">
-          <h1 className="rate-title">QR code já utilizado</h1>
+          <h1 className="rate-title">Já avaliaste</h1>
           <p className="rate-lead">
-            Este código já foi usado para uma avaliação. Para avaliar de novo,
-            pede ao vendedor que gere um novo QR code.
+            Esta avaliação já foi registada. Para avaliar de novo, lê o QR code
+            do vendedor outra vez.
           </p>
         </div>
       </div>
@@ -112,8 +126,7 @@ export default function AvaliarVendor() {
         <div className="rate-card">
           <h1 className="rate-title">Avaliação indisponível</h1>
           <p className="rate-lead">
-            Este código já não está ativo ou o vendedor não está disponível para
-            avaliações neste momento.
+            Este vendedor não está disponível para avaliações neste momento.
           </p>
         </div>
       </div>
