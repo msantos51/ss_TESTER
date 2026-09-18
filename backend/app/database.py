@@ -44,22 +44,23 @@ def get_db():
     finally:
         db.close()
 
-# Colunas de `vendors` que o modelo já não tem e cujo conteúdo deixou de ter
-# significado: `subscription_active` e `subscription_valid_until` (o modelo de
-# planos de visibilidade, substituído pelo Premium) e os cinco campos
-# `license_*`, que nunca chegaram a ser usados. O ORM ignora-as e nada as lê;
-# ficam nas bases de dados existentes até serem largadas à mão, porque um DROP
-# automático no arranque destruiria dados sem retorno se um deploy fosse
-# revertido. O histórico de pagamentos não está aqui — vive em `paid_weeks`.
-OBSOLETE_VENDOR_COLUMNS = (
-    "subscription_active",
-    "subscription_valid_until",
-    "license_number",
-    "license_municipality",
-    "license_expiry",
-    "license_type",
-    "license_document",
-)
+# Colunas e tabelas que o modelo já não tem e cujo conteúdo deixou de ter
+# significado. O ORM ignora-as e nada as lê; ficam nas bases de dados
+# existentes até serem largadas à mão, porque um DROP automático no arranque
+# destruiria dados sem retorno se um deploy fosse revertido. O histórico de
+# pagamentos não está aqui — vive em `paid_weeks`.
+#
+#   vendors.subscription_active, vendors.subscription_valid_until
+#       o modelo de planos de visibilidade, substituído pelo Premium
+#   vendors.license_number, license_municipality, license_expiry,
+#   license_type, license_document
+#       nunca chegaram a ser usados
+#   reviews.rater_key
+#       identificador anónimo de quem avalia, nunca preenchido: os votos
+#       repetidos são travados pelo QRToken de uso único
+#   tabela clients
+#       conta de cliente que nunca foi implementada — só os vendedores
+#       autenticam
 
 
 # Pequena migração automática para adicionar colunas recentes

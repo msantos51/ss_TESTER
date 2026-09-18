@@ -1027,16 +1027,6 @@ async def create_vendor(
 # --------------------------
 # Avaliações (1 a 5 estrelas) — vantagem do QR code Premium
 # --------------------------
-def _rating_key(request: Request) -> str:
-    """Identificador anónimo de quem avalia: hash do IP.
-
-    Serve só para impedir votos repetidos da mesma pessoa (um novo voto
-    substitui o anterior). Não guarda o IP em claro.
-    """
-    ip = get_remote_address(request) or "anon"
-    return hashlib.sha256(ip.encode("utf-8")).hexdigest()
-
-
 def _rating_summary(db: Session, vendor_id: int) -> tuple[float | None, int]:
     """Média (arredondada a 1 casa) e número de avaliações de um vendedor."""
     avg, count = (

@@ -96,26 +96,6 @@ class VendorSession(Base):
     vendor = relationship("Vendor", back_populates="sessions")
 
 
-class Client(Base):
-    """Utilizador cliente que pode avaliar e guardar favoritos."""
-
-    __tablename__ = "clients"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    profile_photo = Column(String)
-    email_confirmed = Column(Boolean, default=False)
-    confirmation_token = Column(String, nullable=True, index=True)
-    password_reset_token = Column(String, nullable=True, index=True)
-    password_reset_expires = Column(DateTime, nullable=True)
-    google_id = Column(String, unique=True, index=True, nullable=True)
-    apple_id = Column(String, unique=True, index=True, nullable=True)
-
-
-
-
 class Route(Base):
     """Trajetos percorridos pelos vendedores."""
 
@@ -179,10 +159,9 @@ class Review(Base):
     lê chega à página de avaliação e deixa uma classificação de 1 a 5 estrelas.
     A média destas avaliações aparece no cartão do vendedor no mapa.
 
-    `rater_key` é um identificador anónimo de quem avalia (hash do IP): serve
-    apenas para impedir que a mesma pessoa empole a média com votos repetidos —
-    um novo voto do mesmo `rater_key` substitui o anterior. Nunca guarda o IP em
-    claro nem qualquer dado pessoal.
+    Os votos repetidos são travados pelo `QRToken` de uso único que a página de
+    avaliação consome: nada aqui identifica quem avalia, nem sequer de forma
+    anónima.
     """
 
     __tablename__ = "reviews"
@@ -190,7 +169,6 @@ class Review(Base):
     id = Column(Integer, primary_key=True, index=True)
     vendor_id = Column(Integer, ForeignKey("vendors.id"), index=True)
     rating = Column(Integer, nullable=False)
-    rater_key = Column(String, nullable=True, index=True)
     created_at = Column(DateTime, default=utcnow)
     updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
 
