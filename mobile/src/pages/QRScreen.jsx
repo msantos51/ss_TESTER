@@ -18,13 +18,14 @@ export default function QRScreen({ auth, onGoPremium }) {
   const [summary, setSummary] = useState(null);
 
   useEffect(() => {
+    if (!isPremium) { setSummary(null); return; }
     let alive = true;
     fetch(`${BASE_URL}/vendors/${vendorId}/reviews/summary`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => { if (alive) setSummary(data); })
       .catch(() => {});
     return () => { alive = false; };
-  }, [vendorId]);
+  }, [isPremium, vendorId]);
 
   const shareQr = async () => {
     try {
@@ -57,15 +58,6 @@ export default function QRScreen({ auth, onGoPremium }) {
           </p>
         </header>
         <div className="premium-body">
-          {summary?.count > 0 && (
-            <div className="premium-qr-head" style={{ marginBottom: '1rem' }}>
-              <span className="premium-qr-rating">
-                <FiStar size={14} />
-                <strong>{summary.average.toFixed(1)}</strong>
-                <span className="premium-qr-rating-count">({summary.count} {summary.count === 1 ? 'avaliação' : 'avaliações'})</span>
-              </span>
-            </div>
-          )}
           <button
             type="button"
             className="premium-cta"

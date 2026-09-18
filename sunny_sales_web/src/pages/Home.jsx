@@ -1094,7 +1094,7 @@ export default function Home() {
                     )}
                   </div>
                 </div>
-                {selected.rating_count > 0 && (
+                {selected.is_premium && selected.rating_count > 0 && (
                   <div className="card-rating" title={`${selected.rating_count} avaliações`}>
                     <span className="card-rating-stars" aria-hidden="true">
                       {[1, 2, 3, 4, 5].map((n) => (
@@ -1125,7 +1125,7 @@ export default function Home() {
                     })}
                   </div>
                 )}
-                {vendorProducts.length > 0 && (
+                {selected.is_premium && vendorProducts.length > 0 && (
                   <div className="card-products">
                     <div className="card-products-title">
                       <FiShoppingBag size={13} />
