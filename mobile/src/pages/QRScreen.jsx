@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { FiRefreshCw, FiShare2, FiStar } from 'react-icons/fi';
+import React, { useEffect, useState } from 'react';
+import { FiShare2, FiStar } from 'react-icons/fi';
 import { BASE_URL, WEB_URL } from '../config.js';
 import '../styles/PremiumScreen.css';
 
@@ -13,8 +13,7 @@ export default function QRScreen({ auth, onGoPremium }) {
   const isPremium = Boolean(user?.is_premium);
 
   const reviewUrl = `${WEB_URL.replace(/\/$/, '')}/avaliar/${vendorId}`;
-  const [qrKey, setQrKey] = useState(() => Date.now());
-  const qrSrc = `${BASE_URL}/vendors/${vendorId}/qr.png?k=${qrKey}`;
+  const qrSrc = `${BASE_URL}/vendors/${vendorId}/qr.png`;
 
   const [summary, setSummary] = useState(null);
 
@@ -80,8 +79,8 @@ export default function QRScreen({ auth, onGoPremium }) {
         </span>
         <h1 className="premium-title">O teu QR code pessoal</h1>
         <p className="premium-lead">
-          Mostra-o no teu ponto de venda. Cada leitura gera um código de uso
-          único — só podes receber uma avaliação por scan.
+          Imprime-o ou mostra-o na app. Cada leitura gera automaticamente um
+          código de uso único — uma avaliação por scan, sem repetições.
         </p>
       </header>
 
@@ -110,13 +109,6 @@ export default function QRScreen({ auth, onGoPremium }) {
           </div>
           <button type="button" className="premium-qr-share" onClick={shareQr}>
             <FiShare2 size={16} /> Partilhar link de avaliação
-          </button>
-          <button
-            type="button"
-            className="premium-qr-refresh"
-            onClick={() => setQrKey(Date.now())}
-          >
-            <FiRefreshCw size={14} /> Novo QR
           </button>
         </section>
       </div>

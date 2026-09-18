@@ -1241,13 +1241,13 @@ def test_deleting_the_account_clears_the_premium_it_had(client):
 
 
 # --------------------------
-# Avaliações (QR code Premium — token de uso único)
+# Avaliações (QR code Premium — token de uso único gerado ao abrir o URL)
 # --------------------------
 def _fresh_token(client, vendor_id: int) -> str:
-    """Obtém um token de uso único pedindo o QR code do vendedor."""
-    resp = client.get(f"/vendors/{vendor_id}/qr.png")
+    """Simula a abertura do URL do QR code: pede um token de avaliação fresco."""
+    resp = client.post(f"/vendors/{vendor_id}/review-token")
     assert resp.status_code == 200
-    return resp.headers["x-qr-token"]
+    return resp.json()["token"]
 
 
 def test_review_premium_vendor_updates_average(client):
@@ -1299,17 +1299,14 @@ def test_review_only_for_premium(client):
     assert resp.status_code == 403
 
 
-def test_check_token_endpoint(client):
-    """check-token devolve 200 para token válido e 410 para inválido/usado."""
-    vendor_id, _ = premium_vendor_sharing(client, email="checktoken@example.com")
-    t = _fresh_token(client, vendor_id)
-
-    assert client.get(f"/vendors/{vendor_id}/check-token", params={"t": t}).status_code == 200
-
-    # Consumir o token
-    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 4}, params={"t": t})
-
-    assert client.get(f"/vendors/{vendor_id}/check-token", params={"t": t}).status_code == 410
+def test_review_token_endpoint(client):
+    """review-token devolve um token novo para cada pedido."""
+    vendor_id, _ = premium_vendor_sharing(client, email="novotoken@example.com")
+    r1 = client.post(f"/vendors/{vendor_id}/review-token")
+    r2 = client.post(f"/vendors/{vendor_id}/review-token")
+    assert r1.status_code == 200
+    assert r2.status_code == 200
+    assert r1.json()["token"] != r2.json()["token"]
 
 
 def test_rating_average_appears_in_public_listing(client):
@@ -1327,13 +1324,12 @@ def test_rating_average_appears_in_public_listing(client):
 
 
 def test_qr_available_only_for_premium(client):
-    """O QR code PNG só existe para vendedores Premium."""
+    """O QR code PNG só existe para vendedores Premium; URL é estático."""
     premium_id, _ = premium_vendor_sharing(client, email="comqr@example.com")
     resp = client.get(f"/vendors/{premium_id}/qr.png")
     assert resp.status_code == 200
     assert resp.headers["content-type"] == "image/png"
     assert resp.content[:8] == b"\x89PNG\r\n\x1a\n"
-    assert "x-qr-token" in resp.headers
 
     free_id, _ = premium_vendor_sharing(client, email="semqr@example.com", premium=False)
     assert client.get(f"/vendors/{free_id}/qr.png").status_code == 404
