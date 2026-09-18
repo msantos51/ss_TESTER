@@ -1,10 +1,12 @@
 import React from 'react';
 import './PinColorPicker.css';
 
-// As seis cores da paleta do site (sunny_sales_web/src/index.css),
-// pela mesma ordem em que lá aparecem: o pin do vendedor é lido no mapa do
-// site, por isso não pode ser de outra família de cores. Verde floresta é o
-// primeiro por ser o que o site desenha a quem nunca escolheu cor nenhuma.
+// Cores disponíveis para o pin do vendedor. As primeiras seis são a paleta
+// sóbria da marca (sunny_sales_web/src/index.css); Verde floresta é a primeira
+// por ser o que o site desenha a quem nunca escolheu cor nenhuma. A seguir vem
+// uma família de tons mais vivos, para o pin saltar mais à vista no mapa — o
+// site desenha o pin com a cor guardada (qualquer hex), por isso estas cores
+// extra funcionam tal e qual no mapa do site.
 // Quem já tiver guardada uma cor fora desta lista continua a vê-la (e
 // selecionada) como uma amostra extra.
 const PRESET_COLORS = [
@@ -14,6 +16,13 @@ const PRESET_COLORS = [
   { name: 'Azul-profundo', value: '#1863A3' },
   { name: 'Coral', value: '#BB3E03' },
   { name: 'Noite', value: '#082137' },
+  // Tons vivos
+  { name: 'Vermelho vivo', value: '#FF3B30' },
+  { name: 'Laranja vivo', value: '#FF7A00' },
+  { name: 'Rosa vivo', value: '#FF2D95' },
+  { name: 'Roxo vivo', value: '#8B2FE8' },
+  { name: 'Turquesa', value: '#00C2C7' },
+  { name: 'Verde-lima', value: '#2FCB4F' },
 ];
 
 export default function PinColorPicker({ value, onChange }) {

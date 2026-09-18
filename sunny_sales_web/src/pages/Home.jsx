@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -451,6 +452,10 @@ export default function Home() {
   const [compassReady, setCompassReady] = useState(false);
 
   const mapRef = useRef(null);
+  // Vendedor a focar a partir do URL (?vendor=<id>): é assim que a publicidade
+  // Premium do site abre o mapa já centrado no pin desse vendedor.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const focusedFromUrlRef = useRef(false);
   const isNarrow = useIsNarrow();
   const [isAutoFollowing, setIsAutoFollowing] = useState(true);
 
@@ -765,6 +770,25 @@ export default function Home() {
     // Em telemóvel a lista cobre o mapa: escolher um vendedor volta ao mapa.
     if (isNarrow) setViewMode('map');
   };
+
+  // Quem chega com ?vendor=<id> (a publicidade Premium do site) é levado
+  // diretamente ao pin desse vendedor. Espera-se que a lista carregue e que
+  // o vendedor esteja ativo (com coordenadas); faz-se uma vez só e limpa-se o
+  // parâmetro do URL para não voltar a focar em cada atualização.
+  useEffect(() => {
+    if (focusedFromUrlRef.current) return;
+    const target = searchParams.get('vendor');
+    if (!target) return;
+    const v = vendors.find((x) => String(x.id) === String(target));
+    if (!v || v.current_lat == null || v.current_lng == null) return;
+    focusedFromUrlRef.current = true;
+    focusVendor(v);
+    const next = new URLSearchParams(searchParams);
+    next.delete('vendor');
+    setSearchParams(next, { replace: true });
+    // focusVendor é estável para o efeito (só corre uma vez, guardado por ref).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vendors, searchParams, setSearchParams]);
 
   // Ação principal do painel de pesquisa: enquadra no mapa exatamente o que os
   // filtros deixaram de fora — sem isto, escolher "5 km" não mostra nada de

@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 import { FiArrowUpRight } from 'react-icons/fi';
 import { BASE_URL, TILE_LAYER } from '../config';
+import PremiumAds from '../components/PremiumAds';
 import './Landing.css';
 
 // (em português) Página de entrada. O mapa completo vive em /mapa; aqui
@@ -113,7 +114,7 @@ export default function Landing() {
       <section className="landing-hero">
         <div className="landing-hero-top">
           <h1 className="landing-title">
-            Vendedores de praia, em tempo real.
+            Vendedores, onde precisas.
           </h1>
         </div>
 
@@ -141,6 +142,8 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      <PremiumAds />
 
       <section className="landing-section" id="como-funciona">
         <h2 className="landing-h2">Como funciona</h2>
