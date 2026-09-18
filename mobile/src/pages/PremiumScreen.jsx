@@ -81,7 +81,7 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
   // Endereço da página de avaliação (o mesmo que o QR code contém) e imagem do
   // QR gerada pelo backend. Só fazem sentido para quem tem Premium.
   const reviewUrl = `${WEB_URL.replace(/\/$/, '')}/avaliar/${vendorId}`;
-  const qrSrc = `${BASE_URL}/vendors/${vendorId}/qr.png`;
+  const qrSrc = `${BASE_URL}/vendors/${vendorId}/qr.png?v=2`;
 
   // Média de avaliações, para o vendedor ver o retorno do seu QR code.
   useEffect(() => {
