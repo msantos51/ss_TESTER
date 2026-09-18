@@ -1,6 +1,6 @@
 # schemas.py - define os formatos de dados para entrada e saída
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional, Literal
+from typing import Optional
 from datetime import datetime
 
 class UserLogin(BaseModel):
@@ -22,38 +22,9 @@ class AccountDeleteRequest(BaseModel):
     password: str
 
 
-class VendorProfileUpdate(BaseModel):
-    name: Optional[str] = None
-    email: Optional[str] = None
-    password: Optional[str] = None
-    product: Optional[Literal["Bolas de Berlim", "Gelados", "Acessórios de Praia"]] = None
-    profile_photo: Optional[str] = None
-    pin_color: Optional[str] = None
-    nif: Optional[str] = None
-    id_document_number: Optional[str] = None
-    phone: Optional[str] = None
-    address: Optional[str] = None
-    beaches: Optional[str] = None
-    product_categories: Optional[str] = None
-    iban: Optional[str] = None
-    business_name: Optional[str] = None
-
-class VendorCreate(BaseModel):
-    name: str
-    email: str
-    password: str
-    product: Literal["Bolas de Berlim", "Gelados", "Acessórios de Praia"]
-    profile_photo: str
-    nif: str
-    id_document_number: Optional[str] = None
-    phone: str
-    address: Optional[str] = None
-    beaches: str
-    product_categories: str
-    iban: Optional[str] = None
-    business_name: Optional[str] = None
-    terms_accepted: bool
-
+# O registo e a edição de perfil chegam como multipart/form-data (trazem a
+# fotografia), por isso os campos são declarados em `Form(...)` nos endpoints
+# de main.py — não há aqui um schema de entrada para vendedores.
 class VendorOut(BaseModel):
     id: int
     name: str
