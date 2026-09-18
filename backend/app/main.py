@@ -18,6 +18,7 @@ import os
 from pathlib import Path
 import shutil
 from uuid import uuid4
+import secrets
 import time
 import json
 import base64
@@ -1139,19 +1140,46 @@ def get_vendor(vendor_id: int, db: Session = Depends(get_db)):
 # --------------------------
 # Avaliar um vendedor (1 a 5 estrelas) — destino do QR code Premium
 # --------------------------
+def _consume_qr_token(db: Session, vendor_id: int, token: str) -> None:
+    """Valida e consome o token de uso único do QR code.
+
+    Levanta 410 se o token não existir, já tiver sido usado ou estiver expirado.
+    Em caso de sucesso marca-o como utilizado antes de qualquer commit externo.
+    """
+    now = utcnow()
+    qr_token = (
+        db.query(models.QRToken)
+        .filter(
+            models.QRToken.token == token,
+            models.QRToken.vendor_id == vendor_id,
+            models.QRToken.used == False,
+            models.QRToken.expires_at > now,
+        )
+        .with_for_update()
+        .first()
+    )
+    if not qr_token:
+        raise HTTPException(
+            status_code=410,
+            detail="Este QR code já foi utilizado ou expirou. Pede ao vendedor um novo.",
+        )
+    qr_token.used = True
+
+
 @app.post("/vendors/{vendor_id:int}/reviews", response_model=schemas.ReviewSummary)
 @limiter.limit("20/minute")
 def create_review(
     vendor_id: int,
     payload: schemas.ReviewCreate,
+    t: str,
     request: Request,
     db: Session = Depends(get_db),
 ):
-    """Regista (ou atualiza) a avaliação de quem leu o QR code do vendedor.
+    """Regista a avaliação de quem leu o QR code do vendedor.
 
-    Só vendedores Premium podem ser avaliados — é uma vantagem exclusiva do
-    Premium. Cada avaliador (identificado por um hash anónimo do IP) tem um
-    único voto por vendedor: votar de novo substitui o voto anterior.
+    Exige o token `t` gerado pelo endpoint qr.png — um token de uso único com
+    expiração de 20 min. Após submissão o token é marcado como utilizado:
+    recarregar a página ou aceder ao URL sem escanear de novo não permite votar.
     """
     vendor = (
         db.query(models.Vendor)
@@ -1166,19 +1194,8 @@ def create_review(
             detail="Este vendedor não aceita avaliações.",
         )
 
-    rater_key = _rating_key(request)
-    review = (
-        db.query(models.Review)
-        .filter(
-            models.Review.vendor_id == vendor_id,
-            models.Review.rater_key == rater_key,
-        )
-        .first()
-    )
-    if review:
-        review.rating = payload.rating
-    else:
-        db.add(models.Review(vendor_id=vendor_id, rating=payload.rating, rater_key=rater_key))
+    _consume_qr_token(db, vendor_id, t)
+    db.add(models.Review(vendor_id=vendor_id, rating=payload.rating))
     db.commit()
 
     average, count = _rating_summary(db, vendor_id)
@@ -1197,10 +1214,11 @@ def review_summary(vendor_id: int, db: Session = Depends(get_db)):
 # --------------------------
 @app.get("/vendors/{vendor_id:int}/qr.png", include_in_schema=False)
 def vendor_qr(vendor_id: int, db: Session = Depends(get_db)):
-    """Imagem PNG do QR code que leva à página de avaliação do vendedor.
+    """Imagem PNG do QR code com token de uso único (validade 20 min).
 
-    Só disponível para vendedores Premium: é a vantagem que dá direito ao
-    código pessoal. Quem o lê chega a `/avaliar/{id}` e deixa a sua estrela.
+    Cada pedido gera um novo token e limpa os tokens expirados do vendedor.
+    O URL embutido no QR aponta para `/avaliar/{id}?t={token}` — sem token
+    válido a página de avaliação recusa o formulário.
     """
     vendor = (
         db.query(models.Vendor)
@@ -1215,7 +1233,22 @@ def vendor_qr(vendor_id: int, db: Session = Depends(get_db)):
     except ImportError:
         raise HTTPException(status_code=503, detail="Geração de QR indisponível")
 
-    url = f"{REVIEW_WEB_URL}/avaliar/{vendor_id}"
+    now = utcnow()
+    # Limpar tokens expirados para não acumular
+    db.query(models.QRToken).filter(
+        models.QRToken.vendor_id == vendor_id,
+        models.QRToken.expires_at < now,
+    ).delete()
+
+    token = secrets.token_urlsafe(32)
+    db.add(models.QRToken(
+        vendor_id=vendor_id,
+        token=token,
+        expires_at=now + timedelta(minutes=20),
+    ))
+    db.commit()
+
+    url = f"{REVIEW_WEB_URL}/avaliar/{vendor_id}?t={token}"
     img = qrcode.make(url)
     buffer = io.BytesIO()
     img.save(buffer, format="PNG")
@@ -1223,8 +1256,40 @@ def vendor_qr(vendor_id: int, db: Session = Depends(get_db)):
     return StreamingResponse(
         buffer,
         media_type="image/png",
-        headers={"Cache-Control": "public, max-age=3600"},
+        headers={
+            "Cache-Control": "no-store",
+            # O token também fica num header para facilitar testes automatizados:
+            # quem busca o PNG já tem acesso ao token embutido no QR, portanto
+            # expô-lo aqui não abre nenhum vetor extra.
+            "X-QR-Token": token,
+        },
     )
+
+
+@app.get("/vendors/{vendor_id:int}/check-token", include_in_schema=False)
+def check_qr_token(vendor_id: int, t: str, db: Session = Depends(get_db)):
+    """Verifica se um token QR é válido (existe, não expirou, não foi usado).
+
+    Chamado pela página de avaliação antes de mostrar o formulário. Devolve
+    200 se válido; 410 se inválido, expirado ou já utilizado.
+    """
+    now = utcnow()
+    qr_token = (
+        db.query(models.QRToken)
+        .filter(
+            models.QRToken.token == t,
+            models.QRToken.vendor_id == vendor_id,
+            models.QRToken.used == False,
+            models.QRToken.expires_at > now,
+        )
+        .first()
+    )
+    if not qr_token:
+        raise HTTPException(
+            status_code=410,
+            detail="Este QR code já foi utilizado ou expirou. Pede ao vendedor um novo.",
+        )
+    return {"valid": True}
 
 
 # --------------------------

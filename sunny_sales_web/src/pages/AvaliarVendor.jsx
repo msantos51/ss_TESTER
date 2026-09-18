@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { FiStar, FiCheck } from 'react-icons/fi';
 import { BASE_URL, mediaUrl } from '../config';
 import './AvaliarVendor.css';
 
 // (em português) Página de avaliação — o destino do QR code pessoal de cada
-// vendedor Premium. Quem lê o código chega aqui, escolhe de 1 a 5 estrelas e
-// confirma. A média resultante aparece depois no cartão do vendedor no mapa.
-//
-// Não exige registo nem sessão: a barreira anti-abuso vive no backend, que
-// limita cada avaliador a um voto por vendedor (ver create_review em main.py).
+// vendedor Premium. O acesso exige um token de uso único (`?t=…`) gerado pelo
+// backend ao servir o qr.png. Sem token, ou com token já utilizado/expirado,
+// a página mostra um ecrã de erro — nunca o formulário.
 
 export default function AvaliarVendor() {
   const { vendorId } = useParams();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('t');
+
   const [vendor, setVendor] = useState(null);
-  const [status, setStatus] = useState('loading'); // loading | ready | invalid | done
+  const [status, setStatus] = useState('loading'); // loading | ready | invalid | used | done
   const [hover, setHover] = useState(0);
   const [chosen, setChosen] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -23,41 +24,61 @@ export default function AvaliarVendor() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Sem token no URL → não veio de um QR scan, bloquear imediatamente.
+    if (!token) {
+      setStatus('invalid');
+      return;
+    }
+
     let alive = true;
-    axios
-      .get(`${BASE_URL}/vendors/${vendorId}`)
-      .then((res) => {
+
+    // Valida o token e carrega os dados do vendedor em paralelo.
+    Promise.all([
+      axios.get(`${BASE_URL}/vendors/${vendorId}/check-token`, { params: { t: token } }),
+      axios.get(`${BASE_URL}/vendors/${vendorId}`),
+    ])
+      .then(([, vendorRes]) => {
         if (!alive) return;
-        // Só os vendedores Premium têm QR e recebem avaliações.
-        if (!res.data?.is_premium) {
+        if (!vendorRes.data?.is_premium) {
           setStatus('invalid');
           return;
         }
-        setVendor(res.data);
+        setVendor(vendorRes.data);
         setStatus('ready');
       })
-      .catch(() => {
-        if (alive) setStatus('invalid');
+      .catch((err) => {
+        if (!alive) return;
+        const code = err?.response?.status;
+        // 410 = token já usado ou expirado
+        setStatus(code === 410 ? 'used' : 'invalid');
       });
+
     return () => { alive = false; };
-  }, [vendorId]);
+  }, [vendorId, token]);
 
   const submit = async () => {
     if (!chosen || submitting) return;
     setSubmitting(true);
     setError(null);
     try {
-      const res = await axios.post(`${BASE_URL}/vendors/${vendorId}/reviews`, {
-        rating: chosen,
-      });
+      const res = await axios.post(
+        `${BASE_URL}/vendors/${vendorId}/reviews`,
+        { rating: chosen },
+        { params: { t: token } },
+      );
       setSummary(res.data);
       setStatus('done');
     } catch (err) {
-      setError(
-        err?.response?.status === 403
-          ? 'Este vendedor já não aceita avaliações.'
-          : 'Não foi possível registar a tua avaliação. Tenta de novo.'
-      );
+      const code = err?.response?.status;
+      if (code === 410) {
+        setStatus('used');
+      } else {
+        setError(
+          code === 403
+            ? 'Este vendedor já não aceita avaliações.'
+            : 'Não foi possível registar a tua avaliação. Tenta de novo.',
+        );
+      }
     } finally {
       setSubmitting(false);
     }
@@ -67,6 +88,20 @@ export default function AvaliarVendor() {
     return (
       <div className="rate-page">
         <p className="rate-status" role="status">A carregar…</p>
+      </div>
+    );
+  }
+
+  if (status === 'used') {
+    return (
+      <div className="rate-page">
+        <div className="rate-card">
+          <h1 className="rate-title">QR code já utilizado</h1>
+          <p className="rate-lead">
+            Este código já foi usado para uma avaliação. Para avaliar de novo,
+            pede ao vendedor que gere um novo QR code.
+          </p>
+        </div>
       </div>
     );
   }

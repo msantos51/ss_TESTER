@@ -573,3 +573,22 @@
 .premium-qr-share:active {
   background: var(--sand-alt);
 }
+
+.premium-qr-refresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 1px solid var(--line-field);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.premium-qr-refresh:active {
+  background: var(--sand-alt);
+}

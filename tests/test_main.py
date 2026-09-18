@@ -1241,13 +1241,21 @@ def test_deleting_the_account_clears_the_premium_it_had(client):
 
 
 # --------------------------
-# Avaliações (QR code Premium)
+# Avaliações (QR code Premium — token de uso único)
 # --------------------------
+def _fresh_token(client, vendor_id: int) -> str:
+    """Obtém um token de uso único pedindo o QR code do vendedor."""
+    resp = client.get(f"/vendors/{vendor_id}/qr.png")
+    assert resp.status_code == 200
+    return resp.headers["x-qr-token"]
+
+
 def test_review_premium_vendor_updates_average(client):
     """Avaliar um vendedor Premium regista a estrela e devolve a média."""
     vendor_id, _ = premium_vendor_sharing(client, email="avaliado@example.com")
+    t = _fresh_token(client, vendor_id)
 
-    resp = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 4})
+    resp = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 4}, params={"t": t})
     assert resp.status_code == 200
     assert resp.json() == {"average": 4.0, "count": 1}
 
@@ -1256,35 +1264,60 @@ def test_review_premium_vendor_updates_average(client):
     assert resp.json() == {"average": 4.0, "count": 1}
 
 
-def test_review_is_one_vote_per_rater(client):
-    """Votar de novo do mesmo cliente substitui o voto — não soma."""
-    vendor_id, _ = premium_vendor_sharing(client, email="umvoto@example.com")
+def test_review_token_is_single_use(client):
+    """O mesmo token não pode ser usado duas vezes — segundo uso retorna 410."""
+    vendor_id, _ = premium_vendor_sharing(client, email="usorepetido@example.com")
+    t = _fresh_token(client, vendor_id)
 
-    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 5})
-    resp = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 1})
-    assert resp.status_code == 200
-    assert resp.json() == {"average": 1.0, "count": 1}
+    first = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 5}, params={"t": t})
+    assert first.status_code == 200
+
+    second = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 3}, params={"t": t})
+    assert second.status_code == 410
+
+
+def test_review_without_token_rejected(client):
+    """Submeter sem token retorna 422 (parâmetro obrigatório em falta)."""
+    vendor_id, _ = premium_vendor_sharing(client, email="semtoken@example.com")
+    resp = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 4})
+    assert resp.status_code == 422
 
 
 def test_review_rejects_out_of_range(client):
     """Só 1 a 5 estrelas são aceites."""
     vendor_id, _ = premium_vendor_sharing(client, email="fora@example.com")
-    assert client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 0}).status_code == 422
-    assert client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 6}).status_code == 422
+    t1 = _fresh_token(client, vendor_id)
+    t2 = _fresh_token(client, vendor_id)
+    assert client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 0}, params={"t": t1}).status_code == 422
+    assert client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 6}, params={"t": t2}).status_code == 422
 
 
 def test_review_only_for_premium(client):
     """Sem Premium não há QR nem avaliações: o pedido é recusado."""
     vendor_id, _ = premium_vendor_sharing(client, email="gratuito@example.com", premium=False)
-    resp = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 5})
+    resp = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 5}, params={"t": "qualquercoisa"})
     assert resp.status_code == 403
+
+
+def test_check_token_endpoint(client):
+    """check-token devolve 200 para token válido e 410 para inválido/usado."""
+    vendor_id, _ = premium_vendor_sharing(client, email="checktoken@example.com")
+    t = _fresh_token(client, vendor_id)
+
+    assert client.get(f"/vendors/{vendor_id}/check-token", params={"t": t}).status_code == 200
+
+    # Consumir o token
+    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 4}, params={"t": t})
+
+    assert client.get(f"/vendors/{vendor_id}/check-token", params={"t": t}).status_code == 410
 
 
 def test_rating_average_appears_in_public_listing(client):
     """A média entra no schema público que alimenta o cartão do mapa."""
     vendor_id, token = premium_vendor_sharing(client, email="nolisting@example.com")
     send_location(client, vendor_id, token, 38.0, -9.0)
-    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 3})
+    t = _fresh_token(client, vendor_id)
+    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 3}, params={"t": t})
 
     resp = client.get("/vendors/")
     assert resp.status_code == 200
@@ -1300,6 +1333,7 @@ def test_qr_available_only_for_premium(client):
     assert resp.status_code == 200
     assert resp.headers["content-type"] == "image/png"
     assert resp.content[:8] == b"\x89PNG\r\n\x1a\n"
+    assert "x-qr-token" in resp.headers
 
     free_id, _ = premium_vendor_sharing(client, email="semqr@example.com", premium=False)
     assert client.get(f"/vendors/{free_id}/qr.png").status_code == 404
