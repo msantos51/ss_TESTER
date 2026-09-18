@@ -1,5 +1,5 @@
 # schemas.py - define os formatos de dados para entrada e saída
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, Literal
 from datetime import datetime
 
@@ -99,7 +99,24 @@ class VendorPublicOut(BaseModel):
     payment_methods: Optional[str] = None
     # Marca o vendedor como Premium: é o que põe a estrela no pin do mapa.
     is_premium: bool = False
+    # Média das avaliações (1 a 5) e número de votos. Só os vendedores Premium
+    # acumulam avaliações (têm QR code); nos restantes vem `None`/0.
+    rating_average: Optional[float] = None
+    rating_count: int = 0
     model_config = ConfigDict(from_attributes=True)
+
+
+class ReviewCreate(BaseModel):
+    """Avaliação submetida por quem lê o QR: 1 a 5 estrelas."""
+
+    rating: int = Field(..., ge=1, le=5)
+
+
+class ReviewSummary(BaseModel):
+    """Resumo das avaliações de um vendedor."""
+
+    average: Optional[float] = None
+    count: int = 0
 
 
 class RoutePoint(BaseModel):

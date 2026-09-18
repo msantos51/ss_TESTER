@@ -1,0 +1,154 @@
+/* ---------- Página de avaliação (destino do QR Premium) ----------
+   Um cartão centrado e simples: quem chega aqui veio de um QR code na praia,
+   provavelmente com uma mão ocupada. Uma pergunta, cinco estrelas, um botão. */
+
+.rate-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(24px, 6vw, 64px) 16px;
+}
+
+.rate-card {
+  width: 100%;
+  max-width: 460px;
+  padding: clamp(24px, 5vw, 40px);
+  border-radius: var(--radius-2xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.rate-status {
+  color: var(--text-secondary);
+}
+
+.rate-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  text-align: left;
+  margin-bottom: var(--space-lg);
+}
+
+.rate-photo {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.rate-photo--placeholder {
+  display: block;
+}
+
+.rate-title {
+  margin: 0;
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.rate-sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+}
+
+.rate-lead {
+  margin: 0 0 var(--space-lg);
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+}
+
+.rate-stars {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: var(--space-lg);
+}
+
+.rate-star {
+  padding: 4px;
+  border: none;
+  background: transparent;
+  color: var(--border, #d9d9d9);
+  cursor: pointer;
+  line-height: 0;
+  transition: transform var(--transition), color var(--transition);
+}
+
+.rate-star:hover {
+  transform: scale(1.12);
+}
+
+.rate-star.is-on {
+  color: var(--gold);
+}
+
+.rate-star.is-on svg {
+  fill: currentColor;
+}
+
+.rate-star:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.rate-submit {
+  width: 100%;
+  padding: 14px 18px;
+  border: none;
+  border-radius: var(--radius-panel, 14px);
+  background: var(--gold);
+  color: var(--gold-ink, #3a2c00);
+  font-size: var(--fs-body);
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+.rate-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.rate-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rate-error {
+  margin: 0 0 var(--space-md);
+  font-size: var(--fs-body-sm);
+  color: #c0392b;
+}
+
+.rate-done-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto var(--space-md);
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--gold-ink, #3a2c00);
+}
+
+.rate-average {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: var(--space-md) 0 0;
+  padding: 10px 16px;
+  border-radius: var(--radius-panel, 14px);
+  background: var(--bg, #f6f6f4);
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+}
+
+.rate-average strong {
+  color: var(--text);
+}

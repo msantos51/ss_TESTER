@@ -1449,6 +1449,38 @@
   letter-spacing: 0.06em;
 }
 
+/* Média de avaliações (vantagem do QR code Premium). */
+.card-rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.card-rating-stars {
+  display: inline-flex;
+  gap: 1px;
+  color: var(--border, #d9d9d9);
+  line-height: 0;
+}
+
+.card-rating-stars .is-on {
+  color: var(--gold);
+  fill: var(--gold);
+}
+
+.card-rating-text {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.card-rating-count {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
 .card-payments {
   display: flex;
   justify-content: center;
