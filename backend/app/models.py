@@ -197,6 +197,26 @@ class Review(Base):
     vendor = relationship("Vendor")
 
 
+class QRToken(Base):
+    """Token de uso único gerado ao servir o QR code pessoal do vendedor Premium.
+
+    Cada pedido ao endpoint qr.png cria um token novo com expiração de 20 min.
+    Ao submeter a avaliação, o token é marcado como `used=True`. Tentativas
+    de reutilizar um token já utilizado ou expirado são rejeitadas com 410.
+    """
+
+    __tablename__ = "qr_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vendor_id = Column(Integer, ForeignKey("vendors.id"), index=True)
+    token = Column(String, unique=True, index=True)
+    expires_at = Column(DateTime, nullable=False)
+    used = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=utcnow)
+
+    vendor = relationship("Vendor")
+
+
 class Story(Base):
     """Stories efêmeras publicadas pelos vendedores."""
 

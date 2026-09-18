@@ -81,7 +81,10 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
   // Endereço da página de avaliação (o mesmo que o QR code contém) e imagem do
   // QR gerada pelo backend. Só fazem sentido para quem tem Premium.
   const reviewUrl = `${WEB_URL.replace(/\/$/, '')}/avaliar/${vendorId}`;
-  const qrSrc = `${BASE_URL}/vendors/${vendorId}/qr.png?v=2`;
+  // qrKey muda ao montar o ecrã e ao carregar "Novo QR", forçando um novo
+  // token de uso único no backend (Cache-Control: no-store no endpoint).
+  const [qrKey, setQrKey] = useState(() => Date.now());
+  const qrSrc = `${BASE_URL}/vendors/${vendorId}/qr.png?k=${qrKey}`;
 
   // Média de avaliações, para o vendedor ver o retorno do seu QR code.
   useEffect(() => {
@@ -237,6 +240,13 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
             </div>
             <button type="button" className="premium-qr-share" onClick={shareQr}>
               <FiShare2 size={16} /> Partilhar link de avaliação
+            </button>
+            <button
+              type="button"
+              className="premium-qr-refresh"
+              onClick={() => setQrKey(Date.now())}
+            >
+              <FiRefreshCw size={14} /> Novo QR
             </button>
           </section>
         )}
