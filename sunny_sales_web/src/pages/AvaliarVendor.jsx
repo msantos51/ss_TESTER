@@ -16,6 +16,7 @@ import './AvaliarVendor.css';
 //   • Fechar o separador e abrir o URL de novo: novo token, pode avaliar.
 
 const SESSION_KEY = (vendorId) => `ss_review_token_${vendorId}`;
+const RATED_KEY = (vendorId) => `ss_rated_${vendorId}`;
 
 export default function AvaliarVendor() {
   const { vendorId } = useParams();
@@ -33,6 +34,11 @@ export default function AvaliarVendor() {
     let alive = true;
 
     const init = async () => {
+      // Se este dispositivo já avaliou este vendedor, mostrar mensagem sem pedir token.
+      try {
+        if (localStorage.getItem(RATED_KEY(vendorId))) { setStatus('used'); return; }
+      } catch { /* privado */ }
+
       // Tentar reutilizar o token desta sessão de browser.
       let sessionToken = null;
       try { sessionToken = sessionStorage.getItem(SESSION_KEY(vendorId)); } catch { /* privado */ }
@@ -77,8 +83,9 @@ export default function AvaliarVendor() {
         { rating: chosen },
         { params: { t: token } },
       );
-      // Token consumido — limpar da sessão para que uma próxima abertura peça um novo.
+      // Token consumido — limpar da sessão e marcar dispositivo como "já avaliou".
       try { sessionStorage.removeItem(SESSION_KEY(vendorId)); } catch { /* privado */ }
+      try { localStorage.setItem(RATED_KEY(vendorId), '1'); } catch { /* privado */ }
       setSummary(res.data);
       setStatus('done');
     } catch (err) {

@@ -12,6 +12,43 @@
   overflow-y: auto;
 }
 
+/* Cabeçalho — painel branco com margem lateral, igual ao Premium/QR. */
+.screen-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  margin: 16px 16px 0;
+  padding: 18px 20px;
+  border-radius: var(--r-card-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-card);
+}
+
+.screen-head-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.screen-title {
+  font-size: var(--fs-title);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.screen-subtitle {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
 .products-overlay {
   position: fixed;
   inset: 0;
@@ -34,7 +71,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 0 16px 24px;
+  padding: 16px 16px 24px;
 }
 
 /* Botão + do cabeçalho. */
