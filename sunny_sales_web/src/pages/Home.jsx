@@ -1094,6 +1094,23 @@ export default function Home() {
                     )}
                   </div>
                 </div>
+                {selected.rating_count > 0 && (
+                  <div className="card-rating" title={`${selected.rating_count} avaliações`}>
+                    <span className="card-rating-stars" aria-hidden="true">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <FiStar
+                          key={n}
+                          size={14}
+                          className={n <= Math.round(selected.rating_average) ? 'is-on' : ''}
+                        />
+                      ))}
+                    </span>
+                    <span className="card-rating-text">
+                      {selected.rating_average.toFixed(1)}
+                      <span className="card-rating-count"> ({selected.rating_count})</span>
+                    </span>
+                  </div>
+                )}
                 {selected.payment_methods && (
                   <div className="card-payments">
                     {selected.payment_methods.split(',').map((m) => {

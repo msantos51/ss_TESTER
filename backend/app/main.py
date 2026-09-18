@@ -5,9 +5,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
-from sqlalchemy import or_
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse, StreamingResponse
+from sqlalchemy import or_, func
 from sqlalchemy.orm import Session
+import io
 from passlib.context import CryptContext
 from . import models, schemas
 import stripe
@@ -316,6 +317,11 @@ _init_db()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 BASE_APP_URL = os.getenv("BASE_APP_URL", "https://sstester-production.up.railway.app")
+
+# Onde vive a página de avaliação que o QR code do vendedor abre. Por omissão é
+# o próprio servidor (que também serve o site), mas pode apontar-se para o
+# domínio público do site com REVIEW_WEB_URL.
+REVIEW_WEB_URL = os.getenv("REVIEW_WEB_URL", BASE_APP_URL).rstrip("/")
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 RESEND_FROM = os.getenv("RESEND_FROM", "Sunny Sales <onboarding@resend.dev>")
@@ -1017,6 +1023,57 @@ async def create_vendor(
 # --------------------------
 # Listar vendedores
 # --------------------------
+# --------------------------
+# Avaliações (1 a 5 estrelas) — vantagem do QR code Premium
+# --------------------------
+def _rating_key(request: Request) -> str:
+    """Identificador anónimo de quem avalia: hash do IP.
+
+    Serve só para impedir votos repetidos da mesma pessoa (um novo voto
+    substitui o anterior). Não guarda o IP em claro.
+    """
+    ip = get_remote_address(request) or "anon"
+    return hashlib.sha256(ip.encode("utf-8")).hexdigest()
+
+
+def _rating_summary(db: Session, vendor_id: int) -> tuple[float | None, int]:
+    """Média (arredondada a 1 casa) e número de avaliações de um vendedor."""
+    avg, count = (
+        db.query(func.avg(models.Review.rating), func.count(models.Review.id))
+        .filter(models.Review.vendor_id == vendor_id)
+        .one()
+    )
+    if not count:
+        return None, 0
+    return round(float(avg), 1), int(count)
+
+
+def _attach_ratings(db: Session, vendors: list[models.Vendor]) -> None:
+    """Preenche `rating_average`/`rating_count` em cada vendedor de uma lista.
+
+    Faz uma só query agregada para toda a lista, evitando um pedido por
+    vendedor (problema N+1).
+    """
+    ids = [v.id for v in vendors]
+    ratings: dict[int, tuple[float, int]] = {}
+    if ids:
+        rows = (
+            db.query(
+                models.Review.vendor_id,
+                func.avg(models.Review.rating),
+                func.count(models.Review.id),
+            )
+            .filter(models.Review.vendor_id.in_(ids))
+            .group_by(models.Review.vendor_id)
+            .all()
+        )
+        ratings = {vid: (round(float(avg), 1), int(cnt)) for vid, avg, cnt in rows}
+    for v in vendors:
+        avg, cnt = ratings.get(v.id, (None, 0))
+        v.rating_average = avg
+        v.rating_count = cnt
+
+
 @app.get("/vendors/", response_model=list[schemas.VendorPublicOut])
 def list_vendors(
     lat: float | None = None,
@@ -1055,9 +1112,12 @@ def list_vendors(
     # O vendedor autenticado vê-se sempre a si próprio, esteja onde estiver: o
     # raio é sobre quem o procura, não sobre quem se vê a si mesmo na app.
     if current_vendor or lat is None or lng is None:
+        _attach_ratings(db, vendors)
         return vendors
 
-    return [v for v in vendors if _within_reach(v, lat, lng)]
+    reachable = [v for v in vendors if _within_reach(v, lat, lng)]
+    _attach_ratings(db, reachable)
+    return reachable
 
 
 # --------------------------
@@ -1072,7 +1132,99 @@ def get_vendor(vendor_id: int, db: Session = Depends(get_db)):
     )
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendedor não encontrado")
+    vendor.rating_average, vendor.rating_count = _rating_summary(db, vendor.id)
     return vendor
+
+
+# --------------------------
+# Avaliar um vendedor (1 a 5 estrelas) — destino do QR code Premium
+# --------------------------
+@app.post("/vendors/{vendor_id:int}/reviews", response_model=schemas.ReviewSummary)
+@limiter.limit("20/minute")
+def create_review(
+    vendor_id: int,
+    payload: schemas.ReviewCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    """Regista (ou atualiza) a avaliação de quem leu o QR code do vendedor.
+
+    Só vendedores Premium podem ser avaliados — é uma vantagem exclusiva do
+    Premium. Cada avaliador (identificado por um hash anónimo do IP) tem um
+    único voto por vendedor: votar de novo substitui o voto anterior.
+    """
+    vendor = (
+        db.query(models.Vendor)
+        .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
+        .first()
+    )
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendedor não encontrado")
+    if not vendor.is_premium:
+        raise HTTPException(
+            status_code=403,
+            detail="Este vendedor não aceita avaliações.",
+        )
+
+    rater_key = _rating_key(request)
+    review = (
+        db.query(models.Review)
+        .filter(
+            models.Review.vendor_id == vendor_id,
+            models.Review.rater_key == rater_key,
+        )
+        .first()
+    )
+    if review:
+        review.rating = payload.rating
+    else:
+        db.add(models.Review(vendor_id=vendor_id, rating=payload.rating, rater_key=rater_key))
+    db.commit()
+
+    average, count = _rating_summary(db, vendor_id)
+    return schemas.ReviewSummary(average=average, count=count)
+
+
+@app.get("/vendors/{vendor_id:int}/reviews/summary", response_model=schemas.ReviewSummary)
+def review_summary(vendor_id: int, db: Session = Depends(get_db)):
+    """Média e número de avaliações de um vendedor (público)."""
+    average, count = _rating_summary(db, vendor_id)
+    return schemas.ReviewSummary(average=average, count=count)
+
+
+# --------------------------
+# QR code pessoal do vendedor Premium
+# --------------------------
+@app.get("/vendors/{vendor_id:int}/qr.png", include_in_schema=False)
+def vendor_qr(vendor_id: int, db: Session = Depends(get_db)):
+    """Imagem PNG do QR code que leva à página de avaliação do vendedor.
+
+    Só disponível para vendedores Premium: é a vantagem que dá direito ao
+    código pessoal. Quem o lê chega a `/avaliar/{id}` e deixa a sua estrela.
+    """
+    vendor = (
+        db.query(models.Vendor)
+        .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
+        .first()
+    )
+    if not vendor or not vendor.is_premium:
+        raise HTTPException(status_code=404, detail="QR code não disponível")
+
+    try:
+        import qrcode
+    except ImportError:
+        raise HTTPException(status_code=503, detail="Geração de QR indisponível")
+
+    url = f"{REVIEW_WEB_URL}/avaliar/{vendor_id}"
+    img = qrcode.make(url)
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+    return StreamingResponse(
+        buffer,
+        media_type="image/png",
+        headers={"Cache-Control": "public, max-age=3600"},
+    )
 
 
 # --------------------------

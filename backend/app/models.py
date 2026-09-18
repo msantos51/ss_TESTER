@@ -172,6 +172,31 @@ class Product(Base):
     vendor = relationship("Vendor")
 
 
+class Review(Base):
+    """Avaliação (1 a 5 estrelas) deixada por um cliente a um vendedor Premium.
+
+    O vendedor Premium tem um QR code pessoal (ver /vendors/{id}/qr.png). Quem o
+    lê chega à página de avaliação e deixa uma classificação de 1 a 5 estrelas.
+    A média destas avaliações aparece no cartão do vendedor no mapa.
+
+    `rater_key` é um identificador anónimo de quem avalia (hash do IP): serve
+    apenas para impedir que a mesma pessoa empole a média com votos repetidos —
+    um novo voto do mesmo `rater_key` substitui o anterior. Nunca guarda o IP em
+    claro nem qualquer dado pessoal.
+    """
+
+    __tablename__ = "reviews"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vendor_id = Column(Integer, ForeignKey("vendors.id"), index=True)
+    rating = Column(Integer, nullable=False)
+    rater_key = Column(String, nullable=True, index=True)
+    created_at = Column(DateTime, default=utcnow)
+    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
+
+    vendor = relationship("Vendor")
+
+
 class Story(Base):
     """Stories efêmeras publicadas pelos vendedores."""
 

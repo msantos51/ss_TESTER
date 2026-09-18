@@ -38,6 +38,7 @@ const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions'));
 const LegalNotice = lazy(() => import('./pages/LegalNotice'));
 const CookiesPolicy = lazy(() => import('./pages/CookiesPolicy'));
 const AccountDeletion = lazy(() => import('./pages/AccountDeletion'));
+const AvaliarVendor = lazy(() => import('./pages/AvaliarVendor'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Rotas sem botão de voltar global: a página de entrada e o mapa, que têm UI
@@ -223,6 +224,9 @@ function AppLayout() {
           {/* Exigida pela Google Play: eliminação de conta acessível
               fora da app, para quem já a desinstalou. */}
           <Route path="/eliminar-conta" element={<AccountDeletion />} />
+          {/* Destino do QR code pessoal dos vendedores Premium: avaliação
+              de 1 a 5 estrelas sem registo. */}
+          <Route path="/avaliar/:vendorId" element={<AvaliarVendor />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>

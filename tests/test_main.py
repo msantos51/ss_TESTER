@@ -1238,3 +1238,68 @@ def test_deleting_the_account_clears_the_premium_it_had(client):
         assert vendor.premium_valid_until is None
     finally:
         db.close()
+
+
+# --------------------------
+# Avaliações (QR code Premium)
+# --------------------------
+def test_review_premium_vendor_updates_average(client):
+    """Avaliar um vendedor Premium regista a estrela e devolve a média."""
+    vendor_id, _ = premium_vendor_sharing(client, email="avaliado@example.com")
+
+    resp = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 4})
+    assert resp.status_code == 200
+    assert resp.json() == {"average": 4.0, "count": 1}
+
+    # O resumo público reflete a avaliação.
+    resp = client.get(f"/vendors/{vendor_id}/reviews/summary")
+    assert resp.json() == {"average": 4.0, "count": 1}
+
+
+def test_review_is_one_vote_per_rater(client):
+    """Votar de novo do mesmo cliente substitui o voto — não soma."""
+    vendor_id, _ = premium_vendor_sharing(client, email="umvoto@example.com")
+
+    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 5})
+    resp = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 1})
+    assert resp.status_code == 200
+    assert resp.json() == {"average": 1.0, "count": 1}
+
+
+def test_review_rejects_out_of_range(client):
+    """Só 1 a 5 estrelas são aceites."""
+    vendor_id, _ = premium_vendor_sharing(client, email="fora@example.com")
+    assert client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 0}).status_code == 422
+    assert client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 6}).status_code == 422
+
+
+def test_review_only_for_premium(client):
+    """Sem Premium não há QR nem avaliações: o pedido é recusado."""
+    vendor_id, _ = premium_vendor_sharing(client, email="gratuito@example.com", premium=False)
+    resp = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 5})
+    assert resp.status_code == 403
+
+
+def test_rating_average_appears_in_public_listing(client):
+    """A média entra no schema público que alimenta o cartão do mapa."""
+    vendor_id, token = premium_vendor_sharing(client, email="nolisting@example.com")
+    send_location(client, vendor_id, token, 38.0, -9.0)
+    client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 3})
+
+    resp = client.get("/vendors/")
+    assert resp.status_code == 200
+    entry = next(v for v in resp.json() if v["id"] == vendor_id)
+    assert entry["rating_average"] == 3.0
+    assert entry["rating_count"] == 1
+
+
+def test_qr_available_only_for_premium(client):
+    """O QR code PNG só existe para vendedores Premium."""
+    premium_id, _ = premium_vendor_sharing(client, email="comqr@example.com")
+    resp = client.get(f"/vendors/{premium_id}/qr.png")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"] == "image/png"
+    assert resp.content[:8] == b"\x89PNG\r\n\x1a\n"
+
+    free_id, _ = premium_vendor_sharing(client, email="semqr@example.com", premium=False)
+    assert client.get(f"/vendors/{free_id}/qr.png").status_code == 404

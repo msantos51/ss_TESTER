@@ -477,3 +477,99 @@
   color: var(--text-muted);
   text-align: justify;
 }
+
+/* ---------- QR code pessoal (vantagem Premium) ---------- */
+.premium-qr-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border-radius: var(--r-card-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-card);
+}
+
+.premium-qr-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.premium-qr-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.premium-qr-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: var(--sun-soft);
+  color: var(--sun-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.premium-qr-rating svg {
+  color: var(--sun);
+  fill: var(--sun);
+}
+
+.premium-qr-rating-count {
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.premium-qr-rating--empty {
+  background: var(--sand-alt);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.premium-qr-desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.premium-qr-image {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  background: #fff;
+  border-radius: var(--r-icon);
+  border: 1px solid var(--line);
+}
+
+.premium-qr-image img {
+  width: 200px;
+  height: 200px;
+  max-width: 100%;
+  image-rendering: pixelated;
+}
+
+.premium-qr-share {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--line-field);
+  border-radius: var(--r-pill);
+  background: var(--field-bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.premium-qr-share:active {
+  background: var(--sand-alt);
+}
