@@ -7,7 +7,7 @@ import MapTab from './pages/MapTab.jsx';
 import DashboardScreen from './pages/DashboardScreen.jsx';
 import ProductsScreen from './pages/ProductsScreen.jsx';
 import PremiumScreen from './pages/PremiumScreen.jsx';
-import RoutesScreen from './pages/RoutesScreen.jsx';
+import QRScreen from './pages/QRScreen.jsx';
 import TabBar from './components/TabBar.jsx';
 
 export default function App() {
@@ -111,7 +111,7 @@ export default function App() {
         id: 'premium',
         node: <PremiumScreen auth={auth} onUserUpdate={handleUserUpdate} />,
       },
-      { id: 'routes', node: <RoutesScreen auth={auth} /> },
+      { id: 'qr', node: <QRScreen auth={auth} onGoPremium={() => goToTab('premium')} /> },
       {
         id: 'account',
         node: (

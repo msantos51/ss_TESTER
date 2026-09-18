@@ -1,16 +1,13 @@
 import React from 'react';
-import { FiMapPin, FiShoppingBag, FiNavigation, FiStar, FiUser } from 'react-icons/fi';
+import { FiMapPin, FiShoppingBag, FiStar, FiUser } from 'react-icons/fi';
+import { RiQrCodeLine } from 'react-icons/ri';
 import './TabBar.css';
 
-// (em português) Barra de separadores fixa no fundo de todos os ecrãs
-// autenticados. Substitui a antiga alternância entre mapa e dashboard.
-// O Premium fica ao centro: é a decisão que queremos à mão, e a Conta deixou
-// de ter a linha "Produtos" porque o separador já a substitui.
 export const TABS = [
   { id: 'map', label: 'Mapa', icon: FiMapPin },
   { id: 'products', label: 'Produtos', icon: FiShoppingBag },
   { id: 'premium', label: 'Premium', icon: FiStar },
-  { id: 'routes', label: 'Trajetos', icon: FiNavigation },
+  { id: 'qr', label: 'QR Code', icon: RiQrCodeLine },
   { id: 'account', label: 'Conta', icon: FiUser },
 ];
 

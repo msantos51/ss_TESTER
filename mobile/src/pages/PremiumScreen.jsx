@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   FiStar, FiRadio, FiImage, FiCheck, FiAlertTriangle, FiRefreshCw, FiArrowRight,
-  FiShare2,
 } from 'react-icons/fi';
-import { BASE_URL, WEB_URL } from '../config.js';
+import { BASE_URL } from '../config.js';
 import '../styles/PremiumScreen.css';
 
 // (em português) Preço do Premium, a única compra da app: um pagamento único
@@ -71,49 +70,10 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
 
-  const [summary, setSummary] = useState(null);
-
   const isPremium = Boolean(user?.is_premium);
   const validUntil = user?.premium_valid_until
     ? new Date(user.premium_valid_until).toLocaleDateString('pt-PT')
     : null;
-
-  // Endereço da página de avaliação (o mesmo que o QR code contém) e imagem do
-  // QR gerada pelo backend. Só fazem sentido para quem tem Premium.
-  const reviewUrl = `${WEB_URL.replace(/\/$/, '')}/avaliar/${vendorId}`;
-  // qrKey muda ao montar o ecrã e ao carregar "Novo QR", forçando um novo
-  // token de uso único no backend (Cache-Control: no-store no endpoint).
-  const [qrKey, setQrKey] = useState(() => Date.now());
-  const qrSrc = `${BASE_URL}/vendors/${vendorId}/qr.png?k=${qrKey}`;
-
-  // Média de avaliações, para o vendedor ver o retorno do seu QR code.
-  useEffect(() => {
-    if (!isPremium) { setSummary(null); return; }
-    let alive = true;
-    fetch(`${BASE_URL}/vendors/${vendorId}/reviews/summary`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => { if (alive) setSummary(data); })
-      .catch(() => {});
-    return () => { alive = false; };
-  }, [isPremium, vendorId]);
-
-  const shareQr = async () => {
-    // Partilha nativa quando disponível (permite guardar/enviar o link do QR);
-    // caso contrário copia o endereço para a área de transferência.
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'Avalia-me na Sunny Sales',
-          text: 'Deixa a tua avaliação de 1 a 5 estrelas:',
-          url: reviewUrl,
-        });
-      } else if (navigator.clipboard) {
-        await navigator.clipboard.writeText(reviewUrl);
-      }
-    } catch {
-      /* utilizador cancelou a partilha — sem erro a mostrar */
-    }
-  };
 
   // O pagamento acontece no browser do sistema, fora da app: ao voltar, o
   // estado guardado ainda é o de antes de comprar. Recarregar o perfil é o que
@@ -211,45 +171,6 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
             <FiRefreshCw size={16} className={refreshing ? 'is-spinning' : undefined} />
           </button>
         </div>
-
-        {isPremium && (
-          <section className="premium-qr-card">
-            <div className="premium-qr-head">
-              <h2 className="premium-qr-title">O teu QR code</h2>
-              {summary?.average != null ? (
-                <span className="premium-qr-rating">
-                  <FiStar size={14} />
-                  <strong>{summary.average.toFixed(1)}</strong>
-                  <span className="premium-qr-rating-count">
-                    ({summary.count})
-                  </span>
-                </span>
-              ) : (
-                <span className="premium-qr-rating premium-qr-rating--empty">
-                  Sem avaliações ainda
-                </span>
-              )}
-            </div>
-            <p className="premium-qr-desc">
-              Mostra-o no teu ponto de venda. Quem o ler deixa-te uma
-              classificação de 1 a 5 estrelas — e a tua média aparece no
-              cartão do mapa.
-            </p>
-            <div className="premium-qr-image">
-              <img src={qrSrc} alt="QR code para avaliação do vendedor" />
-            </div>
-            <button type="button" className="premium-qr-share" onClick={shareQr}>
-              <FiShare2 size={16} /> Partilhar link de avaliação
-            </button>
-            <button
-              type="button"
-              className="premium-qr-refresh"
-              onClick={() => setQrKey(Date.now())}
-            >
-              <FiRefreshCw size={14} /> Novo QR
-            </button>
-          </section>
-        )}
 
         <section className="premium-group">
           <h2 className="ss-group-label">O que ganhas</h2>
