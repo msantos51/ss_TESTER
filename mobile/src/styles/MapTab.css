@@ -384,36 +384,6 @@
   box-shadow: var(--site-shadow-lg);
 }
 
-.share-metrics {
-  display: flex;
-  gap: 10px;
-}
-
-.share-metric {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 12px 14px;
-  border-radius: var(--site-radius-control);
-  background: var(--site-surface-alt);
-}
-
-.share-metric-label {
-  font-size: var(--site-fs-caption);
-  font-weight: 500;
-  color: var(--site-text-muted);
-}
-
-.share-metric-value {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--site-text);
-  font-variant-numeric: tabular-nums;
-}
-
 /* A única ação âncora do ecrã: Gunmetal para iniciar, coral para parar —
    parar é a única coisa urgente que este ecrã tem. */
 .share-btn {

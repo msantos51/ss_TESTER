@@ -49,7 +49,6 @@ export default function AvaliarVendor() {
           axios.get(`${BASE_URL}/vendors/${vendorId}`),
         ]);
         if (!alive) return;
-        if (!vendorRes.data?.is_premium) { setStatus('invalid'); return; }
         setVendor(vendorRes.data);
 
         if (!sessionToken) {
@@ -150,7 +149,7 @@ export default function AvaliarVendor() {
             A tua avaliação de <strong>{chosen}</strong>{' '}
             {chosen === 1 ? 'estrela' : 'estrelas'} foi registada.
           </p>
-          {summary?.average != null && (
+          {vendor?.is_premium && summary?.average != null && (
             <p className="rate-average">
               <FiStar size={16} aria-hidden="true" />
               <span>

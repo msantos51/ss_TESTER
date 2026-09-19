@@ -1241,7 +1241,9 @@ def test_deleting_the_account_clears_the_premium_it_had(client):
 
 
 # --------------------------
-# Avaliações (QR code Premium — token de uso único gerado ao abrir o URL)
+# Avaliações (QR code — token de uso único gerado ao abrir o URL)
+# O QR code é de todos os vendedores; o que o Premium acrescenta é mostrar a
+# pontuação (média e nº de estrelas) no cartão do mapa e no separador do QR.
 # --------------------------
 def _fresh_token(client, vendor_id: int) -> str:
     """Simula a abertura do URL do QR code: pede um token de avaliação fresco."""
@@ -1292,11 +1294,22 @@ def test_review_rejects_out_of_range(client):
     assert client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 6}, params={"t": t2}).status_code == 422
 
 
-def test_review_only_for_premium(client):
-    """Sem Premium não há QR nem avaliações: o pedido é recusado."""
+def test_review_accepted_for_free_vendor(client):
+    """Sem Premium o vendedor também recolhe avaliações — só não as mostra."""
     vendor_id, _ = premium_vendor_sharing(client, email="gratuito@example.com", premium=False)
-    resp = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 5}, params={"t": "qualquercoisa"})
-    assert resp.status_code == 403
+    t = _fresh_token(client, vendor_id)
+    resp = client.post(f"/vendors/{vendor_id}/reviews", json={"rating": 5}, params={"t": t})
+    assert resp.status_code == 200
+    # A pontuação fica escondida: mostrá-la é que é a vantagem Premium.
+    assert resp.json() == {"average": None, "count": 0}
+    assert client.get(f"/vendors/{vendor_id}/reviews/summary").json() == {"average": None, "count": 0}
+    entry = client.get(f"/vendors/{vendor_id}").json()
+    assert entry["rating_average"] is None and entry["rating_count"] == 0
+
+    # Um token inválido continua a ser recusado.
+    assert client.post(
+        f"/vendors/{vendor_id}/reviews", json={"rating": 5}, params={"t": "qualquercoisa"}
+    ).status_code == 410
 
 
 def test_review_token_endpoint(client):
@@ -1323,13 +1336,16 @@ def test_rating_average_appears_in_public_listing(client):
     assert entry["rating_count"] == 1
 
 
-def test_qr_available_only_for_premium(client):
-    """O QR code PNG só existe para vendedores Premium; URL é estático."""
+def test_qr_available_for_every_vendor(client):
+    """O QR code PNG existe para qualquer vendedor; URL é estático."""
     premium_id, _ = premium_vendor_sharing(client, email="comqr@example.com")
     resp = client.get(f"/vendors/{premium_id}/qr.png")
     assert resp.status_code == 200
     assert resp.headers["content-type"] == "image/png"
     assert resp.content[:8] == b"\x89PNG\r\n\x1a\n"
 
+    # Sem Premium o QR é igual: é a pontuação que fica reservada ao Premium.
     free_id, _ = premium_vendor_sharing(client, email="semqr@example.com", premium=False)
-    assert client.get(f"/vendors/{free_id}/qr.png").status_code == 404
+    free_resp = client.get(f"/vendors/{free_id}/qr.png")
+    assert free_resp.status_code == 200
+    assert free_resp.content[:8] == b"\x89PNG\r\n\x1a\n"

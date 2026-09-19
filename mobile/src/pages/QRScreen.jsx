@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { FiShare2, FiStar } from 'react-icons/fi';
+import { FiShare2, FiStar, FiLock } from 'react-icons/fi';
 import { BASE_URL, WEB_URL } from '../config.js';
 import '../styles/PremiumScreen.css';
 
-// (em português) Separador dedicado ao QR code pessoal do vendedor Premium.
+// (em português) Separador dedicado ao QR code pessoal do vendedor.
 // Substitui o separador de Trajetos, que foi removido.
-// Não-Premium: mostra um cartão de convite simples.
-// Premium: mostra o QR code + botões de partilha e de geração de novo código.
+// O QR code é de todos — sem ele o vendedor não tinha como recolher
+// avaliações. O que o Premium acrescenta é mostrar a pontuação: a média e o
+// número de estrelas, aqui e no cartão do mapa. Sem Premium as avaliações
+// continuam a ser registadas, só não estão à vista.
 
 export default function QRScreen({ auth, onGoPremium }) {
   const { user, vendorId } = auth;
@@ -43,44 +45,22 @@ export default function QRScreen({ auth, onGoPremium }) {
     }
   };
 
-  if (!isPremium) {
-    return (
-      <div className="premium-screen">
-        <header className="premium-header">
-          <span className="premium-badge">
-            <FiStar size={13} /> Premium
-          </span>
-          <h1 className="premium-title">O teu QR code pessoal</h1>
-          <p className="premium-lead">
-            Com o Premium recebes um QR code que os clientes lêem para te
-            deixar uma avaliação de 1 a 5 estrelas. A tua média aparece no
-            cartão do mapa.
-          </p>
-        </header>
-        <div className="premium-body">
-          <button
-            type="button"
-            className="premium-cta"
-            style={{ marginTop: 0 }}
-            onClick={onGoPremium}
-          >
-            Ativar Premium
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="premium-screen">
       <header className="premium-header">
-        <span className="premium-badge">
-          <FiStar size={13} /> Premium
-        </span>
+        {isPremium && (
+          <span className="premium-badge">
+            <FiStar size={13} /> Premium
+          </span>
+        )}
         <h1 className="premium-title">O teu QR code pessoal</h1>
         <p className="premium-lead">
-          Imprime-o ou mostra-o na app. Cada leitura gera automaticamente um
-          código de uso único — uma avaliação por scan, sem repetições.
+          {isPremium
+            ? `Imprime-o ou mostra-o na app. Cada leitura gera automaticamente um
+               código de uso único — uma avaliação por scan, sem repetições.`
+            : `Imprime-o ou mostra-o na app: quem o lê deixa-te uma classificação
+               de 1 a 5 estrelas. Com Premium passas a ver a tua pontuação — aqui
+               e no cartão do mapa.`}
         </p>
       </header>
 
@@ -88,7 +68,13 @@ export default function QRScreen({ auth, onGoPremium }) {
         <section className="premium-qr-card">
           <div className="premium-qr-head">
             <h2 className="premium-qr-title">QR code</h2>
-            {summary?.average != null ? (
+            {/* A pontuação é a vantagem Premium: sem ele fica o cadeado no
+                lugar da média, para o vendedor perceber o que lhe falta. */}
+            {!isPremium ? (
+              <span className="premium-qr-rating premium-qr-rating--locked">
+                <FiLock size={13} /> Pontuação com Premium
+              </span>
+            ) : summary?.average != null ? (
               <span className="premium-qr-rating">
                 <FiStar size={14} />
                 <strong>{summary.average.toFixed(1)}</strong>
@@ -101,8 +87,12 @@ export default function QRScreen({ auth, onGoPremium }) {
             )}
           </div>
           <p className="premium-qr-desc">
-            Quem o ler deixa-te uma classificação de 1 a 5 estrelas — e a tua
-            média aparece no cartão do mapa.
+            {isPremium
+              ? `Quem o ler deixa-te uma classificação de 1 a 5 estrelas — e a tua
+                 média aparece no cartão do mapa.`
+              : `Quem o ler deixa-te uma classificação de 1 a 5 estrelas. As
+                 avaliações ficam guardadas; só com Premium é que a média passa a
+                 aparecer aqui e no cartão do mapa.`}
           </p>
           <div className="premium-qr-image">
             <img src={qrSrc} alt="QR code para avaliação do vendedor" />
@@ -110,6 +100,16 @@ export default function QRScreen({ auth, onGoPremium }) {
           <button type="button" className="premium-qr-share" onClick={shareQr}>
             <FiShare2 size={16} /> Partilhar link de avaliação
           </button>
+          {!isPremium && (
+            <button
+              type="button"
+              className="premium-cta"
+              style={{ marginTop: 0 }}
+              onClick={onGoPremium}
+            >
+              Ativar Premium
+            </button>
+          )}
         </section>
       </div>
     </div>
