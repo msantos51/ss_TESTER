@@ -1,13 +1,8 @@
 # models.py - define as tabelas no PostgreSQL
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean, DateTime
 from sqlalchemy.orm import relationship
-from datetime import datetime, timezone
 from .database import Base
-
-
-def utcnow():
-    """Return current UTC time as a naive datetime."""
-    return datetime.now(timezone.utc).replace(tzinfo=None)
+from .utils import utcnow
 
 class Vendor(Base):
     """Tabela principal de vendedores (utilizadores)."""
@@ -25,7 +20,7 @@ class Vendor(Base):
     pin_color = Column(String, default="#1D5C3A")
     current_lat = Column(Float, nullable=True)
     current_lng = Column(Float, nullable=True)
-    # Premium — a única compra da plataforma (ver PREMIUM_PLAN em main.py). Dá
+    # Premium — a única compra da plataforma (ver PREMIUM_PLAN em config.py). Dá
     # estrela no pin, alcance de 1 km em vez de 300 m e fotos nos produtos.
     # Sem ele o vendedor fica no plano gratuito: aparece na mesma no mapa.
     premium_active = Column(Boolean, default=False)
@@ -37,7 +32,6 @@ class Vendor(Base):
     email_change_token = Column(String, nullable=True, index=True)
     password_reset_token = Column(String, nullable=True, index=True)
     password_reset_expires = Column(DateTime, nullable=True)
-    session_token = Column(String, nullable=True, index=True)
     payment_methods = Column(String, nullable=True)
 
     # Identificação e compliance
@@ -180,7 +174,8 @@ class Review(Base):
 class QRToken(Base):
     """Token de uso único gerado ao abrir a página do QR code do vendedor.
 
-    Cada pedido ao endpoint qr.png cria um token novo com expiração de 20 min.
+    A página de avaliação pede um token novo (POST /vendors/{id}/review-token)
+    a cada leitura do QR, com expiração de 20 min.
     Ao submeter a avaliação, o token é marcado como `used=True`. Tentativas
     de reutilizar um token já utilizado ou expirado são rejeitadas com 410.
     """

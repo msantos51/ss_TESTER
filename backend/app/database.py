@@ -55,6 +55,9 @@ def get_db():
 #   vendors.license_number, license_municipality, license_expiry,
 #   license_type, license_document
 #       nunca chegaram a ser usados
+#   vendors.session_token
+#       antecessor da tabela `vendor_sessions`, que hoje guarda uma linha por
+#       dispositivo; a coluna deixou de ser lida ou escrita
 #   reviews.rater_key
 #       identificador anónimo de quem avalia, nunca preenchido: os votos
 #       repetidos são travados pelo QRToken de uso único
@@ -77,7 +80,6 @@ def ensure_latest_schema():
     if "vendors" in tables:
         columns = {c["name"] for c in inspector.get_columns("vendors")}
         migrations = [
-            ("session_token", "ALTER TABLE vendors ADD COLUMN session_token TEXT"),
             ("email_confirmed", "ALTER TABLE vendors ADD COLUMN email_confirmed BOOLEAN DEFAULT false"),
             ("confirmation_token", "ALTER TABLE vendors ADD COLUMN confirmation_token TEXT"),
             ("pending_email", "ALTER TABLE vendors ADD COLUMN pending_email TEXT"),

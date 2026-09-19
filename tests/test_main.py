@@ -1,11 +1,12 @@
 # Testes automatizados do backend com pytest
 import os
-import importlib
+import sys
 import itertools
 import shutil
 from datetime import datetime, timedelta
 
 import pytest
+import stripe
 from fastapi.testclient import TestClient
 
 # Fixture to create a new app with a fresh database for each test
@@ -16,11 +17,12 @@ def client(tmp_path):
     os.environ["ADMIN_TOKEN"] = "test-admin-token"
     os.environ["STRIPE_WEBHOOK_SECRET"] = "test-webhook-secret"
 
-    # reload application modules so they pick up the new DATABASE_URL
-    from backend.app import database, models, main
-    importlib.reload(database)
-    importlib.reload(models)
-    importlib.reload(main)
+    # Descartar os módulos já importados para que a aplicação volte a ser
+    # construída do zero com a DATABASE_URL (e restantes variáveis) do teste.
+    for name in [m for m in sys.modules if m == "backend" or m.startswith("backend.")]:
+        del sys.modules[name]
+
+    from backend.app import database, emails, models, main
 
     sent_emails = []
 
@@ -28,11 +30,11 @@ def client(tmp_path):
         sent_emails.append({"to": to, "subject": subject, "body": body, "html": html})
         return True
 
-    main.send_email = fake_send_email
+    emails.send_email = fake_send_email
 
     # nos testes não há um pedido Stripe real assinado; simular a verificação
     # da assinatura para se poder testar o fluxo do webhook isoladamente
-    main.stripe.Webhook.construct_event = lambda payload, sig, secret: __import__("json").loads(payload)
+    stripe.Webhook.construct_event = lambda payload, sig, secret: __import__("json").loads(payload)
 
     # create tables
     models.Base.metadata.create_all(bind=database.engine)
@@ -522,10 +524,8 @@ def test_password_reset_form(client):
 
 
 def test_paid_weeks_listing(client):
-    from backend.app import main
-
     # O recibo é obtido a partir da fatura Stripe associada à sessão.
-    main.stripe.Invoice.retrieve = lambda invoice_id: {"hosted_invoice_url": "http://r"}
+    stripe.Invoice.retrieve = lambda invoice_id: {"hosted_invoice_url": "http://r"}
 
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
@@ -597,15 +597,13 @@ def test_stripe_webhook_rejects_the_old_visibility_plans(client):
 
 def test_create_checkout_session_uses_one_time_payment(client):
     """O checkout deve ser criado em modo de PAGAMENTO ÚNICO (sem renovação)."""
-    from backend.app import main
-
     captured = {}
 
     def fake_create(**kwargs):
         captured.update(kwargs)
         return type("S", (), {"url": "https://checkout.stripe.test/session_abc"})()
 
-    main.stripe.checkout.Session.create = fake_create
+    stripe.checkout.Session.create = fake_create
 
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
@@ -679,9 +677,7 @@ def test_stripe_webhook_is_idempotent(client):
 
 def test_stripe_webhook_receipt_from_payment_intent(client):
     """Em modo pagamento único o recibo vem da cobrança do payment_intent."""
-    from backend.app import main
-
-    main.stripe.PaymentIntent.retrieve = lambda pi_id, expand=None: {
+    stripe.PaymentIntent.retrieve = lambda pi_id, expand=None: {
         "latest_charge": {"receipt_url": "https://receipt.stripe.test/r1"}
     }
 
@@ -1037,16 +1033,16 @@ def send_location(client, vendor_id, token, lat, lng):
 
 def test_premium_webhook_credits_thirty_days(client):
     """O Premium dá 30 dias e fica registado nas faturas como tal."""
-    from backend.app import main
+    from backend.app.utils import utcnow
 
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
     token = get_token(client)
 
-    before = main.utcnow()
+    before = utcnow()
     grant_premium(client, vendor_id)
-    after = main.utcnow()
+    after = utcnow()
 
     resp = client.get("/vendors/me", headers={"Authorization": f"Bearer {token}"})
     assert resp.status_code == 200
@@ -1068,15 +1064,13 @@ def test_premium_webhook_credits_thirty_days(client):
 
 def test_premium_checkout_charges_the_premium_price(client):
     """O checkout do Premium cobra 19,99 € como pagamento único."""
-    from backend.app import main
-
     captured = {}
 
     def fake_create(**kwargs):
         captured.update(kwargs)
         return type("S", (), {"url": "https://checkout.stripe.test/premium"})()
 
-    main.stripe.checkout.Session.create = fake_create
+    stripe.checkout.Session.create = fake_create
 
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]

@@ -45,7 +45,7 @@ build publicado.
   documentada: **teal do logótipo** (#0e7f94) em acentos/ícones/estados
   ativos, **amarelo** (#f5b301) reservado a ações primárias, **azul-marinho**
   (#0d2b39) nos blocos escuros institucionais, cinzentos AA. Regras de uso em
-  `DESIGN_SYSTEM.md`.
+  `design-system.md`.
 - **Heroes internos**: os títulos hero de Sobre o Projeto/Planos tinham CSS
   próprio clonado; agora as 6 páginas internas usam o mesmo padrão
   `.info-hero` (título 32→44 px peso 650, lead 17→20 px, chips iguais, imagem

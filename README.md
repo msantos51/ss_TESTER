@@ -53,7 +53,18 @@ O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma a
 ss_TESTER/
 ├── backend/                  # FastAPI + SQLAlchemy
 │   └── app/
-│       ├── main.py           # Endpoints REST e WebSocket
+│       ├── main.py           # Criação da app: middlewares, estáticos, routers
+│       ├── routers/          # Rotas por área: auth, vendors, reviews, tracking,
+│       │                     #   catalog, payments, admin, public
+│       ├── config.py         # Configuração lida do ambiente
+│       ├── security.py       # Passwords, tokens JWT e dependências de auth
+│       ├── storage.py        # Uploads (Supabase ou disco local)
+│       ├── emails.py         # Envio de email (Resend) e respetivos modelos
+│       ├── templates.py      # Páginas HTML fora da SPA (confirmações, reset)
+│       ├── premium.py        # Regras do Premium
+│       ├── ratings.py        # Agregação das avaliações
+│       ├── realtime.py       # Difusão de posições por WebSocket
+│       ├── utils.py          # Funções puras (datas, haversine, NIF)
 │       ├── models.py         # Modelos: Vendor, Route, PaidWeek, Story, VendorSession
 │       ├── schemas.py        # Schemas Pydantic
 │       └── database.py       # Configuração da BD
@@ -67,7 +78,9 @@ ss_TESTER/
 │       ├── pages/            # Welcome, Registo, Login, MapTab (partilha), Produtos, Premium, Trajetos, Conta
 │       ├── components/       # AnimatedMarker, cropper de imagem, seletor de cor
 │       └── hooks/            # useDeviceHeading (bússola)
-├── scripts/                  # Utilitários (simulação de movimento, ...)
+├── docs/                     # Documentação: checklist de lançamento, design system
+├── scripts/                  # Utilitários (simulação de movimento)
+├── tests/                    # Testes do backend (pytest)
 ├── requirements.txt          # Dependências Python
 └── start.sh                  # Script de arranque
 ```
@@ -79,13 +92,13 @@ ss_TESTER/
 | Camada | Tecnologia |
 |---|---|
 | Backend | FastAPI, SQLAlchemy, PostgreSQL / SQLite, JWT, bcrypt, Stripe, WebSocket |
-| Web frontend | React 19, Vite, React Router, Leaflet + react-leaflet, Recharts, Axios |
+| Web frontend | React 19, Vite, React Router, Leaflet + react-leaflet, Axios |
 | Mobile | Capacitor 7 (Android), React 18, Vite, Leaflet + leaflet-rotate, @capacitor/geolocation |
 | Mapas | Leaflet com tiles CARTO, leaflet-rotate (rotação com dois dedos e pela bússola, no site e na app), Haversine (distâncias) |
 | Pagamentos | Stripe Checkout + Webhooks, semanas pagas com recibos |
 | Autenticação | JWT Bearer tokens, gestão de sessões multi-dispositivo |
 | Tempo real | WebSocket `/ws/locations` para atualizações de posição |
-| Armazenamento de ficheiros | Fotos de perfil e stories servidos estaticamente |
+| Armazenamento de ficheiros | Supabase Storage em produção; pastas locais servidas estaticamente em desenvolvimento |
 
 ---
 

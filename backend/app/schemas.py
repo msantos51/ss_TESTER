@@ -24,7 +24,7 @@ class AccountDeleteRequest(BaseModel):
 
 # O registo e a edição de perfil chegam como multipart/form-data (trazem a
 # fotografia), por isso os campos são declarados em `Form(...)` nos endpoints
-# de main.py — não há aqui um schema de entrada para vendedores.
+# de routers/vendors.py — não há aqui um schema de entrada para vendedores.
 class VendorOut(BaseModel):
     id: int
     name: str
@@ -38,7 +38,6 @@ class VendorOut(BaseModel):
     premium_valid_until: Optional[datetime] = None
     # Propriedade do modelo: subscrição Premium comprada E dentro da validade.
     is_premium: bool = False
-    last_seen: Optional[str] = None
     payment_methods: Optional[str] = None
     nif: Optional[str] = None
     id_document_number: Optional[str] = None
@@ -64,7 +63,6 @@ class VendorPublicOut(BaseModel):
     pin_color: Optional[str] = None
     current_lat: Optional[float] = None
     current_lng: Optional[float] = None
-    last_seen: Optional[str] = None
     beaches: Optional[str] = None
     product_categories: Optional[str] = None
     payment_methods: Optional[str] = None
