@@ -42,10 +42,10 @@ const BENEFITS = [
   {
     id: 'avaliacoes',
     icon: FiStar,
-    title: 'Avaliações por QR code',
-    description: 'Recebes um QR code pessoal para mostrar no teu ponto de venda. Quem o lê deixa-te uma classificação de 1 a 5 estrelas, e a tua média aparece no cartão do mapa.',
-    free: 'Sem avaliações',
-    premium: 'QR e estrelas',
+    title: 'Pontuação por QR code',
+    description: 'O QR code pessoal é teu desde o primeiro dia e quem o lê deixa-te uma classificação de 1 a 5 estrelas. Sem Premium as avaliações ficam guardadas mas escondidas; com Premium a tua média passa a aparecer no cartão do mapa.',
+    free: 'Sem pontuação',
+    premium: 'Média no mapa',
   },
 ];
 

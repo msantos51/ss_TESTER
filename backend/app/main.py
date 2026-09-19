@@ -1061,6 +1061,10 @@ def _attach_ratings(db: Session, vendors: list[models.Vendor]) -> None:
         ratings = {vid: (round(float(avg), 1), int(cnt)) for vid, avg, cnt in rows}
     for v in vendors:
         avg, cnt = ratings.get(v.id, (None, 0))
+        # Toda a gente recolhe avaliações, mas mostrar a pontuação é Premium:
+        # sem ele o cartão do mapa sai sem média, como se não houvesse votos.
+        if not v.is_premium:
+            avg, cnt = None, 0
         v.rating_average = avg
         v.rating_count = cnt
 
@@ -1123,12 +1127,15 @@ def get_vendor(vendor_id: int, db: Session = Depends(get_db)):
     )
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendedor não encontrado")
-    vendor.rating_average, vendor.rating_count = _rating_summary(db, vendor.id)
+    if vendor.is_premium:
+        vendor.rating_average, vendor.rating_count = _rating_summary(db, vendor.id)
+    else:
+        vendor.rating_average, vendor.rating_count = None, 0
     return vendor
 
 
 # --------------------------
-# Avaliar um vendedor (1 a 5 estrelas) — destino do QR code Premium
+# Avaliar um vendedor (1 a 5 estrelas) — destino do QR code
 # --------------------------
 def _validate_and_consume_token(db: Session, vendor_id: int, token: str) -> None:
     """Valida e consome o token de uso único do QR code.
@@ -1169,7 +1176,7 @@ def create_review_token(vendor_id: int, request: Request, db: Session = Depends(
         .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
         .first()
     )
-    if not vendor or not vendor.is_premium:
+    if not vendor:
         raise HTTPException(status_code=404, detail="Vendedor não disponível para avaliação")
 
     now = utcnow()
@@ -1210,33 +1217,45 @@ def create_review(
     )
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendedor não encontrado")
-    if not vendor.is_premium:
-        raise HTTPException(
-            status_code=403,
-            detail="Este vendedor não aceita avaliações.",
-        )
-
     _validate_and_consume_token(db, vendor_id, t)
     db.add(models.Review(vendor_id=vendor_id, rating=payload.rating))
     db.commit()
 
+    if not vendor.is_premium:
+        # O voto ficou registado, mas a pontuação só se mostra com Premium.
+        return schemas.ReviewSummary(average=None, count=0)
     average, count = _rating_summary(db, vendor_id)
     return schemas.ReviewSummary(average=average, count=count)
 
 
 @app.get("/vendors/{vendor_id:int}/reviews/summary", response_model=schemas.ReviewSummary)
 def review_summary(vendor_id: int, db: Session = Depends(get_db)):
-    """Média e número de avaliações de um vendedor (público)."""
+    """Média e número de avaliações de um vendedor Premium (público).
+
+    Sem Premium o resumo vem vazio: as avaliações continuam a ser guardadas,
+    o que o Premium desbloqueia é mostrá-las.
+    """
+    vendor = (
+        db.query(models.Vendor)
+        .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
+        .first()
+    )
+    if not vendor or not vendor.is_premium:
+        return schemas.ReviewSummary(average=None, count=0)
     average, count = _rating_summary(db, vendor_id)
     return schemas.ReviewSummary(average=average, count=count)
 
 
 # --------------------------
-# QR code pessoal do vendedor Premium
+# QR code pessoal do vendedor
 # --------------------------
 @app.get("/vendors/{vendor_id:int}/qr.png", include_in_schema=False)
 def vendor_qr(vendor_id: int, db: Session = Depends(get_db)):
-    """Imagem PNG do QR code pessoal do vendedor Premium.
+    """Imagem PNG do QR code pessoal do vendedor.
+
+    Todos os vendedores têm QR code e recolhem avaliações — o que o Premium
+    acrescenta é poder mostrar a pontuação (média e número de estrelas) no
+    cartão do mapa e no separador do QR.
 
     O URL embutido é estático: `/avaliar/{id}` — pode ser impresso e colocado
     na mala. Ao abrir esse URL, a página chama POST /review-token para gerar
@@ -1247,7 +1266,7 @@ def vendor_qr(vendor_id: int, db: Session = Depends(get_db)):
         .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
         .first()
     )
-    if not vendor or not vendor.is_premium:
+    if not vendor:
         raise HTTPException(status_code=404, detail="QR code não disponível")
 
     try:

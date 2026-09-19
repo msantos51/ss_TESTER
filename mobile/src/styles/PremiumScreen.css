@@ -252,12 +252,15 @@
   background: var(--green-tint);
 }
 
+/* O risco é vermelho de propósito: é o que o vendedor perde por não ter
+   Premium, e a cor diz isso antes de se ler o texto. */
 .premium-flow-free {
   font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text-muted);
   text-decoration: line-through;
-  text-decoration-color: var(--line-field);
+  text-decoration-color: var(--danger);
+  text-decoration-thickness: 2px;
 }
 
 .premium-flow-arrow {
@@ -530,6 +533,18 @@
   background: var(--sand-alt);
   color: var(--text-muted);
   font-weight: 600;
+}
+
+/* Sem Premium o QR continua lá — o que fica trancado é a pontuação. */
+.premium-qr-rating--locked {
+  background: var(--sand-alt);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.premium-qr-rating--locked svg {
+  color: var(--text-muted);
+  fill: none;
 }
 
 .premium-qr-desc {

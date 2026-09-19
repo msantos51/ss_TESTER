@@ -59,31 +59,6 @@ function escapeHtml(str) {
   }[c]));
 }
 
-// (em português) Distância entre duas coordenadas, em metros. É o que
-// alimenta a métrica "Distância" enquanto o vendedor está a partilhar.
-function metersBetween([lat1, lng1], [lat2, lng2]) {
-  const R = 6371000;
-  const toRad = (deg) => (deg * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a = Math.sin(dLat / 2) ** 2
-    + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(a));
-}
-
-function formatElapsed(totalSeconds) {
-  const secs = Math.max(0, Math.floor(totalSeconds));
-  const pad = (n) => String(n).padStart(2, '0');
-  const hours = Math.floor(secs / 3600);
-  const minutes = Math.floor((secs % 3600) / 60);
-  if (hours > 0) return `${hours}:${pad(minutes)}:${pad(secs % 60)}`;
-  return `${pad(minutes)}:${pad(secs % 60)}`;
-}
-
-function formatKm(meters) {
-  return `${(meters / 1000).toFixed(1).replace('.', ',')} km`;
-}
-
 // O pin do vendedor é o mesmo marcador que o site desenha para a posição do
 // dispositivo: círculo na cor escolhida no perfil, anel branco e seta de
 // direção lá dentro. O halo só pulsa enquanto a partilha está ligada.
@@ -211,9 +186,6 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const [error, setError] = useState(null);
   const [position, setPosition] = useState(null);
   const [mapError, setMapError] = useState(null);
-  const [startedAt, setStartedAt] = useState(null);
-  const [elapsed, setElapsed] = useState(0);
-  const [distanceM, setDistanceM] = useState(0);
   const [tilesLoaded, setTilesLoaded] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const mapRef = useRef(null);
@@ -222,7 +194,6 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const [initialCenter] = useState(() => readLastPos() || FALLBACK_CENTER);
   const listenerRef = useRef(null);
   const watchIdRef = useRef(null);
-  const lastTrackedRef = useRef(null);
   const sharingRef = useRef(false);
   const { heading, reportGpsHeading, enableCompass } = useDeviceHeading();
   const pinColor = user?.pin_color || DEFAULT_PIN;
@@ -256,7 +227,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
               setMapError(null);
               // Só atualiza o mapa local e o rumo. O envio para o servidor é do
               // serviço nativo, que continua a correr com a app em segundo plano.
-              applyPosition(pos.coords.latitude, pos.coords.longitude, false);
+              applyPosition(pos.coords.latitude, pos.coords.longitude);
               reportGpsHeading(pos.coords.heading, pos.coords.speed);
             }
           }
@@ -286,16 +257,6 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
     return () => clearTimeout(t);
   }, [tilesLoaded]);
 
-  // O tempo decorrido vem do instante em que a sessão começou, não de um
-  // contador local: assim sobrevive a app ir para segundo plano.
-  useEffect(() => {
-    if (!sharing || !startedAt) return undefined;
-    const tick = () => setElapsed((Date.now() - startedAt) / 1000);
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [sharing, startedAt]);
-
   const readApiError = async (response, fallbackMessage) => {
     try {
       const payload = await response.json();
@@ -305,20 +266,12 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
     }
   };
 
-  // (em português) Atualiza o mapa local e, quando `trackDistance`, a métrica de
-  // distância desta sessão. Não envia nada para o servidor: o envio é feito pelo
-  // serviço nativo, que sobrevive à app ir para segundo plano ou ao ecrã
-  // bloquear — que é precisamente quando a WebView (e este JS) fica congelada.
-  const applyPosition = useCallback((lat, lng, trackDistance) => {
+  // (em português) Atualiza o mapa local com a posição recebida. Não envia nada
+  // para o servidor: o envio é feito pelo serviço nativo, que sobrevive à app ir
+  // para segundo plano ou ao ecrã bloquear — que é precisamente quando a WebView
+  // (e este JS) fica congelada.
+  const applyPosition = useCallback((lat, lng) => {
     setPosition([lat, lng]);
-    if (trackDistance && sharingRef.current) {
-      const previous = lastTrackedRef.current;
-      if (previous) {
-        const step = metersBetween(previous, [lat, lng]);
-        if (step > 1) setDistanceM((total) => total + step);
-      }
-      lastTrackedRef.current = [lat, lng];
-    }
   }, []);
 
   // (em português) Envio único e imediato ao iniciar a partilha, para o vendedor
@@ -354,9 +307,6 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
         const err = await res.json();
         throw new Error(err.detail || 'Erro ao iniciar partilha');
       }
-      const route = await res.json().catch(() => null);
-      const startTime = route?.start_time ? new Date(route.start_time).getTime() : Date.now();
-
       const currentPosition = position || await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
       const currentLat = Array.isArray(currentPosition)
         ? currentPosition[0]
@@ -365,22 +315,16 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
         ? currentPosition[1]
         : currentPosition.coords.longitude;
 
-      lastTrackedRef.current = null;
-      setDistanceM(0);
-      setStartedAt(Number.isNaN(startTime) ? Date.now() : startTime);
-      setElapsed(0);
-      // A trava de distância só conta quando `sharing` está ligado; ligá-la já
-      // aqui evita perder os primeiros metros entre este ponto e o `setSharing`.
       sharingRef.current = true;
 
-      applyPosition(currentLat, currentLng, true);
+      applyPosition(currentLat, currentLng);
       await sendInitialLocation(currentLat, currentLng);
 
       // O serviço nativo envia sozinho as posições seguintes. Este ouvinte só
-      // atualiza o mapa local e a distância enquanto a app está à frente.
+      // atualiza o mapa local enquanto a app está à frente.
       listenerRef.current = await LocationTracker.addListener(
         'locationUpdate',
-        ({ lat, lng }) => applyPosition(lat, lng, true)
+        ({ lat, lng }) => applyPosition(lat, lng)
       );
       await LocationTracker.startTracking({
         baseUrl: BASE_URL,
@@ -416,10 +360,6 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
       console.error('Erro ao parar partilha:', err);
     } finally {
       setSharing(false);
-      setStartedAt(null);
-      setElapsed(0);
-      setDistanceM(0);
-      lastTrackedRef.current = null;
       setLoading(false);
     }
   };
@@ -607,19 +547,6 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
           )}
 
           <div className="share-card">
-            {sharing && (
-              <div className="share-metrics">
-                <div className="share-metric">
-                  <span className="share-metric-label">Tempo</span>
-                  <span className="share-metric-value">{formatElapsed(elapsed)}</span>
-                </div>
-                <div className="share-metric">
-                  <span className="share-metric-label">Distância</span>
-                  <span className="share-metric-value">{formatKm(distanceM)}</span>
-                </div>
-              </div>
-            )}
-
             <button
               type="button"
               className={`share-btn${sharing ? ' is-sharing' : ''}`}

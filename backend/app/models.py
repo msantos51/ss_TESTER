@@ -153,11 +153,13 @@ class Product(Base):
 
 
 class Review(Base):
-    """Avaliação (1 a 5 estrelas) deixada por um cliente a um vendedor Premium.
+    """Avaliação (1 a 5 estrelas) deixada por um cliente a um vendedor.
 
-    O vendedor Premium tem um QR code pessoal (ver /vendors/{id}/qr.png). Quem o
-    lê chega à página de avaliação e deixa uma classificação de 1 a 5 estrelas.
-    A média destas avaliações aparece no cartão do vendedor no mapa.
+    Todos os vendedores têm um QR code pessoal (ver /vendors/{id}/qr.png). Quem
+    o lê chega à página de avaliação e deixa uma classificação de 1 a 5
+    estrelas. Mostrar a pontuação é que é a vantagem Premium: só a média de um
+    vendedor Premium aparece no cartão do mapa e no separador do QR — sem
+    Premium os votos ficam guardados mas escondidos.
 
     Os votos repetidos são travados pelo `QRToken` de uso único que a página de
     avaliação consome: nada aqui identifica quem avalia, nem sequer de forma
@@ -176,7 +178,7 @@ class Review(Base):
 
 
 class QRToken(Base):
-    """Token de uso único gerado ao servir o QR code pessoal do vendedor Premium.
+    """Token de uso único gerado ao abrir a página do QR code do vendedor.
 
     Cada pedido ao endpoint qr.png cria um token novo com expiração de 20 min.
     Ao submeter a avaliação, o token é marcado como `used=True`. Tentativas
