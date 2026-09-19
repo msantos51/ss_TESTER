@@ -1,0 +1,553 @@
+<title>Sunny Sales para Vendedores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Asap:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+  :root{
+    --deep:#0B2B47;
+    --sea:#1863A3;
+    --surf:#2F8EE0;
+    --sun:#FFA723;
+    --sun-ink:#7A4A00;
+    --sand:#FAF6EE;
+    --paper:#FFFFFF;
+    --ground:#F2F6FA;
+    --ink:#10243A;
+    --ink-soft:#4A6076;
+    --line:#D8E4EE;
+    --line-soft:#E9F0F6;
+    --ok:#1D5C3A;
+
+    --display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+    --body:'Asap','Helvetica Neue',Arial,sans-serif;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --deep:#04121F;
+      --sea:#4BA3E8;
+      --surf:#6FBBF5;
+      --sun:#FFBE55;
+      --sun-ink:#FFD79A;
+      --sand:#11202E;
+      --paper:#132433;
+      --ground:#0B1824;
+      --ink:#E8F1F8;
+      --ink-soft:#9FB6C9;
+      --line:#274055;
+      --line-soft:#1D3243;
+      --ok:#6FCF9A;
+    }
+  }
+  :root[data-theme="dark"]{
+    --deep:#04121F;
+    --sea:#4BA3E8;
+    --surf:#6FBBF5;
+    --sun:#FFBE55;
+    --sun-ink:#FFD79A;
+    --sand:#11202E;
+    --paper:#132433;
+    --ground:#0B1824;
+    --ink:#E8F1F8;
+    --ink-soft:#9FB6C9;
+    --line:#274055;
+    --line-soft:#1D3243;
+    --ok:#6FCF9A;
+  }
+
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:880px;
+    margin:0 auto;
+    padding-inline:20px;
+    padding-block:0 72px;
+  }
+  h1,h2,h3{font-family:var(--display);font-weight:800;line-height:1.08;text-wrap:balance;margin:0}
+  p{margin:0}
+  a{color:var(--sea)}
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0;
+  }
+
+  /* ---------- Herói ---------- */
+  .hero{
+    background:var(--deep);
+    color:#EAF3FA;
+    border-radius:0 0 28px 28px;
+    overflow:hidden;
+    position:relative;
+  }
+  .hero-inner{
+    max-width:880px;
+    margin:0 auto;
+    padding-inline:20px;
+    padding-block:40px 0;
+    display:grid;
+    gap:28px;
+  }
+  .brandline{
+    display:flex;align-items:center;gap:10px;
+    font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:#9FC6E6;
+  }
+  .brandline .dot{width:9px;height:9px;border-radius:50%;background:var(--sun);flex:none}
+  .hero h1{
+    font-size:clamp(34px,7vw,58px);
+    color:#FFFFFF;
+    letter-spacing:-.02em;
+  }
+  .hero h1 em{font-style:normal;color:var(--sun)}
+  .hero-lead{
+    font-size:clamp(17px,2.4vw,20px);
+    color:#C6DDEF;
+    max-width:36em;
+  }
+  .hero-facts{
+    display:flex;flex-wrap:wrap;gap:8px;
+    font-family:var(--mono);font-size:13px;
+  }
+  .fact{
+    border:1px solid rgba(159,198,230,.35);
+    border-radius:999px;
+    padding:5px 12px;
+    color:#DCEAF4;
+  }
+  .fact b{color:var(--sun);font-weight:600}
+
+  /* mini-mapa */
+  .map{
+    position:relative;
+    height:230px;
+    margin:0 -20px -1px;
+    background:
+      radial-gradient(120% 90% at 20% 0%, #14456F 0%, #0B2B47 55%, #071E33 100%);
+    border-top:1px solid rgba(159,198,230,.18);
+  }
+  .map svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .map-note{
+    position:absolute;left:20px;bottom:14px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:#8FB4D2;
+  }
+  @keyframes ping{
+    0%{transform:scale(1);opacity:.55}
+    70%{transform:scale(2.6);opacity:0}
+    100%{transform:scale(2.6);opacity:0}
+  }
+  .pulse{transform-box:fill-box;transform-origin:center;animation:ping 2.8s ease-out infinite}
+  @media (prefers-reduced-motion: reduce){.pulse{animation:none;opacity:.35}}
+
+  /* ---------- Secções ---------- */
+  section{margin-top:56px}
+  .sec-head{display:grid;gap:10px;margin-bottom:22px}
+  .sec-head h2{font-size:clamp(24px,4vw,34px);letter-spacing:-.01em}
+  .sec-head p{color:var(--ink-soft);max-width:60ch}
+
+  /* passos */
+  .steps{display:grid;gap:0;border-top:1px solid var(--line)}
+  .step{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:18px;
+    align-items:start;
+    padding:20px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .step-n{
+    font-family:var(--mono);font-size:13px;font-weight:600;
+    color:var(--sea);
+    border:1px solid var(--line);
+    border-radius:50%;
+    width:34px;height:34px;
+    display:grid;place-items:center;
+    background:var(--paper);
+  }
+  .step h3{font-size:19px;margin-bottom:4px}
+  .step p{color:var(--ink-soft);font-size:16px}
+
+  /* cartões de funcionalidades */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px;
+    display:grid;
+    gap:6px;
+    align-content:start;
+  }
+  .card h3{font-size:17px;font-family:var(--body);font-weight:600}
+  .card p{font-size:15px;color:var(--ink-soft)}
+  .card .tag{
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--sea);
+  }
+
+  /* tabela premium */
+  .table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+  table{border-collapse:collapse;width:100%;min-width:420px}
+  th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line-soft);font-size:15px}
+  thead th{
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:600;
+    background:var(--ground);
+  }
+  thead th:last-child{color:var(--sun-ink)}
+  tbody tr:last-child td{border-bottom:none}
+  td:first-child{font-weight:600}
+  td.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .plus{color:var(--ok);font-weight:600}
+
+  /* preço */
+  .price{
+    margin-top:18px;
+    display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 16px;
+    background:linear-gradient(180deg,var(--sand),var(--paper));
+    border:1px solid var(--line);
+    border-left:4px solid var(--sun);
+    border-radius:14px;
+    padding:18px 20px;
+  }
+  .price .val{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.02em}
+  .price .unit{font-family:var(--mono);font-size:13px;color:var(--ink-soft)}
+  .price .why{font-size:15px;color:var(--ink-soft);flex-basis:100%}
+
+  /* confiança */
+  .trust{display:grid;gap:12px}
+  .trust-item{
+    display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;
+    padding:14px 0;border-bottom:1px solid var(--line);
+  }
+  .trust-item:last-child{border-bottom:none}
+  .trust-item svg{margin-top:3px;flex:none;color:var(--sea)}
+  .trust-item h3{font-size:16px;font-family:var(--body);font-weight:600;margin-bottom:2px}
+  .trust-item p{font-size:15px;color:var(--ink-soft)}
+
+  /* faq */
+  details{
+    border-bottom:1px solid var(--line);
+    padding:14px 0;
+  }
+  details summary{
+    cursor:pointer;
+    font-weight:600;
+    font-size:16px;
+    list-style:none;
+    display:flex;justify-content:space-between;gap:16px;align-items:center;
+  }
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:'+';font-family:var(--mono);color:var(--sea);font-size:18px}
+  details[open] summary::after{content:'–'}
+  details p{margin-top:8px;color:var(--ink-soft);font-size:15px;max-width:62ch}
+  summary:focus-visible,a:focus-visible{outline:2px solid var(--surf);outline-offset:3px;border-radius:4px}
+
+  /* cta */
+  .cta{
+    margin-top:56px;
+    background:var(--deep);
+    color:#EAF3FA;
+    border-radius:20px;
+    padding:30px 24px;
+    display:grid;gap:14px;
+  }
+  .cta h2{color:#fff;font-size:clamp(22px,4vw,30px)}
+  .cta p{color:#C6DDEF;max-width:52ch}
+  .cta-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+  .btn{
+    display:inline-block;
+    background:var(--sun);color:#3B2200;
+    font-weight:600;text-decoration:none;
+    padding:12px 20px;border-radius:999px;
+    font-size:16px;
+  }
+  .btn.ghost{background:transparent;color:#EAF3FA;border:1px solid rgba(159,198,230,.45)}
+
+  footer{
+    margin-top:32px;
+    font-family:var(--mono);font-size:12px;color:var(--ink-soft);
+    display:flex;flex-wrap:wrap;gap:6px 16px;
+  }
+</style>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="brandline"><span class="dot"></span> Sunny Sales · Praias portuguesas</div>
+    <h1>Na praia certa, à hora certa — e agora <em>toda a gente te vê</em>.</h1>
+    <p class="hero-lead">
+      O Sunny Sales põe os vendedores de praia no mapa, em tempo real. Quem está na toalha
+      abre o mapa, vê que estás a 240 m e espera por ti. Tu carregas num botão e andas.
+    </p>
+    <div class="hero-facts">
+      <span class="fact">Estar no mapa: <b>grátis</b></span>
+      <span class="fact">App Android para vendedores</span>
+      <span class="fact">Bolas de Berlim · Gelados · Acessórios</span>
+    </div>
+  </div>
+  <div class="map" role="img" aria-label="Mapa de uma praia com três vendedores assinalados e um banhista a 240 metros de distância.">
+    <svg viewBox="0 0 880 230" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <!-- areia -->
+      <path d="M0 96 C 140 66, 300 130, 460 108 C 620 86, 760 132, 880 104 L880 230 L0 230 Z" fill="#12385A"/>
+      <path d="M0 96 C 140 66, 300 130, 460 108 C 620 86, 760 132, 880 104" fill="none" stroke="#2F8EE0" stroke-width="2" opacity=".65"/>
+      <!-- espuma -->
+      <path d="M0 78 C 150 50, 290 112, 455 90 C 620 68, 755 114, 880 86" fill="none" stroke="#6FBBF5" stroke-width="1.5" opacity=".35" stroke-dasharray="7 11"/>
+      <!-- raio de alcance premium -->
+      <circle cx="300" cy="150" r="86" fill="#FFA723" opacity=".10"/>
+      <circle cx="300" cy="150" r="86" fill="none" stroke="#FFA723" stroke-width="1" stroke-dasharray="4 7" opacity=".55"/>
+      <!-- pin premium -->
+      <circle class="pulse" cx="300" cy="150" r="14" fill="#FFA723"/>
+      <path d="M300 128 c-11 0 -20 9 -20 20 c0 14 20 32 20 32 c0 0 20 -18 20 -32 c0 -11 -9 -20 -20 -20 z" fill="#FFA723"/>
+      <path d="M300 137 l3.2 6.6 l7.3 1 l-5.3 5.1 l1.3 7.2 l-6.5 -3.4 l-6.5 3.4 l1.3 -7.2 l-5.3 -5.1 l7.3 -1 z" fill="#3B2200"/>
+      <!-- pins normais -->
+      <path d="M560 140 c-9 0 -16 7 -16 16 c0 11 16 26 16 26 c0 0 16 -15 16 -26 c0 -9 -7 -16 -16 -16 z" fill="#1D5C3A"/>
+      <circle cx="560" cy="156" r="5.5" fill="#EAF3FA"/>
+      <path d="M700 172 c-9 0 -16 7 -16 16 c0 11 16 26 16 26 c0 0 16 -15 16 -26 c0 -9 -7 -16 -16 -16 z" fill="#2F8EE0"/>
+      <circle cx="700" cy="188" r="5.5" fill="#EAF3FA"/>
+      <!-- banhista + distância -->
+      <circle cx="378" cy="186" r="7" fill="#EAF3FA"/>
+      <circle cx="378" cy="186" r="13" fill="none" stroke="#EAF3FA" stroke-width="1" opacity=".45"/>
+      <line x1="313" y1="160" x2="367" y2="181" stroke="#EAF3FA" stroke-width="1" stroke-dasharray="3 5" opacity=".6"/>
+      <text x="318" y="210" fill="#C6DDEF" font-family="IBM Plex Mono, monospace" font-size="12">240 m</text>
+    </svg>
+    <span class="map-note">Vista do mapa · vendedores ativos agora</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">O problema</p>
+      <h2>Quem está na toalha não se levanta para te procurar.</h2>
+      <p>
+        Numa praia cheia, a venda depende de passares no sítio certo no minuto certo. Andas o
+        areal todo e falhas quem estava mesmo a querer comprar — porque ninguém sabia que
+        vinhas aí. O mapa resolve isso: em vez de gritares, apareces.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Como funciona</p>
+      <h2>Três passos, no primeiro dia</h2>
+      <p>É uma sequência: cada passo só faz sentido depois do anterior.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">1</div>
+        <div>
+          <h3>Crias conta na app</h3>
+          <p>Nome, email, o teu produto e uma foto. Escolhes a cor do teu pin — é assim que os banhistas te distinguem no mapa.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">2</div>
+        <div>
+          <h3>Ligas a partilha de localização</h3>
+          <p>Um botão no ecrã principal. A app envia a tua posição enquanto vendes, com um serviço nativo que continua a funcionar com o telemóvel no bolso. Desligas quando acabas o dia.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <div>
+          <h3>Ficas visível para quem está por perto</h3>
+          <p>O teu pin move-se contigo no mapa, em tempo real. Quem filtra por “Bolas de Berlim” dentro de 500 m vê-te a chegar e espera.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">A app do vendedor</p>
+      <h2>O que levas no bolso</h2>
+      <p>App Android dedicada a quem vende. Nada do que está aqui exige computador.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <span class="tag">Mapa</span>
+        <h3>Partilha de localização</h3>
+        <p>Grátis e sem pré-requisitos. Ligas, vendes, desligas.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Trajetos</span>
+        <h3>Histórico de percursos</h3>
+        <p>Cada sessão fica guardada com duração, distância e o mapa do caminho que fizeste.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Estatísticas</span>
+        <h3>Quilómetros por dia</h3>
+        <p>Um gráfico simples mostra quanto andaste em cada dia — útil para perceber que praias compensam.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Produtos</span>
+        <h3>A tua lista de preços</h3>
+        <p>Nome e preço de cada produto, visíveis no teu perfil antes de o cliente te chamar.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Stories</span>
+        <h3>Fotos e vídeos do dia</h3>
+        <p>Publicas o que tens hoje; expira sozinho. Aparece a quem abre o teu perfil.</p>
+      </div>
+      <div class="card">
+        <span class="tag">QR code</span>
+        <h3>O teu código pessoal</h3>
+        <p>Um cliente aponta a câmara e cai direto no teu perfil. Serve para o chapéu-de-sol, para o carrinho ou para um cartão.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Conta</span>
+        <h3>Sessões e segurança</h3>
+        <p>Vês em que telemóveis a tua conta está aberta e podes terminar qualquer uma à distância.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Faturação</span>
+        <h3>Recibos sempre à mão</h3>
+        <p>Pagamentos processados pela Stripe, com o histórico e o link do recibo de cada período.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Quanto custa</p>
+      <h2>Aparecer não se paga. Destacar-se é opcional.</h2>
+      <p>Há só dois estados: gratuito ou Premium. Não há mensalidade, nem renovação automática.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th scope="col">Vantagem</th><th scope="col">Conta gratuita</th><th scope="col">Premium</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Estar no mapa em tempo real</td>
+            <td class="plus">Sim</td>
+            <td class="plus">Sim</td>
+          </tr>
+          <tr>
+            <td>Raio a que te veem</td>
+            <td class="num">300 m</td>
+            <td class="num"><strong>1 km</strong></td>
+          </tr>
+          <tr>
+            <td>Destaque no pin</td>
+            <td>Pin normal</td>
+            <td>Pin com estrela</td>
+          </tr>
+          <tr>
+            <td>Produtos</td>
+            <td>Nome e preço</td>
+            <td>Nome, preço e fotografia</td>
+          </tr>
+          <tr>
+            <td>Trajetos, estatísticas e stories</td>
+            <td class="plus">Sim</td>
+            <td class="plus">Sim</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="price">
+      <span class="val">19,99 €</span>
+      <span class="unit">pagamento único · 30 dias</span>
+      <p class="why">
+        Sem renovação automática: quando acabam os 30 dias, voltas à conta gratuita e continuas no
+        mapa. Se comprares com o Premium ainda ativo, os dias somam-se ao período em curso.
+        Faz sentido no pico de agosto e pode ficar parado em setembro.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Confiança</p>
+      <h2>O que é teu continua teu</h2>
+    </div>
+    <div class="trust">
+      <div class="trust-item">
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5 3 4.3v5.2c0 4 3 7.3 7 9 4-1.7 7-5 7-9V4.3L10 1.5Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m6.8 10 2.2 2.2 4.2-4.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div>
+          <h3>A localização só é partilhada quando tu queres</h3>
+          <p>O botão de partilha é teu. Com ele desligado, não sais no mapa nem envias posições.</p>
+        </div>
+      </div>
+      <div class="trust-item">
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="14" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 6.5v7M6.5 10h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div>
+          <h3>Levas os teus dados contigo</h3>
+          <p>Descarregas tudo o que temos sobre ti num ficheiro, a qualquer momento, pela app.</p>
+        </div>
+      </div>
+      <div class="trust-item">
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12M8 6V4.5h4V6M6.5 6l.8 9.5h5.4L13.5 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div>
+          <h3>Sais quando quiseres, sem telefonemas</h3>
+          <p>Apagas a conta na app ou na página <span style="font-family:var(--mono);font-size:.92em">/eliminar-conta</span>: perfil, trajetos, produtos e stories desaparecem em definitivo. Só ficam os registos de faturação, que a lei fiscal portuguesa obriga a guardar.</p>
+        </div>
+      </div>
+      <div class="trust-item">
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l2.6 1.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div>
+          <h3>Pagamentos pela Stripe</h3>
+          <p>Nunca guardamos o teu cartão. O recibo de cada compra fica na app, no separador de faturação.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Perguntas frequentes</p>
+      <h2>O que os vendedores perguntam primeiro</h2>
+    </div>
+    <details open>
+      <summary>Tenho mesmo de pagar para aparecer?</summary>
+      <p>Não. A conta gratuita põe-te no mapa em tempo real, com trajetos, estatísticas e stories incluídos. O Premium só alarga o raio e acrescenta a estrela e as fotos dos produtos.</p>
+    </details>
+    <details>
+      <summary>Gasta muita bateria?</summary>
+      <p>A partilha usa o serviço de localização nativo do Android e só corre enquanto o botão estiver ligado. Desligas no fim do dia e o telemóvel volta ao normal.</p>
+    </details>
+    <details>
+      <summary>E se não perceber nada de telemóveis?</summary>
+      <p>A app tem quatro coisas no ecrã principal: ligar a partilha, os teus produtos, os teus trajetos e a tua conta. O registo demora menos do que montar o chapéu-de-sol.</p>
+    </details>
+    <details>
+      <summary>Os clientes precisam de instalar alguma coisa?</summary>
+      <p>Não. Abrem o mapa no site, no telemóvel deles, e vêem quem está a vender naquele momento. A app é só para vendedores.</p>
+    </details>
+    <details>
+      <summary>Posso ser encontrado por tipo de produto?</summary>
+      <p>Sim. Os banhistas filtram por Bolas de Berlim, gelados ou acessórios de praia e pela distância que estão dispostos a andar — de 500 m a 5 km.</p>
+    </details>
+  </section>
+
+  <div class="cta">
+    <p class="eyebrow" style="color:#9FC6E6">Próximo passo</p>
+    <h2>Instala, regista-te e liga a partilha na próxima ida à praia.</h2>
+    <p>Sem contrato e sem custo para começar. Se ao fim de uma semana não valer a pena, apagas a conta na app em dois toques.</p>
+    <div class="cta-actions">
+      <a class="btn" href="#">Quero criar conta de vendedor</a>
+      <a class="btn ghost" href="#">Ver o mapa como um banhista</a>
+    </div>
+  </div>
+
+  <footer>
+    <span>Sunny Sales</span>
+    <span>Mapa em tempo real para praias portuguesas</span>
+    <span>Documento de apresentação · 2026</span>
+  </footer>
+</div>
