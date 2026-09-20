@@ -475,12 +475,28 @@
 
 /* A seta aponta para o rumo do vendedor, mas o marcador vive no painel que
    não roda com o mapa: o ângulo no ecrã é o rumo mais o bearing do mapa, que
-   o MapBearingPublisher escreve em `--map-bearing`. Com o mapa a norte as
-   contas dão o rumo, como sempre deram. */
+   o MapRotationController escreve em `--map-bearing`. Com o mapa a norte as
+   contas dão o rumo, como sempre deram.
+   A transição cose as leituras da bússola, que chegam dez vezes por segundo,
+   num movimento contínuo; o ângulo vem em contínuo do AnimatedMarker (pode
+   passar dos 360°), senão a volta ao norte dava uma pirueta ao contrário. */
 .user-location-arrow {
   display: block;
   flex-shrink: 0;
   transform: rotate(calc(var(--pin-heading, 0deg) + var(--map-bearing, 0deg)));
+  transition: transform 140ms linear;
+}
+
+/* Sem bússola nem rumo do GPS não há para onde apontar: mostrar a seta parada
+   no norte seria dizer ao vendedor que está virado para norte. */
+.vendor-location-pin:not(.has-heading) .user-location-arrow {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .user-location-arrow {
+    transition: none;
+  }
 }
 
 @keyframes user-pulse {

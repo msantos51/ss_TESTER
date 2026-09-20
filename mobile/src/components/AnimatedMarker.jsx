@@ -1,37 +1,101 @@
-import React, { useEffect, useRef } from 'react';
-import { Marker } from 'react-leaflet';
+import { useEffect, useRef } from 'react';
+import { useMap } from 'react-leaflet';
+import L from 'leaflet';
 
-// Marker que anima suavemente entre posições em vez de saltar instantaneamente
-// para a nova posição recebida do GPS — disfarça pequenas oscilações de
-// precisão que ainda passem pelos filtros de distância/accuracy.
-export default function AnimatedMarker({ position, icon }) {
+// Duração da interpolação entre duas leituras de GPS. Fixá-la em meio segundo
+// dava um pin que andava meio segundo e parava até à leitura seguinte — o
+// andamento aos empurrões que se nota na app. Aqui a duração acompanha o
+// intervalo real entre leituras, dentro de limites sãos, para o pin deslizar
+// sem interrupções à velocidade a que o vendedor anda mesmo.
+const MIN_DURATION = 300;
+const MAX_DURATION = 1600;
+const DEFAULT_DURATION = 600;
+
+// Marcador do vendedor, desenhado à mão em vez de pelo <Marker> do
+// react-leaflet. O motivo é a fluidez: o rumo muda dez vezes por segundo e o
+// componente do react-leaflet responde a cada mudança de ícone trocando o
+// elemento no DOM — o que corta a animação em curso, reinicia o halo a pulsar
+// e devolve o pin à última posição entregue. Aqui o elemento é criado uma vez;
+// a posição muda por interpolação e o rumo por variável CSS, sem tocar no DOM.
+export default function AnimatedMarker({ position, icon, heading }) {
+  const map = useMap();
   const markerRef = useRef(null);
-  const displayedRef = useRef(position);
+  // Posição mostrada neste instante (o fotograma a meio da interpolação), de
+  // onde arranca a animação seguinte: partir da última leitura entregue faria
+  // o pin saltar para trás sempre que uma nova chegasse a meio do caminho.
+  const currentRef = useRef(position);
   const animFrameRef = useRef(null);
+  const lastUpdateRef = useRef(0);
+  // Rumo em contínuo (pode passar dos 360 ou abaixo de 0): sem isto, a volta
+  // ao norte ia de 359° para 1° e a seta dava uma pirueta de quase 360° ao
+  // contrário, porque o CSS interpola o caminho longo.
+  const unwrappedHeadingRef = useRef(null);
+
+  useEffect(() => {
+    const marker = L.marker(currentRef.current, {
+      icon,
+      interactive: false,
+      keyboard: false,
+      // O pin do próprio vendedor fica por cima dos tiles e de qualquer outro
+      // marcador; é o que ele procura quando olha para o ecrã.
+      zIndexOffset: 1000,
+    }).addTo(map);
+    markerRef.current = marker;
+    return () => {
+      marker.remove();
+      markerRef.current = null;
+    };
+    // O ícone inicial entra na criação; as mudanças seguintes vão no efeito
+    // abaixo, para o marcador não ser recriado a cada uma.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map]);
+
+  useEffect(() => {
+    if (markerRef.current) markerRef.current.setIcon(icon);
+  }, [icon]);
+
+  // Rumo: só uma variável CSS no elemento do marcador. O CSS trata da
+  // transição e soma-lhe a rotação atual do mapa.
+  useEffect(() => {
+    const el = markerRef.current?.getElement();
+    if (!el) return;
+    const hasHeading = heading !== null && heading !== undefined && !isNaN(heading);
+    el.classList.toggle('has-heading', hasHeading);
+    if (!hasHeading) return;
+    const previous = unwrappedHeadingRef.current;
+    if (previous === null) {
+      unwrappedHeadingRef.current = heading;
+    } else {
+      // Caminho mais curto entre o rumo anterior e o novo.
+      let diff = (heading - (previous % 360) + 540) % 360 - 180;
+      unwrappedHeadingRef.current = previous + diff;
+    }
+    el.style.setProperty('--pin-heading', `${unwrappedHeadingRef.current.toFixed(1)}deg`);
+  }, [heading, icon]);
 
   useEffect(() => {
     const marker = markerRef.current;
     if (!marker) {
-      displayedRef.current = position;
-      return;
+      currentRef.current = position;
+      return undefined;
     }
-    const from = displayedRef.current;
+    const from = currentRef.current;
     const to = position;
+    if (from[0] === to[0] && from[1] === to[1]) return undefined;
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
 
-    const duration = 500;
-    const start = performance.now();
+    const now0 = performance.now();
+    const gap = lastUpdateRef.current ? now0 - lastUpdateRef.current : DEFAULT_DURATION;
+    lastUpdateRef.current = now0;
+    const duration = Math.min(MAX_DURATION, Math.max(MIN_DURATION, gap));
 
     const step = (now) => {
-      const t = Math.min(1, (now - start) / duration);
+      const t = Math.min(1, (now - now0) / duration);
       const lat = from[0] + (to[0] - from[0]) * t;
       const lng = from[1] + (to[1] - from[1]) * t;
-      marker.setLatLng([lat, lng]);
-      if (t < 1) {
-        animFrameRef.current = requestAnimationFrame(step);
-      } else {
-        displayedRef.current = to;
-      }
+      currentRef.current = [lat, lng];
+      marker.setLatLng(currentRef.current);
+      if (t < 1) animFrameRef.current = requestAnimationFrame(step);
     };
     animFrameRef.current = requestAnimationFrame(step);
 
@@ -41,5 +105,5 @@ export default function AnimatedMarker({ position, icon }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [position[0], position[1]]);
 
-  return <Marker ref={markerRef} position={displayedRef.current} icon={icon} />;
+  return null;
 }
