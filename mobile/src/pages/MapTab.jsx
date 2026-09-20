@@ -46,6 +46,23 @@ function writeLastPos(lat, lng) {
   }
 }
 
+// Enquanto o watch do JS estiver a entregar leituras (app à frente), as do
+// serviço nativo não mexem no mapa. Cinco segundos é o intervalo do serviço;
+// doze dá folga para uma leitura falhada antes de ele assumir o comando.
+const NATIVE_TAKEOVER_MS = 12000;
+// Abaixo disto é tremer do GPS, não andamento do vendedor.
+const MIN_MOVE_METERS = 1;
+
+// Distância entre duas coordenadas, em metros (equirretangular: a menos de um
+// metro em distâncias de praia, e sem a trigonometria toda do haversine).
+function metersBetween(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const rad = Math.PI / 180;
+  const x = (lng2 - lng1) * rad * Math.cos(((lat1 + lat2) / 2) * rad);
+  const y = (lat2 - lat1) * rad;
+  return Math.sqrt(x * x + y * y) * R;
+}
+
 function hexToRgba(hex, alpha) {
   const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
   if (!match) return `rgba(29, 92, 58, ${alpha})`;
@@ -64,13 +81,14 @@ function escapeHtml(str) {
 // direção lá dentro. O halo só pulsa enquanto a partilha está ligada.
 // A seta aponta para o rumo geográfico; como o marcador vive no painel que não
 // roda com o mapa, é o CSS que lhe soma o bearing atual (`--map-bearing`).
+// O rumo NÃO entra neste HTML: entra como variável CSS escrita pelo
+// AnimatedMarker. Refazer o HTML a cada leitura da bússola obrigava o Leaflet
+// a trocar o elemento no DOM dez vezes por segundo — o halo reiniciava e o pin
+// tremia, que é a falta de fluidez que se sente na app.
 // Com Premium leva ainda a estrela ao canto — a mesma que o banhista vê no
 // mapa do site, para o vendedor confirmar aqui que a vantagem está a pegar.
-function getVendorLocationHtml(heading, color, sharing, premium) {
-  const hasHeading = heading !== null && !isNaN(heading);
-  const arrow = hasHeading
-    ? `<svg viewBox="0 0 20 20" width="12" height="12" class="user-location-arrow" style="--pin-heading:${heading.toFixed(1)}deg;"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="#fff"/></svg>`
-    : '';
+function getVendorLocationHtml(color, sharing, premium) {
+  const arrow = '<svg viewBox="0 0 20 20" width="12" height="12" class="user-location-arrow"><polygon points="10,1 6.5,14 10,11.5 13.5,14" fill="#fff"/></svg>';
   const pinColor = color || DEFAULT_PIN;
   const safeColor = escapeHtml(pinColor);
   const pulse = sharing
@@ -82,11 +100,55 @@ function getVendorLocationHtml(heading, color, sharing, premium) {
   return `<div class="user-location-marker">${pulse}<div class="user-location-dot" style="background:${safeColor};box-shadow:0 2px 8px ${hexToRgba(pinColor, 0.45)};">${arrow}</div>${star}</div>`;
 }
 
-function FollowPosition({ position }) {
+// (em português) O mapa segue o vendedor. Seguir com `setView` a cada leitura
+// — como se fazia aqui — dava dois problemas de uma vez: o mapa saltava de
+// golpe a cada fix e arrastá-lo com o dedo era inútil, porque a leitura
+// seguinte trazia-o logo de volta. Agora acompanha com uma deslocação suave,
+// só quando o pin se afasta mesmo do centro, e larga o volante assim que o
+// vendedor toca no mapa — o botão de localização devolve-lho.
+const FOLLOW_DEADZONE_PX = 28;
+
+function AutoFollow({ position, following, onUserPan }) {
   const map = useMap();
+
   useEffect(() => {
-    if (position) map.setView(position, map.getZoom() < 15 ? 16 : map.getZoom());
-  }, [position, map]);
+    const container = map.getContainer();
+    const onInteraction = (e) => {
+      if (e.target.closest('button, a, .leaflet-control')) return;
+      onUserPan();
+    };
+    container.addEventListener('mousedown', onInteraction);
+    container.addEventListener('touchstart', onInteraction, { passive: true });
+    return () => {
+      container.removeEventListener('mousedown', onInteraction);
+      container.removeEventListener('touchstart', onInteraction);
+    };
+  }, [map, onUserPan]);
+
+  useEffect(() => {
+    if (!following || !position) return;
+    const zoom = map.getZoom() < 15 ? 16 : map.getZoom();
+    if (map.getZoom() !== zoom) {
+      map.setView(position, zoom, { animate: false });
+      return;
+    }
+    const target = map.latLngToContainerPoint(position);
+    const center = map.latLngToContainerPoint(map.getCenter());
+    const drift = target.distanceTo(center);
+    // Tremer do GPS: mexer o mapa por dois píxeis só faz o mundo vibrar.
+    if (drift < FOLLOW_DEADZONE_PX) return;
+    const size = map.getSize();
+    if (drift > Math.max(size.x, size.y)) {
+      // Fora do ecrã (primeiro fix, ou volta de um longo intervalo): animar
+      // meio país é pior do que aparecer já lá.
+      map.setView(position, zoom, { animate: false });
+      return;
+    }
+    // Deslocação linear e da duração do intervalo típico entre leituras: o
+    // mapa desliza com o pin em vez de o perseguir aos solavancos.
+    map.panTo(position, { animate: true, duration: 0.7, easeLinearity: 0.5, noMoveStart: true });
+  }, [position, following, map]);
+
   return null;
 }
 
@@ -96,12 +158,25 @@ function bearingGap(a, b) {
   return diff > 180 ? 360 - diff : diff;
 }
 
-// Publica o rumo do mapa em CSS (`--map-bearing`) e avisa o ecrã quando ele
-// está torto. A seta do pin vive num painel que não roda com o mapa, por isso
-// é o CSS que lhe soma este valor; escrevê-lo aqui, e não em estado, evita
-// redesenhar o marcador a cada grau do gesto.
-function MapBearingPublisher({ onRotatedChange }) {
+// Quanto é preciso rodar com os dedos para o gesto valer como "o mapa é meu".
+const MANUAL_ROTATE_DEG = 4;
+
+// Dono da rotação do mapa, tal como no site. Há dois candidatos ao volante: a
+// bússola do dispositivo, que mantém o mapa virado para onde o vendedor olha,
+// e os dois dedos dele. Quem toca manda — assim que o gesto roda mesmo o mapa,
+// a bússola larga o volante até ao botão do norte ou ao de localizar.
+// Publica também o rumo do mapa em CSS (`--map-bearing`): a seta do pin vive
+// num painel que não roda com o mapa, por isso é o CSS que lhe soma este
+// valor; escrevê-lo aqui, e não em estado, evita redesenhar o marcador a cada
+// grau do gesto.
+function MapRotationController({ targetBearingRef, followCompass, onManualRotate, onRotatedChange }) {
   const map = useMap();
+  // Rumo no início do gesto de dois dedos; `null` quando não há gesto a
+  // decorrer — é também o sinal de "não mexer no mapa" para a bússola.
+  const gestureBearingRef = useRef(null);
+  // Rumo suavizado que a bússola está a aplicar; `null` = ainda não arrancou.
+  const smoothBearingRef = useRef(null);
+
   useEffect(() => {
     // No ecrã inteiro e não só no mapa: a variável tem de chegar tanto à seta
     // do pin (dentro do mapa) como à agulha do botão do norte (no chrome, que
@@ -116,6 +191,78 @@ function MapBearingPublisher({ onRotatedChange }) {
     map.on('rotate', publish);
     return () => map.off('rotate', publish);
   }, [map, onRotatedChange]);
+
+  // Gesto de dois dedos: enquanto dura, o mapa é do vendedor; se chegar a
+  // rodá-lo mais do que um tremer de mão, a bússola larga-o de vez.
+  useEffect(() => {
+    const container = map.getContainer();
+
+    const onTouchStart = (e) => {
+      if (e.touches.length === 2) gestureBearingRef.current = map.getBearing();
+    };
+    const onTouchEnd = (e) => {
+      if (e.touches.length < 2) gestureBearingRef.current = null;
+    };
+    const onRotate = () => {
+      const start = gestureBearingRef.current;
+      if (start !== null && bearingGap(map.getBearing(), start) > MANUAL_ROTATE_DEG) {
+        onManualRotate();
+      }
+    };
+
+    container.addEventListener('touchstart', onTouchStart, { passive: true });
+    container.addEventListener('touchend', onTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', onTouchEnd, { passive: true });
+    map.on('rotate', onRotate);
+    return () => {
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchend', onTouchEnd);
+      container.removeEventListener('touchcancel', onTouchEnd);
+      map.off('rotate', onRotate);
+    };
+  }, [map, onManualRotate]);
+
+  // Modo navegação: o mapa persegue o rumo a cada fotograma, aproximando-se
+  // dele por passos de 18% da diferença. É esta perseguição contínua que falta
+  // à app e que no site faz o mapa parecer colado ao telemóvel — rodar o mapa
+  // só ao carregar no botão deixava-o parado o resto do tempo.
+  useEffect(() => {
+    if (!followCompass) return undefined;
+    let rafId;
+    const LERP = 0.18;
+
+    const tick = () => {
+      const target = targetBearingRef.current;
+      // Se o mapa foi rodado por fora — pelos dedos, pelo botão do norte — a
+      // bússola retoma a partir de onde ele está e não de onde o deixou, que
+      // é o que evita o salto ao reatar.
+      if (
+        smoothBearingRef.current !== null
+        && bearingGap(map.getBearing(), smoothBearingRef.current) > 0.5
+      ) {
+        smoothBearingRef.current = map.getBearing();
+      }
+      // Dedos no mapa: a bússola cala-se até os levantarem.
+      if (gestureBearingRef.current === null && target !== null && !isNaN(target)) {
+        if (smoothBearingRef.current === null) {
+          smoothBearingRef.current = target;
+          map.setBearing(target);
+        } else {
+          let diff = target - smoothBearingRef.current;
+          if (diff > 180) diff -= 360;
+          if (diff < -180) diff += 360;
+          if (Math.abs(diff) > 0.08) {
+            smoothBearingRef.current = (smoothBearingRef.current + diff * LERP + 360) % 360;
+            map.setBearing(smoothBearingRef.current);
+          }
+        }
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [map, targetBearingRef, followCompass]);
+
   return null;
 }
 
@@ -188,6 +335,11 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const [mapError, setMapError] = useState(null);
   const [tilesLoaded, setTilesLoaded] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
+  // O mapa segue o vendedor e roda com a bússola até ele tomar o volante: um
+  // arrasto larga o seguimento, um gesto de rotação larga a bússola. O botão
+  // de localização devolve-lhe as duas coisas.
+  const [isAutoFollowing, setIsAutoFollowing] = useState(true);
+  const [followCompass, setFollowCompass] = useState(true);
   const mapRef = useRef(null);
   // Lido uma única vez: o Leaflet só olha para `center` quando cria o mapa, e
   // este ecrã volta a desenhar-se a cada leitura de GPS.
@@ -195,15 +347,21 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const listenerRef = useRef(null);
   const watchIdRef = useRef(null);
   const sharingRef = useRef(false);
-  const { heading, reportGpsHeading, enableCompass } = useDeviceHeading();
+  const { heading, targetBearingRef, reportGpsHeading, enableCompass } = useDeviceHeading();
   const pinColor = user?.pin_color || DEFAULT_PIN;
   const isPremium = Boolean(user?.is_premium);
+  // Sem o rumo nas dependências: ele muda dez vezes por segundo e refazer o
+  // ícone tantas vezes era o que tornava o pin tremido. Aqui o ícone só muda
+  // quando muda mesmo — cor, partilha ligada, Premium.
   const vendorIcon = useMemo(() => L.divIcon({
     className: 'vendor-location-pin',
-    html: getVendorLocationHtml(heading, pinColor, sharing, isPremium),
+    html: getVendorLocationHtml(pinColor, sharing, isPremium),
     iconSize: [54, 54],
     iconAnchor: [27, 27],
-  }), [heading, pinColor, sharing, isPremium]);
+  }), [pinColor, sharing, isPremium]);
+
+  const stopFollowingCompass = useCallback(() => setFollowCompass(false), []);
+  const stopAutoFollowing = useCallback(() => setIsAutoFollowing(false), []);
 
   const authHeader = { Authorization: `Bearer ${token}` };
 
@@ -216,7 +374,10 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
           return;
         }
         watchIdRef.current = await Geolocation.watchPosition(
-          { enableHighAccuracy: true },
+          // `maximumAge: 0` como no site: uma posição guardada em cache é
+          // uma posição velha, e no mapa vê-se como um pin que anda atrasado
+          // em relação ao vendedor.
+          { enableHighAccuracy: true, maximumAge: 0 },
           (pos, err) => {
             if (!active) return;
             if (err) {
@@ -227,7 +388,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
               setMapError(null);
               // Só atualiza o mapa local e o rumo. O envio para o servidor é do
               // serviço nativo, que continua a correr com a app em segundo plano.
-              applyPosition(pos.coords.latitude, pos.coords.longitude);
+              applyPosition(pos.coords.latitude, pos.coords.longitude, 'gps');
               reportGpsHeading(pos.coords.heading, pos.coords.speed);
             }
           }
@@ -270,7 +431,27 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   // para o servidor: o envio é feito pelo serviço nativo, que sobrevive à app ir
   // para segundo plano ou ao ecrã bloquear — que é precisamente quando a WebView
   // (e este JS) fica congelada.
-  const applyPosition = useCallback((lat, lng) => {
+  //
+  // Com a partilha ligada há duas fontes de posição: o watch do JS, contínuo e
+  // fino, e o serviço nativo, que só entrega de cinco em cinco segundos e
+  // depois de filtrar os metros. Deixá-las escrever as duas punha o pin a
+  // andar para a frente com uma e a recuar com a outra — o andamento errático
+  // que se sente na app. À frente manda o watch do JS; o nativo só entra
+  // quando o JS está calado (ecrã bloqueado, app a voltar do segundo plano).
+  const lastGpsTsRef = useRef(0);
+  const lastAppliedRef = useRef(null);
+  const applyPosition = useCallback((lat, lng, source = 'gps') => {
+    const now = Date.now();
+    if (source === 'gps') {
+      lastGpsTsRef.current = now;
+    } else if (now - lastGpsTsRef.current < NATIVE_TAKEOVER_MS) {
+      return;
+    }
+    // Parado ao sol, o GPS ainda oscila uns metros a cada leitura. Abaixo de um
+    // metro não se mexe o pin: seria um tremer sem informação nenhuma.
+    const previous = lastAppliedRef.current;
+    if (previous && metersBetween(previous[0], previous[1], lat, lng) < MIN_MOVE_METERS) return;
+    lastAppliedRef.current = [lat, lng];
     setPosition([lat, lng]);
   }, []);
 
@@ -324,7 +505,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
       // atualiza o mapa local enquanto a app está à frente.
       listenerRef.current = await LocationTracker.addListener(
         'locationUpdate',
-        ({ lat, lng }) => applyPosition(lat, lng)
+        ({ lat, lng }) => applyPosition(lat, lng, 'native')
       );
       await LocationTracker.startTracking({
         baseUrl: BASE_URL,
@@ -385,24 +566,34 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
     };
   }, []);
 
-  // (em português) Botão de localização, como o do site: leva o mapa à
-  // posição do vendedor e, quando há bússola, ALINHA o mapa com o seu rumo
-  // (a direção para onde está virado fica a apontar para cima — modo
-  // navegação). Ativa a bússola no toque, que no iOS é o único momento em
-  // que a permissão pode ser pedida. Sem posição ainda, só ativa a bússola.
+  // (em português) Botão de localização, como o do site: devolve ao mapa o
+  // seguimento do vendedor e o modo navegação (a direção para onde está virado
+  // fica a apontar para cima), e leva-o à sua posição. Ativa a bússola no
+  // toque, que no iOS é o único momento em que a permissão pode ser pedida.
+  // Sem posição ainda, só ativa a bússola e o seguimento.
   const handleLocate = async () => {
     await enableCompass();
+    setIsAutoFollowing(true);
+    setFollowCompass(true);
     const map = mapRef.current;
     if (!map) return;
     if (position) {
       const zoom = map.getZoom() < 16 ? 17 : map.getZoom();
       map.setView(position, zoom, { animate: true });
     }
-    // Alinhar com o rumo: o mapa roda para -rumo, o que põe a direção do
-    // vendedor para cima e (com a soma --pin-heading + --map-bearing) deixa a
-    // seta do pin a apontar para cima. Sem rumo, endireita para norte.
-    const hasHeading = heading !== null && !isNaN(heading);
-    animateToBearing(map, hasHeading ? (360 - heading) % 360 : 0);
+    // Sem rumo nenhum (bússola negada, telemóvel sem magnetómetro) endireita
+    // para norte; com rumo é o controlador de rotação que assume daqui.
+    if (targetBearingRef.current === null || isNaN(targetBearingRef.current)) {
+      animateToBearing(map, 0);
+    }
+  };
+
+  // Botão do norte: endireita o mapa e cala a bússola — senão ela voltava a
+  // rodá-lo no fotograma seguinte. Quem o quer de volta a seguir a bússola tem
+  // o botão de localizar, mesmo ao lado.
+  const handleNorthUp = () => {
+    setFollowCompass(false);
+    animateToBearing(mapRef.current, 0);
   };
 
   const vendorName = user?.name || 'Vendedor';
@@ -440,9 +631,20 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
             {...TILE_LAYER}
             eventHandlers={{ load: () => setTilesLoaded(true) }}
           />
-          {position && <AnimatedMarker position={position} icon={vendorIcon} />}
-          <FollowPosition position={position} />
-          <MapBearingPublisher onRotatedChange={setIsRotated} />
+          {position && (
+            <AnimatedMarker position={position} icon={vendorIcon} heading={heading} />
+          )}
+          <AutoFollow
+            position={position}
+            following={isAutoFollowing}
+            onUserPan={stopAutoFollowing}
+          />
+          <MapRotationController
+            targetBearingRef={targetBearingRef}
+            followCompass={followCompass}
+            onManualRotate={stopFollowingCompass}
+            onRotatedChange={setIsRotated}
+          />
           <MapResizeWatcher />
         </MapContainer>
         {/* Grelha com brilho a atravessar, como no mapa do site, enquanto
@@ -486,7 +688,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
               <button
                 type="button"
                 className="map-north-btn"
-                onClick={() => animateToBearing(mapRef.current, 0)}
+                onClick={handleNorthUp}
                 aria-label="Virar o mapa para norte"
               >
                 <svg className="map-north-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
