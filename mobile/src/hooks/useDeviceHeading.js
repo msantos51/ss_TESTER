@@ -9,6 +9,23 @@ import { useEffect, useRef, useState } from 'react';
 // ligeiramente ao lado.
 const RAW_THROTTLE_MS = 16;
 const MAX_ACCURACY_DEG = 50;
+// (em português) Salto de rumo, entre duas leituras da bússola, grande de mais
+// para ser o vendedor a virar-se: é interferência magnética (o suporte do
+// telemóvel, um altifalante, o metal da carrinha) a fazer o magnetómetro
+// disparar para um valor qualquer por um instante. Sem filtro, cada disparo
+// destes era exatamente o "pin sempre a rodar" — o mapa e a seta saltavam
+// para esse rumo falso e logo a seguir de volta. Só GPS não tem este
+// problema (o rumo aí vem do movimento real), por isso o filtro é só para as
+// leituras da bússola.
+const MAX_COMPASS_JUMP_DEG = 60;
+// Confirmação: o mesmo salto grande a repetir-se é mesmo uma viragem, não
+// ruído de um instante.
+const SPIKE_CONFIRM_DEG = 20;
+
+function bearingGapDeg(a, b) {
+  const diff = Math.abs(a - b) % 360;
+  return diff > 180 ? 360 - diff : diff;
+}
 
 // Devolve `headingRef`, a direção (graus, 0 = norte, sentido horário) para
 // onde o dispositivo está virado, combinando o heading do GPS (quando o
@@ -25,6 +42,10 @@ export default function useDeviceHeading() {
   const absEventFiredRef = useRef(false);
   const gpsMovingRef = useRef(false);
   const [compassReady, setCompassReady] = useState(false);
+  // Último rumo da bússola aceite e um salto grande ainda por confirmar — ver
+  // `acceptCompassHeading`.
+  const lastCompassHeadingRef = useRef(null);
+  const pendingSpikeRef = useRef(null);
 
   // Uma leitura de rumo: os dois refs ficam sempre em dia; o estado só assina
   // a primeira leitura.
@@ -37,6 +58,26 @@ export default function useDeviceHeading() {
       hasHeadingRef.current = true;
       setHasHeading(true);
     }
+  };
+
+  // Filtra as leituras da bússola antes de as passar a `pushHeading`: um
+  // salto isolado maior do que `MAX_COMPASS_JUMP_DEG` é descartado, e só
+  // aceite se a leitura seguinte confirmar o mesmo rumo novo.
+  const acceptCompassHeading = (raw) => {
+    const last = lastCompassHeadingRef.current;
+    if (last !== null && bearingGapDeg(raw, last) > MAX_COMPASS_JUMP_DEG) {
+      const pending = pendingSpikeRef.current;
+      if (pending !== null && bearingGapDeg(pending, raw) < SPIKE_CONFIRM_DEG) {
+        pendingSpikeRef.current = null;
+      } else {
+        pendingSpikeRef.current = raw;
+        return;
+      }
+    } else {
+      pendingSpikeRef.current = null;
+    }
+    lastCompassHeadingRef.current = raw;
+    pushHeading(raw);
   };
 
   // Ativa a bússola. No iOS 13+ `requestPermission` TEM de ser chamado a
@@ -84,7 +125,7 @@ export default function useDeviceHeading() {
       if (now - lastHeadingTs.current < RAW_THROTTLE_MS) return;
       lastHeadingTs.current = now;
       absEventFiredRef.current = true;
-      pushHeading((360 - e.alpha) % 360);
+      acceptCompassHeading((360 - e.alpha) % 360);
     };
 
     const onOrientation = (e) => {
@@ -99,7 +140,7 @@ export default function useDeviceHeading() {
       } else if (e.alpha != null && e.absolute) {
         raw = (360 - e.alpha) % 360;
       }
-      if (raw !== null) pushHeading(raw);
+      if (raw !== null) acceptCompassHeading(raw);
     };
 
     window.addEventListener('deviceorientationabsolute', onAbsolute, true);
@@ -117,6 +158,11 @@ export default function useDeviceHeading() {
     if (gpsHeading != null && !isNaN(gpsHeading) && speed != null && speed > 0.3) {
       gpsMovingRef.current = true;
       lastHeadingTs.current = Date.now();
+      // O GPS pode levar o rumo para um lado bem diferente de onde a bússola
+      // o deixou; sem isto, a leitura da bússola seguinte via um "salto" que
+      // não era ruído nenhum e ficava presa à espera de confirmação.
+      lastCompassHeadingRef.current = null;
+      pendingSpikeRef.current = null;
       pushHeading(gpsHeading);
     } else {
       gpsMovingRef.current = false;
