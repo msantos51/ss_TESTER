@@ -52,6 +52,16 @@ function writeLastPos(lat, lng) {
 const NATIVE_TAKEOVER_MS = 12000;
 // Abaixo disto é tremer do GPS, não andamento do vendedor.
 const MIN_MOVE_METERS = 1;
+// (em português) Precisão (raio de erro, m) a partir da qual uma leitura já é
+// "boa". Uma leitura bem pior do que isto — um palpite da rede móvel, com
+// centenas de metros de erro — não substitui uma boa recente: era isso que
+// punha o pin aos saltos para um quarteirão ao lado e de volta.
+const GOOD_ACCURACY_METERS = 50;
+// Durante quanto tempo uma leitura boa protege o pin das más que vierem a seguir.
+const GOOD_FIX_HOLD_MS = 15000;
+// Ao iniciar a partilha, quanto tempo se espera por um fix preciso antes de
+// enviar o melhor que houver.
+const INITIAL_FIX_TIMEOUT_MS = 8000;
 
 // Distância entre duas coordenadas, em metros (equirretangular: a menos de um
 // metro em distâncias de praia, e sem a trigonometria toda do haversine).
@@ -448,7 +458,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
               setMapError(null);
               // Só atualiza o mapa local e o rumo. O envio para o servidor é do
               // serviço nativo, que continua a correr com a app em segundo plano.
-              applyPosition(pos.coords.latitude, pos.coords.longitude, 'gps');
+              applyPosition(pos.coords.latitude, pos.coords.longitude, 'gps', pos.coords.accuracy);
               reportGpsHeading(pos.coords.heading, pos.coords.speed);
             }
           }
@@ -500,12 +510,21 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   // quando o JS está calado (ecrã bloqueado, app a voltar do segundo plano).
   const lastGpsTsRef = useRef(0);
   const lastAppliedRef = useRef(null);
-  const applyPosition = useCallback((lat, lng, source = 'gps') => {
+  // Raio de erro da posição no pin e quando chegou a última leitura boa.
+  const lastAccuracyRef = useRef(null);
+  const lastGoodFixTsRef = useRef(0);
+  const applyPosition = useCallback((lat, lng, source = 'gps', accuracy = null) => {
     const now = Date.now();
     if (source === 'gps') {
       lastGpsTsRef.current = now;
     } else if (now - lastGpsTsRef.current < NATIVE_TAKEOVER_MS) {
       return;
+    }
+    const hasAccuracy = typeof accuracy === 'number' && Number.isFinite(accuracy);
+    if (hasAccuracy) {
+      if (accuracy > GOOD_ACCURACY_METERS && now - lastGoodFixTsRef.current < GOOD_FIX_HOLD_MS) return;
+      if (accuracy <= GOOD_ACCURACY_METERS) lastGoodFixTsRef.current = now;
+      lastAccuracyRef.current = accuracy;
     }
     // Parado ao sol, o GPS ainda oscila uns metros a cada leitura. Abaixo de um
     // metro não se mexe o pin: seria um tremer sem informação nenhuma.
@@ -518,11 +537,13 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   // (em português) Envio único e imediato ao iniciar a partilha, para o vendedor
   // aparecer logo no mapa do banhista sem esperar pelo primeiro fix do serviço
   // nativo. A partir daí, todos os envios são do serviço nativo.
-  const sendInitialLocation = useCallback(async (lat, lng) => {
+  const sendInitialLocation = useCallback(async (lat, lng, accuracy = null) => {
+    const payload = { lat, lng };
+    if (typeof accuracy === 'number' && Number.isFinite(accuracy)) payload.accuracy = accuracy;
     const response = await fetch(`${BASE_URL}/vendors/${vendorId}/location`, {
       method: 'PUT',
       headers: { ...authHeader, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lat, lng }),
+      body: JSON.stringify(payload),
     });
     if (!response.ok) {
       const message = await readApiError(response, 'Erro ao enviar localização');
@@ -549,18 +570,40 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
         const err = await res.json();
         throw new Error(err.detail || 'Erro ao iniciar partilha');
       }
-      const currentPosition = position || await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
-      const currentLat = Array.isArray(currentPosition)
-        ? currentPosition[0]
-        : currentPosition.coords.latitude;
-      const currentLng = Array.isArray(currentPosition)
-        ? currentPosition[1]
-        : currentPosition.coords.longitude;
+      // O primeiro ponto é o que os banhistas veem logo: só se reaproveita o
+      // pin se ele já tiver uma leitura precisa e fresca; senão pede-se um fix
+      // novo, sem cache, e fica o pin como recurso se o GPS não responder.
+      let currentLat;
+      let currentLng;
+      let currentAccuracy = null;
+      const pinIsPrecise = position
+        && lastAccuracyRef.current !== null
+        && lastAccuracyRef.current <= GOOD_ACCURACY_METERS
+        && Date.now() - lastGpsTsRef.current < GOOD_FIX_HOLD_MS;
+      if (pinIsPrecise) {
+        [currentLat, currentLng] = position;
+        currentAccuracy = lastAccuracyRef.current;
+      } else {
+        try {
+          const fix = await Geolocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: INITIAL_FIX_TIMEOUT_MS,
+          });
+          currentLat = fix.coords.latitude;
+          currentLng = fix.coords.longitude;
+          currentAccuracy = fix.coords.accuracy ?? null;
+        } catch (err) {
+          if (!position) throw err;
+          [currentLat, currentLng] = position;
+          currentAccuracy = lastAccuracyRef.current;
+        }
+      }
 
       sharingRef.current = true;
 
-      applyPosition(currentLat, currentLng);
-      await sendInitialLocation(currentLat, currentLng);
+      applyPosition(currentLat, currentLng, 'gps', currentAccuracy);
+      await sendInitialLocation(currentLat, currentLng, currentAccuracy);
 
       // O serviço nativo envia sozinho as posições seguintes. Este ouvinte só
       // atualiza o mapa local enquanto a app está à frente.

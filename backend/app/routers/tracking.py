@@ -1,18 +1,41 @@
 # tracking.py - partilha de localização e trajetos dos vendedores.
 
 import json
+from datetime import datetime
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from .. import models, schemas
-from ..config import MAX_GPS_DISTANCE_M, MIN_GPS_DISTANCE_M
+from ..config import (
+    MAX_GPS_ACCURACY_M,
+    MAX_GPS_DISTANCE_M,
+    MAX_GPS_SPEED_MPS,
+    MIN_GPS_DISTANCE_M,
+)
 from ..database import get_db
 from ..realtime import manager
 from ..security import get_current_vendor
 from ..utils import haversine, route_distance, utcnow
 
 router = APIRouter()
+
+
+def _jump_is_plausible(last_point: dict, moved: float, now) -> bool:
+    """Diz se um salto maior que MAX_GPS_DISTANCE_M pode ser verdadeiro.
+
+    É plausível quando o ponto anterior era impreciso (o erro estava nele, não
+    na leitura nova) ou quando o tempo decorrido chega para o percorrer a uma
+    velocidade possível.
+    """
+    last_acc = last_point.get("acc")
+    if last_acc is not None and last_acc > MAX_GPS_ACCURACY_M:
+        return True
+    try:
+        elapsed = (now - datetime.fromisoformat(last_point["t"])).total_seconds()
+    except (KeyError, TypeError, ValueError):
+        return False
+    return elapsed > 0 and moved / elapsed <= MAX_GPS_SPEED_MPS
 
 # --------------------------
 # Atualizar localização do vendedor
@@ -22,6 +45,9 @@ async def update_vendor_location(
     vendor_id: int,
     lat: float = Body(...),
     lng: float = Body(...),
+    # Raio de incerteza da leitura, em metros, tal como o GPS do telemóvel o
+    # reporta. Opcional para as versões antigas da app continuarem a funcionar.
+    accuracy: float | None = Body(None),
     db: Session = Depends(get_db),
     current_vendor: models.Vendor = Depends(get_current_vendor),
 ):
@@ -43,21 +69,39 @@ async def update_vendor_location(
 
     points = json.loads(active_route.points or "[]")
     last_point = points[-1] if points else None
+    now = utcnow()
 
-    # Ignora leituras de GPS demasiado próximas ou demasiado afastadas:
-    # - Próximas (< 15m): ruído de GPS não deve ser contabilizado como movimento
-    # - Afastadas (> 2km): saltos impossíveis de GPS (erro de satélite, etc.)
     if last_point is not None:
+        # Leitura demasiado imprecisa para mexer num pin que já existe: um fix
+        # de rede com centenas de metros de erro só o afastava do vendedor.
+        if accuracy is not None and accuracy > MAX_GPS_ACCURACY_M:
+            return {"message": "Localização ignorada (precisão insuficiente)"}
+
+        # Saltos grandes são quase sempre erro de satélite, MAS não quando o
+        # ponto anterior é que estava errado (primeiro fix por rede, impreciso)
+        # ou quando passou tempo suficiente para o salto ser possível. Antes o
+        # salto era recusado sempre, e um primeiro ponto mal colocado prendia o
+        # pin no sítio errado durante o resto do trajeto.
         moved = haversine(last_point["lat"], last_point["lng"], lat, lng)
-        if moved < MIN_GPS_DISTANCE_M:
-            return {"message": "Localização ignorada (ruído de GPS)"}
-        if moved > MAX_GPS_DISTANCE_M:
+        if moved > MAX_GPS_DISTANCE_M and not _jump_is_plausible(last_point, moved, now):
             return {"message": "Localização ignorada (salto de GPS anómalo)"}
 
+    # A posição mostrada aos banhistas é sempre a mais recente que a app envia:
+    # a app já filtra o tremer do GPS e só reenvia parado quando a precisão
+    # melhora. Antes, tudo abaixo de 15 m era deitado fora, e o pin no mapa do
+    # site ficava até 15 m ao lado do vendedor — ou preso no primeiro fix,
+    # impreciso, mesmo depois de o GPS acertar.
     vendor.current_lat = lat
     vendor.current_lng = lng
-    points.append({"lat": lat, "lng": lng, "t": utcnow().isoformat()})
-    active_route.points = json.dumps(points)
+
+    # Ao trajeto (distância percorrida) só entra movimento real: abaixo de
+    # MIN_GPS_DISTANCE_M é ruído e faria o trajeto "andar sozinho" parado.
+    if last_point is None or moved >= MIN_GPS_DISTANCE_M:
+        point = {"lat": lat, "lng": lng, "t": now.isoformat()}
+        if accuracy is not None:
+            point["acc"] = accuracy
+        points.append(point)
+        active_route.points = json.dumps(points)
     db.commit()
 
     await manager.broadcast({"vendor_id": vendor_id, "lat": lat, "lng": lng})

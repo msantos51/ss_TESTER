@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -70,6 +71,18 @@ public class LocationForegroundService extends Service {
     // incerteza da própria leitura.
     private static final float MIN_UPDATE_DISTANCE_METERS = 8f;
     private static final float MAX_ACCEPTABLE_ACCURACY_METERS = 50f;
+
+    // (em português) Parado, o filtro de distância acima deixava o pin preso no
+    // primeiro fix aceite — muitas vezes o pior, tirado com o GPS ainda a
+    // aquecer — até o vendedor andar tanto quanto o erro desse fix. Agora uma
+    // leitura claramente mais precisa (raio de erro a esta fração do anterior,
+    // e pelo menos uns metros melhor) substitui a anterior mesmo sem movimento.
+    private static final float ACCURACY_IMPROVEMENT_RATIO = 0.6f;
+    private static final float MIN_ACCURACY_GAIN_METERS = 3f;
+
+    // Leituras mais velhas do que isto (o Fused às vezes entrega a última que
+    // tem em cache) mostram onde o vendedor ESTEVE, não onde está.
+    private static final long MAX_LOCATION_AGE_MS = 20 * 1000L;
 
     // (em português) Quanto tempo o vendedor pode ficar parado antes de a
     // partilha se desligar sozinha. Estar parado meia hora é quase sempre sinal
@@ -183,7 +196,7 @@ public class LocationForegroundService extends Service {
     // NetworkOnMainThreadException) e num executor de uma só thread, para as
     // leituras seguirem por ordem. É o mesmo pedido que o JS fazia antes, mas
     // aqui não pode ser congelado com a app em segundo plano.
-    private void uploadLocation(final double lat, final double lng) {
+    private void uploadLocation(final double lat, final double lng, final Float accuracy) {
         final String url = baseUrl;
         final String vendor = vendorId;
         final String token = authToken;
@@ -201,7 +214,11 @@ public class LocationForegroundService extends Service {
                 conn.setConnectTimeout(15000);
                 conn.setReadTimeout(15000);
                 conn.setDoOutput(true);
-                String body = String.format(Locale.US, "{\"lat\":%f,\"lng\":%f}", lat, lng);
+                // Sete casas decimais (~1 cm) e o raio de erro da leitura, para o
+                // servidor saber distinguir um fix fino de um palpite da rede.
+                String body = accuracy != null
+                        ? String.format(Locale.US, "{\"lat\":%.7f,\"lng\":%.7f,\"accuracy\":%.1f}", lat, lng, accuracy)
+                        : String.format(Locale.US, "{\"lat\":%.7f,\"lng\":%.7f}", lat, lng);
                 try (OutputStream os = conn.getOutputStream()) {
                     os.write(body.getBytes(StandardCharsets.UTF_8));
                 }
@@ -259,7 +276,11 @@ public class LocationForegroundService extends Service {
                 .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
                 .setMinUpdateIntervalMillis(2000)
                 .setMaxUpdateDelayMillis(0)
-                .setMinUpdateDistanceMeters(MIN_UPDATE_DISTANCE_METERS)
+                // Sem filtro de distância no pedido: o Fused descartava também
+                // as leituras que só melhoram a precisão com o vendedor parado.
+                // O filtro de ruído é feito abaixo, onde se conhece a precisão.
+                .setMinUpdateDistanceMeters(0f)
+                .setWaitForAccurateLocation(true)
                 .build();
 
         locationCallback = new LocationCallback() {
@@ -275,6 +296,11 @@ public class LocationForegroundService extends Service {
                 if (location.hasAccuracy() && location.getAccuracy() > MAX_ACCEPTABLE_ACCURACY_METERS) {
                     return;
                 }
+                long ageMs = (SystemClock.elapsedRealtimeNanos() - location.getElapsedRealtimeNanos()) / 1_000_000L;
+                if (ageMs > MAX_LOCATION_AGE_MS) {
+                    return;
+                }
+                boolean moved = true;
                 if (lastAcceptedLocation != null) {
                     // O raio de incerteza do GPS (accuracy) pode por si só explicar a
                     // distância entre duas leituras com o vendedor parado, por isso o
@@ -288,16 +314,25 @@ public class LocationForegroundService extends Service {
                         requiredDistance = Math.max(requiredDistance, lastAcceptedLocation.getAccuracy());
                     }
                     if (lastAcceptedLocation.distanceTo(location) < requiredDistance) {
-                        return;
+                        if (!isMuchMoreAccurate(location, lastAcceptedLocation)) {
+                            return;
+                        }
+                        // Não andou: é a mesma posição, só que mais bem medida.
+                        moved = false;
                     }
                 }
                 lastAcceptedLocation = location;
-                // Passou o filtro de ruído acima, por isso isto é andar a sério:
-                // é o que põe o relógio da inatividade a zero.
-                lastMovementAt = System.currentTimeMillis();
+                // Só andar a sério põe o relógio da inatividade a zero; afinar a
+                // precisão parado não conta como movimento.
+                if (moved) {
+                    lastMovementAt = System.currentTimeMillis();
+                }
                 // Envio para o servidor: feito aqui, no nativo, para não depender
                 // da WebView (que o Android congela em segundo plano).
-                uploadLocation(location.getLatitude(), location.getLongitude());
+                uploadLocation(
+                        location.getLatitude(),
+                        location.getLongitude(),
+                        location.hasAccuracy() ? location.getAccuracy() : null);
                 // O ouvinte só atualiza o mapa local da app quando ela está à
                 // frente; pode ser nulo com a app em segundo plano, e isso já não
                 // impede o envio acima.
@@ -312,6 +347,16 @@ public class LocationForegroundService extends Service {
         } catch (SecurityException e) {
             e.printStackTrace();
         }
+    }
+
+    // Diz se `candidate` mede a posição claramente melhor do que `previous`.
+    private static boolean isMuchMoreAccurate(Location candidate, Location previous) {
+        if (!candidate.hasAccuracy() || !previous.hasAccuracy()) {
+            return false;
+        }
+        float next = candidate.getAccuracy();
+        float prev = previous.getAccuracy();
+        return next <= prev * ACCURACY_IMPROVEMENT_RATIO && prev - next >= MIN_ACCURACY_GAIN_METERS;
     }
 
     // (em português) Relógio da inatividade. Arranca (ou reinicia) a contagem no
