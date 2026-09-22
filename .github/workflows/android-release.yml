@@ -77,15 +77,38 @@ jobs:
         working-directory: mobile
         run: npx cap sync android
 
+      # O ficheiro chama-se signing-key.jks e não upload-keystore.jks: com o
+      # alias "upload" num secret, o GitHub mascara essa palavra nos logs e o
+      # caminho aparecia como "***-keystore.jks".
       - name: Decode upload keystore
         env:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-        run: echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload-keystore.jks"
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          # Copiado do terminal, o texto traz muitas vezes espaços e quebras de
+          # linha pelo meio; não fazem parte do base64 e são retirados aqui.
+          clean="$(printf '%s' "$KEYSTORE_B64" | tr -d ' \t\r\n')"
+          if printf '%s' "$clean" | grep -q '[^A-Za-z0-9+/=]'; then
+            echo "::error::O secret ANDROID_KEYSTORE_BASE64 tem caracteres que não são base64 (por exemplo, parte do prompt do terminal como 'cloudshell:~\$'). Volta a copiar só o texto que o comando base64 -w0 no Cloud Shell mostra."
+            exit 1
+          fi
+          if ! printf '%s' "$clean" | base64 -d > "$RUNNER_TEMP/signing-key.jks" 2>/dev/null; then
+            echo "::error::O secret ANDROID_KEYSTORE_BASE64 está incompleto ou cortado. Volta a copiar o texto todo do comando base64 -w0 no Cloud Shell."
+            exit 1
+          fi
+          # Confirma já aqui a password e o alias, com uma mensagem clara, em
+          # vez de deixar o Gradle falhar a meio com um erro difícil de ler.
+          if ! keytool -list -keystore "$RUNNER_TEMP/signing-key.jks" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" > /dev/null 2>&1; then
+            echo "::error::A chave foi lida, mas a password (ANDROID_KEYSTORE_PASSWORD) ou o alias (ANDROID_KEY_ALIAS) não correspondem a ela."
+            exit 1
+          fi
+          echo "Chave de upload validada."
 
       - name: Build signed App Bundle
         working-directory: mobile/android
         env:
-          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/upload-keystore.jks
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/signing-key.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
@@ -104,7 +127,7 @@ jobs:
 
       - name: Remove keystore
         if: always()
-        run: rm -f "$RUNNER_TEMP/upload-keystore.jks"
+        run: rm -f "$RUNNER_TEMP/signing-key.jks"
 
       - name: Upload App Bundle
         uses: actions/upload-artifact@v4
