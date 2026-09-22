@@ -3,6 +3,12 @@ name: Android Build
 on:
   push:
     branches: [main]
+  # Também nos PRs que mexem na app, para uma alteração ao Android (SDK,
+  # Gradle, código nativo) ser validada antes do merge e não só depois.
+  pull_request:
+    paths:
+      - "mobile/**"
+      - ".github/workflows/android-build.yml"
   workflow_dispatch:
 
 jobs:
