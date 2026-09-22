@@ -123,11 +123,24 @@ public class LocationPlugin extends Plugin {
     }
 
     private void startLocationTracking(PluginCall call) {
-        LocationForegroundService.setLocationListener((lat, lng) -> {
-            JSObject data = new JSObject();
-            data.put("lat", lat);
-            data.put("lng", lng);
-            notifyListeners("locationUpdate", data);
+        LocationForegroundService.setLocationListener(new LocationForegroundService.LocationListener() {
+            @Override
+            public void onLocationUpdate(double lat, double lng) {
+                JSObject data = new JSObject();
+                data.put("lat", lat);
+                data.put("lng", lng);
+                notifyListeners("locationUpdate", data);
+            }
+
+            // O serviço desligou a partilha sozinho (vendedor parado há 30
+            // minutos). O ecrã do mapa precisa de saber para o botão voltar a
+            // "Partilhar" — o servidor já foi avisado pelo próprio serviço.
+            @Override
+            public void onSharingStopped(String reason) {
+                JSObject data = new JSObject();
+                data.put("reason", reason);
+                notifyListeners("sharingStopped", data);
+            }
         });
 
         Intent intent = new Intent(getContext(), LocationForegroundService.class);
