@@ -559,3 +559,11 @@
     background: var(--site-glass-solid);
   }
 }
+
+/* Aviso informativo (partilha desligada por inatividade): mesmo painel dos
+   erros, mas no azul do resto da app — não é uma falha, é a app a proteger o
+   vendedor. */
+.map-alert--info {
+  border-color: rgba(24, 99, 163, 0.35);
+  color: var(--site-accent);
+}

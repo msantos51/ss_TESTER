@@ -3,6 +3,7 @@ package com.sunnysales.vendor;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +38,13 @@ public class LocationForegroundService extends Service {
     private static final String CHANNEL_ID = "location_channel";
     private static final int NOTIFICATION_ID = 1;
 
+    // (em português) Canal e id separados para o aviso de partilha desligada por
+    // inatividade. O canal do serviço é de importância baixa de propósito (a
+    // notificação permanente não deve tocar de cada vez); este aviso, esse, tem
+    // de chegar ao vendedor mesmo com o telemóvel no bolso.
+    private static final String ALERT_CHANNEL_ID = "location_alert_channel";
+    private static final int ALERT_NOTIFICATION_ID = 2;
+
     // (em português) Onde ficam guardados os dados de que o envio nativo precisa
     // (URL da API, id do vendedor e token). São persistidos porque, com
     // START_STICKY, o Android pode matar e relançar o serviço com um `Intent`
@@ -63,10 +71,22 @@ public class LocationForegroundService extends Service {
     private static final float MIN_UPDATE_DISTANCE_METERS = 8f;
     private static final float MAX_ACCEPTABLE_ACCURACY_METERS = 50f;
 
+    // (em português) Quanto tempo o vendedor pode ficar parado antes de a
+    // partilha se desligar sozinha. Estar parado meia hora é quase sempre sinal
+    // de que a partilha ficou esquecida ligada (o vendedor foi para casa com a
+    // app aberta, o telemóvel ficou na mala), e um pin parado na praia é uma
+    // informação errada para o banhista e uma exposição desnecessária da
+    // posição do vendedor. É o mesmo filtro de movimento real usado acima que
+    // conta o tempo: leituras que são só ruído de GPS não contam como andar.
+    private static final long INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000L;
+    // De quanto em quanto tempo se verifica o relógio da inatividade.
+    private static final long INACTIVITY_CHECK_INTERVAL_MS = 60 * 1000L;
+
     private FusedLocationProviderClient fusedClient;
     private LocationCallback locationCallback;
     private PowerManager.WakeLock wakeLock;
     private Location lastAcceptedLocation;
+    private long lastMovementAt;
     private Handler handler;
     private static final long WAKELOCK_RENEW_INTERVAL = 55 * 60 * 1000L;
 
@@ -83,6 +103,11 @@ public class LocationForegroundService extends Service {
 
     public interface LocationListener {
         void onLocationUpdate(double lat, double lng);
+
+        // (em português) Avisa o ecrã do mapa de que a partilha foi desligada
+        // pelo próprio serviço (inatividade), para o botão voltar a "Partilhar"
+        // sem o vendedor ter de fechar e abrir a app.
+        void onSharingStopped(String reason);
     }
 
     private static LocationListener listener;
@@ -117,9 +142,17 @@ public class LocationForegroundService extends Service {
             startForeground(NOTIFICATION_ID, notification);
         }
 
+        // Nova partilha: o aviso da partilha anterior ter sido desligada já não
+        // faz sentido na gaveta de notificações.
+        NotificationManager alertManager = getSystemService(NotificationManager.class);
+        if (alertManager != null) {
+            alertManager.cancel(ALERT_NOTIFICATION_ID);
+        }
+
         acquireWakeLock();
         scheduleWakeLockRenewal();
         startLocationUpdates();
+        startInactivityWatch();
         return START_STICKY;
     }
 
@@ -259,6 +292,9 @@ public class LocationForegroundService extends Service {
                     }
                 }
                 lastAcceptedLocation = location;
+                // Passou o filtro de ruído acima, por isso isto é andar a sério:
+                // é o que põe o relógio da inatividade a zero.
+                lastMovementAt = System.currentTimeMillis();
                 // Envio para o servidor: feito aqui, no nativo, para não depender
                 // da WebView (que o Android congela em segundo plano).
                 uploadLocation(location.getLatitude(), location.getLongitude());
@@ -278,6 +314,105 @@ public class LocationForegroundService extends Service {
         }
     }
 
+    // (em português) Relógio da inatividade. Arranca (ou reinicia) a contagem no
+    // momento em que a partilha começa — sem isto, um serviço relançado pelo
+    // sistema herdava `lastMovementAt = 0` e desligava a partilha logo na
+    // primeira verificação.
+    private void startInactivityWatch() {
+        lastMovementAt = System.currentTimeMillis();
+        handler.removeCallbacks(inactivityCheck);
+        handler.postDelayed(inactivityCheck, INACTIVITY_CHECK_INTERVAL_MS);
+    }
+
+    private final Runnable inactivityCheck = new Runnable() {
+        @Override
+        public void run() {
+            if (System.currentTimeMillis() - lastMovementAt >= INACTIVITY_TIMEOUT_MS) {
+                stopForInactivity();
+                return;
+            }
+            handler.postDelayed(this, INACTIVITY_CHECK_INTERVAL_MS);
+        }
+    };
+
+    // Desliga a partilha por o vendedor estar parado há demasiado tempo: fecha o
+    // trajeto no servidor (é isso que tira o pin do mapa dos banhistas), avisa o
+    // vendedor por notificação, avisa o ecrã do mapa se a app estiver à frente e
+    // mata o serviço. Voltar a partilhar exige carregar outra vez no botão — é o
+    // ponto: a partilha não se retoma sozinha.
+    private void stopForInactivity() {
+        requestRouteStop();
+        showInactivityNotification();
+        // Sem os dados de envio guardados, um relançamento do sistema
+        // (START_STICKY) não retoma a partilha que acabou de ser desligada.
+        getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().clear().apply();
+        if (listener != null) {
+            listener.onSharingStopped("inactivity");
+        }
+        stopSelf();
+    }
+
+    // Fecha o trajeto no servidor, do lado nativo, porque isto acontece muitas
+    // vezes com a app em segundo plano — o JavaScript da WebView está congelado
+    // e não o podia fazer.
+    private void requestRouteStop() {
+        final String url = baseUrl;
+        final String vendor = vendorId;
+        final String token = authToken;
+        if (url == null || vendor == null || token == null || uploadExecutor == null) {
+            return;
+        }
+        uploadExecutor.execute(() -> {
+            HttpURLConnection conn = null;
+            try {
+                String endpoint = url.replaceAll("/+$", "") + "/vendors/" + vendor + "/routes/stop";
+                conn = (HttpURLConnection) new URL(endpoint).openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Authorization", "Bearer " + token);
+                conn.setConnectTimeout(15000);
+                conn.setReadTimeout(15000);
+                conn.setFixedLengthStreamingMode(0);
+                conn.setDoOutput(true);
+                conn.getOutputStream().close();
+                conn.getResponseCode();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (conn != null) {
+                    conn.disconnect();
+                }
+            }
+        });
+    }
+
+    private void showInactivityNotification() {
+        Intent openApp = new Intent(this, MainActivity.class);
+        openApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, openApp, flags);
+
+        String text = "Não te moveste nos últimos 30 minutos. Por segurança, a tua localização"
+                + " deixou de ser partilhada. Carrega em partilhar para voltar a ficar visível.";
+        Notification notification = new NotificationCompat.Builder(this, ALERT_CHANNEL_ID)
+                .setContentTitle("Partilha de localização desligada")
+                .setContentText(text)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setSmallIcon(android.R.drawable.ic_menu_mylocation)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true)
+                .build();
+
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        if (manager != null) {
+            manager.notify(ALERT_NOTIFICATION_ID, notification);
+        }
+    }
+
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
@@ -288,12 +423,27 @@ public class LocationForegroundService extends Service {
             channel.setDescription("Notificação de partilha de localização");
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
+
+            NotificationChannel alertChannel = new NotificationChannel(
+                    ALERT_CHANNEL_ID,
+                    "Avisos de partilha",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            alertChannel.setDescription("Avisos sobre a partilha de localização ter sido desligada");
+            manager.createNotificationChannel(alertChannel);
         }
     }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
+        // Sem dados de envio guardados não há partilha ativa (foi parada pelo
+        // vendedor ou desligada por inatividade): relançar o serviço deixava o
+        // GPS a correr para nada.
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        if (prefs.getString(KEY_VENDOR_ID, null) == null) {
+            return;
+        }
         Intent restartIntent = new Intent(getApplicationContext(), LocationForegroundService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             getApplicationContext().startForegroundService(restartIntent);

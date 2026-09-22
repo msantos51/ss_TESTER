@@ -390,6 +390,8 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const [error, setError] = useState(null);
   const [position, setPosition] = useState(null);
   const [mapError, setMapError] = useState(null);
+  // Aviso (não é erro) de que a partilha se desligou sozinha por inatividade.
+  const [notice, setNotice] = useState(null);
   const [tilesLoaded, setTilesLoaded] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   // O mapa segue o vendedor e roda com a bússola até ele tomar o volante: um
@@ -402,6 +404,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   // este ecrã volta a desenhar-se a cada leitura de GPS.
   const [initialCenter] = useState(() => readLastPos() || FALLBACK_CENTER);
   const listenerRef = useRef(null);
+  const stoppedListenerRef = useRef(null);
   const watchIdRef = useRef(null);
   const sharingRef = useRef(false);
   const { headingRef, targetBearingRef, hasHeading, reportGpsHeading, enableCompass } = useDeviceHeading();
@@ -530,6 +533,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const startSharing = async () => {
     setLoading(true);
     setError(null);
+    setNotice(null);
     try {
       if (!(await ensureLocationPermission())) {
         setError('Permissão de localização negada.');
@@ -564,6 +568,30 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
         'locationUpdate',
         ({ lat, lng }) => applyPosition(lat, lng, 'native')
       );
+      // (em português) A partilha pode ser desligada pelo próprio serviço
+      // nativo quando o vendedor fica meia hora parado. Quando isso acontece o
+      // trajeto já foi fechado no servidor pelo lado nativo (a app pode estar em
+      // segundo plano, com este JavaScript congelado); aqui só se acerta o que o
+      // vendedor vê: o botão volta a "Iniciar partilha" e fica explicado porquê.
+      stoppedListenerRef.current = await LocationTracker.addListener(
+        'sharingStopped',
+        () => {
+          setSharing(false);
+          setNotice(
+            'Estiveste 30 minutos sem te mexeres, por isso a partilha de localização'
+            + ' foi desligada por segurança. Carrega em iniciar partilha para voltares'
+            + ' a aparecer no mapa.'
+          );
+          if (listenerRef.current) {
+            listenerRef.current.remove();
+            listenerRef.current = null;
+          }
+          if (stoppedListenerRef.current) {
+            stoppedListenerRef.current.remove();
+            stoppedListenerRef.current = null;
+          }
+        }
+      );
       await LocationTracker.startTracking({
         baseUrl: BASE_URL,
         vendorId: String(vendorId),
@@ -580,10 +608,15 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const stopSharing = async () => {
     setLoading(true);
     setError(null);
+    setNotice(null);
     try {
       if (listenerRef.current) {
         await listenerRef.current.remove();
         listenerRef.current = null;
+      }
+      if (stoppedListenerRef.current) {
+        await stoppedListenerRef.current.remove();
+        stoppedListenerRef.current = null;
       }
       await LocationTracker.stopTracking();
     } catch (err) {
@@ -620,6 +653,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   useEffect(() => {
     return () => {
       if (listenerRef.current) listenerRef.current.remove();
+      if (stoppedListenerRef.current) stoppedListenerRef.current.remove();
     };
   }, []);
 
@@ -795,6 +829,17 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
                 <line x1="12" y1="17" x2="12.01" y2="17" />
               </svg>
               <span>{mapError}</span>
+            </div>
+          )}
+
+          {notice && (
+            <div className="map-alert map-alert--info" role="status">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="12" x2="12" y2="16" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+              <span>{notice}</span>
             </div>
           )}
 
