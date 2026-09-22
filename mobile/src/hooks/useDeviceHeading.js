@@ -1,37 +1,42 @@
 import { useEffect, useRef, useState } from 'react';
 
-// O rumo alimenta duas coisas com ritmos muito diferentes: a rotação do mapa,
-// que corre a cada fotograma e quer todas as leituras da bússola, e o desenho
-// da seta do pin, que passa por React e não precisa de mais do que dez
-// atualizações por segundo. Guardar as leituras num ref (rápido) e só de vez
-// em quando em estado (lento) é o que o mapa do site faz — e é o que faz a
-// diferença entre um mapa que acompanha a mão e um que vai aos saltos.
+// O rumo alimenta duas coisas: a rotação do mapa e o ângulo da seta do pin.
+// Ambas correm a cada fotograma, no mesmo sítio (o controlador de rotação do
+// mapa), e ambas querem a leitura mais fresca da bússola — por isso o rumo
+// vive num ref, que se escreve a custo zero, e não em estado. Passá-lo por
+// estado, a dez leituras por segundo, era o que punha a seta a olhar para um
+// rumo e o mapa já virado para outro: o desencontro que fazia o pin apontar
+// ligeiramente ao lado.
 const RAW_THROTTLE_MS = 16;
-const MARKER_THROTTLE_MS = 100;
 const MAX_ACCURACY_DEG = 50;
 
-// Devolve a direção (graus, 0 = norte, sentido horário) para onde o
-// dispositivo está virado, combinando o heading do GPS (quando o vendedor
-// se está a mover) com a bússola do dispositivo (quando está parado).
-// Devolve também `targetBearingRef`, o mesmo rumo já convertido para bearing
-// de mapa (360 − rumo), que o controlador de rotação lê a cada fotograma.
+// Devolve `headingRef`, a direção (graus, 0 = norte, sentido horário) para
+// onde o dispositivo está virado, combinando o heading do GPS (quando o
+// vendedor se está a mover) com a bússola do dispositivo (quando está
+// parado), e `targetBearingRef`, o mesmo rumo já convertido para bearing de
+// mapa (360 − rumo). `hasHeading` é só o sinal de "já há para onde apontar",
+// que muda uma vez e não a cada leitura.
 export default function useDeviceHeading() {
-  const [heading, setHeading] = useState(null);
+  const headingRef = useRef(null);
   const targetBearingRef = useRef(null);
+  const [hasHeading, setHasHeading] = useState(false);
+  const hasHeadingRef = useRef(false);
   const lastHeadingTs = useRef(0);
-  const lastMarkerTs = useRef(0);
   const absEventFiredRef = useRef(false);
   const gpsMovingRef = useRef(false);
   const [compassReady, setCompassReady] = useState(false);
 
-  // Uma leitura de rumo: o bearing do mapa é atualizado sempre, o estado do
-  // marcador só ao ritmo do React.
+  // Uma leitura de rumo: os dois refs ficam sempre em dia; o estado só assina
+  // a primeira leitura.
   const pushHeading = (geoHeading) => {
+    headingRef.current = geoHeading;
     targetBearingRef.current = (360 - geoHeading) % 360;
-    const now = Date.now();
-    if (now - lastMarkerTs.current < MARKER_THROTTLE_MS) return;
-    lastMarkerTs.current = now;
-    setHeading(geoHeading);
+    // Só a primeira leitura mexe em estado: as seguintes redesenhariam o ecrã
+    // dezenas de vezes por segundo para dizer o mesmo.
+    if (!hasHeadingRef.current) {
+      hasHeadingRef.current = true;
+      setHasHeading(true);
+    }
   };
 
   // Ativa a bússola. No iOS 13+ `requestPermission` TEM de ser chamado a
@@ -112,13 +117,11 @@ export default function useDeviceHeading() {
     if (gpsHeading != null && !isNaN(gpsHeading) && speed != null && speed > 0.3) {
       gpsMovingRef.current = true;
       lastHeadingTs.current = Date.now();
-      targetBearingRef.current = (360 - gpsHeading) % 360;
-      lastMarkerTs.current = Date.now();
-      setHeading(gpsHeading);
+      pushHeading(gpsHeading);
     } else {
       gpsMovingRef.current = false;
     }
   };
 
-  return { heading, targetBearingRef, reportGpsHeading, enableCompass };
+  return { headingRef, targetBearingRef, hasHeading, reportGpsHeading, enableCompass };
 }

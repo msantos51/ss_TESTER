@@ -17,7 +17,7 @@ const DEFAULT_DURATION = 600;
 // elemento no DOM — o que corta a animação em curso, reinicia o halo a pulsar
 // e devolve o pin à última posição entregue. Aqui o elemento é criado uma vez;
 // a posição muda por interpolação e o rumo por variável CSS, sem tocar no DOM.
-export default function AnimatedMarker({ position, icon, heading }) {
+export default function AnimatedMarker({ position, icon, hasHeading }) {
   const map = useMap();
   const markerRef = useRef(null);
   // Posição mostrada neste instante (o fotograma a meio da interpolação), de
@@ -26,10 +26,6 @@ export default function AnimatedMarker({ position, icon, heading }) {
   const currentRef = useRef(position);
   const animFrameRef = useRef(null);
   const lastUpdateRef = useRef(0);
-  // Rumo em contínuo (pode passar dos 360 ou abaixo de 0): sem isto, a volta
-  // ao norte ia de 359° para 1° e a seta dava uma pirueta de quase 360° ao
-  // contrário, porque o CSS interpola o caminho longo.
-  const unwrappedHeadingRef = useRef(null);
 
   useEffect(() => {
     const marker = L.marker(currentRef.current, {
@@ -54,24 +50,15 @@ export default function AnimatedMarker({ position, icon, heading }) {
     if (markerRef.current) markerRef.current.setIcon(icon);
   }, [icon]);
 
-  // Rumo: só uma variável CSS no elemento do marcador. O CSS trata da
-  // transição e soma-lhe a rotação atual do mapa.
+  // Rumo: aqui só se diz se há ou não para onde apontar. O ângulo em si é
+  // escrito a cada fotograma pelo MapRotationController, que é quem roda o
+  // mapa — as duas coisas têm de sair do mesmo fotograma, senão a seta aponta
+  // para um rumo e o mapa já está virado para outro.
   useEffect(() => {
     const el = markerRef.current?.getElement();
     if (!el) return;
-    const hasHeading = heading !== null && heading !== undefined && !isNaN(heading);
-    el.classList.toggle('has-heading', hasHeading);
-    if (!hasHeading) return;
-    const previous = unwrappedHeadingRef.current;
-    if (previous === null) {
-      unwrappedHeadingRef.current = heading;
-    } else {
-      // Caminho mais curto entre o rumo anterior e o novo.
-      let diff = (heading - (previous % 360) + 540) % 360 - 180;
-      unwrappedHeadingRef.current = previous + diff;
-    }
-    el.style.setProperty('--pin-heading', `${unwrappedHeadingRef.current.toFixed(1)}deg`);
-  }, [heading, icon]);
+    el.classList.toggle('has-heading', Boolean(hasHeading));
+  }, [hasHeading, icon]);
 
   useEffect(() => {
     const marker = markerRef.current;
