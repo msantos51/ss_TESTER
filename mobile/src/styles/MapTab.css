@@ -473,30 +473,24 @@
   justify-content: center;
 }
 
-/* A seta aponta para o rumo do vendedor, mas o marcador vive no painel que
-   não roda com o mapa: o ângulo no ecrã é o rumo mais o bearing do mapa, que
-   o MapRotationController escreve em `--map-bearing`. Com o mapa a norte as
-   contas dão o rumo, como sempre deram.
-   A transição cose as leituras da bússola, que chegam dez vezes por segundo,
-   num movimento contínuo; o ângulo vem em contínuo do AnimatedMarker (pode
-   passar dos 360°), senão a volta ao norte dava uma pirueta ao contrário. */
+/* A seta aponta para onde o vendedor está virado. O ângulo já vem pronto em
+   `--pin-heading`: é o MapRotationController que o calcula, a cada fotograma,
+   somando o rumo ao bearing que o mapa tem nesse mesmo instante (o marcador
+   vive no painel que não roda com o mapa). Somá-los aqui em CSS obrigava a
+   misturar dois valores escritos em ritmos diferentes — e era isso que punha
+   a seta ligeiramente ao lado durante a viragem.
+   Sem transição de propósito: o ângulo já chega suavizado e a cada fotograma;
+   uma transição por cima só lhe acrescentaria atraso. */
 .user-location-arrow {
   display: block;
   flex-shrink: 0;
-  transform: rotate(calc(var(--pin-heading, 0deg) + var(--map-bearing, 0deg)));
-  transition: transform 140ms linear;
+  transform: rotate(var(--pin-heading, 0deg));
 }
 
 /* Sem bússola nem rumo do GPS não há para onde apontar: mostrar a seta parada
    no norte seria dizer ao vendedor que está virado para norte. */
 .vendor-location-pin:not(.has-heading) .user-location-arrow {
   display: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .user-location-arrow {
-    transition: none;
-  }
 }
 
 @keyframes user-pulse {

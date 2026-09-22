@@ -80,9 +80,10 @@ function escapeHtml(str) {
 // dispositivo: círculo na cor escolhida no perfil, anel branco e seta de
 // direção lá dentro. O halo só pulsa enquanto a partilha está ligada.
 // A seta aponta para o rumo geográfico; como o marcador vive no painel que não
-// roda com o mapa, é o CSS que lhe soma o bearing atual (`--map-bearing`).
-// O rumo NÃO entra neste HTML: entra como variável CSS escrita pelo
-// AnimatedMarker. Refazer o HTML a cada leitura da bússola obrigava o Leaflet
+// roda com o mapa, o ângulo no ecrã já lhe chega somado ao bearing do mapa, na
+// variável CSS `--pin-heading` que o MapRotationController escreve a cada
+// fotograma. O rumo NÃO entra neste HTML: refazê-lo a cada leitura da bússola
+// obrigava o Leaflet
 // a trocar o elemento no DOM dez vezes por segundo — o halo reiniciava e o pin
 // tremia, que é a falta de fluidez que se sente na app.
 // Com Premium leva ainda a estrela ao canto — a mesma que o banhista vê no
@@ -152,6 +153,13 @@ function AutoFollow({ position, following, onUserPan }) {
   return null;
 }
 
+// Um ângulo em graus trazido para o intervalo [0, 360). O `getBearing` do
+// plugin devolve o que lhe puseram lá — um gesto longo pode deixá-lo negativo
+// ou acima de 360 — e o resto de `%` em JS herda o sinal do dividendo.
+function normalizeDeg(deg) {
+  return ((deg % 360) + 360) % 360;
+}
+
 // Diferença entre dois rumos, sempre entre 0 e 180 graus.
 function bearingGap(a, b) {
   const diff = Math.abs(a - b) % 360;
@@ -161,6 +169,10 @@ function bearingGap(a, b) {
 // Quanto é preciso rodar com os dedos para o gesto valer como "o mapa é meu".
 const MANUAL_ROTATE_DEG = 4;
 
+// Zoom a que o botão de localização deixa o mapa — o mesmo que o botão do site
+// usa para o banhista, para o vendedor se ver ao nível da rua.
+const LOCATE_ZOOM = 18;
+
 // Dono da rotação do mapa, tal como no site. Há dois candidatos ao volante: a
 // bússola do dispositivo, que mantém o mapa virado para onde o vendedor olha,
 // e os dois dedos dele. Quem toca manda — assim que o gesto roda mesmo o mapa,
@@ -169,13 +181,19 @@ const MANUAL_ROTATE_DEG = 4;
 // num painel que não roda com o mapa, por isso é o CSS que lhe soma este
 // valor; escrevê-lo aqui, e não em estado, evita redesenhar o marcador a cada
 // grau do gesto.
-function MapRotationController({ targetBearingRef, followCompass, onManualRotate, onRotatedChange }) {
+function MapRotationController({ headingRef, targetBearingRef, hasHeading, followCompass, onManualRotate, onRotatedChange }) {
   const map = useMap();
   // Rumo no início do gesto de dois dedos; `null` quando não há gesto a
   // decorrer — é também o sinal de "não mexer no mapa" para a bússola.
   const gestureBearingRef = useRef(null);
   // Rumo suavizado que a bússola está a aplicar; `null` = ainda não arrancou.
   const smoothBearingRef = useRef(null);
+  // Rumo do dispositivo, suavizado com a MESMA constante do bearing do mapa —
+  // é essa igualdade que mantém a seta a apontar em frente durante a viragem
+  // (ver o comentário do ciclo de fotogramas).
+  const smoothHeadingRef = useRef(null);
+  // Último ângulo escrito na seta, para não tocar no estilo sem necessidade.
+  const lastArrowRef = useRef(null);
 
   useEffect(() => {
     // No ecrã inteiro e não só no mapa: a variável tem de chegar tanto à seta
@@ -222,46 +240,85 @@ function MapRotationController({ targetBearingRef, followCompass, onManualRotate
     };
   }, [map, onManualRotate]);
 
-  // Modo navegação: o mapa persegue o rumo a cada fotograma, aproximando-se
-  // dele por passos de 18% da diferença. É esta perseguição contínua que falta
-  // à app e que no site faz o mapa parecer colado ao telemóvel — rodar o mapa
-  // só ao carregar no botão deixava-o parado o resto do tempo.
+  // Um único ciclo de fotogramas trata das duas metades do modo navegação: o
+  // mapa a rodar para o rumo e a seta do pin a apontar em frente. Estavam
+  // separados — o mapa rodava aqui a cada fotograma, a seta era desenhada pelo
+  // React dez vezes por segundo e ainda passava por uma transição CSS — e o
+  // desencontro entre os dois ritmos era exatamente o que punha a seta a
+  // apontar ligeiramente ao lado enquanto o vendedor se virava.
+  //
+  // Agora ambos saem do mesmo fotograma e o rumo é suavizado com a MESMA
+  // constante do bearing do mapa. Com os dois a perseguirem alvos simétricos
+  // (rumo e 360 − rumo) à mesma cadência, os atrasos anulam-se: a soma do rumo
+  // suavizado com o bearing real do mapa — que é o ângulo da seta no ecrã —
+  // fica em zero durante toda a viragem, e não só no fim dela.
   useEffect(() => {
-    if (!followCompass) return undefined;
+    if (!followCompass && !hasHeading) return undefined;
     let rafId;
     const LERP = 0.18;
+    const container = map.getContainer().closest('.map-screen') || map.getContainer();
 
     const tick = () => {
-      const target = targetBearingRef.current;
-      // Se o mapa foi rodado por fora — pelos dedos, pelo botão do norte — a
-      // bússola retoma a partir de onde ele está e não de onde o deixou, que
-      // é o que evita o salto ao reatar.
-      if (
-        smoothBearingRef.current !== null
-        && bearingGap(map.getBearing(), smoothBearingRef.current) > 0.5
-      ) {
-        smoothBearingRef.current = map.getBearing();
-      }
-      // Dedos no mapa: a bússola cala-se até os levantarem.
-      if (gestureBearingRef.current === null && target !== null && !isNaN(target)) {
-        if (smoothBearingRef.current === null) {
-          smoothBearingRef.current = target;
-          map.setBearing(target);
+      // 1. Rumo do dispositivo, suavizado pelo caminho mais curto.
+      const rawHeading = headingRef.current;
+      if (rawHeading !== null && rawHeading !== undefined && !isNaN(rawHeading)) {
+        if (smoothHeadingRef.current === null) {
+          smoothHeadingRef.current = rawHeading;
         } else {
-          let diff = target - smoothBearingRef.current;
+          let diff = rawHeading - smoothHeadingRef.current;
           if (diff > 180) diff -= 360;
           if (diff < -180) diff += 360;
-          if (Math.abs(diff) > 0.08) {
-            smoothBearingRef.current = (smoothBearingRef.current + diff * LERP + 360) % 360;
-            map.setBearing(smoothBearingRef.current);
+          smoothHeadingRef.current = (smoothHeadingRef.current + diff * LERP + 360) % 360;
+        }
+      }
+
+      // 2. Bearing do mapa: persegue o rumo por passos de 18% da diferença. É
+      // esta perseguição contínua que faz o mapa parecer colado ao telemóvel.
+      if (followCompass) {
+        const target = targetBearingRef.current;
+        // Se o mapa foi rodado por fora — pelos dedos, pelo botão do norte — a
+        // bússola retoma a partir de onde ele está e não de onde o deixou, que
+        // é o que evita o salto ao reatar.
+        if (
+          smoothBearingRef.current !== null
+          && bearingGap(map.getBearing(), smoothBearingRef.current) > 0.5
+        ) {
+          smoothBearingRef.current = map.getBearing();
+        }
+        // Dedos no mapa: a bússola cala-se até os levantarem.
+        if (gestureBearingRef.current === null && target !== null && !isNaN(target)) {
+          if (smoothBearingRef.current === null) {
+            smoothBearingRef.current = target;
+            map.setBearing(target);
+          } else {
+            let diff = target - smoothBearingRef.current;
+            if (diff > 180) diff -= 360;
+            if (diff < -180) diff += 360;
+            if (Math.abs(diff) > 0.08) {
+              smoothBearingRef.current = (smoothBearingRef.current + diff * LERP + 360) % 360;
+              map.setBearing(smoothBearingRef.current);
+            }
           }
         }
       }
+
+      // 3. Ângulo da seta no ecrã. O marcador vive num painel que não roda com
+      // o mapa, por isso o ângulo é o rumo mais o bearing que o mapa tem
+      // MESMO neste fotograma — lido depois de o rodar, e não o alvo a que
+      // ainda vai a caminho.
+      if (smoothHeadingRef.current !== null) {
+        const arrow = normalizeDeg(smoothHeadingRef.current + map.getBearing());
+        if (lastArrowRef.current === null || bearingGap(arrow, lastArrowRef.current) > 0.15) {
+          lastArrowRef.current = arrow;
+          container.style.setProperty('--pin-heading', `${arrow.toFixed(1)}deg`);
+        }
+      }
+
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [map, targetBearingRef, followCompass]);
+  }, [map, headingRef, targetBearingRef, hasHeading, followCompass]);
 
   return null;
 }
@@ -347,7 +404,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
   const listenerRef = useRef(null);
   const watchIdRef = useRef(null);
   const sharingRef = useRef(false);
-  const { heading, targetBearingRef, reportGpsHeading, enableCompass } = useDeviceHeading();
+  const { headingRef, targetBearingRef, hasHeading, reportGpsHeading, enableCompass } = useDeviceHeading();
   const pinColor = user?.pin_color || DEFAULT_PIN;
   const isPremium = Boolean(user?.is_premium);
   // Sem o rumo nas dependências: ele muda dez vezes por segundo e refazer o
@@ -578,8 +635,10 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
     const map = mapRef.current;
     if (!map) return;
     if (position) {
-      const zoom = map.getZoom() < 16 ? 17 : map.getZoom();
-      map.setView(position, zoom, { animate: true });
+      // Zoom fixo, como o botão do site faz para o banhista: quem carrega aqui
+      // quer ver-se de perto, e manter o zoom de antes deixava o botão a
+      // parecer que não fazia nada quando o mapa já estava centrado.
+      map.setView(position, LOCATE_ZOOM, { animate: true });
     }
     // Sem rumo nenhum (bússola negada, telemóvel sem magnetómetro) endireita
     // para norte; com rumo é o controlador de rotação que assume daqui.
@@ -632,7 +691,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
             eventHandlers={{ load: () => setTilesLoaded(true) }}
           />
           {position && (
-            <AnimatedMarker position={position} icon={vendorIcon} heading={heading} />
+            <AnimatedMarker position={position} icon={vendorIcon} hasHeading={hasHeading} />
           )}
           <AutoFollow
             position={position}
@@ -640,7 +699,9 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
             onUserPan={stopAutoFollowing}
           />
           <MapRotationController
+            headingRef={headingRef}
             targetBearingRef={targetBearingRef}
+            hasHeading={hasHeading}
             followCompass={followCompass}
             onManualRotate={stopFollowingCompass}
             onRotatedChange={setIsRotated}
