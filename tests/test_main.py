@@ -1343,3 +1343,60 @@ def test_qr_available_for_every_vendor(client):
     free_resp = client.get(f"/vendors/{free_id}/qr.png")
     assert free_resp.status_code == 200
     assert free_resp.content[:8] == b"\x89PNG\r\n\x1a\n"
+
+
+def _start_sharing(client):
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+    headers = {"Authorization": f"Bearer {token}"}
+    client.post(f"/vendors/{vendor_id}/routes/start", headers=headers)
+    return vendor_id, headers
+
+
+def _current_position(client, vendor_id):
+    vendor = next(v for v in client.get("/vendors/").json() if v["id"] == vendor_id)
+    return vendor["current_lat"], vendor["current_lng"]
+
+
+def test_small_correction_updates_pin_but_not_route(client):
+    """Uma correção de poucos metros mexe no pin, mas não conta como trajeto."""
+    vendor_id, headers = _start_sharing(client)
+    url = f"/vendors/{vendor_id}/location"
+    client.put(url, json={"lat": 38.68, "lng": -9.33, "accuracy": 40}, headers=headers)
+    # ~5 m ao lado, já com o GPS mais afinado.
+    resp = client.put(url, json={"lat": 38.68004, "lng": -9.33, "accuracy": 5}, headers=headers)
+    assert resp.status_code == 200
+    assert _current_position(client, vendor_id) == (38.68004, -9.33)
+
+    route = client.post(f"/vendors/{vendor_id}/routes/stop", headers=headers).json()
+    assert len(route["points"]) == 1
+
+
+def test_imprecise_first_fix_can_be_corrected_by_large_jump(client):
+    """Um primeiro fix por rede, errado por quilómetros, não prende o pin."""
+    vendor_id, headers = _start_sharing(client)
+    url = f"/vendors/{vendor_id}/location"
+    client.put(url, json={"lat": 38.70, "lng": -9.30, "accuracy": 1500}, headers=headers)
+    # ~5 km a sul, com GPS a sério: é a posição verdadeira.
+    client.put(url, json={"lat": 38.655, "lng": -9.30, "accuracy": 6}, headers=headers)
+    assert _current_position(client, vendor_id) == (38.655, -9.30)
+
+
+def test_large_jump_after_precise_fix_is_still_ignored(client):
+    vendor_id, headers = _start_sharing(client)
+    url = f"/vendors/{vendor_id}/location"
+    client.put(url, json={"lat": 38.70, "lng": -9.30, "accuracy": 5}, headers=headers)
+    resp = client.put(url, json={"lat": 38.655, "lng": -9.30, "accuracy": 5}, headers=headers)
+    assert "anómalo" in resp.json()["message"]
+    assert _current_position(client, vendor_id) == (38.70, -9.30)
+
+
+def test_imprecise_reading_does_not_move_existing_pin(client):
+    vendor_id, headers = _start_sharing(client)
+    url = f"/vendors/{vendor_id}/location"
+    client.put(url, json={"lat": 38.70, "lng": -9.30, "accuracy": 5}, headers=headers)
+    resp = client.put(url, json={"lat": 38.702, "lng": -9.30, "accuracy": 400}, headers=headers)
+    assert "precisão" in resp.json()["message"]
+    assert _current_position(client, vendor_id) == (38.70, -9.30)

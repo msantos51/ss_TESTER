@@ -158,7 +158,8 @@ PREMIUM_PRODUCT_PHOTO_DETAIL = (
 
 # Distância mínima (metros) entre leituras de GPS consecutivas para serem
 # consideradas movimento real. Abaixo deste valor é ruído típico de GPS
-# e o ponto é ignorado, evitando que o trajeto "ande sozinho" parado.
+# e o ponto não entra no trajeto, evitando que ele "ande sozinho" parado
+# (a posição mostrada no mapa, essa, é atualizada na mesma).
 # Alinhado com a precisão máxima aceite no dispositivo (ver
 # MAX_ACCEPTABLE_ACCURACY_METERS em LocationForegroundService.java), já que
 # valores mais baixos deixavam passar oscilações dentro do raio de erro do GPS.
@@ -169,6 +170,16 @@ MIN_GPS_DISTANCE_M = 15.0
 # fornecedor de localização, etc.) e a leitura é descartada. Para um vendedor
 # numa praia, valores > 2 km em 1 segundo são fisicamente impossíveis.
 MAX_GPS_DISTANCE_M = 2000.0
+
+# Um salto acima de MAX_GPS_DISTANCE_M ainda é aceite se o tempo desde o ponto
+# anterior o tornar possível a esta velocidade (m/s, ~180 km/h) — assim um
+# primeiro ponto mal colocado não prende o pin no sítio errado para sempre.
+MAX_GPS_SPEED_MPS = 50.0
+
+# Precisão (raio de erro, metros) acima da qual uma leitura não mexe num pin
+# que já existe. Também marca o ponto anterior como "impreciso", o que deixa
+# a leitura seguinte corrigi-lo mesmo com um salto grande.
+MAX_GPS_ACCURACY_M = 100.0
 
 
 # --------------------------
