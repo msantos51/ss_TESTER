@@ -7,8 +7,9 @@ import 'leaflet/dist/leaflet.css';
 // Mesmo plugin de rotação do mapa do site: o mapa da app roda com o gesto de
 // dois dedos, como qualquer mapa de telemóvel.
 import 'leaflet-rotate';
-import { BASE_URL, TILE_LAYER, mediaUrl } from '../config.js';
+import { BASE_URL, TILE_LAYER } from '../config.js';
 import AnimatedMarker from '../components/AnimatedMarker.jsx';
+import BrandHeader from '../components/BrandHeader.jsx';
 import useDeviceHeading from '../hooks/useDeviceHeading.js';
 import '../styles/MapTab.css';
 
@@ -732,172 +733,160 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
     animateToBearing(mapRef.current, 0);
   };
 
-  const vendorName = user?.name || 'Vendedor';
-  const initial = vendorName.charAt(0).toUpperCase();
-  const photo = user?.profile_photo ? mediaUrl(user.profile_photo) : null;
-
   const status = sharing
     ? { label: 'A partilhar', className: 'is-sharing' }
     : { label: 'Offline', className: 'is-idle' };
 
   return (
     <div className="map-screen">
-      {/* O mapa ocupa todo o fundo; o resto é sobreposto. */}
-      <div className="map-canvas">
-        {/* O mapa é desenhado de imediato, na última posição conhecida: à
-            espera do primeiro fix de GPS ficava uma grelha cinzenta, e o mapa
-            criado mais tarde podia nascer num painel escondido — sem caixa que
-            medir e, por isso, sem tiles. O pin é que espera pela posição real.
-            `rotate` + `touchRotate`: o mesmo gesto de dois dedos faz zoom e
-            roda o mapa, como no site e como em qualquer mapa de telemóvel. O
-            controlo de rotação do plugin fica desligado — quem endireita o
-            mapa é o botão do norte, desenhado como o resto do ecrã. */}
-        <MapContainer
-          ref={mapRef}
-          center={initialCenter}
-          zoom={16}
-          className="map-container"
-          zoomControl={false}
-          rotate={true}
-          bearing={0}
-          touchRotate={true}
-          rotateControl={false}
-        >
-          <TileLayer
-            {...TILE_LAYER}
-            eventHandlers={{ load: () => setTilesLoaded(true) }}
-          />
-          {position && (
-            <AnimatedMarker position={position} icon={vendorIcon} hasHeading={hasHeading} />
-          )}
-          <AutoFollow
-            position={position}
-            following={isAutoFollowing}
-            onUserPan={stopAutoFollowing}
-          />
-          <MapRotationController
-            headingRef={headingRef}
-            targetBearingRef={targetBearingRef}
-            hasHeading={hasHeading}
-            followCompass={followCompass}
-            onManualRotate={stopFollowingCompass}
-            onRotatedChange={setIsRotated}
-          />
-          <MapResizeWatcher />
-        </MapContainer>
-        {/* Grelha com brilho a atravessar, como no mapa do site, enquanto
-            os tiles ainda não pintaram. */}
-        <div
-          className={`map-skeleton${tilesLoaded ? ' map-skeleton--hidden' : ''}`}
-          aria-hidden="true"
-        />
-      </div>
-
-      <div className="map-chrome">
-        <div className="map-topbar">
-          <button
-            type="button"
-            className="map-user-pill"
-            onClick={() => onChangePage('account')}
-            title="Ir para a conta"
-          >
-            {photo ? (
-              <img src={photo} alt="" className="map-user-avatar" />
-            ) : (
-              <span className="map-user-avatar map-user-avatar-initial">{initial}</span>
-            )}
-            <span className="map-user-name">{vendorName}</span>
-          </button>
-
-          <div className={`map-status-pill ${status.className}`}>
+      {/* Cabeçalho da marca, com o estado da partilha à direita. */}
+      <BrandHeader
+        compact
+        aside={(
+          <div className={`brand-header-chip map-status-pill ${status.className}`}>
             <span className="map-status-dot" />
             <span className="map-status-label">{status.label}</span>
           </div>
+        )}
+      />
+
+      <div className="map-area">
+        {/* O mapa ocupa todo o fundo da área; o resto é sobreposto. */}
+        <div className="map-canvas">
+          {/* O mapa é desenhado de imediato, na última posição conhecida: à
+              espera do primeiro fix de GPS ficava uma grelha cinzenta, e o mapa
+              criado mais tarde podia nascer num painel escondido — sem caixa que
+              medir e, por isso, sem tiles. O pin é que espera pela posição real.
+              `rotate` + `touchRotate`: o mesmo gesto de dois dedos faz zoom e
+              roda o mapa, como no site e como em qualquer mapa de telemóvel. O
+              controlo de rotação do plugin fica desligado — quem endireita o
+              mapa é o botão do norte, desenhado como o resto do ecrã. */}
+          <MapContainer
+            ref={mapRef}
+            center={initialCenter}
+            zoom={16}
+            className="map-container"
+            zoomControl={false}
+            rotate={true}
+            bearing={0}
+            touchRotate={true}
+            rotateControl={false}
+          >
+            <TileLayer
+              {...TILE_LAYER}
+              eventHandlers={{ load: () => setTilesLoaded(true) }}
+            />
+            {position && (
+              <AnimatedMarker position={position} icon={vendorIcon} hasHeading={hasHeading} />
+            )}
+            <AutoFollow
+              position={position}
+              following={isAutoFollowing}
+              onUserPan={stopAutoFollowing}
+            />
+            <MapRotationController
+              headingRef={headingRef}
+              targetBearingRef={targetBearingRef}
+              hasHeading={hasHeading}
+              followCompass={followCompass}
+              onManualRotate={stopFollowingCompass}
+              onRotatedChange={setIsRotated}
+            />
+            <MapResizeWatcher />
+          </MapContainer>
+          {/* Grelha com brilho a atravessar, como no mapa do site, enquanto
+              os tiles ainda não pintaram. */}
+          <div
+            className={`map-skeleton${tilesLoaded ? ' map-skeleton--hidden' : ''}`}
+            aria-hidden="true"
+          />
         </div>
 
-        <div className="map-bottom">
-          {/* Controlos flutuantes à direita, empilhados sobre o cartão de
-              partilha — o canto do polegar de quem segura o telemóvel. */}
-          <div className="map-side-controls">
-            {/* Botão do norte: só aparece com o mapa torto, isto é, depois de o
-                vendedor o ter rodado com os dois dedos. A agulha roda com o
-                mapa, por isso aponta sempre para o norte real. */}
-            {isRotated && (
+        <div className="map-chrome">
+          <div className="map-bottom">
+            {/* Controlos flutuantes à direita, empilhados sobre o cartão de
+                partilha — o canto do polegar de quem segura o telemóvel. */}
+            <div className="map-side-controls">
+              {/* Botão do norte: só aparece com o mapa torto, isto é, depois de o
+                  vendedor o ter rodado com os dois dedos. A agulha roda com o
+                  mapa, por isso aponta sempre para o norte real. */}
+              {isRotated && (
+                <button
+                  type="button"
+                  className="map-north-btn"
+                  onClick={handleNorthUp}
+                  aria-label="Virar o mapa para norte"
+                >
+                  <svg className="map-north-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                    <polygon points="12,3 8.2,15 12,12.4 15.8,15" fill="var(--site-coral)" />
+                    <polygon points="12,21 8.2,15 12,17.6 15.8,15" fill="#9aa5b1" />
+                  </svg>
+                </button>
+              )}
+
+              {/* Botão de localização: leva o mapa à posição do vendedor e alinha
+                  com o seu rumo. Igual em forma ao botão "localizar-me" do site. */}
               <button
                 type="button"
-                className="map-north-btn"
-                onClick={handleNorthUp}
-                aria-label="Virar o mapa para norte"
+                className="map-locate-btn"
+                onClick={handleLocate}
+                disabled={!position}
+                aria-label="Ir para a minha localização e alinhar"
               >
-                <svg className="map-north-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-                  <polygon points="12,3 8.2,15 12,12.4 15.8,15" fill="var(--site-coral)" />
-                  <polygon points="12,21 8.2,15 12,17.6 15.8,15" fill="#9aa5b1" />
+                <svg className="map-locate-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4" strokeWidth="2" />
+                  <circle cx="12" cy="12" r="8.5" strokeWidth="1.6" />
+                  <line x1="12" y1="1" x2="12" y2="4" strokeWidth="1.8" strokeLinecap="round" />
+                  <line x1="12" y1="20" x2="12" y2="23" strokeWidth="1.8" strokeLinecap="round" />
+                  <line x1="1" y1="12" x2="4" y2="12" strokeWidth="1.8" strokeLinecap="round" />
+                  <line x1="20" y1="12" x2="23" y2="12" strokeWidth="1.8" strokeLinecap="round" />
                 </svg>
               </button>
+            </div>
+
+            {/* GPS ainda por obter: a mesma faixa de estado do site — texto
+                branco sobre petróleo, legível num ecrã ao sol. */}
+            {!position && !mapError && (
+              <p className="map-status" role="status">
+                A obter a tua localização…
+              </p>
             )}
 
-            {/* Botão de localização: leva o mapa à posição do vendedor e alinha
-                com o seu rumo. Igual em forma ao botão "localizar-me" do site. */}
-            <button
-              type="button"
-              className="map-locate-btn"
-              onClick={handleLocate}
-              disabled={!position}
-              aria-label="Ir para a minha localização e alinhar"
-            >
-              <svg className="map-locate-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" aria-hidden="true">
-                <circle cx="12" cy="12" r="4" strokeWidth="2" />
-                <circle cx="12" cy="12" r="8.5" strokeWidth="1.6" />
-                <line x1="12" y1="1" x2="12" y2="4" strokeWidth="1.8" strokeLinecap="round" />
-                <line x1="12" y1="20" x2="12" y2="23" strokeWidth="1.8" strokeLinecap="round" />
-                <line x1="1" y1="12" x2="4" y2="12" strokeWidth="1.8" strokeLinecap="round" />
-                <line x1="20" y1="12" x2="23" y2="12" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-            </button>
-          </div>
+            {mapError && (
+              <div className="map-alert">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <span>{mapError}</span>
+              </div>
+            )}
 
-          {/* GPS ainda por obter: a mesma faixa de estado do site — texto
-              branco sobre petróleo, legível num ecrã ao sol. */}
-          {!position && !mapError && (
-            <p className="map-status" role="status">
-              A obter a tua localização…
-            </p>
-          )}
+            {notice && (
+              <div className="map-alert map-alert--info" role="status">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="12" x2="12" y2="16" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+                <span>{notice}</span>
+              </div>
+            )}
 
-          {mapError && (
-            <div className="map-alert">
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                <line x1="12" y1="9" x2="12" y2="13" />
-                <line x1="12" y1="17" x2="12.01" y2="17" />
-              </svg>
-              <span>{mapError}</span>
-            </div>
-          )}
+            {error && (
+              <div className="map-alert">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <span>{error}</span>
+              </div>
+            )}
 
-          {notice && (
-            <div className="map-alert map-alert--info" role="status">
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="12" x2="12" y2="16" />
-                <line x1="12" y1="8" x2="12.01" y2="8" />
-              </svg>
-              <span>{notice}</span>
-            </div>
-          )}
-
-          {error && (
-            <div className="map-alert">
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-              <span>{error}</span>
-            </div>
-          )}
-
-          <div className="share-card">
+            {/* Botão de partilha em pílula, do tamanho do texto, centrado por
+                baixo dos controlos — nunca por cima deles. */}
             <button
               type="button"
               className={`share-btn${sharing ? ' is-sharing' : ''}`}

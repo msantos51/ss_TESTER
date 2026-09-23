@@ -81,8 +81,16 @@
 }
 
 /* ── Estrutura ────────────────────────────────────────
-   O mapa ocupa todo o fundo; o "chrome" (pastilhas, banners e cartão de
-   partilha) é sobreposto. */
+   Cabeçalho da marca em cima (components/BrandHeader) e, por baixo, a área
+   do mapa: o mapa ocupa todo o fundo dessa área e o "chrome" (controlos,
+   avisos e botão de partilha) é-lhe sobreposto. */
+.map-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .map-canvas {
   position: absolute;
   inset: 0;
@@ -140,10 +148,9 @@
    Só os elementos do chrome intercetam toques: entre eles o mapa continua
    a arrastar-se normalmente. */
 .map-chrome {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 2;
-  flex: 1;
-  min-height: 0;
   display: flex;
   flex-direction: column;
   font-family: var(--site-font);
@@ -151,22 +158,12 @@
 }
 
 .map-chrome,
-.map-topbar,
 .map-bottom {
   pointer-events: none;
 }
 
-.map-topbar > *,
 .map-bottom > * {
   pointer-events: auto;
-}
-
-.map-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: calc(14px + env(safe-area-inset-top, 0px)) 14px 14px;
 }
 
 .map-bottom {
@@ -174,99 +171,25 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 0 14px 14px;
+  padding: 0 16px 16px;
 }
 
-/* ── Pastilhas flutuantes ─────────────────────────────
-   Brancas, em pílula, com --site-shadow-float: é como o site desenha tudo
-   o que assenta sobre o mapa (vista, zoom, localizar, estado em direto). */
-.map-user-pill {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-width: 0;
-  min-height: 48px;
-  padding: 5px 16px 5px 5px;
-  border: none;
-  border-radius: var(--site-radius-full);
-  background: var(--site-glass);
-  -webkit-backdrop-filter: var(--site-glass-blur);
-  backdrop-filter: var(--site-glass-blur);
-  box-shadow: var(--site-glass-ring), var(--site-shadow-float);
-  font-family: inherit;
-  cursor: pointer;
-  transition: background var(--site-transition);
-}
-
-.map-user-pill:active {
-  background: var(--site-surface-alt);
-}
-
-.map-user-avatar {
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.map-user-avatar-initial {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--site-accent);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.map-user-name {
-  font-size: var(--site-fs-body-sm);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--site-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Estado em direto: a mesma pastilha do `.map-live` do site, com o ponto
-   verde-floresta a piscar enquanto a posição está a ser emitida. */
-.map-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  min-height: 40px;
-  padding: 0 14px;
-  border-radius: var(--site-radius-full);
-  background: var(--site-glass);
-  -webkit-backdrop-filter: var(--site-glass-blur);
-  backdrop-filter: var(--site-glass-blur);
-  box-shadow: var(--site-glass-ring), var(--site-shadow-float);
-}
-
-.map-status-label {
-  font-size: var(--site-fs-caption);
-  font-weight: 600;
-  color: var(--site-text);
-}
-
-/* Sem partilha a pastilha não desaparece, só baixa o tom: o vendedor
-   continua a saber onde está a ler o seu estado. */
+/* ── Estado da partilha ───────────────────────────────
+   Vive no cabeçalho da marca, numa pastilha translúcida (.brand-header-chip):
+   o ponto acende a verde e pisca enquanto a posição está a ser emitida. */
 .map-status-pill.is-idle .map-status-label {
-  color: var(--site-text-secondary);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .map-status-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--site-text-muted);
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .map-status-pill.is-sharing .map-status-dot {
-  background: var(--site-forest);
+  background: #4ADE80;
   animation: map-live-blink 1.8s ease-in-out infinite;
 }
 
@@ -292,21 +215,29 @@
 
 .map-north-btn,
 .map-locate-btn {
-  width: 46px;
-  height: 46px;
+  position: relative;
+  width: 38px;
+  height: 38px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   border-radius: var(--site-radius-full);
-  background: var(--site-glass);
-  -webkit-backdrop-filter: var(--site-glass-blur);
-  backdrop-filter: var(--site-glass-blur);
-  box-shadow: var(--site-glass-ring), var(--site-shadow-float);
+  background: var(--site-surface);
+  box-shadow: 0 4px 14px rgba(11, 49, 61, 0.14);
   cursor: pointer;
   transition: background var(--site-transition);
   -webkit-tap-highlight-color: transparent;
+}
+
+/* O círculo desenhado tem 38px, mas o alvo de toque chega aos 46px. */
+.map-north-btn::after,
+.map-locate-btn::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
 }
 
 .map-north-btn:active,
@@ -319,10 +250,12 @@
   transform: rotate(var(--map-bearing, 0deg));
 }
 
-/* Botão de localização: o alvo é o azul-profundo da ação do site. */
+/* Botão de localização: o alvo no azul de tinta (--ocean). */
 .map-locate-icon {
   display: block;
-  color: var(--site-ink);
+  width: 18px;
+  height: 18px;
+  color: #217E8F;
 }
 
 .map-locate-btn:disabled {
@@ -372,36 +305,27 @@
   margin-top: 1px;
 }
 
-/* ── Cartão de partilha ───────────────────────────────
-   Painel branco de 22px com a sombra longa dos painéis do site. */
-.share-card {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 16px;
-  border-radius: var(--site-radius-panel);
-  background: var(--site-surface);
-  box-shadow: var(--site-shadow-lg);
-}
-
-/* A única ação âncora do ecrã: Gunmetal para iniciar, coral para parar —
-   parar é a única coisa urgente que este ecrã tem. */
+/* ── Botão de partilha ────────────────────────────────
+   A única ação âncora do ecrã: uma pílula do tamanho do texto, centrada em
+   baixo e sempre por baixo dos controlos de localização (nunca por cima).
+   Azul escurecido para iniciar, petróleo para parar. */
 .share-btn {
-  display: flex;
+  align-self: center;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
-  width: 100%;
-  min-height: 54px;
-  padding: 0 24px;
+  min-height: 46px;
+  padding: 12px 22px;
   border: none;
   border-radius: var(--site-radius-full);
   background: var(--site-ink);
   color: #fff;
   font-family: inherit;
-  font-size: var(--site-fs-body);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 8px 22px rgba(11, 49, 61, 0.32);
   cursor: pointer;
   transition: background var(--site-transition), opacity var(--site-transition);
 }
@@ -411,11 +335,11 @@
 }
 
 .share-btn.is-sharing {
-  background: var(--site-coral);
+  background: var(--site-text);
 }
 
 .share-btn.is-sharing:active:not(:disabled) {
-  background: var(--site-coral-hover);
+  background: #072029;
 }
 
 .share-btn:disabled {
@@ -424,8 +348,9 @@
 }
 
 .share-btn-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
   border-radius: 50%;
   background: currentColor;
 }
@@ -554,7 +479,6 @@
 /* Sem backdrop-filter as pastilhas ficam opacas: sobre o mapa, um branco
    a 0,82 sem blur seria um borrão. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .map-status-pill,
   .map-alert {
     background: var(--site-glass-solid);
   }

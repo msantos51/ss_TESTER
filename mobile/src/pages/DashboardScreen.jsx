@@ -7,6 +7,7 @@ import { WEB_URL, mediaUrl } from '../config.js';
 import { terminateCurrentSession } from '../sessionApi.js';
 import ProfileScreen from './ProfileScreen.jsx';
 import InvoicesScreen from './InvoicesScreen.jsx';
+import BrandHeader from '../components/BrandHeader.jsx';
 
 export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUpdate }) {
   const { user } = auth;
@@ -65,24 +66,26 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
 
   return (
     <div className="account-screen">
-      {/* Cabeçalho de identidade */}
-      <header className="account-header">
-        {user?.profile_photo ? (
-          <img src={mediaUrl(user.profile_photo)} alt="" className="account-avatar" />
-        ) : (
-          <span className="account-avatar account-avatar-initial">{initial}</span>
-        )}
+      {/* Cabeçalho da marca com a identidade do vendedor */}
+      <BrandHeader>
+        <div className="account-header">
+          {user?.profile_photo ? (
+            <img src={mediaUrl(user.profile_photo)} alt="" className="account-avatar" />
+          ) : (
+            <span className="account-avatar account-avatar-initial">{initial}</span>
+          )}
 
-        <div className="account-identity">
-          <span className="account-name">{user?.name}</span>
-          <span className="account-email">{user?.email}</span>
-          {user?.product && <span className="account-product">{user.product}</span>}
+          <div className="account-identity">
+            <span className="account-name">{user?.name}</span>
+            <span className="account-email">{user?.email}</span>
+            {user?.product && <span className="account-product">{user.product}</span>}
+          </div>
+
+          <button type="button" className="account-edit-btn" onClick={() => setShowProfile(true)}>
+            Editar
+          </button>
         </div>
-
-        <button type="button" className="account-edit-btn" onClick={() => setShowProfile(true)}>
-          Editar
-        </button>
-      </header>
+      </BrandHeader>
 
       <div className="account-body">
         {/* Cartão do Premium */}
