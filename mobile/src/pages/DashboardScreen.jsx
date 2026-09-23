@@ -66,9 +66,14 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
 
   return (
     <div className="account-screen">
-      {/* Cabeçalho da marca com a identidade do vendedor */}
       <BrandHeader>
-        <div className="account-header">
+        <h2 className="brand-header-title">Conta</h2>
+        <p className="brand-header-subtitle">{user?.name || user?.email || 'O teu perfil'}</p>
+      </BrandHeader>
+
+      <div className="account-body">
+        {/* Identidade do vendedor, com o botão para editar o perfil */}
+        <div className="account-identity-card">
           {user?.profile_photo ? (
             <img src={mediaUrl(user.profile_photo)} alt="" className="account-avatar" />
           ) : (
@@ -85,9 +90,7 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
             Editar
           </button>
         </div>
-      </BrandHeader>
 
-      <div className="account-body">
         {/* Cartão do Premium */}
         <div className={`account-sub-card${isPremium ? ' is-active' : ''}`}>
           <div className="account-sub-text">

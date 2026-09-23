@@ -128,20 +128,12 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
   return (
     <div className="premium-screen">
       <BrandHeader>
-        <div className="premium-header">
-          <span className="premium-badge">
-            <FiStar size={12} fill="currentColor" /> Premium
-          </span>
-          <h1 className="premium-title">Sê o vendedor que se vê primeiro</h1>
-          <p className="premium-lead">
-            No plano gratuito já estás no mapa. O Premium faz com que te
-            encontrem de longe — e que vejam o que estás a vender.
-          </p>
-          <span className="premium-hero-price">
-            <strong>{PRICE_LABEL}</strong>
-            <span>/ 30 dias</span>
-          </span>
-        </div>
+        <h2 className="brand-header-title">Premium</h2>
+        <p className="brand-header-subtitle">
+          {isPremium
+            ? `Ativo até ${validUntil || '—'}`
+            : `Mais alcance, destaque e fotos · ${PRICE_LABEL}`}
+        </p>
       </BrandHeader>
 
       <div className="premium-body">

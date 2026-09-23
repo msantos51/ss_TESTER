@@ -49,22 +49,10 @@ export default function QRScreen({ auth, onGoPremium }) {
   return (
     <div className="premium-screen">
       <BrandHeader>
-        <div className="premium-header">
-          {isPremium && (
-            <span className="premium-badge">
-              <FiStar size={12} fill="currentColor" /> Premium
-            </span>
-          )}
-          <h1 className="premium-title">O teu QR code pessoal</h1>
-          <p className="premium-lead">
-            {isPremium
-              ? `Imprime-o ou mostra-o na app. Cada leitura gera automaticamente um
-                 código de uso único — uma avaliação por scan, sem repetições.`
-              : `Imprime-o ou mostra-o na app: quem o lê deixa-te uma classificação
-                 de 1 a 5 estrelas. Com Premium passas a ver a tua pontuação — aqui
-                 e no cartão do mapa.`}
-          </p>
-        </div>
+        <h2 className="brand-header-title">QR code</h2>
+        <p className="brand-header-subtitle">
+          {isPremium ? 'O teu QR code pessoal' : 'Recolhe avaliações de 1 a 5 estrelas'}
+        </p>
       </BrandHeader>
 
       <div className="premium-body">

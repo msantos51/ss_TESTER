@@ -271,8 +271,8 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
             mantém o cabeçalho branco com o botão de fechar. */}
         {asTab ? (
           <BrandHeader>
-            <div className="screen-head-row">
-              <div className="screen-head-text">
+            <div className="brand-header-row">
+              <div className="brand-header-text">
                 <h2 className="brand-header-title">Produtos</h2>
                 <p className="brand-header-subtitle">
                   {products.length} de {MAX_PRODUCTS} · visíveis no teu perfil

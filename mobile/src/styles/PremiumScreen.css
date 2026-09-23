@@ -13,69 +13,6 @@
   background: var(--sand);
 }
 
-/* Conteúdo do cabeçalho da marca (components/BrandHeader): badge dourado,
-   título e texto a branco sobre o gradiente azul. */
-.premium-header {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.premium-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 14px;
-  padding: 6px 12px;
-  border-radius: var(--r-pill);
-  background: var(--sun);
-  color: var(--sun-ink);
-  font-size: var(--fs-label);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.premium-title {
-  margin-bottom: 10px;
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  color: #fff;
-}
-
-.premium-lead {
-  font-size: 14.5px;
-  font-weight: 500;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-/* Preço logo no cabeçalho: quem abre o separador vê o número antes de rolar
-   até ao cartão de preço. Pastilha translúcida sobre o gradiente. */
-.premium-hero-price {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
-  margin-top: 16px;
-  padding: 9px 16px;
-  border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.16);
-}
-
-.premium-hero-price strong {
-  font-size: 17px;
-  font-weight: 800;
-  color: #fff;
-}
-
-.premium-hero-price span {
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.85);
-}
-
 /* O cabeçalho fica fixo; só o corpo rola. */
 .premium-body {
   flex: 1;

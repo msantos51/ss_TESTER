@@ -739,23 +739,24 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
 
   return (
     <div className="map-screen">
-      {/* Cabeçalho da marca, com o estado da partilha à direita e, por
-          baixo, título e resumo — mesma estrutura (e por isso mesma altura)
-          do cabeçalho de Produtos. */}
-      <BrandHeader
-        aside={(
+      {/* Cabeçalho da marca: título e resumo à esquerda, estado da partilha
+          à direita — mesma estrutura (e por isso mesma altura) do
+          cabeçalho de Produtos. */}
+      <BrandHeader>
+        <div className="brand-header-row">
+          <div className="brand-header-text">
+            <h2 className="brand-header-title">Mapa</h2>
+            <p className="brand-header-subtitle">
+              {sharing
+                ? 'Os banhistas veem-te em tempo real'
+                : 'Inicia a partilha para apareceres no mapa'}
+            </p>
+          </div>
           <div className={`brand-header-chip map-status-pill ${status.className}`}>
             <span className="map-status-dot" />
             <span className="map-status-label">{status.label}</span>
           </div>
-        )}
-      >
-        <h2 className="brand-header-title">Mapa</h2>
-        <p className="brand-header-subtitle">
-          {sharing
-            ? 'Os banhistas veem-te em tempo real'
-            : 'Inicia a partilha para apareceres no mapa'}
-        </p>
+        </div>
       </BrandHeader>
 
       <div className="map-area">
