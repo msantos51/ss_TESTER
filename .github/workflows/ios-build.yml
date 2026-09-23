@@ -1,0 +1,68 @@
+name: iOS Build (Simulator)
+
+# Compila a app para o Simulador de iOS, só para validar que o projeto
+# gerado pelo Capacitor continua a compilar. Não fica assinada e não
+# instala num iPhone físico — para isso ver o workflow "iOS Release
+# (TestFlight)".
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "mobile/**"
+      - ".github/workflows/ios-build.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 21
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
+
+      - name: Install dependencies
+        working-directory: mobile
+        run: |
+          npm config set fetch-timeout 60000
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+          npm ci --prefer-offline --no-audit
+
+      - name: Build React
+        working-directory: mobile
+        env:
+          # O estilo do mapa da app tem de ser o mesmo do site: CARTO Voyager.
+          VITE_CARTO_API_KEY: ${{ secrets.CARTO_API_KEY }}
+        run: npm run build
+
+      - name: Sync Capacitor iOS
+        working-directory: mobile
+        run: npx cap sync ios
+
+      - name: Install CocoaPods dependencies
+        working-directory: mobile/ios/App
+        run: pod install
+
+      - name: Build for iOS Simulator
+        working-directory: mobile/ios/App
+        run: |
+          xcodebuild build \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload Simulator app
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-simulator
+          path: mobile/ios/App/build/Build/Products/Debug-iphonesimulator/App.app

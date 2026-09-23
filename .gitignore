@@ -16,6 +16,10 @@ mobile/android/.gradle/
 mobile/android/app/build/
 mobile/android/build/
 mobile/.capacitor/
+mobile/ios/App/Pods/
+mobile/ios/App/build/
+mobile/ios/App/output/
+mobile/ios/DerivedData/
 
 # Ambientes virtuais Python
 .venv/

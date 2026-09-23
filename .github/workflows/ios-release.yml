@@ -1,0 +1,224 @@
+name: iOS Release (TestFlight)
+
+# Gera o .ipa assinado e envia-o para o TestFlight, sem precisar de um Mac
+# local. Corre à mão: Actions → "iOS Release (TestFlight)" → Run workflow.
+# Depois de processado pela Apple (alguns minutos a ~1h), a build aparece
+# na app TestFlight do iPhone associado à Apple ID convidada para o teste.
+#
+# Pré-requisitos únicos (feitos uma vez, em developer.apple.com /
+# appstoreconnect.apple.com, sem precisar de Mac):
+#   1. Conta paga no Apple Developer Program (99 USD/ano).
+#   2. Um "App ID" com o bundle id com.sunnysales.vendor.
+#   3. Um registo da app em App Store Connect com esse bundle id.
+#   4. Um certificado de distribuição (.p12) e um provisioning profile
+#      "App Store" para esse App ID.
+#   5. Uma API Key da App Store Connect (Users and Access → Integrations)
+#      para o upload automático, sem precisar de 2FA interativo.
+#
+# Secrets necessários (Settings → Secrets and variables → Actions):
+#   APPLE_DISTRIBUTION_CERT_BASE64       certificado .p12 codificado em base64
+#   APPLE_DISTRIBUTION_CERT_PASSWORD     password do .p12
+#   APPLE_PROVISIONING_PROFILE_BASE64    perfil .mobileprovision (App Store) em base64
+#   APPLE_TEAM_ID                        Team ID (developer.apple.com → Membership)
+#   APPSTORE_API_KEY_ID                  Key ID da API Key da App Store Connect
+#   APPSTORE_API_ISSUER_ID               Issuer ID dessa API Key
+#   APPSTORE_API_KEY_BASE64              ficheiro AuthKey_<KEY_ID>.p8 em base64
+#   CARTO_API_KEY                        (opcional) estilo do mapa igual ao do site
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: "Build number (inteiro, maior que o último carregado). Vazio = número da execução"
+        required: false
+        default: ""
+
+env:
+  BUNDLE_ID: com.sunnysales.vendor
+
+jobs:
+  release:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check signing secrets
+        env:
+          CERT_B64: ${{ secrets.APPLE_DISTRIBUTION_CERT_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASSWORD }}
+          PROFILE_B64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          API_KEY_B64: ${{ secrets.APPSTORE_API_KEY_BASE64 }}
+        run: |
+          missing=""
+          [ -z "$CERT_B64" ] && missing="$missing APPLE_DISTRIBUTION_CERT_BASE64"
+          [ -z "$CERT_PASSWORD" ] && missing="$missing APPLE_DISTRIBUTION_CERT_PASSWORD"
+          [ -z "$PROFILE_B64" ] && missing="$missing APPLE_PROVISIONING_PROFILE_BASE64"
+          [ -z "$TEAM_ID" ] && missing="$missing APPLE_TEAM_ID"
+          [ -z "$API_KEY_ID" ] && missing="$missing APPSTORE_API_KEY_ID"
+          [ -z "$API_ISSUER_ID" ] && missing="$missing APPSTORE_API_ISSUER_ID"
+          [ -z "$API_KEY_B64" ] && missing="$missing APPSTORE_API_KEY_BASE64"
+          if [ -n "$missing" ]; then
+            echo "::error::Faltam os secrets:$missing"
+            exit 1
+          fi
+
+      - name: Setup Node.js 21
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
+
+      - name: Install dependencies
+        working-directory: mobile
+        run: |
+          npm config set fetch-timeout 60000
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+          npm ci --prefer-offline --no-audit
+
+      - name: Build React
+        working-directory: mobile
+        env:
+          VITE_CARTO_API_KEY: ${{ secrets.CARTO_API_KEY }}
+        run: npm run build
+
+      - name: Sync Capacitor iOS
+        working-directory: mobile
+        run: npx cap sync ios
+
+      - name: Install CocoaPods dependencies
+        working-directory: mobile/ios/App
+        run: pod install
+
+      # Cria uma keychain só para esta execução, para não misturar com as
+      # keychains normais do runner nem deixar o certificado a persistir.
+      - name: Import distribution certificate
+        env:
+          CERT_B64: ${{ secrets.APPLE_DISTRIBUTION_CERT_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ github.run_id }}
+        run: |
+          clean="$(printf '%s' "$CERT_B64" | tr -d ' \t\r\n')"
+          if ! printf '%s' "$clean" | base64 -d > "$RUNNER_TEMP/dist-cert.p12" 2>/dev/null; then
+            echo "::error::O secret APPLE_DISTRIBUTION_CERT_BASE64 está incompleto ou não é base64 válido."
+            exit 1
+          fi
+
+          KEYCHAIN="$RUNNER_TEMP/app-signing.keychain-db"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/dist-cert.p12" -P "$CERT_PASSWORD" -A \
+            -t cert -f pkcs12 -k "$KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security list-keychain -d user -s "$KEYCHAIN" $(security list-keychains -d user | sed 's/"//g')
+          rm -f "$RUNNER_TEMP/dist-cert.p12"
+
+      - name: Install provisioning profile
+        id: profile
+        env:
+          PROFILE_B64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          clean="$(printf '%s' "$PROFILE_B64" | tr -d ' \t\r\n')"
+          PROFILE_PATH="$RUNNER_TEMP/profile.mobileprovision"
+          if ! printf '%s' "$clean" | base64 -d > "$PROFILE_PATH" 2>/dev/null; then
+            echo "::error::O secret APPLE_PROVISIONING_PROFILE_BASE64 está incompleto ou não é base64 válido."
+            exit 1
+          fi
+
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          UUID=$(security cms -D -i "$PROFILE_PATH" | plutil -extract UUID xml1 -o - - | sed -n 's/.*<string>\(.*\)<\/string>.*/\1/p')
+          NAME=$(security cms -D -i "$PROFILE_PATH" | plutil -extract Name xml1 -o - - | sed -n 's/.*<string>\(.*\)<\/string>.*/\1/p')
+          cp "$PROFILE_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/$UUID.mobileprovision"
+          echo "uuid=$UUID" >> "$GITHUB_OUTPUT"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Create export options
+        env:
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          PROFILE_NAME: ${{ steps.profile.outputs.name }}
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>$TEAM_ID</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>$BUNDLE_ID</key>
+              <string>$PROFILE_NAME</string>
+            </dict>
+          </dict>
+          </plist>
+          PLIST
+
+      - name: Archive
+        env:
+          INPUT_BUILD_NUMBER: ${{ inputs.build_number }}
+          RUN_NUMBER: ${{ github.run_number }}
+        working-directory: mobile/ios/App
+        run: |
+          export BUILD_NUMBER="${INPUT_BUILD_NUMBER:-$RUN_NUMBER}"
+          case "$BUILD_NUMBER" in
+            ''|*[!0-9]*) echo "::error::build_number tem de ser um inteiro: $BUILD_NUMBER"; exit 1 ;;
+          esac
+          xcodebuild archive \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -destination "generic/platform=iOS" \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER"
+
+      - name: Export IPA
+        working-directory: mobile/ios/App
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export"
+
+      - name: Upload to TestFlight
+        env:
+          API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          API_KEY_B64: ${{ secrets.APPSTORE_API_KEY_BASE64 }}
+        run: |
+          mkdir -p "$HOME/private_keys"
+          clean="$(printf '%s' "$API_KEY_B64" | tr -d ' \t\r\n')"
+          if ! printf '%s' "$clean" | base64 -d > "$HOME/private_keys/AuthKey_$API_KEY_ID.p8" 2>/dev/null; then
+            echo "::error::O secret APPSTORE_API_KEY_BASE64 está incompleto ou não é base64 válido."
+            exit 1
+          fi
+          IPA_PATH=$(find "$RUNNER_TEMP/export" -name "*.ipa" | head -n1)
+          xcrun altool --upload-app \
+            -f "$IPA_PATH" \
+            -t ios \
+            --apiKey "$API_KEY_ID" \
+            --apiIssuer "$API_ISSUER_ID"
+
+      - name: Cleanup secrets
+        if: always()
+        run: |
+          rm -f "$HOME/private_keys/AuthKey_"*.p8
+          rm -f "$RUNNER_TEMP/app-signing.keychain-db"
+          rm -f "$HOME/Library/MobileDevice/Provisioning Profiles/${{ steps.profile.outputs.uuid }}.mobileprovision"
+
+      - name: Upload IPA artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-ipa
+          path: ${{ runner.temp }}/export/*.ipa
+          if-no-files-found: ignore

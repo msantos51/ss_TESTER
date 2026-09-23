@@ -43,7 +43,7 @@ O **Sunny Sales** é uma plataforma SaaS composta por uma aplicação web, uma a
 | Premium (19,99 €/30 dias) | A única compra da plataforma, com separador próprio na app: estrela no pin, alcance de 1 km e fotografias nos produtos |
 | Stories | Publicar fotos/vídeos efémeros visíveis no perfil |
 | Os teus dados (RGPD) | Descarregar todos os dados pessoais em JSON e eliminar a conta em definitivo, na app ou em `/eliminar-conta` |
-| App móvel | App Android (Capacitor + React) dedicada ao vendedor: registo de conta, partilha de localização em tempo real (serviço nativo), gestão de conta, produtos, Premium e faturas |
+| App móvel | App Android e iOS (Capacitor + React) dedicada ao vendedor: registo de conta, partilha de localização em tempo real (serviço nativo), gestão de conta, produtos, Premium e faturas |
 
 ---
 
@@ -73,7 +73,7 @@ ss_TESTER/
 │       ├── pages/            # Mapa, Praia Sustentável, Sobre, FAQs, Contacto, ...
 │       ├── components/       # Botões de mapa, meteorologia, footer, ...
 │       └── config.js         # BASE_URL do backend
-├── mobile/                   # Capacitor + React + Vite (móvel Android, para vendedores)
+├── mobile/                   # Capacitor + React + Vite (móvel Android e iOS, para vendedores)
 │   └── src/
 │       ├── pages/            # Welcome, Registo, Login, MapTab (partilha), Produtos, Premium, Trajetos, Conta
 │       ├── components/       # AnimatedMarker, cropper de imagem, seletor de cor
@@ -93,7 +93,7 @@ ss_TESTER/
 |---|---|
 | Backend | FastAPI, SQLAlchemy, PostgreSQL / SQLite, JWT, bcrypt, Stripe, WebSocket |
 | Web frontend | React 19, Vite, React Router, Leaflet + react-leaflet, Axios |
-| Mobile | Capacitor 7 (Android), React 18, Vite, Leaflet + leaflet-rotate, @capacitor/geolocation |
+| Mobile | Capacitor 7 (Android e iOS), React 18, Vite, Leaflet + leaflet-rotate, @capacitor/geolocation |
 | Mapas | Leaflet com tiles CARTO, leaflet-rotate (rotação com dois dedos e pela bússola, no site e na app), Haversine (distâncias) |
 | Pagamentos | Stripe Checkout + Webhooks, semanas pagas com recibos |
 | Autenticação | JWT Bearer tokens, gestão de sessões multi-dispositivo |
