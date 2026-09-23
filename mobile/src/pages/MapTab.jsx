@@ -739,9 +739,10 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
 
   return (
     <div className="map-screen">
-      {/* Cabeçalho da marca, com o estado da partilha à direita. */}
+      {/* Cabeçalho da marca, com o estado da partilha à direita. Mesmo
+          tamanho e formato do cabeçalho dos restantes separadores (ver
+          Produtos): sem a variante `compact`. */}
       <BrandHeader
-        compact
         aside={(
           <div className={`brand-header-chip map-status-pill ${status.className}`}>
             <span className="map-status-dot" />
