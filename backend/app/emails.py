@@ -41,14 +41,14 @@ def send_confirmation_email(name: str, email: str, confirmation_token: str) -> b
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
     <tr><td align="center">
       <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-        <tr><td style="background:linear-gradient(135deg,#FCB454,#F7931E);padding:30px;text-align:center;">
+        <tr><td style="background:linear-gradient(135deg,#F9B10B,#F9B10B);padding:30px;text-align:center;">
           <h1 style="margin:0;color:#ffffff;font-size:24px;">&#9728;&#65039; Sunny Sales</h1>
         </td></tr>
         <tr><td style="padding:30px;">
           <h2 style="color:#333;margin-top:0;">Olá {name}!</h2>
           <p style="color:#555;font-size:16px;line-height:1.6;">Obrigado por te registares na <strong>Sunny Sales</strong>. Para ativares a tua conta, confirma o teu email clicando no botão abaixo:</p>
           <div style="text-align:center;margin:30px 0;">
-            <a href="{confirm_link}" style="background:#FCB454;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Confirmar Email</a>
+            <a href="{confirm_link}" style="background:#F9B10B;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Confirmar Email</a>
           </div>
           <p style="color:#888;font-size:13px;">Se o botão não funcionar, copia e cola este link no teu navegador:</p>
           <p style="color:#888;font-size:13px;word-break:break-all;">{confirm_link}</p>
@@ -81,14 +81,14 @@ def send_email_change_confirmation(name: str, new_email: str, change_token: str)
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
     <tr><td align="center">
       <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-        <tr><td style="background:linear-gradient(135deg,#FCB454,#F7931E);padding:30px;text-align:center;">
+        <tr><td style="background:linear-gradient(135deg,#F9B10B,#F9B10B);padding:30px;text-align:center;">
           <h1 style="margin:0;color:#ffffff;font-size:24px;">&#9728;&#65039; Sunny Sales</h1>
         </td></tr>
         <tr><td style="padding:30px;">
           <h2 style="color:#333;margin-top:0;">Olá {name}!</h2>
           <p style="color:#555;font-size:16px;line-height:1.6;">Pediste para alterar o email da tua conta <strong>Sunny Sales</strong> para este endereço. Para confirmares a alteração, clica no botão abaixo:</p>
           <div style="text-align:center;margin:30px 0;">
-            <a href="{confirm_link}" style="background:#FCB454;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Confirmar Novo Email</a>
+            <a href="{confirm_link}" style="background:#F9B10B;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Confirmar Novo Email</a>
           </div>
           <p style="color:#888;font-size:13px;">Se o botão não funcionar, copia e cola este link no teu navegador:</p>
           <p style="color:#888;font-size:13px;word-break:break-all;">{confirm_link}</p>
@@ -120,14 +120,14 @@ def send_password_reset_email(name: str, email: str, reset_token: str) -> bool:
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
     <tr><td align="center">
       <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-        <tr><td style="background:linear-gradient(135deg,#FCB454,#F7931E);padding:30px;text-align:center;">
+        <tr><td style="background:linear-gradient(135deg,#F9B10B,#F9B10B);padding:30px;text-align:center;">
           <h1 style="margin:0;color:#ffffff;font-size:24px;">&#9728;&#65039; Sunny Sales</h1>
         </td></tr>
         <tr><td style="padding:30px;">
           <h2 style="color:#333;margin-top:0;">Olá {name}!</h2>
           <p style="color:#555;font-size:16px;line-height:1.6;">Recebemos um pedido para redefinir a palavra-passe da tua conta <strong>Sunny Sales</strong>. Clica no botão abaixo para definires uma nova palavra-passe:</p>
           <div style="text-align:center;margin:30px 0;">
-            <a href="{reset_link}" style="background:#FCB454;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Redefinir Palavra-passe</a>
+            <a href="{reset_link}" style="background:#F9B10B;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Redefinir Palavra-passe</a>
           </div>
           <p style="color:#888;font-size:13px;">Este link é válido durante 2 horas. Se o botão não funcionar, copia e cola este link no teu navegador:</p>
           <p style="color:#888;font-size:13px;word-break:break-all;">{reset_link}</p>
