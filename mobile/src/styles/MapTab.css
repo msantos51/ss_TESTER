@@ -23,12 +23,12 @@
   /* ── Paleta (sunny_sales_web/src/index.css · :root) ── */
   --site-surface: #ffffff;
   --site-surface-alt: #DCEAF4;
-  --site-accent: #1D6F7E;          /* azul-profundo: ação, seleção, texto pequeno */
-  --site-accent-hover: #175A66;
+  --site-accent: #2AA1B7;          /* azul-profundo: ação, seleção, texto pequeno */
+  --site-accent-hover: #2AA1B7;
   --site-brand-blue: #2AA1B7;      /* o azul da marca: tintes e superfícies */
-  --site-teal: #2794A8;            /* azul médio: estados e ícones (3,57:1) */
-  --site-ink: #1D6F7E;             /* a ação principal do ecrã */
-  --site-ink-hover: #175A66;
+  --site-teal: #2AA1B7;            /* azul médio: estados e ícones */
+  --site-ink: #2AA1B7;             /* a ação principal do ecrã */
+  --site-ink-hover: #2AA1B7;
   --site-coral: #BB3E03;           /* só o que é urgente: parar a partilha */
   --site-coral-hover: #9A3303;
   --site-forest: #1D5C3A;          /* presença de vendedores (pins) */
@@ -564,6 +564,6 @@
    erros, mas no azul do resto da app — não é uma falha, é a app a proteger o
    vendedor. */
 .map-alert--info {
-  border-color: rgba(29, 111, 126, 0.35);
+  border-color: rgba(42, 161, 183, 0.35);
   color: var(--site-accent);
 }

@@ -13,19 +13,15 @@
    cor mudar no site, muda aqui com o mesmo valor — é o que faz a app e o
    site parecerem a mesma marca.
 
-   Regras de contraste herdadas do site — as duas cores da marca são claras
-   demais para servirem de tinta, por isso cada uma tem a sua variante
-   escurecida da mesma matiz:
-   · --brand-blue (#2AA1B7) e --brand-yellow (#F9B10B) são a marca, mas só
-     como SUPERFÍCIE: sobre branco dão 3,05:1 e 1,85:1.
-   · --ink (#1D6F7E, o azul da marca escurecido) aguanta texto pequeno
-     branco por cima (5,79:1) — daí ser a dos botões e dos fundos escuros.
-   · --ocean (#217E8F) dá 4,72:1 com branco: serve de fundo com texto
-     branco e de texto pequeno sobre a tela. --ocean-bright (#2AA1B7) é o
-     azul da marca, para tintes, pins e realces sobre escuro.
-   · --sun (#F9B10B) é sempre fundo com --sun-ink por cima (17,85:1); como
-     TEXTO sobre a tela usa-se --sun-text (#825C03, 6,03:1) e sobre os
-     painéis azul-profundo usa-se --sun-soft (#FFDBA4, 4,75:1).
+   A paleta foi simplificada para UMA cor por família, sem escala: todos os
+   tokens de azul (--ink, --ocean, --ocean-bright, --ocean-ink, --ocean-text,
+   --blue, ...) apontam para #2AA1B7, e os de amarelo (--sun, --sun-text,
+   --amber, ...) para #F9B10B. Os nomes diferentes ficam só por
+   compatibilidade com os ecrãs que já os usam. Como nenhuma das duas cores
+   aguenta texto pequeno sobre branco (3,05:1 e 1,85:1), continuam a viver
+   nas SUPERFÍCIES. A única exceção é --sun-ink (#201601): é o texto que
+   fica POR CIMA do fundo amarelo, por isso tem de se manter escuro — se
+   fosse #F9B10B o texto ficava invisível sobre o próprio fundo.
 
    A Manrope é a letra única da marca (site + app), auto-hospedada em
    /fonts e declarada no @font-face abaixo — sem ligação ao Google Fonts.
@@ -59,21 +55,21 @@
   /* ── Paleta da marca ──────────────────────── */
   --brand-blue: #2AA1B7;       /* AZUL da marca */
   --brand-yellow: #F9B10B;     /* AMARELO da marca */
-  --ink: #1D6F7E;              /* o azul escurecido: fundo escuro, botões primários */
-  --ink-hover: #175A66;
-  --ocean: #217E8F;            /* azul de tinta: ícones de lista, preços, botões (4,72:1) */
+  --ink: #2AA1B7;              /* botões primários, fundos de destaque */
+  --ink-hover: #2AA1B7;
+  --ocean: #2AA1B7;            /* azul de tinta: ícones de lista, preços, botões */
   --ocean-bright: #2AA1B7;     /* o azul da marca: tintes, pins, realces sobre escuro */
   --ocean-tint: #D3E7F8;       /* fundo de ícones, pílula do separador ativo */
-  --ocean-ink: #1D6F7E;        /* o azul escurecido para glifos sobre o tinte (5,28:1) */
-  --ocean-text: #217E8F;       /* o azul como texto sobre a tela (4,94:1) */
+  --ocean-ink: #2AA1B7;        /* o azul escurecido para glifos sobre o tinte */
+  --ocean-text: #2AA1B7;       /* o azul como texto sobre a tela */
   --sun: #F9B10B;              /* acento: CTA, avatar, pin do mapa — sempre fundo */
-  --sun-ink: #201601;          /* texto sobre o acento (17,85:1) */
-  --sun-text: #825C03;         /* o amarelo como texto sobre a tela (6,03:1) */
-  --sun-soft: #FFDBA4;         /* o amarelo como texto sobre os painéis --ink (4,75:1) */
+  --sun-ink: #201601;          /* texto sobre o acento — tem de ficar escuro, nunca #F9B10B */
+  --sun-text: #F9B10B;         /* o amarelo como texto sobre a tela */
+  --sun-soft: #FFDBA4;         /* o amarelo como texto sobre os painéis --ink */
   --coral: #BB3E03;            /* só o que é urgente (parar a partilha) */
   --coral-hover: #9A3303;
   --forest: #1D5C3A;           /* presença de vendedores: pins do mapa */
-  --blue: #217E8F;             /* azul utilitário: "a tua posição", avisos */
+  --blue: #2AA1B7;             /* azul utilitário: "a tua posição", avisos */
   --sand: #F7FAFB;             /* fundo geral dos ecrãs (neutro frio) */
   --sand-alt: #ECF2F4;         /* o neutro mais escuro (puxadores, chips) */
   --surface: #FFFFFF;          /* cartões, linhas de lista, tab bar */
@@ -170,19 +166,18 @@
      Os ecrãs ainda não refinados (login, registo, planos, faturas)
      continuam a usar estes nomes; apontá-los para a paleta nova muda
      o tom da app toda de uma vez. */
-  /* --primary carrega texto branco (.btn-primary), por isso é o azul
-     escurecido (--ink, 5,79:1) e não o #2AA1B7 da marca, que com branco
-     dá 3,05:1 e reprova AA. */
+  /* --primary aponta para --ink por compatibilidade com estes ecrãs; com a
+     paleta a uma cor só, --ink e o azul da marca já são o mesmo #2AA1B7. */
   --primary: var(--ink);
-  --primary-hover: #175A66;
-  --primary-dark: #12434D;
+  --primary-hover: #2AA1B7;
+  --primary-dark: #2AA1B7;
   --primary-light: var(--ocean-tint);
   --primary-light-solid: #D3E7F8;
   --secondary: var(--sun);
-  --secondary-hover: #C68B05;
+  --secondary-hover: #F9B10B;
   --danger-dark: #991b1b;
   --gold: var(--sun);
-  --gold-hover: #C68B05;
+  --gold-hover: #F9B10B;
   --navy: var(--ink);
   --bg: var(--sand);
   --surface-alt: var(--field-bg);
@@ -601,12 +596,12 @@ body {
   background: var(--primary);
   color: white;
   width: 100%;
-  box-shadow: 0 4px 14px rgba(29, 111, 126, 0.28);
+  box-shadow: 0 4px 14px rgba(42, 161, 183, 0.28);
 }
 
 .btn-primary:active:not(:disabled) {
   background: var(--primary-dark);
-  box-shadow: 0 2px 8px rgba(29, 111, 126, 0.18);
+  box-shadow: 0 2px 8px rgba(42, 161, 183, 0.18);
 }
 
 .btn-danger {
@@ -660,7 +655,7 @@ body {
   font-weight: 800;
   letter-spacing: -0.3px;
   border-radius: var(--radius-full);
-  box-shadow: 0 8px 28px rgba(29, 111, 126, 0.35);
+  box-shadow: 0 8px 28px rgba(42, 161, 183, 0.35);
 }
 
 .btn-danger.location-toggle-btn {
@@ -1479,7 +1474,7 @@ body {
   font-size: var(--fs-btn);
   font-weight: 800;
   letter-spacing: -0.2px;
-  box-shadow: 0 6px 18px rgba(29, 111, 126, 0.28);
+  box-shadow: 0 6px 18px rgba(42, 161, 183, 0.28);
 }
 
 .welcome-btn-secondary {
