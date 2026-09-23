@@ -20,13 +20,6 @@
   padding: 20px 16px 24px;
 }
 
-.screen-head-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
 /* Cabeçalho — painel branco com margem lateral, igual ao Premium/QR. */
 .screen-head {
   display: flex;
