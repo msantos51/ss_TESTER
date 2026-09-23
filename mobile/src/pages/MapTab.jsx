@@ -47,9 +47,9 @@ function writeLastPos(lat, lng) {
 }
 
 // Enquanto o watch do JS estiver a entregar leituras (app à frente), as do
-// serviço nativo não mexem no mapa. Cinco segundos é o intervalo do serviço;
-// doze dá folga para uma leitura falhada antes de ele assumir o comando.
-const NATIVE_TAKEOVER_MS = 12000;
+// serviço nativo não mexem no mapa. Três segundos é o intervalo do serviço;
+// sete dá folga para uma leitura falhada antes de ele assumir o comando.
+const NATIVE_TAKEOVER_MS = 7000;
 // Abaixo disto é tremer do GPS, não andamento do vendedor.
 const MIN_MOVE_METERS = 1;
 // (em português) Precisão (raio de erro, m) a partir da qual uma leitura já é
