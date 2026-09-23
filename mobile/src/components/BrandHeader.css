@@ -14,12 +14,6 @@
   font-family: var(--font);
 }
 
-/* No mapa a faixa é direita e mais baixa: o mapa começa logo por baixo. */
-.brand-header.is-compact {
-  padding-bottom: 18px;
-  border-radius: 0;
-}
-
 .brand-header-top {
   display: flex;
   align-items: center;
@@ -51,16 +45,6 @@
   height: 14px;
 }
 
-.brand-header.is-compact .brand-header-mark {
-  width: 32px;
-  height: 32px;
-}
-
-.brand-header.is-compact .brand-header-mark svg {
-  width: 16px;
-  height: 16px;
-}
-
 .brand-header-name {
   font-size: 13.5px;
   font-weight: 800;
@@ -68,10 +52,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.brand-header.is-compact .brand-header-name {
-  font-size: 15px;
 }
 
 .brand-header-body {

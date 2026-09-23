@@ -2,13 +2,14 @@ import React from 'react';
 import './BrandHeader.css';
 
 // (em português) Cabeçalho da marca, comum aos cinco separadores: faixa em
-// gradiente azul com o selo amarelo e o nome "Vendedor de Praia" no topo.
-// No mapa é uma faixa compacta (`compact`), com o estado da partilha à
-// direita (`aside`); nos restantes ecrãs tem os cantos de baixo arredondados
-// e leva por baixo do selo o título e o resumo do ecrã (`children`).
-export default function BrandHeader({ compact = false, aside = null, children }) {
+// gradiente azul com o selo amarelo e o nome "Vendedor de Praia" no topo,
+// cantos de baixo arredondados. O mapa usa o estado da partilha à direita
+// (`aside`); os restantes ecrãs levam por baixo do selo o título e o resumo
+// do ecrã (`children`). Sempre no mesmo tamanho e formato, em todos os
+// separadores.
+export default function BrandHeader({ aside = null, children }) {
   return (
-    <header className={`brand-header${compact ? ' is-compact' : ''}`}>
+    <header className="brand-header">
       <div className="brand-header-top">
         <div className="brand-header-brand">
           <span className="brand-header-mark" aria-hidden="true">
