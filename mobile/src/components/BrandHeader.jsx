@@ -3,10 +3,10 @@ import './BrandHeader.css';
 
 // (em português) Cabeçalho da marca, comum aos cinco separadores: faixa em
 // gradiente azul com o selo amarelo e o nome "Vendedor de Praia" no topo,
-// cantos de baixo arredondados. O mapa usa o estado da partilha à direita
-// (`aside`); os restantes ecrãs levam por baixo do selo o título e o resumo
-// do ecrã (`children`). Sempre no mesmo tamanho e formato, em todos os
-// separadores.
+// cantos de baixo arredondados, e por baixo o título e o resumo do ecrã
+// (`children`) — sempre no mesmo tamanho e formato, em todos os
+// separadores. O mapa acrescenta ainda o estado da partilha ao lado do
+// nome da marca (`aside`).
 export default function BrandHeader({ aside = null, children }) {
   return (
     <header className="brand-header">

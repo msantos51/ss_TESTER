@@ -739,9 +739,9 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
 
   return (
     <div className="map-screen">
-      {/* Cabeçalho da marca, com o estado da partilha à direita. Mesmo
-          tamanho e formato do cabeçalho dos restantes separadores (ver
-          Produtos): sem a variante `compact`. */}
+      {/* Cabeçalho da marca, com o estado da partilha à direita e, por
+          baixo, título e resumo — mesma estrutura (e por isso mesma altura)
+          do cabeçalho de Produtos. */}
       <BrandHeader
         aside={(
           <div className={`brand-header-chip map-status-pill ${status.className}`}>
@@ -749,7 +749,14 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
             <span className="map-status-label">{status.label}</span>
           </div>
         )}
-      />
+      >
+        <h2 className="brand-header-title">Mapa</h2>
+        <p className="brand-header-subtitle">
+          {sharing
+            ? 'Os banhistas veem-te em tempo real'
+            : 'Inicia a partilha para apareceres no mapa'}
+        </p>
+      </BrandHeader>
 
       <div className="map-area">
         {/* O mapa ocupa todo o fundo da área; o resto é sobreposto. */}
