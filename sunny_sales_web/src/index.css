@@ -46,26 +46,26 @@
    · A ação principal de cada ecrã é um botão AZUL-PROFUNDO
      (--ink) em pílula — âncora visual única.
 
-   PALETA — duas cores de marca: AZUL #2F8EE0 e AMARELO
-   #FFA723. Nenhuma das duas aguenta texto pequeno por cima
-   de branco (3,46:1 e 1,94:1), por isso a marca vive nas
+   PALETA — duas cores de marca: AZUL #2AA1B7 e AMARELO
+   #F9B10B. Nenhuma das duas aguenta texto pequeno por cima
+   de branco (3,05:1 e 1,85:1), por isso a marca vive nas
    SUPERFÍCIES e cada uma tem uma variante escurecida da
    mesma matiz para quando é preciso TINTA:
-   · --brand-blue = AZUL #2F8EE0 — a cor da marca: fundos,
+   · --brand-blue = AZUL #2AA1B7 — a cor da marca: fundos,
      tintes, gradientes, pins, realces sobre escuro. Nunca
      texto pequeno sobre branco.
-   · --blue-mid = #2084D9 (3,92:1) — ícones, contornos e
+   · --blue-mid = #2794A8 (3,57:1) — ícones, contornos e
      texto grande sobre a tela.
-   · --accent-text / --blue-text = #1B70B8 (5,18:1) — o azul
+   · --accent-text / --blue-text = #217E8F (4,72:1) — o azul
      como TEXTO pequeno sobre branco.
-   · --ink / --accent = #1863A3 (6,26:1 com branco) — a tinta
+   · --ink / --accent = #1D6F7E (5,79:1 com branco) — a tinta
      das ações: botões, links, item ativo. É o azul da marca
      escurecido até passar AA com texto branco por cima.
-   · --gold = AMARELO #FFA723 — informação, nunca ação.
-     SEMPRE como fundo com --gold-ink (#241500, 9,14:1) por
-     cima; nunca com texto branco (1,94:1). Significa uma
+   · --gold = AMARELO #F9B10B — informação, nunca ação.
+     SEMPRE como fundo com --gold-ink (#201601, 17,85:1) por
+     cima; nunca com texto branco (1,85:1). Significa uma
      coisa só: há vendedores ativos agora.
-     Como TEXTO usa-se --gold-strong (#955900, 5,67:1).
+     Como TEXTO usa-se --gold-strong (#825C03, 6,03:1).
    · --canvas = azul muito claro #EDF5FA, a tela de todo o
      site. Os neutros (chips, campos, hovers) são tons frios
      tirados da mesma matiz do azul, não areia.
@@ -95,51 +95,51 @@
 
 :root {
   /* ── Paleta da marca ──
-     Duas cores: AZUL #2F8EE0 e AMARELO #FFA723. Abaixo delas ficam as
+     Duas cores: AZUL #2AA1B7 e AMARELO #F9B10B. Abaixo delas ficam as
      variantes escurecidas da mesma matiz, porque nenhuma das duas aguenta
-     texto pequeno sobre branco (3,46:1 e 1,94:1 — ver cabeçalho). */
-  --brand-blue: #2F8EE0;
-  --brand-yellow: #FFA723;
-  /* Escala do azul (matiz 208°), da marca até à tinta */
-  --blue-bright: #2F8EE0;   /* 3,46:1 — só superfície e tinte */
-  --blue-mid: #2084D9;      /* 3,92:1 — ícones, contornos, texto grande */
-  --blue-text: #1B70B8;     /* 5,18:1 — texto pequeno sobre branco */
-  --blue-deep: #1863A3;     /* 6,26:1 — botões com texto branco */
-  --blue-deeper: #145083;   /* 8,38:1 — hover dos botões */
-  --blue-darkest: #0F3C62;  /* 11,4:1 — blocos escuros */
-  --palette-sky: #2F8EE0;
-  --palette-sun: #FFA723;
+     texto pequeno sobre branco (3,05:1 e 1,85:1 — ver cabeçalho). */
+  --brand-blue: #2AA1B7;
+  --brand-yellow: #F9B10B;
+  /* Escala do azul (matiz 189°), da marca até à tinta */
+  --blue-bright: #2AA1B7;   /* 3,05:1 — só superfície e tinte */
+  --blue-mid: #2794A8;      /* 3,57:1 — ícones, contornos, texto grande */
+  --blue-text: #217E8F;     /* 4,72:1 — texto pequeno sobre branco */
+  --blue-deep: #1D6F7E;     /* 5,79:1 — botões com texto branco */
+  --blue-deeper: #175A66;   /* 7,80:1 — hover dos botões */
+  --blue-darkest: #12434D;  /* 10,85:1 — blocos escuros */
+  --palette-sky: #2AA1B7;
+  --palette-sun: #F9B10B;
   --palette-cloud: #F5FAFD;
   /* Tons de apoio das mesmas famílias */
   --palette-foam: #89BFED;
   --palette-dune: #FFDBA4;
   --palette-sunset: #BB3E03;
-  --palette-night: #082137;
+  --palette-night: #0A252B;
 
   /* ── Acento = o azul da marca escurecido ──
-     #1863A3 dá 6,26:1 com texto branco, por isso é ele que carrega
-     botões, links e tudo o que leva texto pequeno por cima. O #2F8EE0
+     #1D6F7E dá 5,79:1 com texto branco, por isso é ele que carrega
+     botões, links e tudo o que leva texto pequeno por cima. O #2AA1B7
      puro fica para as superfícies (--brand-blue / --teal). */
-  --accent: #1863A3;
-  --accent-hover: #145083;
-  --accent-soft: rgba(47, 142, 224, 0.12);
+  --accent: #1D6F7E;
+  --accent-hover: #175A66;
+  --accent-soft: rgba(42, 161, 183, 0.12);
   /* Ícones/realces "de acento" sobre fundo claro */
-  --accent-text: #1863A3;
+  --accent-text: #1D6F7E;
   /* Texto sobre superfícies azul-profundo (botões, badges, blocos) */
   --on-accent: #ffffff;
 
   /* ── Cor primária (alias do acento, compatibilidade) ── */
-  --primary: #1863A3;
-  --primary-hover: #145083;
-  --primary-dark: #0F3C62;
-  --primary-bright: #2F8EE0;
-  --primary-light: rgba(47, 142, 224, 0.1);
+  --primary: #1D6F7E;
+  --primary-hover: #175A66;
+  --primary-dark: #12434D;
+  --primary-bright: #2AA1B7;
+  --primary-light: rgba(42, 161, 183, 0.1);
   --primary-light-solid: #D3E7F8;
 
   /* ── Ação primária (CTAs sólidos) ── */
-  --secondary: #1863A3;
-  --secondary-hover: #145083;
-  --secondary-light: rgba(47, 142, 224, 0.12);
+  --secondary: #1D6F7E;
+  --secondary-hover: #175A66;
+  --secondary-light: rgba(42, 161, 183, 0.12);
 
   /* ── Coral: reservado ao que é acionável ──
      5,58:1 com texto branco. Regra: só o botão de localização do mapa e o
@@ -155,39 +155,39 @@
   --forest-light: rgba(29, 92, 58, 0.12);
 
   /* ── Amarelo da marca: informação, nunca ação ──
-     Usar sempre como FUNDO com --gold-ink por cima (9,14:1). Nunca com
-     texto branco, que daria 1,94:1. Como TEXTO sobre branco usa-se
-     --gold-strong (#955900, 5,67:1). */
-  --gold: #FFA723;
-  --gold-ink: #241500;
-  --gold-soft: rgba(255, 167, 35, 0.18);
-  --gold-strong: #955900;
-  --amber: #FFA723;
-  --amber-strong: #955900;
+     Usar sempre como FUNDO com --gold-ink por cima (17,85:1). Nunca com
+     texto branco, que daria 1,85:1. Como TEXTO sobre branco usa-se
+     --gold-strong (#825C03, 6,03:1). */
+  --gold: #F9B10B;
+  --gold-ink: #201601;
+  --gold-soft: rgba(249, 177, 11, 0.18);
+  --gold-strong: #825C03;
+  --amber: #F9B10B;
+  --amber-strong: #825C03;
 
   /* ── Azul médio: estado ativo, seleção, ícones ──
      Os nomes `--teal-*` mantêm-se por compatibilidade com os ecrãs que já
-     os usam, mas são agora tons do azul da marca. #2084D9 dá 3,92:1 com
+     os usam, mas são agora tons do azul da marca. #2794A8 dá 3,57:1 com
      branco — serve para ícones, contornos e texto grande, nunca para
      corpo. Como texto sobre a tela usa-se --teal-text, que passa AA. */
-  --blue: #1B70B8;
-  --blue-hover: #145083;
-  --teal: #2084D9;
-  --teal-text: #1B70B8;
-  --teal-strong: #1863A3;
-  --teal-light: rgba(47, 142, 224, 0.12);
-  --sky: #1B70B8;
+  --blue: #217E8F;
+  --blue-hover: #175A66;
+  --teal: #2794A8;
+  --teal-text: #217E8F;
+  --teal-strong: #1D6F7E;
+  --teal-light: rgba(42, 161, 183, 0.12);
+  --sky: #217E8F;
 
   /* ── "Ink" — a ação principal do ecrã ──
      Um único botão azul-profundo por ecrã (o "Ver o mapa agora" da entrada,
      o "Voltar ao início" do 404). Se houver dois, deixa de haver âncora. */
-  --ink: #1863A3;
-  --ink-hover: #145083;
+  --ink: #1D6F7E;
+  --ink-hover: #175A66;
   /* Texto escuro para fundos claros */
   --ink-on-light: #0B313D;
   /* ── Painéis institucionais (petróleo profundo) ── */
   --navy: #0B313D;
-  --navy-light: #2F8EE0;
+  --navy-light: #2AA1B7;
   --navy-border: rgba(11, 49, 61, 0.2);
 
   /* ── Superfícies: tela branca + painéis brancos ──
@@ -241,12 +241,12 @@
   --danger: #b91c1c;
 
   /* ── Gradientes — azul e amarelo da marca ── */
-  --grad-sun: linear-gradient(135deg, #FFA723, #E28800);
-  --grad-gold: linear-gradient(135deg, #FFA723, #E28800);
-  --grad-sea: linear-gradient(135deg, #2F8EE0, #1863A3);
-  --grad-dusk: linear-gradient(135deg, #1863A3, #082137);
+  --grad-sun: linear-gradient(135deg, #F9B10B, #C68B05);
+  --grad-gold: linear-gradient(135deg, #F9B10B, #C68B05);
+  --grad-sea: linear-gradient(135deg, #2AA1B7, #1D6F7E);
+  --grad-dusk: linear-gradient(135deg, #1D6F7E, #0A252B);
   /* Blocos de destaque: azul-profundo a descer para a noite (texto branco) */
-  --grad-dark: linear-gradient(155deg, #1863A3 0%, #0F3C62 100%);
+  --grad-dark: linear-gradient(155deg, #1D6F7E 0%, #12434D 100%);
 
   /* ── Sombras (difusas, de baixa opacidade) ──
      Duas camadas: um contacto curto que substitui a borda
@@ -262,10 +262,10 @@
   --shadow-glass: 0 1px 1px rgba(11, 49, 61, 0.06), 0 14px 30px -16px rgba(11, 49, 61, 0.4);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
-  --shadow-primary: 0 10px 24px -12px rgba(24, 99, 163, 0.5);
-  --shadow-ink: 0 10px 24px -12px rgba(24, 99, 163, 0.5);
-  --shadow-gold: 0 10px 24px -12px rgba(255, 167, 35, 0.4);
-  --shadow-accent: 0 12px 28px -12px rgba(47, 142, 224, 0.5);
+  --shadow-primary: 0 10px 24px -12px rgba(29, 111, 126, 0.5);
+  --shadow-ink: 0 10px 24px -12px rgba(29, 111, 126, 0.5);
+  --shadow-gold: 0 10px 24px -12px rgba(249, 177, 11, 0.4);
+  --shadow-accent: 0 12px 28px -12px rgba(42, 161, 183, 0.5);
 
   /* ── Raios (generosos; controlos em pílula) ── */
   --radius-xs: 10px;
@@ -302,7 +302,7 @@
   --section-pad: clamp(4rem, 8vw, 7rem);
 
   /* ── Foco visível (teclado): teal escuro, ≥3:1 sobre branco ── */
-  --focus-ring: #1B70B8;
+  --focus-ring: #217E8F;
 
   /* ── Movimento (200ms, ease-out, nada mais) ── */
   --transition: 0.2s cubic-bezier(0, 0, 0.2, 1);

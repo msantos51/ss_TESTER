@@ -60,8 +60,8 @@ e os links do rodapé não são o que se vem cá fazer.
 
 ## 1. Paleta
 
-A marca tem **duas cores**: **Azul `#2F8EE0`** e **Amarelo `#FFA723`**. Nenhuma
-das duas aguenta texto pequeno sobre branco (3,46:1 e 1,94:1), por isso a marca
+A marca tem **duas cores**: **Azul `#2AA1B7`** e **Amarelo `#F9B10B`**. Nenhuma
+das duas aguenta texto pequeno sobre branco (3,05:1 e 1,85:1), por isso a marca
 vive nas **superfícies** e cada cor tem uma **variante escurecida da mesma
 matiz** para quando é preciso tinta. **O papel de cada tom é decidido pelo
 contraste que aguenta**, não pelo gosto — o site é usado num telemóvel ao sol.
@@ -71,33 +71,33 @@ contraste que aguenta**, não pelo gosto — o site é usado num telemóvel ao s
 | `--canvas` / `--canvas-deep` | `#EDF5FA` / `#DCEAF4` | **Tela** de fundo de todo o site (body), azul muito clara, e o seu tom mais fundo (ex.: o "404"). |
 | `--surface` | `#ffffff` | **Painéis brancos** (sem borda, com `--shadow-sm`), a flutuar sobre a tela azul clara. |
 | `--surface-alt` / `--surface-hover` | `#DCEAF4` / `#CBDFEC` | Preenchimento neutro de chips, segmentos, campos e botões-ícone; o segundo é o hover. Tons **frios**, tirados da matiz do azul. |
-| `--brand-blue` / `--blue-bright` | `#2F8EE0` | **O azul da marca.** 3,46:1 com branco — só superfícies, tintes, gradientes, pins e realces sobre escuro. **Nunca texto pequeno sobre branco.** |
-| `--blue-mid` / `--teal` | `#2084D9` | 3,92:1 — ícones, contornos e texto grande sobre a tela. |
-| `--blue-text` / `--teal-text` / `--accent-text` | `#1B70B8` | O azul como **texto pequeno** sobre branco (5,18:1). |
-| `--accent` / `--primary` / `--ink` / `--blue-deep` | `#1863A3` | **A tinta das ações** — o azul da marca escurecido até dar **6,26:1** com branco. Botões, links, botão principal, texto do item ativo. |
+| `--brand-blue` / `--blue-bright` | `#2AA1B7` | **O azul da marca.** 3,05:1 com branco — só superfícies, tintes, gradientes, pins e realces sobre escuro. **Nunca texto pequeno sobre branco.** |
+| `--blue-mid` / `--teal` | `#2794A8` | 3,57:1 — ícones, contornos e texto grande sobre a tela. |
+| `--blue-text` / `--teal-text` / `--accent-text` | `#217E8F` | O azul como **texto pequeno** sobre branco (4,72:1). |
+| `--accent` / `--primary` / `--ink` / `--blue-deep` | `#1D6F7E` | **A tinta das ações** — o azul da marca escurecido até dar **5,79:1** com branco. Botões, links, botão principal, texto do item ativo. |
 | `--on-accent` | `#ffffff` | Texto branco sobre as superfícies `--ink`. |
-| `--accent-hover` / `--ink-hover` / `--blue-deeper` | `#145083` | Hover (tom mais escuro) das superfícies `--ink` (8,38:1). |
-| `--blue-darkest` / `--primary-dark` | `#0F3C62` | Blocos escuros e o fim dos gradientes (11,4:1). |
+| `--accent-hover` / `--ink-hover` / `--blue-deeper` | `#175A66` | Hover (tom mais escuro) das superfícies `--ink` (7,80:1). |
+| `--blue-darkest` / `--primary-dark` | `#12434D` | Blocos escuros e o fim dos gradientes (10,85:1). |
 | `--accent-soft` | `rgba(47,142,224,.12)` | Tinte do azul da marca: item de navegação ativo, item de lista ativo, chips. |
-| `--gold` / `--amber` | `#FFA723` | **O amarelo da marca** — informação e "ao vivo", nunca ação. **Sempre como fundo**, com `--gold-ink` (`#241500`, 9,14:1) por cima. Nunca com texto branco: daria 1,94:1. |
-| `--gold-strong` / `--amber-strong` | `#955900` | A variante para usar como **texto** amarelo sobre branco (5,67:1). |
+| `--gold` / `--amber` | `#F9B10B` | **O amarelo da marca** — informação e "ao vivo", nunca ação. **Sempre como fundo**, com `--gold-ink` (`#201601`, 17,85:1) por cima. Nunca com texto branco: daria 1,85:1. |
+| `--gold-strong` / `--amber-strong` | `#825C03` | A variante para usar como **texto** amarelo sobre branco (6,03:1). |
 | `--coral` / `--coral-hover` | `#BB3E03` / `#9A3303` | **Só o que é acionável e urgente** (5,58:1 com branco): o botão de filtros quando há um filtro ativo. Em mais nenhum sítio. Não é cor de marca — é o sinal de urgência, e continua distinto do amarelo. |
 | `--forest` | `#1D5C3A` | **Presença de vendedores** (7,94:1): cor por omissão dos pins do mapa. Não muda com a paleta — é lida contra os tiles, não contra a tela. |
 | `--glass` / `--glass-strong` / `--glass-thick` | `rgba(255,255,255,.72/.82)` / `rgba(253,254,255,.93)` | **Vidro.** `--glass` para a cápsula e o rodapé, `--glass-strong` para o que flutua sobre o mapa, `--glass-thick` para a folha do menu (por baixo dela passa o conteúdo da página). |
 | `--glass-blur` / `--glass-ring` / `--glass-solid` | `saturate(180%) blur(18px)` / anel interior branco / `#FDFEFF` | O blur, a aresta de vidro e o **plano B opaco** obrigatório. |
-| `--grad-dark` | gradiente `#1863A3 → #0F3C62` | **Blocos de destaque** (banners/CTAs finais) com texto branco. |
-| `--grad-sea` / `--grad-sun` | `#2F8EE0 → #1863A3` / `#FFA723 → #E28800` | Gradientes decorativos das duas cores da marca. |
+| `--grad-dark` | gradiente `#1D6F7E → #12434D` | **Blocos de destaque** (banners/CTAs finais) com texto branco. |
+| `--grad-sea` / `--grad-sun` | `#2AA1B7 → #1D6F7E` / `#F9B10B → #C68B05` | Gradientes decorativos das duas cores da marca. |
 | `--text` | `#0B313D` | Títulos e texto principal (13,8:1 sobre a tela). |
 | `--text-secondary` | `#44616A` | Parágrafos de apoio (6,6:1). |
 | `--text-muted` | `#547783` | Legendas, contadores e metadados (4,8:1). |
 | `--border` / `--border-strong` | `rgba(11,49,61,.08)` / `.15` | Hairlines. Só onde a sombra não chega (divisórias internas, contorno de checkbox). |
-| `--blue` / `--sky` / `--focus-ring` | `#1B70B8` | Apenas funcional: links utilitários, "a tua posição" no mapa, o botão de localização e o anel de foco (5,18:1 sobre branco). |
+| `--blue` / `--sky` / `--focus-ring` | `#217E8F` | Apenas funcional: links utilitários, "a tua posição" no mapa, o botão de localização e o anel de foco (4,72:1 sobre branco). |
 | `--success` / `--warning` / `--error` | `#15803d` / `#b45309` / `#b91c1c` | Apenas estados funcionais (validação, avisos), com fundos rgba translúcidos; todos AA sobre branco. |
 
-**Regra de ouro:** `--ink` (#1863A3) = "a ação desta página" (um botão cheio
-por ecrã) e tudo o que é texto pequeno colorido; o **azul da marca** (#2F8EE0)
+**Regra de ouro:** `--ink` (#1D6F7E) = "a ação desta página" (um botão cheio
+por ecrã) e tudo o que é texto pequeno colorido; o **azul da marca** (#2AA1B7)
 = seleção e estados ativos, como tinte ou superfície, **nunca com texto branco
-nem texto pequeno por cima**; o **amarelo da marca** (#FFA723) = "há vendedores
+nem texto pequeno por cima**; o **amarelo da marca** (#F9B10B) = "há vendedores
 ativos agora", sempre como fundo com tinta escura; coral = "faz isto agora" (um
 só visível de cada vez); verde floresta = "há aqui um vendedor". Dentro de um
 bloco `--ink` o botão inverte para **pílula branca com texto `--ink`**. A cápsula e a folha do menu são vidro; a cápsula só
@@ -171,7 +171,7 @@ apenas com texto e badges; o único `<img>` do layout é o logótipo da navbar
 ## 5. Acessibilidade
 
 - Foco visível: `outline: 2px solid var(--focus-ring)` (azul de tinta
-  `#1B70B8`, 5,18:1 sobre branco, +2px offset) em todos os elementos
+  `#217E8F`, 4,72:1 sobre branco, +2px offset) em todos os elementos
   interativos.
 - Alvos de toque ≥48×48px em mobile (≥44px é o mínimo legal, não o alvo).
 - A folha do menu é um `role="dialog"` com `aria-modal`: o foco entra nela ao
@@ -180,12 +180,12 @@ apenas com texto e badges; o único `<img>` do layout é o logótipo da navbar
 - Contraste: o site é usado num telemóvel ao sol, onde o mínimo AA não chega.
   `--text` (13,8:1), `--text-secondary` (6,6:1) e `--text-muted` (4,8:1)
   garantem AA sobre a tela branca, em qualquer parte do site — não há
-  gradiente a variar o fundo. O `--accent` (#1863A3) dá **6,26:1** com
+  gradiente a variar o fundo. O `--accent` (#1D6F7E) dá **5,79:1** com
   texto branco, o verde floresta **7,94:1** e o coral **5,58:1**.
-  **O azul da marca (#2F8EE0) dá 3,46:1** e **o amarelo da marca (#FFA723)
-  dá 1,94:1**: ambos são superfície, nunca texto sobre branco. Como texto
-  usam-se `--blue-text` (#1B70B8, 5,18:1) e `--gold-strong` (#955900, 5,67:1);
-  para ícones e texto grande, `--blue-mid` (#2084D9, 3,92:1). Não usar
+  **O azul da marca (#2AA1B7) dá 3,05:1** e **o amarelo da marca (#F9B10B)
+  dá 1,85:1**: ambos são superfície, nunca texto sobre branco. Como texto
+  usam-se `--blue-text` (#217E8F, 4,72:1) e `--gold-strong` (#825C03, 6,03:1);
+  para ícones e texto grande, `--blue-mid` (#2794A8, 3,57:1). Não usar
   cinzentos mais claros do que `--text-muted` para texto informativo, nem
   texto `--ink` dentro de blocos `--ink` (usar `--on-accent`).
 - Cores dos pins do mapa: a lista fechada em `PinColorPicker.jsx` é a única
@@ -210,8 +210,8 @@ apenas com texto e badges; o único `<img>` do layout é o logótipo da navbar
 
 ## 6. A app do vendedor
 
-A app (`mobile/`) segue **esta direção** — a mesma paleta (azul #2F8EE0 e
-amarelo #FFA723), o mesmo vidro e os mesmos neutros frios — mas **mantém a
+A app (`mobile/`) segue **esta direção** — a mesma paleta (azul #2AA1B7 e
+amarelo #F9B10B), o mesmo vidro e os mesmos neutros frios — mas **mantém a
 navegação que já tinha**: os
 quatro separadores de `components/TabBar.jsx` (Mapa, Produtos, Trajetos,
 Conta), a mesma estrutura e o mesmo comportamento. Só o material da barra

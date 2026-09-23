@@ -23,17 +23,17 @@
   /* ── Paleta (sunny_sales_web/src/index.css · :root) ── */
   --site-surface: #ffffff;
   --site-surface-alt: #DCEAF4;
-  --site-accent: #1863A3;          /* azul-profundo: ação, seleção, texto pequeno */
-  --site-accent-hover: #145083;
-  --site-brand-blue: #2F8EE0;      /* o azul da marca: tintes e superfícies */
-  --site-teal: #2084D9;            /* azul médio: estados e ícones (3,92:1) */
-  --site-ink: #1863A3;             /* a ação principal do ecrã */
-  --site-ink-hover: #145083;
+  --site-accent: #1D6F7E;          /* azul-profundo: ação, seleção, texto pequeno */
+  --site-accent-hover: #175A66;
+  --site-brand-blue: #2AA1B7;      /* o azul da marca: tintes e superfícies */
+  --site-teal: #2794A8;            /* azul médio: estados e ícones (3,57:1) */
+  --site-ink: #1D6F7E;             /* a ação principal do ecrã */
+  --site-ink-hover: #175A66;
   --site-coral: #BB3E03;           /* só o que é urgente: parar a partilha */
   --site-coral-hover: #9A3303;
   --site-forest: #1D5C3A;          /* presença de vendedores (pins) */
-  --site-gold: #FFA723;            /* amarelo da marca: informação, nunca ação; sempre fundo */
-  --site-gold-ink: #241500;        /* texto por cima do dourado */
+  --site-gold: #F9B10B;            /* amarelo da marca: informação, nunca ação; sempre fundo */
+  --site-gold-ink: #201601;        /* texto por cima do dourado */
   --site-text: #0B313D;
   --site-text-secondary: #44616A;
   --site-text-muted: #547783;
@@ -512,8 +512,8 @@
   height: 16px;
   border-radius: 50%;
   border: 2px solid #fff;
-  background: var(--sun, #FFA723);
-  color: var(--sun-ink, #241500);
+  background: var(--sun, #F9B10B);
+  color: var(--sun-ink, #201601);
   box-shadow: 0 1px 4px rgba(11, 49, 61, 0.35);
   pointer-events: none;
 }
@@ -564,6 +564,6 @@
    erros, mas no azul do resto da app — não é uma falha, é a app a proteger o
    vendedor. */
 .map-alert--info {
-  border-color: rgba(24, 99, 163, 0.35);
+  border-color: rgba(29, 111, 126, 0.35);
   color: var(--site-accent);
 }
