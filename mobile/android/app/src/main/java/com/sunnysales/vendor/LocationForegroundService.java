@@ -272,9 +272,9 @@ public class LocationForegroundService extends Service {
         // Android podia guardar até 30 s de posições e entregá-las de uma vez,
         // e no mapa do banhista isso via-se como um pin parado que só de vez em
         // quando dava um salto. Aqui a posição tem de sair assim que existe.
-        LocationRequest request = new LocationRequest.Builder(5000)
+        LocationRequest request = new LocationRequest.Builder(3000)
                 .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-                .setMinUpdateIntervalMillis(2000)
+                .setMinUpdateIntervalMillis(1000)
                 .setMaxUpdateDelayMillis(0)
                 // Sem filtro de distância no pedido: o Fused descartava também
                 // as leituras que só melhoram a precisão com o vendedor parado.

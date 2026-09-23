@@ -21,6 +21,16 @@ const MAX_COMPASS_JUMP_DEG = 60;
 // Confirmação: o mesmo salto grande a repetir-se é mesmo uma viragem, não
 // ruído de um instante.
 const SPIKE_CONFIRM_DEG = 20;
+// (em português) Parado, o magnetómetro nunca fica quieto: oscila uns graus a
+// cada leitura só com o ruído normal do sensor, e isso — mesmo já filtrado
+// dos saltos grandes acima — chegava inteiro ao rumo e mantinha o pin a rodar
+// sem ninguém se ter virado ("o pin está sempre a mudar de sítio para onde
+// está virado"). Duas peças resolvem isto: uma média corrida (`EMA`) que
+// absorve o tremer amostra a amostra, e uma zona morta que só deixa um rumo
+// novo passar quando essa média se afasta mesmo do último rumo aceite — o
+// vendedor a virar-se de verdade, não o sensor a tremer.
+const COMPASS_EMA_ALPHA = 0.12;
+const COMPASS_DEADZONE_DEG = 7;
 
 function bearingGapDeg(a, b) {
   const diff = Math.abs(a - b) % 360;
@@ -46,6 +56,10 @@ export default function useDeviceHeading() {
   // `acceptCompassHeading`.
   const lastCompassHeadingRef = useRef(null);
   const pendingSpikeRef = useRef(null);
+  // Média corrida das leituras (filtra o tremer) e último rumo que passou a
+  // zona morta e chegou a ser aplicado — ver `acceptCompassHeading`.
+  const compassEmaRef = useRef(null);
+  const acceptedCompassHeadingRef = useRef(null);
 
   // Uma leitura de rumo: os dois refs ficam sempre em dia; o estado só assina
   // a primeira leitura.
@@ -77,7 +91,27 @@ export default function useDeviceHeading() {
       pendingSpikeRef.current = null;
     }
     lastCompassHeadingRef.current = raw;
-    pushHeading(raw);
+
+    // Média corrida pelo caminho mais curto, para o ruído amostra a amostra
+    // não chegar inteiro ao rumo aplicado.
+    if (compassEmaRef.current === null) {
+      compassEmaRef.current = raw;
+    } else {
+      let diff = raw - compassEmaRef.current;
+      if (diff > 180) diff -= 360;
+      if (diff < -180) diff += 360;
+      compassEmaRef.current = (compassEmaRef.current + diff * COMPASS_EMA_ALPHA + 360) % 360;
+    }
+
+    // Zona morta: só se aplica o rumo suavizado quando ele se afasta mesmo do
+    // último aplicado — parado, isso nunca acontece e o pin fica quieto.
+    if (
+      acceptedCompassHeadingRef.current === null
+      || bearingGapDeg(compassEmaRef.current, acceptedCompassHeadingRef.current) > COMPASS_DEADZONE_DEG
+    ) {
+      acceptedCompassHeadingRef.current = compassEmaRef.current;
+      pushHeading(compassEmaRef.current);
+    }
   };
 
   // Ativa a bússola. No iOS 13+ `requestPermission` TEM de ser chamado a
@@ -163,6 +197,8 @@ export default function useDeviceHeading() {
       // não era ruído nenhum e ficava presa à espera de confirmação.
       lastCompassHeadingRef.current = null;
       pendingSpikeRef.current = null;
+      compassEmaRef.current = null;
+      acceptedCompassHeadingRef.current = null;
       pushHeading(gpsHeading);
     } else {
       gpsMovingRef.current = false;
