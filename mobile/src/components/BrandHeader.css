@@ -1,0 +1,111 @@
+/* ═══ Cabeçalho da marca ═══════════════════════════
+   Gradiente do azul da marca (#2AA1B7) para o azul escurecido (--ink-hover),
+   com o selo amarelo (#F9B10B) e o nome ao lado. O texto por cima é sempre
+   branco: sobre a ponta escura do gradiente dá 7,5:1. Fica fixo no topo do
+   ecrã — o que rola é o corpo por baixo. */
+.brand-header {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 3;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 18px 22px;
+  border-radius: 0 0 32px 32px;
+  background: linear-gradient(135deg, var(--brand-blue), var(--ink-hover));
+  color: #fff;
+  font-family: var(--font);
+}
+
+/* No mapa a faixa é direita e mais baixa: o mapa começa logo por baixo. */
+.brand-header.is-compact {
+  padding-bottom: 18px;
+  border-radius: 0;
+}
+
+.brand-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.brand-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.brand-header-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--brand-yellow);
+  color: #fff;
+}
+
+.brand-header-mark svg {
+  width: 14px;
+  height: 14px;
+}
+
+.brand-header.is-compact .brand-header-mark {
+  width: 32px;
+  height: 32px;
+}
+
+.brand-header.is-compact .brand-header-mark svg {
+  width: 16px;
+  height: 16px;
+}
+
+.brand-header-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-header.is-compact .brand-header-name {
+  font-size: 15px;
+}
+
+.brand-header-body {
+  margin-top: 16px;
+}
+
+/* ── Peças partilhadas dentro do cabeçalho ── */
+.brand-header-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.brand-header-subtitle {
+  margin-top: 4px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Pastilha translúcida (estado da partilha, preço do Premium). */
+.brand-header-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}

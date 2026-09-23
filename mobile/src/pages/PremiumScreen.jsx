@@ -3,6 +3,7 @@ import {
   FiStar, FiRadio, FiImage, FiCheck, FiAlertTriangle, FiRefreshCw, FiArrowRight,
 } from 'react-icons/fi';
 import { BASE_URL } from '../config.js';
+import BrandHeader from '../components/BrandHeader.jsx';
 import '../styles/PremiumScreen.css';
 
 // (em português) Preço do Premium, a única compra da app: um pagamento único
@@ -126,20 +127,22 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
 
   return (
     <div className="premium-screen">
-      <header className="premium-header">
-        <span className="premium-badge">
-          <FiStar size={13} /> Premium
-        </span>
-        <h1 className="premium-title">Sê o vendedor que se vê primeiro</h1>
-        <p className="premium-lead">
-          No plano gratuito já estás no mapa. O Premium faz com que te
-          encontrem de longe — e que vejam o que estás a vender.
-        </p>
-        <span className="premium-hero-price">
-          <strong>{PRICE_LABEL}</strong>
-          <span>/ 30 dias</span>
-        </span>
-      </header>
+      <BrandHeader>
+        <div className="premium-header">
+          <span className="premium-badge">
+            <FiStar size={12} fill="currentColor" /> Premium
+          </span>
+          <h1 className="premium-title">Sê o vendedor que se vê primeiro</h1>
+          <p className="premium-lead">
+            No plano gratuito já estás no mapa. O Premium faz com que te
+            encontrem de longe — e que vejam o que estás a vender.
+          </p>
+          <span className="premium-hero-price">
+            <strong>{PRICE_LABEL}</strong>
+            <span>/ 30 dias</span>
+          </span>
+        </div>
+      </BrandHeader>
 
       <div className="premium-body">
         {error && (
@@ -150,7 +153,7 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
         )}
 
         <div className={`premium-status${isPremium ? ' is-active' : ''}`}>
-          <span className="premium-status-icon"><FiStar size={18} /></span>
+          <span className="premium-status-icon"><FiStar size={17} /></span>
           <div className="premium-status-text">
             <span className="premium-status-title">
               {isPremium ? 'Premium ativo' : 'Ainda sem Premium'}
@@ -168,7 +171,7 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
             disabled={refreshing}
             aria-label="Atualizar estado do Premium"
           >
-            <FiRefreshCw size={16} className={refreshing ? 'is-spinning' : undefined} />
+            <FiRefreshCw size={15} className={refreshing ? 'is-spinning' : undefined} />
           </button>
         </div>
 
@@ -178,15 +181,15 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
             {BENEFITS.map(({ id, icon: Icon, title, description, free, premium }) => (
               <article className="premium-benefit" key={id}>
                 <div className="premium-benefit-head">
-                  <span className="premium-benefit-icon"><Icon size={18} /></span>
+                  <span className="premium-benefit-icon"><Icon size={17} /></span>
                   <h3 className="premium-benefit-title">{title}</h3>
                 </div>
                 <p className="premium-benefit-desc">{description}</p>
                 <div className="premium-flow">
                   <span className="premium-flow-free">{free}</span>
-                  <FiArrowRight className="premium-flow-arrow" size={15} aria-hidden="true" />
+                  <FiArrowRight className="premium-flow-arrow" size={14} aria-hidden="true" />
                   <span className="premium-flow-premium">
-                    <FiCheck size={13} aria-hidden="true" />
+                    <FiCheck size={11} strokeWidth={2.5} aria-hidden="true" />
                     {premium}
                   </span>
                 </div>

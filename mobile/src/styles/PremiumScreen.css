@@ -1,42 +1,31 @@
 /* ═══ Premium ═══════════════════════════════════
    O separador vende uma decisão, por isso segue a mesma estrutura da Conta —
-   cabeçalho escuro com a identidade do ecrã, corpo na tela clara com cartões.
-   Segue a linguagem do site ("Vidro & Maré"): painéis brancos sem contorno,
-   com sombra suave em vez de aresta de 1px. A cor de acento dos cartões é o
-   VERDE (--green), a mesma matiz dos pins de vendedor; o amarelo (--sun)
-   fica reservado à estrela do badge, que é a identidade do pin Premium no
-   mapa. */
+   cabeçalho da marca em gradiente com a identidade do ecrã, corpo na tela
+   clara com cartões brancos de cantos largos (32px). O verde (--green) marca
+   o que o Premium dá; o amarelo (--sun) fica reservado ao badge, que é a
+   identidade do pin Premium no mapa. */
 .premium-screen {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
   background: var(--sand);
 }
 
-/* Cabeçalho em painel branco sobre a tela clara (estilo site), em vez da
-   faixa azul-escura. O badge dourado mantém-se — é a identidade Premium. */
+/* Conteúdo do cabeçalho da marca (components/BrandHeader): badge dourado,
+   título e texto a branco sobre o gradiente azul. */
 .premium-header {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
-  flex-shrink: 0;
-  margin: 16px 16px 0;
-  padding: 22px;
-  border-radius: var(--r-card-lg);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-card);
-  position: relative;
-  overflow: hidden;
 }
 
 .premium-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  margin-bottom: 14px;
   padding: 6px 12px;
   border-radius: var(--r-pill);
   background: var(--sun);
@@ -44,62 +33,58 @@
   font-size: var(--fs-label);
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  position: relative;
-  z-index: 1;
+  letter-spacing: 0.04em;
 }
 
 .premium-title {
-  font-size: var(--fs-title);
+  margin-bottom: 10px;
+  font-size: 22px;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.02em;
   line-height: 1.2;
-  color: var(--text-primary);
-  position: relative;
-  z-index: 1;
+  color: #fff;
 }
 
 .premium-lead {
-  font-size: var(--fs-sm);
+  font-size: 14.5px;
   font-weight: 500;
-  line-height: 1.6;
-  color: var(--text-secondary);
-  text-align: justify;
-  position: relative;
-  z-index: 1;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 /* Preço logo no cabeçalho: quem abre o separador vê o número antes de rolar
-   até ao cartão de preço. Chip neutro frio com a tinta azul-profunda. */
+   até ao cartão de preço. Pastilha translúcida sobre o gradiente. */
 .premium-hero-price {
   display: inline-flex;
   align-items: baseline;
   gap: 6px;
-  margin-top: 2px;
-  padding: 8px 14px;
+  margin-top: 16px;
+  padding: 9px 16px;
   border-radius: var(--r-pill);
-  background: var(--ocean-tint);
-  position: relative;
-  z-index: 1;
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .premium-hero-price strong {
   font-size: 17px;
   font-weight: 800;
-  color: var(--ink);
+  color: #fff;
 }
 
 .premium-hero-price span {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ocean-text);
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
 }
 
+/* O cabeçalho fica fixo; só o corpo rola. */
 .premium-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  padding: 18px 16px 26px;
+  gap: 16px;
+  padding: 20px 16px 26px;
 }
 
 .premium-group {
@@ -107,29 +92,22 @@
   flex-direction: column;
 }
 
-/* ── Estado ─────────────────────────────────── */
+/* ── Estado ───────────────────────────────────
+   Cartão tingido: verde com o Premium ativo, âmbar sem ele — o mesmo par de
+   cores do cartão do Premium na Conta. */
 .premium-status {
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 16px 18px;
   border-radius: var(--r-card-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-card);
-  position: relative;
-  overflow: hidden;
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-line);
 }
 
-/* Barra de acento à esquerda em vez de um cartão inteiro colorido: mais
-   limpo e deixa o texto sobre branco. */
-.premium-status::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: var(--green);
+.premium-status.is-active {
+  background: var(--success-bg);
+  border-color: var(--success-line);
 }
 
 .premium-status-icon {
@@ -140,8 +118,13 @@
   height: 38px;
   flex-shrink: 0;
   border-radius: var(--r-icon);
-  background: var(--green-tint);
-  color: var(--green-deep);
+  background: rgba(180, 83, 9, 0.15);
+  color: var(--warn-ink);
+}
+
+.premium-status.is-active .premium-status-icon {
+  background: rgba(21, 128, 61, 0.15);
+  color: var(--green);
 }
 
 .premium-status-text {
@@ -149,35 +132,55 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 1px;
 }
 
 .premium-status-title {
   font-size: var(--fs-body);
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--warn-ink);
+}
+
+.premium-status.is-active .premium-status-title {
+  color: var(--green);
 }
 
 .premium-status-desc {
   font-size: var(--fs-caption);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.5;
-  color: var(--text-muted);
-  text-align: justify;
+  color: var(--warn-ink);
 }
 
+.premium-status.is-active .premium-status-desc {
+  color: #3f7a54;
+}
+
+/* Círculo branco de 34px; o alvo de toque chega aos 44px. */
 .premium-status-refresh {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
   border: none;
-  border-radius: var(--r-pill);
-  background: transparent;
-  color: var(--text-muted);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--warn-ink);
   cursor: pointer;
+}
+
+.premium-status-refresh::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: inherit;
+}
+
+.premium-status.is-active .premium-status-refresh {
+  color: var(--green);
 }
 
 .premium-status-refresh:disabled {
@@ -196,7 +199,7 @@
 .premium-benefits {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .premium-benefit {
@@ -205,78 +208,76 @@
   gap: 12px;
   padding: 18px;
   background: var(--surface);
-  border-radius: var(--r-card-lg);
-  box-shadow: var(--shadow-card);
+  border: 1px solid var(--line);
+  border-radius: 32px;
+  box-shadow: 0 4px 16px rgba(11, 49, 61, 0.07);
 }
 
 .premium-benefit-head {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 12px;
 }
 
 .premium-benefit-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
-  border-radius: var(--r-input);
-  background: var(--green-tint);
-  color: var(--green-deep);
+  border-radius: var(--r-icon);
+  background: var(--ocean-tint);
+  color: var(--ocean-ink);
 }
 
 .premium-benefit-title {
-  font-size: 15px;
+  font-size: 15.5px;
   font-weight: 800;
   color: var(--text-primary);
 }
 
 .premium-benefit-desc {
-  font-size: var(--fs-caption);
+  font-size: 13.5px;
   font-weight: 500;
   line-height: 1.55;
-  color: var(--text-muted);
-  text-align: justify;
+  color: var(--text-secondary);
 }
 
 /* A comparação torna a vantagem concreta: o valor gratuito riscado, uma seta
-   e o valor Premium a verde. Mais leve do que dois cartões lado a lado. */
+   e o valor Premium numa pastilha verde. */
 .premium-flow {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 11px 14px;
-  border-radius: var(--r-input);
-  background: var(--green-tint);
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--sand);
 }
 
-/* O risco é vermelho de propósito: é o que o vendedor perde por não ter
-   Premium, e a cor diz isso antes de se ler o texto. */
 .premium-flow-free {
-  font-size: var(--fs-sm);
+  font-size: 12.5px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--icon-faint);
   text-decoration: line-through;
-  text-decoration-color: var(--danger);
-  text-decoration-thickness: 2px;
 }
 
 .premium-flow-arrow {
   flex-shrink: 0;
-  color: var(--green);
+  color: var(--icon-faint);
 }
 
 .premium-flow-premium {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-left: auto;
-  font-size: var(--fs-sm);
-  font-weight: 800;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: rgba(21, 128, 61, 0.12);
+  font-size: 12.5px;
+  font-weight: 700;
   color: var(--green);
-  text-align: right;
 }
 
 .premium-flow-premium svg {
@@ -293,7 +294,7 @@
   align-items: center;
   gap: 14px;
   padding: 26px 20px;
-  border-radius: 28px;
+  border-radius: 32px;
   background: var(--ink);
   box-shadow: var(--shadow-share);
   text-align: center;
@@ -435,7 +436,8 @@
 
 .premium-faq-item {
   background: var(--surface);
-  border-radius: var(--r-input);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
   box-shadow: var(--shadow-card);
   overflow: hidden;
 }
@@ -485,12 +487,12 @@
 .premium-qr-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 18px;
-  border-radius: var(--r-card-lg);
+  gap: 14px;
+  padding: 20px;
+  border-radius: 32px;
   background: var(--surface);
   border: 1px solid var(--line);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 4px 16px rgba(11, 49, 61, 0.07);
 }
 
 .premium-qr-head {
@@ -510,13 +512,13 @@
 .premium-qr-rating {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
+  gap: 5px;
+  padding: 6px 11px;
   border-radius: var(--r-pill);
-  background: var(--sun-soft);
+  background: rgba(249, 177, 11, 0.15);
   color: var(--sun-text);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .premium-qr-rating svg {
@@ -549,23 +551,26 @@
 
 .premium-qr-desc {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.55;
   color: var(--text-secondary);
 }
 
 .premium-qr-image {
+  align-self: center;
   display: flex;
   justify-content: center;
   padding: 16px;
   background: #fff;
-  border-radius: var(--r-icon);
-  border: 1px solid var(--line);
+  border-radius: var(--r-card-lg);
+  border: 1.5px solid var(--line);
 }
 
 .premium-qr-image img {
-  width: 200px;
-  height: 200px;
+  display: block;
+  width: 180px;
+  height: 180px;
   max-width: 100%;
   image-rendering: pixelated;
 }
@@ -574,13 +579,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px 16px;
-  border: 1px solid var(--line-field);
+  gap: 9px;
+  min-height: 48px;
+  padding: 14px;
+  border: 1.5px solid var(--line-field);
   border-radius: var(--r-pill);
-  background: var(--field-bg);
-  color: var(--text-primary);
-  font-size: 14px;
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14.5px;
   font-weight: 700;
   cursor: pointer;
 }

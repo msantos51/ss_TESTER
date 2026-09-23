@@ -5,6 +5,7 @@ import {
 } from 'react-icons/fi';
 import { BASE_URL, mediaUrl } from '../config.js';
 import ImageCropper from '../components/ImageCropper';
+import BrandHeader from '../components/BrandHeader.jsx';
 import '../styles/ProductsScreen.css';
 
 const MAX_PRODUCTS = 10;
@@ -266,30 +267,42 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
   return (
     <div className={asTab ? 'products-screen' : 'products-overlay'}>
       <div className={asTab ? 'products-panel' : 'products-sheet'}>
-        <div className="screen-head">
-          <div className="screen-head-text">
-            <h2 className="screen-title">Produtos</h2>
-            <p className="screen-subtitle">
-              {products.length} de {MAX_PRODUCTS} · visíveis no teu perfil
-            </p>
-          </div>
-          {asTab ? (
-            <button
-              type="button"
-              className={`product-add-fab${showForm ? ' is-open' : ''}`}
-              onClick={toggleForm}
-              disabled={atLimit && !showForm}
-              aria-label={showForm ? 'Fechar formulário' : 'Adicionar produto'}
-              aria-expanded={showForm}
-            >
-              {showForm ? <FiX size={20} /> : <FiPlus size={20} />}
-            </button>
-          ) : (
+        {/* Como separador, o título vive no cabeçalho da marca; como folha
+            mantém o cabeçalho branco com o botão de fechar. */}
+        {asTab ? (
+          <BrandHeader>
+            <div className="screen-head-row">
+              <div className="screen-head-text">
+                <h2 className="brand-header-title">Produtos</h2>
+                <p className="brand-header-subtitle">
+                  {products.length} de {MAX_PRODUCTS} · visíveis no teu perfil
+                </p>
+              </div>
+              <button
+                type="button"
+                className={`product-add-fab${showForm ? ' is-open' : ''}`}
+                onClick={toggleForm}
+                disabled={atLimit && !showForm}
+                aria-label={showForm ? 'Fechar formulário' : 'Adicionar produto'}
+                aria-expanded={showForm}
+              >
+                {showForm ? <FiX size={20} strokeWidth={2.4} /> : <FiPlus size={20} strokeWidth={2.4} />}
+              </button>
+            </div>
+          </BrandHeader>
+        ) : (
+          <div className="screen-head">
+            <div className="screen-head-text">
+              <h2 className="screen-title">Produtos</h2>
+              <p className="screen-subtitle">
+                {products.length} de {MAX_PRODUCTS} · visíveis no teu perfil
+              </p>
+            </div>
             <button type="button" className="ss-sheet-close" onClick={onClose} aria-label="Fechar">
               <FiX size={18} />
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="products-body">
           {error && (

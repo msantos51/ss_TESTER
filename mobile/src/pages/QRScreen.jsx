@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FiShare2, FiStar, FiLock } from 'react-icons/fi';
 import { BASE_URL, WEB_URL } from '../config.js';
+import BrandHeader from '../components/BrandHeader.jsx';
 import '../styles/PremiumScreen.css';
 
 // (em português) Separador dedicado ao QR code pessoal do vendedor.
@@ -47,22 +48,24 @@ export default function QRScreen({ auth, onGoPremium }) {
 
   return (
     <div className="premium-screen">
-      <header className="premium-header">
-        {isPremium && (
-          <span className="premium-badge">
-            <FiStar size={13} /> Premium
-          </span>
-        )}
-        <h1 className="premium-title">O teu QR code pessoal</h1>
-        <p className="premium-lead">
-          {isPremium
-            ? `Imprime-o ou mostra-o na app. Cada leitura gera automaticamente um
-               código de uso único — uma avaliação por scan, sem repetições.`
-            : `Imprime-o ou mostra-o na app: quem o lê deixa-te uma classificação
-               de 1 a 5 estrelas. Com Premium passas a ver a tua pontuação — aqui
-               e no cartão do mapa.`}
-        </p>
-      </header>
+      <BrandHeader>
+        <div className="premium-header">
+          {isPremium && (
+            <span className="premium-badge">
+              <FiStar size={12} fill="currentColor" /> Premium
+            </span>
+          )}
+          <h1 className="premium-title">O teu QR code pessoal</h1>
+          <p className="premium-lead">
+            {isPremium
+              ? `Imprime-o ou mostra-o na app. Cada leitura gera automaticamente um
+                 código de uso único — uma avaliação por scan, sem repetições.`
+              : `Imprime-o ou mostra-o na app: quem o lê deixa-te uma classificação
+                 de 1 a 5 estrelas. Com Premium passas a ver a tua pontuação — aqui
+                 e no cartão do mapa.`}
+          </p>
+        </div>
+      </BrandHeader>
 
       <div className="premium-body">
         <section className="premium-qr-card">
@@ -76,7 +79,7 @@ export default function QRScreen({ auth, onGoPremium }) {
               </span>
             ) : summary?.average != null ? (
               <span className="premium-qr-rating">
-                <FiStar size={14} />
+                <FiStar size={12} fill="currentColor" />
                 <strong>{summary.average.toFixed(1)}</strong>
                 <span className="premium-qr-rating-count">({summary.count})</span>
               </span>
@@ -98,7 +101,7 @@ export default function QRScreen({ auth, onGoPremium }) {
             <img src={qrSrc} alt="QR code para avaliação do vendedor" />
           </div>
           <button type="button" className="premium-qr-share" onClick={shareQr}>
-            <FiShare2 size={16} /> Partilhar link de avaliação
+            <FiShare2 size={17} /> Partilhar link de avaliação
           </button>
           {!isPremium && (
             <button

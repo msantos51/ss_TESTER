@@ -1,44 +1,36 @@
-/* Barra de separadores: o material passou a vidro (mesma barra do site),
-   mas a estrutura é a de sempre — a mesma pílula no ativo, o mesmo
-   comportamento. Com a entrada do Premium são cinco separadores, por isso a
-   pílula deixou de ter largura fixa (ver .ss-tab-pill). */
+/* Barra de separadores fixa em baixo, em branco sólido com uma aresta fina
+   por cima — a mesma em todos os ecrãs, por baixo do cabeçalho da marca.
+   O separador ativo leva a pílula azul-clara; os restantes ficam em cinza
+   azulado. São cinco separadores, por isso a pílula encolhe num ecrã
+   estreito em vez de empurrar a barra (ver .ss-tab-pill). */
 .ss-tabbar {
   flex-shrink: 0;
   display: flex;
-  background: var(--glass-thick);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  border-top: 0.5px solid var(--line-tab);
-  padding: 10px 8px calc(6px + env(safe-area-inset-bottom, 0px));
-}
-
-/* Sem backdrop-filter (WebView Android antigo) a barra fica opaca em vez
-   de deixar ler o conteúdo através dela. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .ss-tabbar { background: var(--glass-solid); }
+  background: var(--surface);
+  border-top: 1px solid #E9EEEF;
+  padding: 10px 6px calc(8px + env(safe-area-inset-bottom, 0px));
 }
 
 .ss-tab {
   flex: 1;
-  /* Sem isto o rótulo mais comprido ("Trajetos") esticava o seu separador e
-     comia o espaço dos vizinhos num ecrã de 320px. */
+  /* Sem isto o rótulo mais comprido esticava o seu separador e comia o
+     espaço dos vizinhos num ecrã de 320px. */
   min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 5px;
-  /* 6px + 30px (pílula) + 5px + 13px (rótulo) + 6px = 60px de alvo. */
-  padding: 6px 0;
+  padding: 4px 0;
   background: transparent;
   border: none;
   font-family: inherit;
-  color: var(--tab-inactive);
+  color: #9FB4BB;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* O azul escurecido (--ink) e não o #2AA1B7 da marca: o rótulo tem 11px e
-   o azul claro não aguanta texto pequeno (3,46:1). */
+/* O azul escurecido (--ink) e não o #2AA1B7 da marca: o rótulo é pequeno e
+   o azul claro não aguenta texto pequeno (3,46:1). */
 .ss-tab.is-active {
   color: var(--ink);
 }
@@ -47,22 +39,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 52px é a largura desenhada; com cinco separadores num ecrã estreito a
-     pílula encolhe até caber em vez de empurrar a barra. */
-  width: min(52px, 100%);
-  height: 30px;
+  width: min(44px, 100%);
+  height: 26px;
   border-radius: var(--r-pill);
   background: transparent;
-  transition: background var(--transition);
+  transition: background var(--transition), transform var(--transition);
 }
 
 .ss-tab.is-active .ss-tab-pill {
-  background: var(--ocean-tint);
+  background: #EAF6F8;
 }
 
 .ss-tab-label {
   max-width: 100%;
-  font-size: var(--fs-label);
+  font-size: 10.5px;
   font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
