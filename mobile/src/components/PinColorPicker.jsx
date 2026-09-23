@@ -11,11 +11,11 @@ import './PinColorPicker.css';
 // selecionada) como uma amostra extra.
 const PRESET_COLORS = [
   { name: 'Verde floresta', value: '#1D5C3A' },
-  { name: 'Amarelo', value: '#FFA723' },
-  { name: 'Azul', value: '#2F8EE0' },
-  { name: 'Azul-profundo', value: '#1863A3' },
+  { name: 'Amarelo', value: '#F9B10B' },
+  { name: 'Azul', value: '#2AA1B7' },
+  { name: 'Azul-profundo', value: '#1D6F7E' },
   { name: 'Coral', value: '#BB3E03' },
-  { name: 'Noite', value: '#082137' },
+  { name: 'Noite', value: '#0A252B' },
   // Tons vivos
   { name: 'Vermelho vivo', value: '#FF3B30' },
   { name: 'Laranja vivo', value: '#FF7A00' },
