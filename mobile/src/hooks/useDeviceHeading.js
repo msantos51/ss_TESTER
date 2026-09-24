@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { Capacitor, registerPlugin } from '@capacitor/core';
+
+const Compass = registerPlugin('Compass');
 
 // O rumo alimenta duas coisas: a rotação do mapa e o ângulo da seta do pin.
 // Ambas correm a cada fotograma, no mesmo sítio (o controlador de rotação do
@@ -205,9 +208,47 @@ export default function useDeviceHeading() {
       if (raw !== null) acceptCompassHeading(raw);
     };
 
-    window.addEventListener('deviceorientationabsolute', onAbsolute, true);
-    window.addEventListener('deviceorientation', onOrientation, true);
+    const listenWeb = () => {
+      window.addEventListener('deviceorientationabsolute', onAbsolute, true);
+      window.addEventListener('deviceorientation', onOrientation, true);
+    };
+
+    // No Android o rumo vem do sensor nativo: os eventos da WebView punham o
+    // mapa da app a rodar ao contrário do do site. Numa versão da app sem o
+    // plugin, volta-se aos eventos da WebView.
+    let cancelled = false;
+    let nativeListener = null;
+    const startNative = async () => {
+      try {
+        nativeListener = await Compass.addListener('heading', ({ heading }) => {
+          if (gpsMovingRef.current || heading == null || isNaN(heading)) return;
+          lastHeadingTs.current = Date.now();
+          acceptCompassHeading(heading);
+        });
+        if (cancelled) {
+          nativeListener.remove();
+          return;
+        }
+        await Compass.start();
+        if (cancelled) Compass.stop().catch(() => {});
+      } catch {
+        if (nativeListener) nativeListener.remove();
+        nativeListener = null;
+        if (!cancelled) listenWeb();
+      }
+    };
+    if (Capacitor.getPlatform() === 'android') {
+      startNative();
+    } else {
+      listenWeb();
+    }
+
     return () => {
+      cancelled = true;
+      if (nativeListener) {
+        nativeListener.remove();
+        Compass.stop().catch(() => {});
+      }
       window.removeEventListener('deviceorientationabsolute', onAbsolute, true);
       window.removeEventListener('deviceorientation', onOrientation, true);
     };

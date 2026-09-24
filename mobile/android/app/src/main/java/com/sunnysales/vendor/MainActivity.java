@@ -7,6 +7,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         registerPlugin(LocationPlugin.class);
+        registerPlugin(CompassPlugin.class);
         super.onCreate(savedInstanceState);
     }
 }
