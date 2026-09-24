@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  FiStar, FiRadio, FiImage, FiCheck, FiAlertTriangle, FiRefreshCw, FiArrowRight,
+  FiStar, FiRadio, FiImage, FiAward, FiCheck, FiMinus, FiAlertTriangle,
+  FiRefreshCw, FiCreditCard, FiRepeat, FiShield,
 } from 'react-icons/fi';
 import { BASE_URL } from '../config.js';
 import BrandHeader from '../components/BrandHeader.jsx';
@@ -8,62 +9,99 @@ import '../styles/PremiumScreen.css';
 
 // (em português) Preço do Premium, a única compra da app: um pagamento único
 // de 30 dias, sem renovação automática, para não haver cobranças-surpresa.
-// O valor tem de acompanhar PREMIUM_PLAN no backend.
-const PRICE_LABEL = '19,99 €';
-const PERIOD_LABEL = 'por mês';
+// Os valores têm de acompanhar PREMIUM_PLAN no backend.
+const PRICE_EUR = 19.99;
+const PREMIUM_DAYS = 30;
+const formatEur = (value) => value.toLocaleString('pt-PT', {
+  style: 'currency', currency: 'EUR', minimumFractionDigits: 2,
+});
+const PRICE_LABEL = formatEur(PRICE_EUR);
+// O preço por dia é o argumento que faz 19,99 € parecer pouco para quem vende
+// o dia inteiro na praia.
+const DAILY_LABEL = formatEur(PRICE_EUR / PREMIUM_DAYS);
 
-// As três vantagens, cada uma com o que o vendedor tem sem Premium e o que
-// passa a ter com ele. A comparação é o argumento: sem ela isto seria uma
-// lista de promessas soltas.
-const BENEFITS = [
-  {
-    id: 'destaque',
-    icon: FiStar,
-    title: 'Destaque no mapa',
-    description: 'O teu pin ganha uma estrela que te identifica como vendedor Premium — no meio de vários pins, é o que o banhista repara primeiro.',
-    free: 'Pin normal',
-    premium: 'Pin com estrela',
-  },
-  {
-    id: 'alcance',
-    icon: FiRadio,
-    title: 'Raio de alcance',
-    description: 'Sem Premium só apareces a quem já está mesmo ao teu lado. Com Premium és encontrado de uma ponta à outra da praia.',
-    free: '300 m',
-    premium: '1 km',
-  },
-  {
-    id: 'fotos',
-    icon: FiImage,
-    title: 'Fotos dos produtos',
-    description: 'No plano gratuito os produtos ficam-se pelo nome e pelo preço. Com Premium cada produto leva a sua fotografia.',
-    free: 'Nome e preço',
-    premium: 'Nome, preço e foto',
-  },
-  {
-    id: 'avaliacoes',
-    icon: FiStar,
-    title: 'Pontuação por QR code',
-    description: 'O QR code pessoal é teu desde o primeiro dia e quem o lê deixa-te uma classificação de 1 a 5 estrelas. Sem Premium as avaliações ficam guardadas mas escondidas; com Premium a tua média passa a aparecer no cartão do mapa.',
-    free: 'Sem pontuação',
-    premium: 'Média no mapa',
-  },
+// Mesma cor por omissão do pin do mapa (MapTab), para a ilustração mostrar o
+// pin que o vendedor já conhece.
+const DEFAULT_PIN = '#1D5C3A';
+
+// O vendedor decide numa olhadela, por isso cada vantagem é uma linha da
+// tabela com o que tem hoje e o que passa a ter — sem parágrafos. `free: null`
+// quer dizer que o plano gratuito não a tem.
+const COMPARISON = [
+  { id: 'destaque', icon: FiStar, label: 'Estrela no teu pin', free: null, premium: true },
+  { id: 'alcance', icon: FiRadio, label: 'Alcance no mapa', free: '300 m', premium: '1 km' },
+  { id: 'fotos', icon: FiImage, label: 'Fotos dos produtos', free: null, premium: true },
+  { id: 'avaliacoes', icon: FiAward, label: 'Média de estrelas', free: null, premium: true },
+];
+
+const TRUST = [
+  { id: 'unico', icon: FiCreditCard, label: 'Pagamento único' },
+  { id: 'renovacao', icon: FiRepeat, label: 'Sem renovação automática' },
+  { id: 'stripe', icon: FiShield, label: 'Seguro via Stripe' },
 ];
 
 const FAQS = [
   {
     q: 'Tenho de pagar para aparecer no mapa?',
-    a: 'Não. Estar no mapa é gratuito e sempre foi o suficiente para vender. O Premium é opcional: acrescenta o destaque, o alcance e as fotos.',
+    a: 'Não. Aparecer no mapa é grátis. O Premium junta o destaque, o alcance, as fotos e a tua média de estrelas.',
   },
   {
-    q: 'É cobrado automaticamente todos os meses?',
-    a: 'Não. É um pagamento único que te dá 30 dias de Premium. Só voltas a pagar se quiseres, e podes comprar outro período antes de o atual acabar — os dias somam-se.',
+    q: 'É cobrado todos os meses?',
+    a: 'Não. Pagas uma vez e ficas com 30 dias. Se comprares antes de acabar, os dias somam-se.',
   },
   {
-    q: 'O que acontece às fotos se o Premium acabar?',
-    a: 'As fotos já publicadas continuam nos teus produtos. Enquanto não tiveres Premium é que não podes adicionar nem trocar fotografias.',
+    q: 'E quando o Premium acabar?',
+    a: 'Voltas ao plano grátis. As fotos já publicadas ficam; só não podes adicionar novas.',
   },
 ];
+
+// Praia vista de cima: o pin do vendedor, com a estrela e o raio de 1 km,
+// no meio dos pins dos outros vendedores. Mostra a vantagem antes de se ler.
+function BeachPreview({ pinColor }) {
+  return (
+    <svg
+      className="premium-map"
+      viewBox="0 0 320 128"
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <rect className="premium-map-sand" width="320" height="128" />
+      <path
+        className="premium-map-sea"
+        d="M0 0H320V34C292 44 262 26 230 36S164 48 128 36 60 26 32 38 8 42 0 40Z"
+      />
+      <path
+        className="premium-map-foam"
+        d="M0 46C20 48 40 34 70 42S126 52 160 42 228 34 262 44 304 46 320 40"
+      />
+
+      {[[34, 86], [92, 104], [120, 64], [252, 100], [292, 72]].map(([cx, cy]) => (
+        <circle key={`${cx}-${cy}`} className="premium-map-pin" cx={cx} cy={cy} r="6" />
+      ))}
+
+      <circle className="premium-map-reach" cx="186" cy="74" r="40" />
+      <circle className="premium-map-pulse" cx="186" cy="74" r="20" />
+      <circle
+        className="premium-map-me"
+        cx="186"
+        cy="74"
+        r="12"
+        style={{ fill: pinColor }}
+      />
+      <circle className="premium-map-star-bg" cx="196" cy="63" r="8" />
+      <polygon
+        className="premium-map-star"
+        points="196 57.5 197.6 61.2 201.6 61.3 198.5 63.8 199.6 67.7 196 65.5 192.4 67.7 193.5 63.8 190.4 61.3 194.4 61.2"
+      />
+
+      <g className="premium-map-chip" transform="translate(216 32)">
+        <rect width="38" height="20" rx="10" />
+        <text x="19" y="14" textAnchor="middle">1 km</text>
+      </g>
+    </svg>
+  );
+}
 
 export default function PremiumScreen({ auth, onUserUpdate }) {
   const { token, user, vendorId } = auth;
@@ -132,7 +170,7 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
         <p className="brand-header-subtitle">
           {isPremium
             ? `Ativo até ${validUntil || '—'}`
-            : `Mais alcance, destaque e fotos · ${PRICE_LABEL}`}
+            : 'Destaca-te na praia e vende mais'}
         </p>
       </BrandHeader>
 
@@ -144,80 +182,110 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
           </div>
         )}
 
-        <div className={`premium-status${isPremium ? ' is-active' : ''}`}>
-          <span className="premium-status-icon"><FiStar size={17} /></span>
-          <div className="premium-status-text">
-            <span className="premium-status-title">
-              {isPremium ? 'Premium ativo' : 'Ainda sem Premium'}
-            </span>
-            <span className="premium-status-desc">
-              {isPremium
-                ? `Válido até ${validUntil || '—'}`
-                : 'Estás no plano gratuito: 300 m de alcance e produtos sem foto.'}
-            </span>
-          </div>
-          <button
-            type="button"
-            className="premium-status-refresh"
-            onClick={() => refreshProfile()}
-            disabled={refreshing}
-            aria-label="Atualizar estado do Premium"
-          >
-            <FiRefreshCw size={15} className={refreshing ? 'is-spinning' : undefined} />
-          </button>
-        </div>
+        {/* O essencial cabe no primeiro ecrã: o que se ganha (a ilustração),
+            quanto custa e o botão. O resto é para quem ainda hesita. */}
+        <section className={`premium-hero${isPremium ? ' is-active' : ''}`}>
+          <BeachPreview pinColor={user?.pin_color || DEFAULT_PIN} />
 
-        <section className="premium-group">
-          <h2 className="ss-group-label">O que ganhas</h2>
-          <div className="premium-benefits">
-            {BENEFITS.map(({ id, icon: Icon, title, description, free, premium }) => (
-              <article className="premium-benefit" key={id}>
-                <div className="premium-benefit-head">
-                  <span className="premium-benefit-icon"><Icon size={17} /></span>
-                  <h3 className="premium-benefit-title">{title}</h3>
-                </div>
-                <p className="premium-benefit-desc">{description}</p>
-                <div className="premium-flow">
-                  <span className="premium-flow-free">{free}</span>
-                  <FiArrowRight className="premium-flow-arrow" size={14} aria-hidden="true" />
-                  <span className="premium-flow-premium">
-                    <FiCheck size={11} strokeWidth={2.5} aria-hidden="true" />
-                    {premium}
-                  </span>
-                </div>
-              </article>
-            ))}
+          <div className="premium-hero-content">
+            <span className="premium-badge">
+              <FiStar size={12} aria-hidden="true" />
+              {isPremium ? 'Premium ativo' : 'Premium'}
+            </span>
+            <h3 className="premium-hero-title">
+              {isPremium ? 'Estás em destaque na praia' : 'Sê o primeiro pin que o banhista vê'}
+            </h3>
+
+            {isPremium ? (
+              <p className="premium-hero-until">
+                Válido até <strong>{validUntil || '—'}</strong>
+              </p>
+            ) : (
+              <div className="premium-price">
+                <span className="premium-price-amount">{PRICE_LABEL}</span>
+                <span className="premium-price-period">
+                  / {PREMIUM_DAYS} dias
+                  <span className="premium-price-daily">Só {DAILY_LABEL} por dia</span>
+                </span>
+              </div>
+            )}
+
+            <button
+              type="button"
+              className="premium-cta"
+              onClick={handleSubscribe}
+              disabled={loading}
+            >
+              {loading
+                ? 'A processar…'
+                : isPremium
+                  ? `Juntar mais ${PREMIUM_DAYS} dias · ${PRICE_LABEL}`
+                  : 'Ativar Premium'}
+            </button>
+
+            <ul className="premium-trust">
+              {TRUST.map(({ id, icon: Icon, label }) => (
+                <li key={id}>
+                  <Icon size={14} aria-hidden="true" />
+                  <span>{label}</span>
+                </li>
+              ))}
+            </ul>
+
+            <button
+              type="button"
+              className="premium-refresh"
+              onClick={() => refreshProfile()}
+              disabled={refreshing}
+            >
+              <FiRefreshCw size={13} className={refreshing ? 'is-spinning' : undefined} aria-hidden="true" />
+              {isPremium ? 'Atualizar estado' : 'Já pagaste? Atualizar estado'}
+            </button>
           </div>
         </section>
 
-        <section className="premium-price-card">
-          <span className="premium-price-eyebrow">Premium · 30 dias</span>
-          <div className="premium-price">
-            <span className="premium-price-amount">{PRICE_LABEL}</span>
-            <span className="premium-price-period">{PERIOD_LABEL}</span>
-          </div>
-          <ul className="premium-price-list">
-            {BENEFITS.map(({ id, title, premium }) => (
-              <li key={id}>
-                <span className="premium-check"><FiCheck size={12} /></span>
-                <span>{title} · <strong>{premium}</strong></span>
-              </li>
-            ))}
-          </ul>
-          <button
-            type="button"
-            className="premium-cta"
-            onClick={handleSubscribe}
-            disabled={loading}
-          >
-            {loading
-              ? 'A processar…'
-              : isPremium ? 'Renovar mais 30 dias' : 'Ativar Premium'}
-          </button>
-          <p className="premium-price-note">
-            Pagamento único de 30 dias, seguro via Stripe. Sem renovação
-            automática — comprar com o Premium ativo soma os dias ao que já tens.
-          </p>
+        <section className="premium-group">
+          <h2 className="ss-group-label">Grátis vs Premium</h2>
+          <table className="premium-compare">
+            <thead>
+              <tr>
+                <th scope="col"><span className="premium-sr-only">Vantagem</span></th>
+                <th scope="col">Grátis</th>
+                <th scope="col" className="premium-compare-col">
+                  <FiStar size={11} aria-hidden="true" />
+                  Premium
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {COMPARISON.map(({ id, icon: Icon, label, free, premium }) => (
+                <tr key={id}>
+                  <th scope="row">
+                    <span className="premium-compare-feature">
+                      <span className="premium-compare-icon"><Icon size={15} aria-hidden="true" /></span>
+                      {label}
+                    </span>
+                  </th>
+                  <td className="premium-compare-free">
+                    {free || (
+                      <>
+                        <FiMinus size={15} aria-hidden="true" />
+                        <span className="premium-sr-only">Não</span>
+                      </>
+                    )}
+                  </td>
+                  <td className="premium-compare-premium">
+                    {premium === true ? (
+                      <span className="premium-compare-check">
+                        <FiCheck size={13} strokeWidth={3} aria-hidden="true" />
+                        <span className="premium-sr-only">Sim</span>
+                      </span>
+                    ) : premium}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </section>
 
         <section className="premium-group">
