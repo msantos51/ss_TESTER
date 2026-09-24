@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  FiStar, FiRadio, FiImage, FiAward, FiCheck, FiMinus, FiAlertTriangle,
+  FiStar, FiRadio, FiImage, FiAward, FiCheck, FiX, FiAlertTriangle,
   FiRefreshCw, FiCreditCard, FiRepeat, FiShield,
 } from 'react-icons/fi';
 import { BASE_URL } from '../config.js';
@@ -269,7 +269,9 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
                   <td className="premium-compare-free">
                     {free || (
                       <>
-                        <FiMinus size={15} aria-hidden="true" />
+                        <span className="premium-compare-cross">
+                          <FiX size={13} strokeWidth={3} aria-hidden="true" />
+                        </span>
                         <span className="premium-sr-only">Não</span>
                       </>
                     )}
