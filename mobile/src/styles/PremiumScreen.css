@@ -413,8 +413,17 @@
   color: var(--text-muted);
 }
 
-.premium-compare-free svg {
-  color: var(--icon-faint);
+/* O que o plano grátis não tem: uma cruz vermelha, o espelho do visto verde
+   da coluna Premium. */
+.premium-compare-cross {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: #fff;
   vertical-align: middle;
 }
 
