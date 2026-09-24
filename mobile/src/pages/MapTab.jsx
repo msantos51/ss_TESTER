@@ -124,10 +124,9 @@ function getVendorLocationHtml(color, sharing, premium) {
 // (em português) O mapa segue o vendedor. Seguir com `setView` a cada leitura
 // — como se fazia aqui — dava dois problemas de uma vez: o mapa saltava de
 // golpe a cada fix e arrastá-lo com o dedo era inútil, porque a leitura
-// seguinte trazia-o logo de volta. Agora acompanha com uma deslocação suave,
-// só quando o pin se afasta mesmo do centro, e larga o volante assim que o
-// vendedor toca no mapa — o botão de localização devolve-lho.
-const FOLLOW_DEADZONE_PX = 28;
+// seguinte trazia-o logo de volta. Agora o mapa desliza com o pin (ver
+// AnimatedMarker) e larga o volante assim que o vendedor toca no mapa — o
+// botão de localização devolve-lho.
 
 function AutoFollow({ position, following, onUserPan }) {
   const map = useMap();
@@ -153,21 +152,16 @@ function AutoFollow({ position, following, onUserPan }) {
       map.setView(position, zoom, { animate: false });
       return;
     }
+    // O deslizar normal é do AnimatedMarker, que leva o mapa com o pin a cada
+    // fotograma. Aqui só se trata do salto grande — primeiro fix, ou volta de
+    // um longo intervalo com o pin fora do ecrã: animar meio país é pior do
+    // que aparecer já lá.
     const target = map.latLngToContainerPoint(position);
     const center = map.latLngToContainerPoint(map.getCenter());
-    const drift = target.distanceTo(center);
-    // Tremer do GPS: mexer o mapa por dois píxeis só faz o mundo vibrar.
-    if (drift < FOLLOW_DEADZONE_PX) return;
     const size = map.getSize();
-    if (drift > Math.max(size.x, size.y)) {
-      // Fora do ecrã (primeiro fix, ou volta de um longo intervalo): animar
-      // meio país é pior do que aparecer já lá.
+    if (target.distanceTo(center) > Math.max(size.x, size.y)) {
       map.setView(position, zoom, { animate: false });
-      return;
     }
-    // Deslocação linear e da duração do intervalo típico entre leituras: o
-    // mapa desliza com o pin em vez de o perseguir aos solavancos.
-    map.panTo(position, { animate: true, duration: 0.7, easeLinearity: 0.5, noMoveStart: true });
   }, [position, following, map]);
 
   return null;
@@ -795,7 +789,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
               eventHandlers={{ load: () => setTilesLoaded(true) }}
             />
             {position && (
-              <AnimatedMarker position={position} icon={vendorIcon} hasHeading={hasHeading} />
+              <AnimatedMarker position={position} icon={vendorIcon} hasHeading={hasHeading} follow={isAutoFollowing} />
             )}
             <AutoFollow
               position={position}

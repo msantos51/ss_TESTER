@@ -30,10 +30,10 @@ const SPIKE_CONFIRM_DEG = 20;
 // Há duas médias: uma lenta, que come o ruído (mesmo o de telemóveis com
 // magnetómetros mais nervosos), e uma rápida, que só manda numa viragem real.
 const SLOW_ALPHA = 0.04;
-const FAST_ALPHA = 0.25;
+const FAST_ALPHA = 0.15;
 const TURN_DEG = 15;
 const WAKE_DEG = 3;
-const SETTLE_DEG = 2.5;
+const SETTLE_DEG = 3;
 const SETTLE_MS = 400;
 const GPS_MIN_SPEED = 0.8;
 
@@ -113,26 +113,32 @@ export default function useDeviceHeading() {
     } else {
       compassEmaRef.current = emaStep(compassEmaRef.current, raw, SLOW_ALPHA);
       compassFastEmaRef.current = emaStep(compassFastEmaRef.current, raw, FAST_ALPHA);
-      // Viragem real: a média rápida afasta-se da lenta mais do que o ruído
-      // consegue, e a lenta salta para ela em vez de ficar para trás.
-      if (bearingGapDeg(compassFastEmaRef.current, compassEmaRef.current) > TURN_DEG) {
-        compassEmaRef.current = compassFastEmaRef.current;
-      }
     }
-    const smoothed = compassEmaRef.current;
+    const slow = compassEmaRef.current;
+    const fast = compassFastEmaRef.current;
     const now = Date.now();
 
+    // Em repouso o rumo fica quieto; acorda com uma viragem real (a média
+    // rápida foge) ou com uma deriva lenta (a média lenta afasta-se).
     if (!trackingRef.current) {
-      if (headingRef.current !== null && bearingGapDeg(smoothed, headingRef.current) <= WAKE_DEG) return;
+      const published = headingRef.current;
+      if (
+        published !== null
+        && bearingGapDeg(slow, published) <= WAKE_DEG
+        && bearingGapDeg(fast, published) <= TURN_DEG
+      ) return;
       trackingRef.current = true;
-      settleAnchorRef.current = { value: smoothed, ts: now };
+      settleAnchorRef.current = { value: fast, ts: now };
     }
-    pushHeading(smoothed);
+    // Acordado, segue a média rápida sem degraus, para o mapa rodar contínuo
+    // durante a viragem; quando ela estabiliza, volta a repousar ali.
+    pushHeading(fast);
     const anchor = settleAnchorRef.current;
-    if (anchor.value === null || bearingGapDeg(smoothed, anchor.value) > SETTLE_DEG) {
-      settleAnchorRef.current = { value: smoothed, ts: now };
+    if (anchor.value === null || bearingGapDeg(fast, anchor.value) > SETTLE_DEG) {
+      settleAnchorRef.current = { value: fast, ts: now };
     } else if (now - anchor.ts > SETTLE_MS) {
       trackingRef.current = false;
+      compassEmaRef.current = fast;
     }
   };
 
