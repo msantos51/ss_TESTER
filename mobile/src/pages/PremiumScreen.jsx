@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  FiStar, FiRadio, FiImage, FiAward, FiCheck, FiX, FiAlertTriangle,
+  FiStar, FiRadio, FiShoppingBag, FiAward, FiCheck, FiX, FiAlertTriangle,
   FiRefreshCw, FiCreditCard, FiRepeat, FiShield,
 } from 'react-icons/fi';
 import { BASE_URL } from '../config.js';
@@ -30,7 +30,7 @@ const DEFAULT_PIN = '#1D5C3A';
 const COMPARISON = [
   { id: 'destaque', icon: FiStar, label: 'Estrela no teu pin', free: null, premium: true },
   { id: 'alcance', icon: FiRadio, label: 'Alcance no mapa', free: '300 m', premium: '1 km' },
-  { id: 'fotos', icon: FiImage, label: 'Fotos dos produtos', free: null, premium: true },
+  { id: 'produtos', icon: FiShoppingBag, label: 'Produtos com foto e preço', free: null, premium: true },
   { id: 'avaliacoes', icon: FiAward, label: 'Média de estrelas', free: null, premium: true },
 ];
 
@@ -43,7 +43,7 @@ const TRUST = [
 const FAQS = [
   {
     q: 'Tenho de pagar para aparecer no mapa?',
-    a: 'Não. Aparecer no mapa é grátis. O Premium junta o destaque, o alcance, as fotos e a tua média de estrelas.',
+    a: 'Não. Aparecer no mapa é grátis. O Premium junta a estrela no pin, 1 km de alcance, os teus produtos e as avaliações dos clientes.',
   },
   {
     q: 'É cobrado todos os meses?',
@@ -51,7 +51,7 @@ const FAQS = [
   },
   {
     q: 'E quando o Premium acabar?',
-    a: 'Voltas ao plano grátis. As fotos já publicadas ficam; só não podes adicionar novas.',
+    a: 'Voltas ao plano grátis: continuas no mapa, mas os produtos e a média das avaliações deixam de aparecer aos clientes. Fica tudo guardado e volta a aparecer quando renovares.',
   },
 ];
 

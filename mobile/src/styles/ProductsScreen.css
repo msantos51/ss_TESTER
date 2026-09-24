@@ -143,71 +143,6 @@
   gap: 12px;
 }
 
-/* Sem Premium o bloco da foto é substituído pelo convite. Mantém a mesma
-   forma do bloco original para o formulário não dar um salto quando o
-   vendedor ativa o Premium. */
-.product-photo-locked {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px;
-  border-radius: var(--r-field);
-  background: var(--warn-bg);
-  border: 1px solid var(--warn-line);
-}
-
-.product-photo-locked-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  border-radius: var(--r-icon);
-  background: var(--sun);
-  color: var(--sun-ink);
-}
-
-.product-photo-locked-text {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-start;
-}
-
-.product-photo-locked-title {
-  font-size: var(--fs-sm);
-  font-weight: 800;
-  color: var(--warn-ink);
-}
-
-.product-photo-locked-desc {
-  font-size: var(--fs-caption);
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--warn-soft);
-}
-
-.product-photo-locked-cta {
-  margin-top: 4px;
-  min-height: 40px;
-  padding: 9px 16px;
-  border: none;
-  border-radius: var(--r-pill);
-  background: var(--ink);
-  color: #fff;
-  font-family: inherit;
-  font-size: var(--fs-caption);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.product-photo-locked-cta:active {
-  transform: scale(0.97);
-}
-
 .product-form-photo-btns {
   display: flex;
   flex-direction: column;
@@ -405,4 +340,77 @@
 
 .product-row-btn:active {
   transform: scale(0.94);
+}
+
+/* ── Sem Premium ─────────────────────────────
+   Os produtos são uma vantagem Premium: sem ele o ecrã é um convite, com o
+   botão amarelo do Premium (--sun com --sun-ink por cima, 17,85:1). */
+.products-locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 22px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+}
+
+.products-locked-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--sun);
+  color: var(--sun-ink);
+}
+
+.products-locked-icon svg {
+  fill: currentColor;
+}
+
+.products-locked h3 {
+  font-size: var(--fs-body);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.products-locked p {
+  max-width: 290px;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.products-locked-cta {
+  margin-top: 4px;
+  min-height: 48px;
+  padding: 13px 28px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--sun);
+  color: var(--sun-ink);
+  font-family: inherit;
+  font-size: var(--fs-btn);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(249, 177, 11, 0.35);
+}
+
+.products-locked-cta:active {
+  transform: scale(0.98);
+}
+
+/* Produtos de um período com Premium: guardados, mas fora do mapa. */
+.products-stored-note {
+  padding: 0 6px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-muted);
 }

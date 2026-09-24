@@ -100,7 +100,7 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
             <span className="account-sub-desc">
               {isPremium
                 ? `Válido até ${premiumDate || '—'}`
-                : 'Estás no gratuito. Premium: estrela no pin, 1 km e fotos'}
+                : 'Estás no grátis. Premium: estrela no pin, 1 km, produtos e avaliações'}
             </span>
           </div>
           <button

@@ -14,11 +14,11 @@ from ..config import (
     MAX_IMAGE_SIZE,
     MAX_PRODUCTS_PER_VENDOR,
     MAX_VIDEO_SIZE,
-    PREMIUM_PRODUCT_PHOTO_DETAIL,
+    PREMIUM_PRODUCTS_DETAIL,
 )
 from ..database import get_db
 from ..premium import verify_premium
-from ..security import get_current_vendor
+from ..security import get_current_vendor, get_current_vendor_optional
 from ..storage import (
     PRODUCT_PHOTO_DIR,
     STORY_DIR,
@@ -105,6 +105,9 @@ async def create_product(
 ):
     if current_vendor.id != vendor_id:
         raise HTTPException(status_code=403, detail="Not authorized")
+    # Os produtos são uma vantagem Premium: sem ele não aparecem no mapa, por
+    # isso nem se criam.
+    verify_premium(current_vendor, db, PREMIUM_PRODUCTS_DETAIL)
 
     existing_count = db.query(models.Product).filter(models.Product.vendor_id == vendor_id).count()
     if existing_count >= MAX_PRODUCTS_PER_VENDOR:
@@ -115,9 +118,6 @@ async def create_product(
 
     photo_path = None
     if photo:
-        # A fotografia é uma vantagem Premium; sem ele o produto fica-se pelo
-        # nome e pelo preço, que é o que o plano gratuito promete.
-        verify_premium(current_vendor, db, PREMIUM_PRODUCT_PHOTO_DETAIL)
         validate_upload(photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto do produto")
         photo_path = upload_file(photo, PRODUCT_PHOTO_DIR)
 
@@ -134,7 +134,26 @@ async def create_product(
 
 
 @router.get("/vendors/{vendor_id}/products", response_model=list[schemas.ProductOut])
-def list_products(vendor_id: int, db: Session = Depends(get_db)):
+def list_products(
+    vendor_id: int,
+    db: Session = Depends(get_db),
+    current_vendor: models.Vendor | None = Depends(get_current_vendor_optional),
+):
+    """Produtos de um vendedor.
+
+    Em público só os de quem tem Premium: sem ele os produtos ficam guardados
+    mas não se mostram no cartão do mapa. O próprio vendedor vê sempre os seus
+    (é assim que a app os lista para ele os poder apagar).
+    """
+    is_owner = current_vendor is not None and current_vendor.id == vendor_id
+    if not is_owner:
+        vendor = (
+            db.query(models.Vendor)
+            .filter(models.Vendor.id == vendor_id, models.Vendor.deleted_at == None)
+            .first()
+        )
+        if not vendor or not vendor.is_premium:
+            return []
     return (
         db.query(models.Product)
         .filter(models.Product.vendor_id == vendor_id)
@@ -163,9 +182,9 @@ async def update_product(
     )
     if not product:
         raise HTTPException(status_code=404, detail="Produto não encontrado")
+    verify_premium(current_vendor, db, PREMIUM_PRODUCTS_DETAIL)
 
     if photo:
-        verify_premium(current_vendor, db, PREMIUM_PRODUCT_PHOTO_DETAIL)
         validate_upload(photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto do produto")
         new_photo_path = upload_file(photo, PRODUCT_PHOTO_DIR)
         if product.photo:
