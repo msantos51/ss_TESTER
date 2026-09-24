@@ -266,6 +266,30 @@
   cursor: not-allowed;
 }
 
+/* Botão secundário: abre o exemplo do cartão Premium. Contorno branco sobre
+   o azul, para não competir com o amarelo da compra. */
+.premium-example-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 18px;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-family: inherit;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.premium-example-btn:active {
+  background: rgba(255, 255, 255, 0.22);
+}
+
 /* Três garantias curtas por baixo do botão — respondem às dúvidas antes de
    serem perguntas. */
 .premium-trust {
@@ -510,7 +534,77 @@
   text-align: justify;
 }
 
-/* ---------- QR code pessoal (vantagem Premium) ---------- */
+/* ═══ Avaliações (separador do QR code) ═══════════
+   Partilha a folha com o Premium: o cartão da média no topo e, por baixo, o
+   QR code com os três passos que explicam de onde vêm as estrelas. */
+
+/* ── Média das avaliações ── */
+.reviews-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 22px;
+  border-radius: 32px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 16px rgba(11, 49, 61, 0.07);
+  text-align: center;
+}
+
+.reviews-summary .premium-cta {
+  margin-top: 8px;
+}
+
+.reviews-summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--sand-alt);
+  color: var(--text-muted);
+}
+
+.reviews-summary-score {
+  font-size: var(--fs-display);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.reviews-summary-title {
+  font-size: var(--fs-body);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.reviews-summary-desc {
+  max-width: 290px;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+/* As estrelas da média: cheias no amarelo da marca, vazias no neutro. */
+.reviews-stars {
+  display: inline-flex;
+  gap: 3px;
+  color: var(--line-field);
+}
+
+.reviews-stars svg {
+  fill: currentColor;
+}
+
+.reviews-stars .is-on {
+  color: var(--sun);
+}
+
+/* ── QR code de avaliação ── */
 .premium-qr-card {
   display: flex;
   flex-direction: column;
@@ -522,13 +616,6 @@
   box-shadow: 0 4px 16px rgba(11, 49, 61, 0.07);
 }
 
-.premium-qr-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
 .premium-qr-title {
   margin: 0;
   font-size: 17px;
@@ -536,52 +623,35 @@
   color: var(--text-primary);
 }
 
-.premium-qr-rating {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 11px;
-  border-radius: var(--r-pill);
-  background: rgba(249, 177, 11, 0.15);
-  color: var(--sun-text);
-  font-size: 13px;
-  font-weight: 800;
+.reviews-steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.premium-qr-rating svg {
-  color: var(--sun);
-  fill: var(--sun);
-}
-
-.premium-qr-rating-count {
+.reviews-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: var(--fs-sm);
   font-weight: 500;
-  opacity: 0.8;
-}
-
-.premium-qr-rating--empty {
-  background: var(--sand-alt);
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-/* Sem Premium o QR continua lá — o que fica trancado é a pontuação. */
-.premium-qr-rating--locked {
-  background: var(--sand-alt);
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-.premium-qr-rating--locked svg {
-  color: var(--text-muted);
-  fill: none;
-}
-
-.premium-qr-desc {
-  margin: 0;
-  font-size: 13.5px;
-  font-weight: 500;
-  line-height: 1.55;
+  line-height: 1.5;
   color: var(--text-secondary);
+}
+
+.reviews-step-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--ocean-tint);
+  color: var(--ocean-ink);
+  font-size: var(--fs-caption);
+  font-weight: 800;
 }
 
 .premium-qr-image {
@@ -620,24 +690,5 @@
 }
 
 .premium-qr-share:active {
-  background: var(--sand-alt);
-}
-
-.premium-qr-refresh {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 16px;
-  border: 1px solid var(--line-field);
-  border-radius: var(--r-pill);
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.premium-qr-refresh:active {
   background: var(--sand-alt);
 }

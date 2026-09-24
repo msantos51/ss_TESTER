@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  FiStar, FiRadio, FiImage, FiAward, FiCheck, FiX, FiAlertTriangle,
-  FiRefreshCw, FiCreditCard, FiRepeat, FiShield,
+  FiStar, FiRadio, FiShoppingBag, FiAward, FiCheck, FiX, FiAlertTriangle,
+  FiRefreshCw, FiCreditCard, FiRepeat, FiShield, FiEye,
 } from 'react-icons/fi';
 import { BASE_URL } from '../config.js';
 import BrandHeader from '../components/BrandHeader.jsx';
+import PremiumExample from '../components/PremiumExample.jsx';
 import '../styles/PremiumScreen.css';
 
 // (em português) Preço do Premium, a única compra da app: um pagamento único
@@ -30,8 +31,8 @@ const DEFAULT_PIN = '#1D5C3A';
 const COMPARISON = [
   { id: 'destaque', icon: FiStar, label: 'Estrela no teu pin', free: null, premium: true },
   { id: 'alcance', icon: FiRadio, label: 'Alcance no mapa', free: '300 m', premium: '1 km' },
-  { id: 'fotos', icon: FiImage, label: 'Fotos dos produtos', free: null, premium: true },
-  { id: 'avaliacoes', icon: FiAward, label: 'Média de estrelas', free: null, premium: true },
+  { id: 'produtos', icon: FiShoppingBag, label: 'Produtos com foto e preço', free: null, premium: true },
+  { id: 'avaliacoes', icon: FiAward, label: 'Avaliações dos clientes', free: null, premium: true },
 ];
 
 const TRUST = [
@@ -43,15 +44,19 @@ const TRUST = [
 const FAQS = [
   {
     q: 'Tenho de pagar para aparecer no mapa?',
-    a: 'Não. Aparecer no mapa é grátis. O Premium junta o destaque, o alcance, as fotos e a tua média de estrelas.',
+    a: 'Não. Aparecer no mapa é grátis. O Premium junta a estrela no pin, 1 km de alcance, os teus produtos e as avaliações dos clientes.',
   },
   {
     q: 'É cobrado todos os meses?',
     a: 'Não. Pagas uma vez e ficas com 30 dias. Se comprares antes de acabar, os dias somam-se.',
   },
   {
+    q: 'Como funcionam as avaliações?',
+    a: 'No separador Avaliações tens o teu QR code. Depois de uma venda, o cliente lê-o com a câmara e dá-te de 1 a 5 estrelas. As avaliações ficam sempre guardadas; com Premium, a média aparece no teu cartão no mapa.',
+  },
+  {
     q: 'E quando o Premium acabar?',
-    a: 'Voltas ao plano grátis. As fotos já publicadas ficam; só não podes adicionar novas.',
+    a: 'Voltas ao plano grátis: continuas no mapa, mas os produtos e a média das avaliações deixam de aparecer aos clientes. Fica tudo guardado e volta a aparecer quando renovares.',
   },
 ];
 
@@ -108,6 +113,7 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
+  const [showExample, setShowExample] = useState(false);
 
   const isPremium = Boolean(user?.is_premium);
   const validUntil = user?.premium_valid_until
@@ -223,6 +229,19 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
                   : 'Ativar Premium'}
             </button>
 
+            {/* Antes de pagar, ver o resultado: o cartão como o cliente o vê,
+                com e sem Premium. */}
+            {!isPremium && (
+              <button
+                type="button"
+                className="premium-example-btn"
+                onClick={() => setShowExample(true)}
+              >
+                <FiEye size={17} aria-hidden="true" />
+                Ver como fica o teu cartão
+              </button>
+            )}
+
             <ul className="premium-trust">
               {TRUST.map(({ id, icon: Icon, label }) => (
                 <li key={id}>
@@ -302,6 +321,15 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
           </div>
         </section>
       </div>
+
+      {showExample && (
+        <PremiumExample
+          user={user}
+          priceLabel={PRICE_LABEL}
+          onClose={() => setShowExample(false)}
+          onSubscribe={() => { setShowExample(false); handleSubscribe(); }}
+        />
+      )}
     </div>
   );
 }

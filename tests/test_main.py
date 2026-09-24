@@ -1161,8 +1161,8 @@ def test_vendor_listing_exposes_is_premium(client):
     assert "email" not in vendor and "nif" not in vendor
 
 
-def test_product_photo_requires_premium(client):
-    """Sem Premium o produto guarda-se com nome e preço, mas sem fotografia."""
+def test_products_require_premium(client):
+    """Sem Premium não se criam nem editam produtos — nem com foto, nem sem."""
     resp = register_vendor(client)
     vendor_id = resp.json()["id"]
     confirm_latest_email(client)
@@ -1171,35 +1171,17 @@ def test_product_photo_requires_premium(client):
 
     photo = {"photo": ("p.png", b"fakeimage", "image/png")}
 
-    resp = client.post(
-        f"/vendors/{vendor_id}/products",
-        data={"name": "Bola de Berlim", "price": "1.50"},
-        files=photo,
-        headers=headers,
-    )
-    assert resp.status_code == 403
-    assert "Premium" in resp.json()["detail"]
+    for files in (None, photo):
+        resp = client.post(
+            f"/vendors/{vendor_id}/products",
+            data={"name": "Bola de Berlim", "price": "1.50"},
+            files=files,
+            headers=headers,
+        )
+        assert resp.status_code == 403
+        assert "Premium" in resp.json()["detail"]
 
-    # Sem foto passa: é o que o plano gratuito promete.
-    resp = client.post(
-        f"/vendors/{vendor_id}/products",
-        data={"name": "Bola de Berlim", "price": "1.50"},
-        headers=headers,
-    )
-    assert resp.status_code == 200
-    product_id = resp.json()["id"]
-    assert resp.json()["photo"] is None
-
-    # Trocar a foto de um produto existente está igualmente fechado.
-    resp = client.put(
-        f"/vendors/{vendor_id}/products/{product_id}",
-        data={"name": "Bola de Berlim", "price": "1.60"},
-        files=photo,
-        headers=headers,
-    )
-    assert resp.status_code == 403
-
-    # Com Premium, a mesma chamada passa.
+    # Com Premium passa, com nome, preço e foto.
     grant_premium(client, vendor_id)
     resp = client.post(
         f"/vendors/{vendor_id}/products",
@@ -1209,6 +1191,65 @@ def test_product_photo_requires_premium(client):
     )
     assert resp.status_code == 200
     assert resp.json()["photo"]
+    product_id = resp.json()["id"]
+
+    resp = client.put(
+        f"/vendors/{vendor_id}/products/{product_id}",
+        data={"name": "Gelado", "price": "2.20"},
+        headers=headers,
+    )
+    assert resp.status_code == 200
+    assert resp.json()["price"] == 2.2
+
+
+def test_products_are_hidden_when_premium_ends(client):
+    """Sem Premium os produtos ficam guardados mas saem do cartão do mapa.
+
+    O vendedor continua a vê-los na app (para os apagar), mas já não os pode
+    editar; apagar é sempre possível.
+    """
+    from backend.app import database, models
+
+    resp = register_vendor(client)
+    vendor_id = resp.json()["id"]
+    confirm_latest_email(client)
+    token = get_token(client)
+    headers = {"Authorization": f"Bearer {token}"}
+    grant_premium(client, vendor_id)
+
+    resp = client.post(
+        f"/vendors/{vendor_id}/products",
+        data={"name": "Bola de Berlim", "price": "1.50"},
+        headers=headers,
+    )
+    product_id = resp.json()["id"]
+
+    # Com Premium, o público vê o produto.
+    assert [p["id"] for p in client.get(f"/vendors/{vendor_id}/products").json()] == [product_id]
+
+    db = database.SessionLocal()
+    try:
+        vendor = db.query(models.Vendor).filter_by(id=vendor_id).first()
+        vendor.premium_valid_until = models.utcnow() - timedelta(minutes=1)
+        db.commit()
+    finally:
+        db.close()
+
+    # Premium acabou: o público deixa de ver, o próprio vendedor continua a ver.
+    assert client.get(f"/vendors/{vendor_id}/products").json() == []
+    own = client.get(f"/vendors/{vendor_id}/products", headers=headers).json()
+    assert [p["id"] for p in own] == [product_id]
+
+    resp = client.put(
+        f"/vendors/{vendor_id}/products/{product_id}",
+        data={"name": "Bola de Berlim", "price": "1.60"},
+        headers=headers,
+    )
+    assert resp.status_code == 403
+
+    resp = client.delete(f"/vendors/{vendor_id}/products/{product_id}", headers=headers)
+    assert resp.status_code == 200
+    assert client.get(f"/vendors/{vendor_id}/products", headers=headers).json() == []
 
 
 def test_deleting_the_account_clears_the_premium_it_had(client):

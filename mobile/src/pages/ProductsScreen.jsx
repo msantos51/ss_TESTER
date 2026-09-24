@@ -15,9 +15,11 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
   // como bottom sheet (usado a partir de outros ecrãs).
   const asTab = typeof onClose !== 'function';
   const { token, vendorId, user } = auth;
-  // A fotografia é uma vantagem Premium (o servidor recusa o upload sem ele):
-  // sem Premium o formulário mostra o convite em vez dos botões de foto.
-  const canUploadPhotos = Boolean(user?.is_premium);
+  // Os produtos (nome, preço e foto) são uma vantagem Premium: o servidor
+  // recusa criar e editar sem ele, e o cartão do mapa só os mostra com ele.
+  // Sem Premium o ecrã mostra o convite e, se houver produtos guardados de um
+  // período com Premium, deixa só apagá-los.
+  const isPremium = Boolean(user?.is_premium);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -215,34 +217,6 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
   const atLimit = products.length >= MAX_PRODUCTS;
 
   const photoFields = (preview, cameraRef, fileRef, onChange) => {
-    if (!canUploadPhotos) {
-      // A foto que já lá está (de um período com Premium) continua a mostrar-se
-      // e a ser guardada: o que fica bloqueado é trocá-la ou pôr uma nova.
-      return (
-        <div className="product-photo-locked">
-          {preview ? (
-            <img src={preview} alt="" className="product-form-thumb" />
-          ) : (
-            <span className="product-photo-locked-icon"><FiStar size={18} /></span>
-          )}
-          <div className="product-photo-locked-text">
-            <span className="product-photo-locked-title">
-              {preview ? 'Trocar a foto é Premium' : 'Fotos são Premium'}
-            </span>
-            <span className="product-photo-locked-desc">
-              No gratuito o produto fica com nome e preço. Com Premium
-              cada produto leva a sua fotografia.
-            </span>
-            {typeof onGoPremium === 'function' && (
-              <button type="button" className="product-photo-locked-cta" onClick={onGoPremium}>
-                Ver Premium
-              </button>
-            )}
-          </div>
-        </div>
-      );
-    }
-
     return (
       <div className="product-form-photo">
         {preview ? (
@@ -275,9 +249,12 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
               <div className="brand-header-text">
                 <h2 className="brand-header-title">Produtos</h2>
                 <p className="brand-header-subtitle">
-                  {products.length} de {MAX_PRODUCTS} · visíveis no teu perfil
+                  {isPremium
+                    ? `${products.length} de ${MAX_PRODUCTS} · no teu cartão do mapa`
+                    : 'Exclusivo Premium'}
                 </p>
               </div>
+              {isPremium && (
               <button
                 type="button"
                 className={`product-add-fab${showForm ? ' is-open' : ''}`}
@@ -288,6 +265,7 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
               >
                 {showForm ? <FiX size={20} strokeWidth={2.4} /> : <FiPlus size={20} strokeWidth={2.4} />}
               </button>
+              )}
             </div>
           </BrandHeader>
         ) : (
@@ -295,7 +273,9 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
             <div className="screen-head-text">
               <h2 className="screen-title">Produtos</h2>
               <p className="screen-subtitle">
-                {products.length} de {MAX_PRODUCTS} · visíveis no teu perfil
+                {isPremium
+                  ? `${products.length} de ${MAX_PRODUCTS} · no teu cartão do mapa`
+                  : 'Exclusivo Premium'}
               </p>
             </div>
             <button type="button" className="ss-sheet-close" onClick={onClose} aria-label="Fechar">
@@ -312,13 +292,37 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
             </div>
           )}
 
-          {atLimit && (
+          {!isPremium && (
+            <section className="products-locked">
+              <span className="products-locked-icon"><FiStar size={22} /></span>
+              <h3>Os produtos são Premium</h3>
+              <p>
+                Com Premium adicionas até {MAX_PRODUCTS} produtos com nome, preço
+                e foto. Aparecem no teu cartão no mapa, para o cliente ver o que
+                vendes antes de te chamar.
+              </p>
+              {typeof onGoPremium === 'function' && (
+                <button type="button" className="products-locked-cta" onClick={onGoPremium}>
+                  Ver Premium
+                </button>
+              )}
+            </section>
+          )}
+
+          {!isPremium && products.length > 0 && (
+            <p className="products-stored-note">
+              Estes produtos estão guardados, mas os clientes não os veem sem
+              Premium. Voltam ao teu cartão quando o ativares.
+            </p>
+          )}
+
+          {isPremium && atLimit && (
             <p className="products-limit">
               Atingiste o limite de {MAX_PRODUCTS} produtos. Remove um para adicionar outro.
             </p>
           )}
 
-          {showForm && !atLimit && (
+          {isPremium && showForm && !atLimit && (
             <form className="product-form" onSubmit={handleSubmit}>
               <span className="product-form-title">Novo produto</span>
               {photoFields(photoPreview, addCameraRef, addFileRef, handlePhotoChange)}
@@ -361,15 +365,15 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
           )}
 
           {loading ? (
-            <div className="products-list">
+            isPremium && <div className="products-list">
               {[0, 1, 2].map((i) => <span key={i} className="ss-skeleton product-skeleton" />)}
             </div>
           ) : products.length === 0 ? (
-            !error && (
+            isPremium && !error && (
               <div className="ss-empty">
                 <span className="ss-empty-icon"><FiImage size={22} /></span>
                 <h3>Ainda não tens produtos</h3>
-                <p>Os produtos que adicionares aqui aparecem no teu perfil público.</p>
+                <p>Os produtos que adicionares aqui aparecem no teu cartão no mapa.</p>
                 {!showForm && (
                   <button type="button" className="ss-empty-cta" onClick={toggleForm}>
                     Adicionar o primeiro
@@ -459,14 +463,16 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
                       </div>
                     ) : (
                       <div className="product-row-actions">
-                        <button
-                          type="button"
-                          className="product-row-btn"
-                          onClick={() => startEdit(product)}
-                          aria-label={`Editar ${product.name}`}
-                        >
-                          <FiEdit2 size={17} />
-                        </button>
+                        {isPremium && (
+                          <button
+                            type="button"
+                            className="product-row-btn"
+                            onClick={() => startEdit(product)}
+                            aria-label={`Editar ${product.name}`}
+                          >
+                            <FiEdit2 size={17} />
+                          </button>
+                        )}
                         <button
                           type="button"
                           className="product-row-btn is-danger"

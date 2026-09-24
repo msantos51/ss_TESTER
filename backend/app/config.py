@@ -125,7 +125,10 @@ CANCEL_URL = os.getenv("CANCEL_URL", f"{BASE_APP_URL}/premium")
 # acrescenta ao vendedor
 #   · estrela no pin, para se distinguir no mapa;
 #   · alcance de PREMIUM_REACH_RADIUS_M em vez de FREE_REACH_RADIUS_M;
-#   · fotografias nos produtos (sem Premium ficam-se pelo nome e preço).
+#   · produtos com nome, preço e foto no cartão do mapa (sem Premium não se
+#     criam nem se mostram);
+#   · a média das avaliações do QR code à vista (sem Premium ficam guardadas
+#     mas escondidas).
 # O montante pode ser ajustado por variável de ambiente sem alterar o código
 # nem tocar no Stripe.
 def _plan_amount(env_name: str, default_cents: int) -> int:
@@ -151,9 +154,12 @@ PREMIUM_PLAN = {
 FREE_REACH_RADIUS_M = int(os.getenv("FREE_REACH_RADIUS_M", "300"))
 PREMIUM_REACH_RADIUS_M = int(os.getenv("PREMIUM_REACH_RADIUS_M", "1000"))
 
-PREMIUM_PRODUCT_PHOTO_DETAIL = (
-    "As fotografias nos produtos são uma vantagem Premium. "
-    "Sem Premium podes guardar o nome e o preço."
+# Os produtos (nome, preço e foto) são uma vantagem Premium: sem ele não
+# aparecem no cartão do vendedor no mapa, por isso também não se criam nem
+# editam. Apagar continua livre — os dados são do vendedor.
+PREMIUM_PRODUCTS_DETAIL = (
+    "Os produtos são uma vantagem Premium. Ativa o Premium para adicionar "
+    "produtos com nome, preço e foto."
 )
 
 # Distância mínima (metros) entre leituras de GPS consecutivas para serem

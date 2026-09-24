@@ -131,7 +131,11 @@ comprar com o Premium ainda ativo soma os dias ao período em curso.
 |---|---|---|
 | Destaque no mapa | Pin normal | Pin com estrela, na app e no site |
 | Raio de alcance | 300 m | 1 km |
-| Produtos | Nome e preço | Nome, preço e fotografia |
+| Produtos | — (não se criam nem aparecem no mapa) | Até 10, com nome, preço e fotografia |
+| Avaliações por QR code | Recolhidas, mas escondidas | Média e número de avaliações no cartão do mapa |
+
+Sem Premium os produtos e as avaliações ficam guardados: voltam a aparecer
+quando o vendedor volta a ter Premium. Apagar produtos é sempre possível.
 
 O raio de alcance é aplicado pelo servidor: `GET /vendors/?lat=&lng=` devolve
 apenas os vendedores ao alcance de quem procura. Sem `lat`/`lng` não há

@@ -1,0 +1,543 @@
+/* ═══ Exemplo de vendedor Premium ═══════════════════
+   Folha de ecrã inteiro por cima da página Premium. O cartão copia o
+   `.vendor-card` do site (mesmas medidas, a estrela amarela, a pastilha
+   "Premium" em --sun com --sun-ink) para o vendedor ver exatamente o que o
+   cliente vê. Os números amarelos ligam cada parte do cartão à nota que a
+   explica por baixo. */
+.pex-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(11, 49, 61, 0.5);
+  animation: ss-fade 0.2s ease-out;
+}
+
+.pex-sheet {
+  width: 100%;
+  max-height: 94%;
+  display: flex;
+  flex-direction: column;
+  background: var(--sand);
+  border-radius: var(--r-sheet) var(--r-sheet) 0 0;
+  overflow: hidden;
+  animation: ss-up 0.25s ease-out;
+}
+
+.pex-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 18px 12px;
+}
+
+.pex-title {
+  font-size: var(--fs-sheet-title);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.pex-subtitle {
+  margin-top: 2px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Alvo de 44px num círculo de 38px. */
+.pex-close {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--sand-alt);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.pex-close::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+}
+
+.pex-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 16px 18px;
+}
+
+.pex-body > * {
+  flex-shrink: 0;
+}
+
+/* ── Sem Premium / Com Premium ── */
+.pex-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--r-pill);
+  background: var(--sand-alt);
+}
+
+.pex-toggle button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.pex-toggle button.is-active {
+  background: var(--surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-card);
+}
+
+.pex-toggle button.is-premium {
+  background: var(--sun);
+  color: var(--sun-ink);
+}
+
+.pex-toggle button.is-premium svg {
+  fill: currentColor;
+}
+
+/* ── A praia vista de cima ── */
+.pex-stage {
+  position: relative;
+  height: 180px;
+  margin-bottom: -44px;
+  border-radius: var(--r-card-lg);
+  background: #fff;
+  overflow: hidden;
+}
+
+/* Areia = o amarelo da marca diluído, como na ilustração da página. */
+.pex-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(249, 177, 11, 0.16);
+}
+
+.pex-sea {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 46px;
+}
+
+.pex-sea path {
+  fill: var(--brand-blue);
+  opacity: 0.55;
+}
+
+/* Gota do site: 40px na cor do vendedor, contorno branco e miolo branco. */
+.pex-pin {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  transform: translate(-50%, -100%);
+}
+
+.pex-pin::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border: 2.5px solid #fff;
+  border-radius: 50% 50% 0;
+  background: var(--pin-color);
+  transform: rotate(45deg);
+  filter: drop-shadow(0 3px 6px rgba(16, 24, 40, 0.3));
+}
+
+.pex-pin-core {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.pex-pin-star {
+  position: absolute;
+  top: 9.5px;
+  left: 9.5px;
+  color: #fff;
+  fill: #fff;
+  filter: drop-shadow(0 1px 2px rgba(16, 24, 40, 0.45));
+}
+
+.pex-pin--other {
+  width: 26px;
+  height: 26px;
+}
+
+.pex-pin--other .pex-pin-core {
+  top: 9px;
+  left: 9px;
+  width: 8px;
+  height: 8px;
+}
+
+/* O raio de alcance: pequeno sem Premium, largo com ele. */
+.pex-reach {
+  position: absolute;
+  top: 50%;
+  left: 52%;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(42, 161, 183, 0.12);
+  border: 1.5px dashed var(--brand-blue);
+  transition: width 0.3s ease-out, height 0.3s ease-out;
+}
+
+.pex-stage.is-premium .pex-reach {
+  width: 150px;
+  height: 150px;
+}
+
+.pex-reach-tag {
+  position: absolute;
+  top: 6%;
+  left: 78%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pex-reach-label {
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--fs-label);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.pex-me {
+  position: absolute;
+  top: 50%;
+  left: 52%;
+}
+
+.pex-me .pex-pin {
+  top: 17px;
+  left: 0;
+}
+
+.pex-me .pex-marker {
+  position: absolute;
+  top: -30px;
+  left: 16px;
+}
+
+/* ── Os números que ligam o cartão às notas ── */
+.pex-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--sun);
+  color: var(--sun-ink);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(11, 49, 61, 0.25);
+}
+
+/* ── O cartão, como no site ── */
+.pex-card {
+  position: relative;
+  z-index: 1;
+  margin: 0 10px;
+  padding: 18px;
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(11, 49, 61, 0.16), 0 8px 20px -6px rgba(11, 49, 61, 0.26);
+}
+
+.pex-card-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pex-card-photo {
+  display: block;
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  border-radius: 18px;
+  object-fit: cover;
+}
+
+.pex-card-head-text {
+  min-width: 0;
+}
+
+.pex-card-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.pex-card-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--sun);
+  color: var(--sun-ink);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pex-card-premium svg {
+  fill: currentColor;
+}
+
+.pex-card-sub {
+  margin-top: 3px;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.pex-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pex-card-stars {
+  display: inline-flex;
+  gap: 1px;
+  color: var(--line-field);
+  line-height: 0;
+}
+
+.pex-card-stars svg {
+  fill: currentColor;
+}
+
+.pex-card-stars .is-on {
+  color: var(--sun);
+}
+
+.pex-card-rating-text {
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.pex-card-rating-count {
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.pex-card-payments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.pex-card-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: var(--r-pill);
+  background: rgba(42, 161, 183, 0.12);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pex-card-products {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.pex-card-products-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.pex-card-product {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+/* A "foto" de exemplo: um emoji num quadrado com um tom da paleta. */
+.pex-card-product-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: var(--r-icon);
+  font-size: 24px;
+}
+
+.pex-card-product-photo.is-sun { background: rgba(249, 177, 11, 0.22); }
+.pex-card-product-photo.is-ocean { background: var(--ocean-tint); }
+.pex-card-product-photo.is-sand { background: var(--sand-alt); }
+
+.pex-card-product-name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.pex-card-product-price {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ── Notas ── */
+.pex-notes {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 22px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.pex-notes li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px;
+}
+
+.pex-note-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--sand-alt);
+  color: var(--text-muted);
+}
+
+.pex-notes.is-premium .pex-note-icon {
+  background: var(--green);
+  color: #fff;
+}
+
+.pex-note-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.pex-note-text strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.pex-note-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--sun);
+  color: var(--sun-ink);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.pex-disclaimer {
+  padding: 0 6px;
+  font-size: var(--fs-label);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* O botão fica sempre à vista; o recuo da safe area põe-no acima dos botões
+   de navegação do Android. */
+.pex-foot {
+  flex-shrink: 0;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+}
+
+.pex-foot .premium-cta {
+  margin-top: 0;
+}
