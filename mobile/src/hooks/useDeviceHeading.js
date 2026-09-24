@@ -27,18 +27,27 @@ const SPIKE_CONFIRM_DEG = 20;
 // histerese: em repouso, só uma diferença maior do que `WAKE_DEG` acorda o
 // rumo; acordado, segue a média até ela estabilizar, e só então volta a
 // repousar — por isso uma viragem real acaba sempre alinhada, sem sobra.
-// A média é adaptativa: pesada para o tremer pequeno, rápida numa viragem.
-const EMA_ALPHA_MIN = 0.06;
-const EMA_ALPHA_MAX = 0.5;
-const EMA_FAST_GAP_DEG = 30;
-const WAKE_DEG = 4;
-const SETTLE_DEG = 1.5;
+// Há duas médias: uma lenta, que come o ruído (mesmo o de telemóveis com
+// magnetómetros mais nervosos), e uma rápida, que só manda numa viragem real.
+const SLOW_ALPHA = 0.04;
+const FAST_ALPHA = 0.25;
+const TURN_DEG = 15;
+const WAKE_DEG = 3;
+const SETTLE_DEG = 2.5;
 const SETTLE_MS = 400;
 const GPS_MIN_SPEED = 0.8;
 
 function bearingGapDeg(a, b) {
   const diff = Math.abs(a - b) % 360;
   return diff > 180 ? 360 - diff : diff;
+}
+
+// Um passo de média corrida pelo caminho mais curto do círculo.
+function emaStep(current, raw, alpha) {
+  let diff = raw - current;
+  if (diff > 180) diff -= 360;
+  if (diff < -180) diff += 360;
+  return (current + diff * alpha + 360) % 360;
 }
 
 // Devolve `headingRef`, a direção (graus, 0 = norte, sentido horário) para
@@ -63,6 +72,7 @@ export default function useDeviceHeading() {
   // Média da bússola, se o rumo está a seguir uma viragem, e onde/quando a
   // média parou de mexer — ver `acceptCompassHeading`.
   const compassEmaRef = useRef(null);
+  const compassFastEmaRef = useRef(null);
   const trackingRef = useRef(true);
   const settleAnchorRef = useRef({ value: null, ts: 0 });
 
@@ -97,18 +107,17 @@ export default function useDeviceHeading() {
     }
     lastCompassHeadingRef.current = raw;
 
-    const ema = compassEmaRef.current;
-    if (ema === null) {
+    if (compassEmaRef.current === null) {
       compassEmaRef.current = raw;
+      compassFastEmaRef.current = raw;
     } else {
-      let diff = raw - ema;
-      if (diff > 180) diff -= 360;
-      if (diff < -180) diff += 360;
-      const alpha = Math.min(
-        EMA_ALPHA_MAX,
-        EMA_ALPHA_MIN + (Math.abs(diff) / EMA_FAST_GAP_DEG) * (EMA_ALPHA_MAX - EMA_ALPHA_MIN),
-      );
-      compassEmaRef.current = (ema + diff * alpha + 360) % 360;
+      compassEmaRef.current = emaStep(compassEmaRef.current, raw, SLOW_ALPHA);
+      compassFastEmaRef.current = emaStep(compassFastEmaRef.current, raw, FAST_ALPHA);
+      // Viragem real: a média rápida afasta-se da lenta mais do que o ruído
+      // consegue, e a lenta salta para ela em vez de ficar para trás.
+      if (bearingGapDeg(compassFastEmaRef.current, compassEmaRef.current) > TURN_DEG) {
+        compassEmaRef.current = compassFastEmaRef.current;
+      }
     }
     const smoothed = compassEmaRef.current;
     const now = Date.now();
@@ -216,6 +225,7 @@ export default function useDeviceHeading() {
       lastCompassHeadingRef.current = null;
       pendingSpikeRef.current = null;
       compassEmaRef.current = null;
+      compassFastEmaRef.current = null;
       trackingRef.current = true;
       settleAnchorRef.current = { value: null, ts: 0 };
       pushHeading(gpsHeading);

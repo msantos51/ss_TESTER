@@ -36,7 +36,15 @@ export default function AnimatedMarker({ position, icon, hasHeading }) {
       // O pin do próprio vendedor fica por cima dos tiles e de qualquer outro
       // marcador; é o que ele procura quando olha para o ecrã.
       zIndexOffset: 1000,
-    }).addTo(map);
+    });
+    // O Leaflet arredonda a posição ao píxel antes de o leaflet-rotate a rodar.
+    // Com o mapa a seguir a bússola isto corre a cada fotograma, e o erro do
+    // arredondamento, rodado, punha o pin a tremer um píxel contra os tiles.
+    marker.update = function update() {
+      if (this._icon && this._map) this._setPos(this._map.latLngToLayerPoint(this._latlng));
+      return this;
+    };
+    marker.addTo(map);
     markerRef.current = marker;
     return () => {
       marker.remove();
