@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   FiStar, FiRadio, FiShoppingBag, FiAward, FiCheck, FiX, FiAlertTriangle,
-  FiRefreshCw, FiCreditCard, FiRepeat, FiShield,
+  FiRefreshCw, FiCreditCard, FiRepeat, FiShield, FiEye,
 } from 'react-icons/fi';
 import { BASE_URL } from '../config.js';
 import BrandHeader from '../components/BrandHeader.jsx';
+import PremiumExample from '../components/PremiumExample.jsx';
 import '../styles/PremiumScreen.css';
 
 // (em português) Preço do Premium, a única compra da app: um pagamento único
@@ -112,6 +113,7 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
+  const [showExample, setShowExample] = useState(false);
 
   const isPremium = Boolean(user?.is_premium);
   const validUntil = user?.premium_valid_until
@@ -227,6 +229,19 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
                   : 'Ativar Premium'}
             </button>
 
+            {/* Antes de pagar, ver o resultado: o cartão como o cliente o vê,
+                com e sem Premium. */}
+            {!isPremium && (
+              <button
+                type="button"
+                className="premium-example-btn"
+                onClick={() => setShowExample(true)}
+              >
+                <FiEye size={17} aria-hidden="true" />
+                Ver como fica o teu cartão
+              </button>
+            )}
+
             <ul className="premium-trust">
               {TRUST.map(({ id, icon: Icon, label }) => (
                 <li key={id}>
@@ -306,6 +321,15 @@ export default function PremiumScreen({ auth, onUserUpdate }) {
           </div>
         </section>
       </div>
+
+      {showExample && (
+        <PremiumExample
+          user={user}
+          priceLabel={PRICE_LABEL}
+          onClose={() => setShowExample(false)}
+          onSubscribe={() => { setShowExample(false); handleSubscribe(); }}
+        />
+      )}
     </div>
   );
 }

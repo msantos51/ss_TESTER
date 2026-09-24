@@ -266,6 +266,30 @@
   cursor: not-allowed;
 }
 
+/* Botão secundário: abre o exemplo do cartão Premium. Contorno branco sobre
+   o azul, para não competir com o amarelo da compra. */
+.premium-example-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 18px;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-family: inherit;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.premium-example-btn:active {
+  background: rgba(255, 255, 255, 0.22);
+}
+
 /* Três garantias curtas por baixo do botão — respondem às dúvidas antes de
    serem perguntas. */
 .premium-trust {
