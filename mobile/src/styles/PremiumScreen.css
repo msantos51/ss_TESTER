@@ -47,29 +47,33 @@
 }
 
 /* ── Cartão principal ─────────────────────────
-   Painel azul-profundo (do --ink ao petróleo do texto) com um brilho do azul
-   da marca no canto: o mesmo material escuro do resto da app, mas a pedir
-   atenção. (Um brilho amarelo sobre este azul dava um verde-oliva sujo.) */
+   O azul da marca, luminoso: um véu branco clareia o topo e o fundo desce
+   só até ao tom de hover (--ink-hover), sem chegar ao petróleo escuro. O
+   texto é branco e o botão amarelo salta à vista sobre o azul. Um brilho
+   branco a meio dá-lhe o reflexo de água. (Um brilho amarelo sobre o azul
+   dava um verde-oliva sujo.) */
 .premium-hero {
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   border-radius: 32px;
-  background: linear-gradient(160deg, var(--ink) 0%, var(--text-primary) 100%);
-  box-shadow: var(--shadow-share);
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(165deg, var(--brand-blue) 55%, var(--ink-hover) 100%);
+  box-shadow: 0 14px 34px rgba(42, 161, 183, 0.35);
   color: #fff;
 }
 
 .premium-hero::after {
   content: '';
   position: absolute;
-  right: -70px;
-  bottom: -90px;
+  top: 110px;
+  right: -60px;
   width: 240px;
   height: 240px;
   border-radius: 50%;
-  background: rgba(42, 161, 183, 0.4);
+  background: rgba(255, 255, 255, 0.28);
   filter: blur(60px);
   pointer-events: none;
 }
@@ -208,11 +212,11 @@
   font-size: var(--fs-sm);
   font-weight: 700;
   line-height: 1.3;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.9);
   text-align: left;
 }
 
-/* Sobre o painel escuro o amarelo é texto em --sun-soft (4,75:1). */
+/* Sobre o azul, o amarelo como texto é o --sun-soft. */
 .premium-price-daily {
   font-size: var(--fs-caption);
   font-weight: 700;
@@ -222,7 +226,7 @@
 .premium-hero-until {
   font-size: var(--fs-body);
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .premium-hero-until strong {
@@ -231,7 +235,7 @@
 }
 
 /* O botão de compra é o único amarelo cheio do ecrã: salta à vista sobre o
-   painel escuro e, sobre branco (ecrã do QR), leva --sun-ink por cima
+   painel azul e, sobre branco (ecrã do QR), leva --sun-ink por cima
    (17,85:1). */
 .premium-cta {
   position: relative;
@@ -271,7 +275,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .premium-trust li {
@@ -282,11 +286,11 @@
   font-size: var(--fs-label);
   font-weight: 700;
   line-height: 1.3;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .premium-trust svg {
-  color: var(--green-soft);
+  color: var(--sun-soft);
 }
 
 /* Ligação discreta para quem volta do pagamento e ainda não vê o Premium;
@@ -301,7 +305,7 @@
   padding: 0 12px;
   border: none;
   background: none;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.88);
   font-family: inherit;
   font-size: var(--fs-caption);
   font-weight: 600;
