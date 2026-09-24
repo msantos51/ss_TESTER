@@ -750,8 +750,11 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
           <div className="brand-header-text">
             <h2 className="brand-header-title">Mapa</h2>
             <p className="brand-header-subtitle">
+              {/* O alcance é o que o servidor aplica (300 m sem Premium,
+                  1 km com ele): dizê-lo aqui evita prometer que toda a praia
+                  vê o vendedor. */}
               {sharing
-                ? 'Os banhistas veem-te em tempo real'
+                ? `Os banhistas até ${isPremium ? '1 km' : '300 m'} veem-te`
                 : 'Inicia a partilha para apareceres no mapa'}
             </p>
           </div>

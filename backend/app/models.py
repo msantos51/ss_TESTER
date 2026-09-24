@@ -21,7 +21,8 @@ class Vendor(Base):
     current_lat = Column(Float, nullable=True)
     current_lng = Column(Float, nullable=True)
     # Premium — a única compra da plataforma (ver PREMIUM_PLAN em config.py). Dá
-    # estrela no pin, alcance de 1 km em vez de 300 m e fotos nos produtos.
+    # estrela no pin, alcance de 1 km em vez de 300 m, produtos no cartão do
+    # mapa e a média das avaliações à vista.
     # Sem ele o vendedor fica no plano gratuito: aparece na mesma no mapa.
     premium_active = Column(Boolean, default=False)
     premium_valid_until = Column(DateTime, nullable=True)

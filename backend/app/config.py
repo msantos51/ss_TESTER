@@ -125,7 +125,10 @@ CANCEL_URL = os.getenv("CANCEL_URL", f"{BASE_APP_URL}/premium")
 # acrescenta ao vendedor
 #   · estrela no pin, para se distinguir no mapa;
 #   · alcance de PREMIUM_REACH_RADIUS_M em vez de FREE_REACH_RADIUS_M;
-#   · fotografias nos produtos (sem Premium ficam-se pelo nome e preço).
+#   · produtos com nome, preço e foto no cartão do mapa (sem Premium não se
+#     criam nem se mostram);
+#   · a média das avaliações do QR code à vista (sem Premium ficam guardadas
+#     mas escondidas).
 # O montante pode ser ajustado por variável de ambiente sem alterar o código
 # nem tocar no Stripe.
 def _plan_amount(env_name: str, default_cents: int) -> int:

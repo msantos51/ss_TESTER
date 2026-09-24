@@ -224,8 +224,8 @@ function AppLayout() {
           {/* Exigida pela Google Play: eliminação de conta acessível
               fora da app, para quem já a desinstalou. */}
           <Route path="/eliminar-conta" element={<AccountDeletion />} />
-          {/* Destino do QR code pessoal dos vendedores Premium: avaliação
-              de 1 a 5 estrelas sem registo. */}
+          {/* Destino do QR code pessoal dos vendedores (todos têm um):
+              avaliação de 1 a 5 estrelas sem registo. */}
           <Route path="/avaliar/:vendorId" element={<AvaliarVendor />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
