@@ -1774,7 +1774,7 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: rgba(26, 118, 147, 0.2);
+  background: rgba(42, 161, 183, 0.2);
   animation: user-pulse 2s ease-out infinite;
   pointer-events: none;
 }
@@ -1790,16 +1790,16 @@
   transform: rotate(calc(var(--pin-heading, 0deg) + var(--map-bearing, 0deg)));
 }
 
-/* Azul utilitário da nova paleta: #217E8F dá 4,72:1 e passa AA. O tamanho
+/* O azul da marca (#2AA1B7), o mesmo dos botões. O tamanho
    mantém-se para não se perder ao lado dos pins de vendedor, de 40px. */
 .user-location-dot {
   position: relative;
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: var(--blue, #217E8F);
+  background: var(--blue, #2AA1B7);
   border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(27, 112, 184, 0.45);
+  box-shadow: 0 2px 8px rgba(42, 161, 183, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;

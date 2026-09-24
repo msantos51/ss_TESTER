@@ -41,26 +41,24 @@
      controlos (zoom, localizar, vista) flutuam por cima
      em pastilhas de vidro.
    · Controlos de escolha: segmentos e pastilhas. O estado
-     selecionado é um tinte AZUL com texto azul-profundo; o
-     não selecionado é um neutro frio claro sem borda.
-   · A ação principal de cada ecrã é um botão AZUL-PROFUNDO
+     selecionado é um tinte AZUL com texto azul; o não
+     selecionado é um neutro frio claro sem borda.
+   · A ação principal de cada ecrã é um botão AZUL da marca
      (--ink) em pílula — âncora visual única.
 
    PALETA — duas cores de marca: AZUL #2AA1B7 e AMARELO
-   #F9B10B. Nenhuma das duas aguenta texto pequeno por cima
-   de branco (3,05:1 e 1,85:1), por isso a marca vive nas
-   SUPERFÍCIES e cada uma tem uma variante escurecida da
-   mesma matiz para quando é preciso TINTA:
-   · --brand-blue = AZUL #2AA1B7 — a cor da marca: fundos,
-     tintes, gradientes, pins, realces sobre escuro. Nunca
-     texto pequeno sobre branco.
-   · --blue-mid = #2794A8 (3,57:1) — ícones, contornos e
-     texto grande sobre a tela.
-   · --accent-text / --blue-text = #217E8F (4,72:1) — o azul
-     como TEXTO pequeno sobre branco.
-   · --ink / --accent = #1D6F7E (5,79:1 com branco) — a tinta
-     das ações: botões, links, item ativo. É o azul da marca
-     escurecido até passar AA com texto branco por cima.
+   #F9B10B.
+   · AZUL #2AA1B7 é o azul de todo o site: botões, links,
+     item ativo, ícones, contornos, tintes e pins. Todos os
+     tokens azuis (--ink, --accent, --primary, --blue,
+     --teal, --blue-*) apontam para ele — é uma decisão da
+     marca: um só azul, igual na app e no site.
+     Contraste: 3,05:1 com branco. Chega para ícones,
+     contornos e texto grande/negrito (≥3:1); texto pequeno
+     azul ou branco por cima dele fica abaixo de AA (4,5:1).
+   · --ink-hover / --accent-hover = #217E8F — o mesmo azul
+     um pouco mais escuro, só para hover e toque.
+   · --blue-darkest = #12434D — blocos escuros.
    · --gold = AMARELO #F9B10B — informação, nunca ação.
      SEMPRE como fundo com --gold-ink (#201601, 17,85:1) por
      cima; nunca com texto branco (1,85:1). Significa uma
@@ -95,18 +93,18 @@
 
 :root {
   /* ── Paleta da marca ──
-     Duas cores: AZUL #2AA1B7 e AMARELO #F9B10B. Abaixo delas ficam as
-     variantes escurecidas da mesma matiz, porque nenhuma das duas aguenta
-     texto pequeno sobre branco (3,05:1 e 1,85:1 — ver cabeçalho). */
+     Duas cores: AZUL #2AA1B7 e AMARELO #F9B10B. O azul é um só em todo o
+     site (ver cabeçalho); só o hover e os blocos escuros usam outro tom. */
   --brand-blue: #2AA1B7;
   --brand-yellow: #F9B10B;
-  /* Escala do azul (matiz 189°), da marca até à tinta */
-  --blue-bright: #2AA1B7;   /* 3,05:1 — só superfície e tinte */
-  --blue-mid: #2794A8;      /* 3,57:1 — ícones, contornos, texto grande */
-  --blue-text: #217E8F;     /* 4,72:1 — texto pequeno sobre branco */
-  --blue-deep: #1D6F7E;     /* 5,79:1 — botões com texto branco */
-  --blue-deeper: #175A66;   /* 7,80:1 — hover dos botões */
-  --blue-darkest: #12434D;  /* 10,85:1 — blocos escuros */
+  /* Escala do azul (matiz 189°): o azul da marca em tudo, mais o hover e
+     o tom dos blocos escuros */
+  --blue-bright: #2AA1B7;
+  --blue-mid: #2AA1B7;
+  --blue-text: #2AA1B7;
+  --blue-deep: #2AA1B7;
+  --blue-deeper: #217E8F;   /* hover dos botões */
+  --blue-darkest: #12434D;  /* blocos escuros */
   --palette-sky: #2AA1B7;
   --palette-sun: #F9B10B;
   --palette-cloud: #F5FAFD;
@@ -116,29 +114,27 @@
   --palette-sunset: #BB3E03;
   --palette-night: #0A252B;
 
-  /* ── Acento = o azul da marca escurecido ──
-     #1D6F7E dá 5,79:1 com texto branco, por isso é ele que carrega
-     botões, links e tudo o que leva texto pequeno por cima. O #2AA1B7
-     puro fica para as superfícies (--brand-blue / --teal). */
-  --accent: #1D6F7E;
-  --accent-hover: #175A66;
+  /* ── Acento = o azul da marca ──
+     Botões, links e tudo o que é ação. O hover escurece para #217E8F. */
+  --accent: #2AA1B7;
+  --accent-hover: #217E8F;
   --accent-soft: rgba(42, 161, 183, 0.12);
   /* Ícones/realces "de acento" sobre fundo claro */
-  --accent-text: #1D6F7E;
-  /* Texto sobre superfícies azul-profundo (botões, badges, blocos) */
+  --accent-text: #2AA1B7;
+  /* Texto sobre superfícies azuis (botões, badges, blocos) */
   --on-accent: #ffffff;
 
   /* ── Cor primária (alias do acento, compatibilidade) ── */
-  --primary: #1D6F7E;
-  --primary-hover: #175A66;
+  --primary: #2AA1B7;
+  --primary-hover: #217E8F;
   --primary-dark: #12434D;
   --primary-bright: #2AA1B7;
   --primary-light: rgba(42, 161, 183, 0.1);
   --primary-light-solid: #D3E7F8;
 
   /* ── Ação primária (CTAs sólidos) ── */
-  --secondary: #1D6F7E;
-  --secondary-hover: #175A66;
+  --secondary: #2AA1B7;
+  --secondary-hover: #217E8F;
   --secondary-light: rgba(42, 161, 183, 0.12);
 
   /* ── Coral: reservado ao que é acionável ──
@@ -165,24 +161,22 @@
   --amber: #F9B10B;
   --amber-strong: #825C03;
 
-  /* ── Azul médio: estado ativo, seleção, ícones ──
-     Os nomes `--teal-*` mantêm-se por compatibilidade com os ecrãs que já
-     os usam, mas são agora tons do azul da marca. #2794A8 dá 3,57:1 com
-     branco — serve para ícones, contornos e texto grande, nunca para
-     corpo. Como texto sobre a tela usa-se --teal-text, que passa AA. */
-  --blue: #217E8F;
-  --blue-hover: #175A66;
-  --teal: #2794A8;
-  --teal-text: #217E8F;
-  --teal-strong: #1D6F7E;
+  /* ── Estado ativo, seleção, ícones ──
+     Os nomes `--teal-*` e `--blue` mantêm-se por compatibilidade com os
+     ecrãs que já os usam; todos são o azul da marca. */
+  --blue: #2AA1B7;
+  --blue-hover: #217E8F;
+  --teal: #2AA1B7;
+  --teal-text: #2AA1B7;
+  --teal-strong: #2AA1B7;
   --teal-light: rgba(42, 161, 183, 0.12);
-  --sky: #217E8F;
+  --sky: #2AA1B7;
 
   /* ── "Ink" — a ação principal do ecrã ──
-     Um único botão azul-profundo por ecrã (o "Ver o mapa agora" da entrada,
+     Um único botão azul por ecrã (o "Ver o mapa agora" da entrada,
      o "Voltar ao início" do 404). Se houver dois, deixa de haver âncora. */
-  --ink: #1D6F7E;
-  --ink-hover: #175A66;
+  --ink: #2AA1B7;
+  --ink-hover: #217E8F;
   /* Texto escuro para fundos claros */
   --ink-on-light: #0B313D;
   /* ── Painéis institucionais (petróleo profundo) ── */
@@ -243,10 +237,10 @@
   /* ── Gradientes — azul e amarelo da marca ── */
   --grad-sun: linear-gradient(135deg, #F9B10B, #C68B05);
   --grad-gold: linear-gradient(135deg, #F9B10B, #C68B05);
-  --grad-sea: linear-gradient(135deg, #2AA1B7, #1D6F7E);
-  --grad-dusk: linear-gradient(135deg, #1D6F7E, #0A252B);
-  /* Blocos de destaque: azul-profundo a descer para a noite (texto branco) */
-  --grad-dark: linear-gradient(155deg, #1D6F7E 0%, #12434D 100%);
+  --grad-sea: linear-gradient(135deg, #2AA1B7, #217E8F);
+  --grad-dusk: linear-gradient(135deg, #2AA1B7, #0A252B);
+  /* Blocos de destaque: azul da marca a descer para a noite (texto branco) */
+  --grad-dark: linear-gradient(155deg, #2AA1B7 0%, #12434D 100%);
 
   /* ── Sombras (difusas, de baixa opacidade) ──
      Duas camadas: um contacto curto que substitui a borda
@@ -262,8 +256,8 @@
   --shadow-glass: 0 1px 1px rgba(11, 49, 61, 0.06), 0 14px 30px -16px rgba(11, 49, 61, 0.4);
   --shadow-warm: var(--shadow-sm);
   --shadow-warm-lg: var(--shadow-md);
-  --shadow-primary: 0 10px 24px -12px rgba(29, 111, 126, 0.5);
-  --shadow-ink: 0 10px 24px -12px rgba(29, 111, 126, 0.5);
+  --shadow-primary: 0 10px 24px -12px rgba(42, 161, 183, 0.5);
+  --shadow-ink: 0 10px 24px -12px rgba(42, 161, 183, 0.5);
   --shadow-gold: 0 10px 24px -12px rgba(249, 177, 11, 0.4);
   --shadow-accent: 0 12px 28px -12px rgba(42, 161, 183, 0.5);
 
@@ -301,8 +295,8 @@
   --space-2xl: 48px;
   --section-pad: clamp(4rem, 8vw, 7rem);
 
-  /* ── Foco visível (teclado): teal escuro, ≥3:1 sobre branco ── */
-  --focus-ring: #217E8F;
+  /* ── Foco visível (teclado): o azul da marca, ≥3:1 sobre branco ── */
+  --focus-ring: #2AA1B7;
 
   /* ── Movimento (200ms, ease-out, nada mais) ── */
   --transition: 0.2s cubic-bezier(0, 0, 0.2, 1);
@@ -540,8 +534,7 @@ body {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
-/* Item ativo: tinte azul com texto azul-profundo. Azul cheio com texto branco
-   daria 3,7:1 — chumba em texto de 14px. */
+/* Item ativo: tinte azul com texto no azul da marca. */
 .nav-link.active {
   color: var(--accent-text);
   font-weight: 600;
@@ -861,9 +854,9 @@ h2 {
   to { background-position: 200% center; }
 }
 @keyframes pinPulse {
-  0% { box-shadow: 0 0 0 0 rgba(81, 156, 171, 0.4); }
-  70% { box-shadow: 0 0 0 14px rgba(81, 156, 171, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(81, 156, 171, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(42, 161, 183, 0.4); }
+  70% { box-shadow: 0 0 0 14px rgba(42, 161, 183, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(42, 161, 183, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
