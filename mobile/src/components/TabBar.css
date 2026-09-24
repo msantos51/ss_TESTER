@@ -29,8 +29,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* O azul escurecido (--ink) e não o #2AA1B7 da marca: o rótulo é pequeno e
-   o azul claro não aguenta texto pequeno (3,46:1). */
+/* O separador ativo leva o azul da marca (--ink = #2AA1B7). */
 .ss-tab.is-active {
   color: var(--ink);
 }

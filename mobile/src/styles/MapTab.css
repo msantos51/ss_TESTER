@@ -6,7 +6,7 @@
    o que lhe fica por cima flutua em pastilhas e painéis de VIDRO de cantos
    grandes com sombra difusa (--site-shadow-float), tipografia Inter,
    o azul da marca nos estados e uma única ação âncora por ecrã —
-   azul-profundo quando é a ação normal, coral quando é urgente
+   azul quando é a ação normal, coral quando é urgente
    (parar a partilha).
 
    É o ecrã que o vendedor vê espelhado no site: quem está na praia com a
@@ -23,12 +23,12 @@
   /* ── Paleta (sunny_sales_web/src/index.css · :root) ── */
   --site-surface: #ffffff;
   --site-surface-alt: #DCEAF4;
-  --site-accent: #1D6F7E;          /* azul-profundo: ação, seleção, texto pequeno */
-  --site-accent-hover: #175A66;
+  --site-accent: #2AA1B7;          /* o azul da marca: ação, seleção, texto */
+  --site-accent-hover: #217E8F;
   --site-brand-blue: #2AA1B7;      /* o azul da marca: tintes e superfícies */
-  --site-teal: #2794A8;            /* azul médio: estados e ícones (3,57:1) */
-  --site-ink: #1D6F7E;             /* a ação principal do ecrã */
-  --site-ink-hover: #175A66;
+  --site-teal: #2AA1B7;            /* estados e ícones */
+  --site-ink: #2AA1B7;             /* a ação principal do ecrã */
+  --site-ink-hover: #217E8F;
   --site-coral: #BB3E03;           /* só o que é urgente: parar a partilha */
   --site-coral-hover: #9A3303;
   --site-forest: #1D5C3A;          /* presença de vendedores (pins) */
@@ -250,12 +250,12 @@
   transform: rotate(var(--map-bearing, 0deg));
 }
 
-/* Botão de localização: o alvo no azul de tinta (--ocean). */
+/* Botão de localização: o alvo no azul da marca. */
 .map-locate-icon {
   display: block;
   width: 18px;
   height: 18px;
-  color: #217E8F;
+  color: #2AA1B7;
 }
 
 .map-locate-btn:disabled {
@@ -308,7 +308,7 @@
 /* ── Botão de partilha ────────────────────────────────
    A única ação âncora do ecrã: uma pílula do tamanho do texto, centrada em
    baixo e sempre por baixo dos controlos de localização (nunca por cima).
-   Azul escurecido para iniciar, petróleo para parar. */
+   Azul da marca para iniciar, petróleo para parar. */
 .share-btn {
   align-self: center;
   display: inline-flex;
@@ -488,6 +488,6 @@
    erros, mas no azul do resto da app — não é uma falha, é a app a proteger o
    vendedor. */
 .map-alert--info {
-  border-color: rgba(29, 111, 126, 0.35);
+  border-color: rgba(42, 161, 183, 0.35);
   color: var(--site-accent);
 }

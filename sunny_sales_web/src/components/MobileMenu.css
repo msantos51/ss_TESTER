@@ -87,8 +87,8 @@
   outline-offset: -2px;
 }
 
-/* Destino atual: a mesma pastilha de tinte azul com texto azul-profundo do menu de
-   desktop — teal cheio com texto branco daria 3,7:1. */
+/* Destino atual: a mesma pastilha de tinte azul com texto azul do menu de
+   desktop. */
 .nav-menu-link.active {
   color: var(--accent-text);
   font-weight: 600;

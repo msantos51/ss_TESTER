@@ -13,19 +13,17 @@
    cor mudar no site, muda aqui com o mesmo valor — é o que faz a app e o
    site parecerem a mesma marca.
 
-   Regras de contraste herdadas do site — as duas cores da marca são claras
-   demais para servirem de tinta, por isso cada uma tem a sua variante
-   escurecida da mesma matiz:
-   · --brand-blue (#2AA1B7) e --brand-yellow (#F9B10B) são a marca, mas só
-     como SUPERFÍCIE: sobre branco dão 3,05:1 e 1,85:1.
-   · --ink (#1D6F7E, o azul da marca escurecido) aguanta texto pequeno
-     branco por cima (5,79:1) — daí ser a dos botões e dos fundos escuros.
-   · --ocean (#217E8F) dá 4,72:1 com branco: serve de fundo com texto
-     branco e de texto pequeno sobre a tela. --ocean-bright (#2AA1B7) é o
-     azul da marca, para tintes, pins e realces sobre escuro.
+   Regras de cor herdadas do site:
+   · AZUL #2AA1B7 é o azul de toda a app: botões, ícones, estados ativos,
+     texto azul e tintes. Todos os tokens azuis (--ink, --ocean,
+     --ocean-ink, --ocean-text, --blue, --primary) apontam para ele — é uma
+     decisão da marca: um só azul, igual na app e no site. Contraste: 3,05:1
+     com branco. Chega para ícones e texto grande/negrito (≥3:1); texto
+     pequeno azul, ou branco por cima dele, fica abaixo de AA (4,5:1).
+     O hover e o toque escurecem-no para #217E8F (--ink-hover).
    · --sun (#F9B10B) é sempre fundo com --sun-ink por cima (17,85:1); como
      TEXTO sobre a tela usa-se --sun-text (#825C03, 6,03:1) e sobre os
-     painéis azul-profundo usa-se --sun-soft (#FFDBA4, 4,75:1).
+     painéis azuis usa-se --sun-soft (#FFDBA4).
 
    A Manrope é a letra única da marca (site + app), auto-hospedada em
    /fonts e declarada no @font-face abaixo — sem ligação ao Google Fonts.
@@ -59,13 +57,13 @@
   /* ── Paleta da marca ──────────────────────── */
   --brand-blue: #2AA1B7;       /* AZUL da marca */
   --brand-yellow: #F9B10B;     /* AMARELO da marca */
-  --ink: #1D6F7E;              /* o azul escurecido: fundo escuro, botões primários */
-  --ink-hover: #175A66;
-  --ocean: #217E8F;            /* azul de tinta: ícones de lista, preços, botões (4,72:1) */
+  --ink: #2AA1B7;              /* o azul da marca: botões primários, fundos azuis */
+  --ink-hover: #217E8F;        /* hover e toque */
+  --ocean: #2AA1B7;            /* ícones de lista, preços, botões */
   --ocean-bright: #2AA1B7;     /* o azul da marca: tintes, pins, realces sobre escuro */
   --ocean-tint: #D3E7F8;       /* fundo de ícones, pílula do separador ativo */
-  --ocean-ink: #1D6F7E;        /* o azul escurecido para glifos sobre o tinte (5,28:1) */
-  --ocean-text: #217E8F;       /* o azul como texto sobre a tela (4,94:1) */
+  --ocean-ink: #2AA1B7;        /* glifos sobre o tinte */
+  --ocean-text: #2AA1B7;       /* o azul como texto sobre a tela */
   --sun: #F9B10B;              /* acento: CTA, avatar, pin do mapa — sempre fundo */
   --sun-ink: #201601;          /* texto sobre o acento (17,85:1) */
   --sun-text: #825C03;         /* o amarelo como texto sobre a tela (6,03:1) */
@@ -73,7 +71,7 @@
   --coral: #BB3E03;            /* só o que é urgente (parar a partilha) */
   --coral-hover: #9A3303;
   --forest: #1D5C3A;           /* presença de vendedores: pins do mapa */
-  --blue: #217E8F;             /* azul utilitário: "a tua posição", avisos */
+  --blue: #2AA1B7;             /* azul utilitário: "a tua posição", avisos */
   --sand: #F7FAFB;             /* fundo geral dos ecrãs (neutro frio) */
   --sand-alt: #ECF2F4;         /* o neutro mais escuro (puxadores, chips) */
   --surface: #FFFFFF;          /* cartões, linhas de lista, tab bar */
@@ -170,11 +168,9 @@
      Os ecrãs ainda não refinados (login, registo, planos, faturas)
      continuam a usar estes nomes; apontá-los para a paleta nova muda
      o tom da app toda de uma vez. */
-  /* --primary carrega texto branco (.btn-primary), por isso é o azul
-     escurecido (--ink, 5,79:1) e não o #2AA1B7 da marca, que com branco
-     dá 3,05:1 e reprova AA. */
+  /* --primary carrega texto branco (.btn-primary): é o azul da marca. */
   --primary: var(--ink);
-  --primary-hover: #175A66;
+  --primary-hover: #217E8F;
   --primary-dark: #12434D;
   --primary-light: var(--ocean-tint);
   --primary-light-solid: #D3E7F8;
@@ -402,7 +398,7 @@ body {
    Alinhado com o site "Vidro & Maré": tela azul muito clara (sem
    gradientes nem halos), painel branco flutuante de cantos grandes,
    logótipo da marca num cartão branco e uma única ação em pílula
-   azul-profundo. */
+   azul. */
 .login-screen {
   background: var(--sand);
   justify-content: flex-start;
@@ -470,7 +466,7 @@ body {
 }
 
 /* Campos com preenchimento neutro frio (como o site), sem borda visível
-   até ao foco, que traz o contorno azul-profundo. */
+   até ao foco, que traz o contorno azul. */
 .login-screen .input-group input {
   background: var(--field-bg);
   border-color: transparent;
@@ -601,12 +597,12 @@ body {
   background: var(--primary);
   color: white;
   width: 100%;
-  box-shadow: 0 4px 14px rgba(29, 111, 126, 0.28);
+  box-shadow: 0 4px 14px rgba(42, 161, 183, 0.28);
 }
 
 .btn-primary:active:not(:disabled) {
   background: var(--primary-dark);
-  box-shadow: 0 2px 8px rgba(29, 111, 126, 0.18);
+  box-shadow: 0 2px 8px rgba(42, 161, 183, 0.18);
 }
 
 .btn-danger {
@@ -660,7 +656,7 @@ body {
   font-weight: 800;
   letter-spacing: -0.3px;
   border-radius: var(--radius-full);
-  box-shadow: 0 8px 28px rgba(29, 111, 126, 0.35);
+  box-shadow: 0 8px 28px rgba(42, 161, 183, 0.35);
 }
 
 .btn-danger.location-toggle-btn {
@@ -679,9 +675,9 @@ body {
 }
 
 .info-msg {
-  background: rgba(16, 120, 160, 0.08);
+  background: rgba(42, 161, 183, 0.08);
   color: var(--blue);
-  border: 1px solid rgba(16, 120, 160, 0.35);
+  border: 1px solid rgba(42, 161, 183, 0.35);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
   font-size: 14px;
@@ -1490,7 +1486,7 @@ body {
   font-size: var(--fs-btn);
   font-weight: 800;
   letter-spacing: -0.2px;
-  box-shadow: 0 6px 18px rgba(29, 111, 126, 0.28);
+  box-shadow: 0 6px 18px rgba(42, 161, 183, 0.28);
 }
 
 .welcome-btn-secondary {
