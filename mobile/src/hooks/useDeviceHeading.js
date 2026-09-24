@@ -21,11 +21,20 @@ const MAX_COMPASS_JUMP_DEG = 60;
 // Confirmação: o mesmo salto grande a repetir-se é mesmo uma viragem, não
 // ruído de um instante.
 const SPIKE_CONFIRM_DEG = 20;
-// (em português) Não há mais filtros aqui, e é de propósito. Uma média corrida
-// e uma zona morta de 7° por cima da suavização por fotograma do mapa
-// deixavam o rumo atrasado e, parado, até 7° ao lado de onde o telemóvel
-// aponta — a seta "sempre ao lado". Como no site, a única suavização é a do
-// MapRotationController.
+// (em português) Parado, o magnetómetro oscila uns graus a cada leitura e isso
+// fazia a seta e o mapa tremer. Uma zona morta simples tirava o tremer mas
+// deixava o rumo parado até 7° ao lado de onde o telemóvel aponta. Aqui há
+// histerese: em repouso, só uma diferença maior do que `WAKE_DEG` acorda o
+// rumo; acordado, segue a média até ela estabilizar, e só então volta a
+// repousar — por isso uma viragem real acaba sempre alinhada, sem sobra.
+// A média é adaptativa: pesada para o tremer pequeno, rápida numa viragem.
+const EMA_ALPHA_MIN = 0.06;
+const EMA_ALPHA_MAX = 0.5;
+const EMA_FAST_GAP_DEG = 30;
+const WAKE_DEG = 4;
+const SETTLE_DEG = 1.5;
+const SETTLE_MS = 400;
+const GPS_MIN_SPEED = 0.8;
 
 function bearingGapDeg(a, b) {
   const diff = Math.abs(a - b) % 360;
@@ -51,6 +60,11 @@ export default function useDeviceHeading() {
   // `acceptCompassHeading`.
   const lastCompassHeadingRef = useRef(null);
   const pendingSpikeRef = useRef(null);
+  // Média da bússola, se o rumo está a seguir uma viragem, e onde/quando a
+  // média parou de mexer — ver `acceptCompassHeading`.
+  const compassEmaRef = useRef(null);
+  const trackingRef = useRef(true);
+  const settleAnchorRef = useRef({ value: null, ts: 0 });
 
   // Uma leitura de rumo: os dois refs ficam sempre em dia; o estado só assina
   // a primeira leitura.
@@ -82,7 +96,35 @@ export default function useDeviceHeading() {
       pendingSpikeRef.current = null;
     }
     lastCompassHeadingRef.current = raw;
-    pushHeading(raw);
+
+    const ema = compassEmaRef.current;
+    if (ema === null) {
+      compassEmaRef.current = raw;
+    } else {
+      let diff = raw - ema;
+      if (diff > 180) diff -= 360;
+      if (diff < -180) diff += 360;
+      const alpha = Math.min(
+        EMA_ALPHA_MAX,
+        EMA_ALPHA_MIN + (Math.abs(diff) / EMA_FAST_GAP_DEG) * (EMA_ALPHA_MAX - EMA_ALPHA_MIN),
+      );
+      compassEmaRef.current = (ema + diff * alpha + 360) % 360;
+    }
+    const smoothed = compassEmaRef.current;
+    const now = Date.now();
+
+    if (!trackingRef.current) {
+      if (headingRef.current !== null && bearingGapDeg(smoothed, headingRef.current) <= WAKE_DEG) return;
+      trackingRef.current = true;
+      settleAnchorRef.current = { value: smoothed, ts: now };
+    }
+    pushHeading(smoothed);
+    const anchor = settleAnchorRef.current;
+    if (anchor.value === null || bearingGapDeg(smoothed, anchor.value) > SETTLE_DEG) {
+      settleAnchorRef.current = { value: smoothed, ts: now };
+    } else if (now - anchor.ts > SETTLE_MS) {
+      trackingRef.current = false;
+    }
   };
 
   // Ativa a bússola. No iOS 13+ `requestPermission` TEM de ser chamado a
@@ -162,8 +204,10 @@ export default function useDeviceHeading() {
   // O plugin nativo do Android entrega `Location.getBearing()` sem ver se há
   // rumo, e sem rumo isso é 0 exato: um "norte" falso que punha a seta a
   // apontar para cima do mapa. Um rumo real de 0,000° exatos não acontece.
+  // Parado, o GPS ainda inventa velocidades de meio metro por segundo com um
+  // rumo ao acaso; abaixo de `GPS_MIN_SPEED` quem manda é a bússola.
   const reportGpsHeading = (gpsHeading, speed) => {
-    if (gpsHeading != null && !isNaN(gpsHeading) && gpsHeading !== 0 && speed != null && speed > 0.3) {
+    if (gpsHeading != null && !isNaN(gpsHeading) && gpsHeading !== 0 && speed != null && speed > GPS_MIN_SPEED) {
       gpsMovingRef.current = true;
       lastHeadingTs.current = Date.now();
       // O GPS pode levar o rumo para um lado bem diferente de onde a bússola
@@ -171,6 +215,9 @@ export default function useDeviceHeading() {
       // não era ruído nenhum e ficava presa à espera de confirmação.
       lastCompassHeadingRef.current = null;
       pendingSpikeRef.current = null;
+      compassEmaRef.current = null;
+      trackingRef.current = true;
+      settleAnchorRef.current = { value: null, ts: 0 };
       pushHeading(gpsHeading);
     } else {
       gpsMovingRef.current = false;
