@@ -12,15 +12,37 @@ const MIN_DURATION = 300;
 const MAX_DURATION = 1000;
 const DEFAULT_DURATION = 600;
 
+// Desloca o mapa para o pin ficar no centro, com precisão abaixo do píxel: o
+// `panBy` do Leaflet arredonda ao píxel e, a cada fotograma, isso tremia. É o
+// mesmo deslocamento que o Leaflet usa ao arrastar o mapa com o dedo. O painel
+// do mapa não roda (roda o painel dos tiles, lá dentro), por isso a conta é
+// feita no referencial do painel do pin.
+function centerOn(map, marker) {
+  if (map._animatingZoom || map._panAnim?._inProgress) return;
+  const layerPoint = map.latLngToLayerPoint(marker.getLatLng());
+  const panePoint = map._rotate ? map.rotatedPointToMapPanePoint(layerPoint) : layerPoint;
+  const offset = panePoint.add(map._getMapPanePos()).subtract(map.getSize().divideBy(2));
+  if (Math.abs(offset.x) < 0.01 && Math.abs(offset.y) < 0.01) return;
+  map._rawPanBy(offset);
+  map.fire('move');
+}
+
 // Marcador do vendedor, desenhado à mão em vez de pelo <Marker> do
 // react-leaflet. O motivo é a fluidez: o rumo muda dez vezes por segundo e o
 // componente do react-leaflet responde a cada mudança de ícone trocando o
 // elemento no DOM — o que corta a animação em curso, reinicia o halo a pulsar
 // e devolve o pin à última posição entregue. Aqui o elemento é criado uma vez;
 // a posição muda por interpolação e o rumo por variável CSS, sem tocar no DOM.
-export default function AnimatedMarker({ position, icon, hasHeading }) {
+//
+// Com `follow`, o mapa desliza com o pin no mesmo fotograma e o pin fica
+// sempre no centro, como no site. Seguir por saltos (o mapa só andava quando o
+// pin se afastava do centro) punha o pin e o mapa a mexer-se cada um ao seu
+// ritmo, que era a falta de fluidez da app.
+export default function AnimatedMarker({ position, icon, hasHeading, follow = false }) {
   const map = useMap();
   const markerRef = useRef(null);
+  const followRef = useRef(follow);
+  followRef.current = follow;
   // Posição mostrada neste instante (o fotograma a meio da interpolação), de
   // onde arranca a animação seguinte: partir da última leitura entregue faria
   // o pin saltar para trás sempre que uma nova chegasse a meio do caminho.
@@ -91,7 +113,13 @@ export default function AnimatedMarker({ position, icon, hasHeading }) {
       const lng = from[1] + (to[1] - from[1]) * t;
       currentRef.current = [lat, lng];
       marker.setLatLng(currentRef.current);
-      if (t < 1) animFrameRef.current = requestAnimationFrame(step);
+      if (followRef.current) centerOn(map, marker);
+      if (t < 1) {
+        animFrameRef.current = requestAnimationFrame(step);
+      } else if (followRef.current) {
+        // Os tiles só se atualizam no fim do movimento, como num arrasto.
+        map.fire('moveend');
+      }
     };
     animFrameRef.current = requestAnimationFrame(step);
 
