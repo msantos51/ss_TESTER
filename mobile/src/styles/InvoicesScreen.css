@@ -11,9 +11,13 @@
   animation: slideIn 0.3s ease-out;
 }
 
+/* A app desenha por baixo da barra de navegação do Android (edge-to-edge):
+   sem o recuo da safe area, a lista ficava tapada pelos botões de voltar,
+   início e recentes. É o mesmo recuo das outras folhas (.ss-sheet). */
 .invoices-sheet {
   width: 100%;
   max-height: 90vh;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   background: var(--bg);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   display: flex;
