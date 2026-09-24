@@ -1,8 +1,15 @@
 name: Android Release (AAB)
 
 # Gera o Android App Bundle (.aab) assinado para carregar na Google Play
-# Console, sem precisar de um PC local. Corre à mão: Actions → "Android
-# Release (AAB)" → Run workflow. O .aab fica nos artefactos da execução.
+# Console, sem precisar de um PC local. O .aab fica nos artefactos da
+# execução. Corre sozinho em cada commit no main que mexa na app (mobile/),
+# e também à mão: Actions → "Android Release (AAB)" → Run workflow, para
+# escolher o versionCode/versionName.
+#
+# O versionCode automático é o número da execução + 1, que sobe sempre. Se
+# um dia correres à mão com um versionCode maior do que esse, as execuções
+# automáticas seguintes geram números mais baixos e a Play Store recusa-os
+# até o número da execução o ultrapassar.
 #
 # Secrets necessários (Settings → Secrets and variables → Actions):
 #   ANDROID_KEYSTORE_BASE64   chave de upload (.jks) codificada em base64
@@ -12,6 +19,13 @@ name: Android Release (AAB)
 #   CARTO_API_KEY             (opcional) estilo do mapa igual ao do site
 
 on:
+  push:
+    branches: [main]
+    # Só quando a app muda: um commit só do site ou do backend daria um .aab
+    # igual ao anterior.
+    paths:
+      - "mobile/**"
+      - ".github/workflows/android-release.yml"
   workflow_dispatch:
     inputs:
       version_code:
@@ -114,7 +128,8 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           INPUT_VERSION_CODE: ${{ inputs.version_code }}
           RUN_NUMBER: ${{ github.run_number }}
-          VERSION_NAME: ${{ inputs.version_name }}
+          # Num push não há inputs: fica o versionName por omissão.
+          VERSION_NAME: ${{ inputs.version_name || '1.0' }}
         run: |
           # As expressões do GitHub não fazem contas; o +1 evita chocar com o
           # versionCode 1 de um eventual primeiro carregamento feito à mão.
