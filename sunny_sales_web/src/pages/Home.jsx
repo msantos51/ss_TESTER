@@ -1105,9 +1105,17 @@ export default function Home() {
                         />
                       ))}
                     </span>
+                    {/* "avaliações" por extenso: só com as estrelas e um
+                        número entre parênteses não se percebia que é a média
+                        do que os clientes deram ao vendedor. */}
                     <span className="card-rating-text">
-                      {selected.rating_average.toFixed(1)}
-                      <span className="card-rating-count"> ({selected.rating_count})</span>
+                      {selected.rating_average.toLocaleString('pt-PT', {
+                        minimumFractionDigits: 1, maximumFractionDigits: 1,
+                      })}
+                      <span className="card-rating-count">
+                        {' · '}{selected.rating_count}{' '}
+                        {selected.rating_count === 1 ? 'avaliação' : 'avaliações'}
+                      </span>
                     </span>
                   </div>
                 )}

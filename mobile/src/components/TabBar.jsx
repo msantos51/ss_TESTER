@@ -19,7 +19,9 @@ export const TABS = [
   { id: 'map', label: 'Mapa', icon: FiMapPin },
   { id: 'products', label: 'Produtos', icon: FiShoppingBag },
   { id: 'premium', label: 'Premium', icon: FiStar },
-  { id: 'qr', label: 'QR Code', icon: QrIcon },
+  // O separador chama-se pelo que o vendedor ganha (avaliações dos clientes),
+  // não pela ferramenta; o ícone do QR mostra como elas chegam.
+  { id: 'qr', label: 'Avaliações', icon: QrIcon },
   { id: 'account', label: 'Conta', icon: FiUser },
 ];
 

@@ -31,7 +31,7 @@ const COMPARISON = [
   { id: 'destaque', icon: FiStar, label: 'Estrela no teu pin', free: null, premium: true },
   { id: 'alcance', icon: FiRadio, label: 'Alcance no mapa', free: '300 m', premium: '1 km' },
   { id: 'produtos', icon: FiShoppingBag, label: 'Produtos com foto e preço', free: null, premium: true },
-  { id: 'avaliacoes', icon: FiAward, label: 'Média de estrelas', free: null, premium: true },
+  { id: 'avaliacoes', icon: FiAward, label: 'Avaliações dos clientes', free: null, premium: true },
 ];
 
 const TRUST = [
@@ -48,6 +48,10 @@ const FAQS = [
   {
     q: 'É cobrado todos os meses?',
     a: 'Não. Pagas uma vez e ficas com 30 dias. Se comprares antes de acabar, os dias somam-se.',
+  },
+  {
+    q: 'Como funcionam as avaliações?',
+    a: 'No separador Avaliações tens o teu QR code. Depois de uma venda, o cliente lê-o com a câmara e dá-te de 1 a 5 estrelas. As avaliações ficam sempre guardadas; com Premium, a média aparece no teu cartão no mapa.',
   },
   {
     q: 'E quando o Premium acabar?',
