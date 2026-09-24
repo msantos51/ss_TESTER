@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
-import { registerPlugin } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 // Mesmo plugin de rotação do mapa do site: o mapa da app roda com o gesto de
@@ -63,6 +63,15 @@ const GOOD_FIX_HOLD_MS = 15000;
 // Ao iniciar a partilha, quanto tempo se espera por um fix preciso antes de
 // enviar o melhor que houver.
 const INITIAL_FIX_TIMEOUT_MS = 8000;
+// (em português) No Android o plugin usa o `timeout` como intervalo do watch e
+// traz um intervalo mínimo de 5 s por omissão: o pin recebia uma posição a cada
+// 5–10 s (e o rumo do GPS, em andamento, também), enquanto o browser do site
+// entrega uma por segundo. No browser o `timeout` é mesmo um prazo, e 1 s daria
+// erros de tempo esgotado — por isso só se aplica no nativo.
+const WATCH_INTERVAL_MS = 1000;
+const WATCH_OPTIONS = Capacitor.isNativePlatform()
+  ? { enableHighAccuracy: true, maximumAge: 0, timeout: WATCH_INTERVAL_MS, minimumUpdateInterval: WATCH_INTERVAL_MS }
+  : { enableHighAccuracy: true, maximumAge: 0 };
 
 // Distância entre duas coordenadas, em metros (equirretangular: a menos de um
 // metro em distâncias de praia, e sem a trigonometria toda do haversine).
@@ -448,7 +457,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
           // `maximumAge: 0` como no site: uma posição guardada em cache é
           // uma posição velha, e no mapa vê-se como um pin que anda atrasado
           // em relação ao vendedor.
-          { enableHighAccuracy: true, maximumAge: 0 },
+          WATCH_OPTIONS,
           (pos, err) => {
             if (!active) return;
             if (err) {

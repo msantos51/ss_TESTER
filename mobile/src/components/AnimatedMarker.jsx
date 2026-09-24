@@ -6,9 +6,10 @@ import L from 'leaflet';
 // dava um pin que andava meio segundo e parava até à leitura seguinte — o
 // andamento aos empurrões que se nota na app. Aqui a duração acompanha o
 // intervalo real entre leituras, dentro de limites sãos, para o pin deslizar
-// sem interrupções à velocidade a que o vendedor anda mesmo.
+// sem interrupções à velocidade a que o vendedor anda mesmo. O teto é o
+// intervalo do watch (1 s): acima disso o pin ficava para trás do vendedor.
 const MIN_DURATION = 300;
-const MAX_DURATION = 1600;
+const MAX_DURATION = 1000;
 const DEFAULT_DURATION = 600;
 
 // Marcador do vendedor, desenhado à mão em vez de pelo <Marker> do
