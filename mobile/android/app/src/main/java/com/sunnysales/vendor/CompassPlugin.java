@@ -21,6 +21,9 @@ import com.getcapacitor.annotation.CapacitorPlugin;
  * Os eventos `deviceorientation` da WebView não são de confiança: no telemóvel
  * do vendedor o mapa da app rodava ao contrário do mapa do site, com o mesmo
  * código JavaScript. Aqui o rumo sai direto do sensor, como no Google Maps.
+ *
+ * O rumo é para onde o vendedor está virado: o topo do telemóvel quando está
+ * deitado, a traseira quando está em pé — ver `headingDegrees`.
  */
 @CapacitorPlugin(name = "Compass")
 public class CompassPlugin extends Plugin implements SensorEventListener {
@@ -33,7 +36,6 @@ public class CompassPlugin extends Plugin implements SensorEventListener {
     private long lastEmitMs = 0;
     private final float[] rotationMatrix = new float[9];
     private final float[] remappedMatrix = new float[9];
-    private final float[] orientation = new float[3];
 
     @Override
     public void load() {
@@ -95,8 +97,8 @@ public class CompassPlugin extends Plugin implements SensorEventListener {
         lastEmitMs = now;
 
         SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
-        // O rumo é o do topo do ecrã: com o ecrã rodado, os eixos do sensor
-        // têm de ser trocados para continuarem a bater com o que se vê.
+        // Os eixos são os do ecrã: com o ecrã rodado, os do sensor têm de ser
+        // trocados para o topo continuar a ser o topo do que se vê.
         int axisX = SensorManager.AXIS_X;
         int axisY = SensorManager.AXIS_Y;
         switch (displayRotation()) {
@@ -116,12 +118,40 @@ public class CompassPlugin extends Plugin implements SensorEventListener {
                 break;
         }
         SensorManager.remapCoordinateSystem(rotationMatrix, axisX, axisY, remappedMatrix);
-        SensorManager.getOrientation(remappedMatrix, orientation);
 
-        double heading = (Math.toDegrees(orientation[0]) + 360.0) % 360.0;
         JSObject data = new JSObject();
-        data.put("heading", heading);
+        data.put("heading", headingDegrees(remappedMatrix));
         notifyListeners("heading", data);
+    }
+
+    /**
+     * Rumo, em graus a partir do norte e no sentido dos ponteiros do relógio,
+     * para onde o vendedor está virado, a partir da matriz de rotação já nos
+     * eixos do ecrã.
+     *
+     * O `getOrientation` dá o rumo do topo do ecrã, que só serve com o
+     * telemóvel deitado. Em pé — no suporte da carrinha, ou erguido à frente
+     * da cara — o topo aponta para o céu e a sua projeção no chão fica quase
+     * nula: meio grau de tremor do suporte chegava para ela rodar dezenas de
+     * graus, e o mapa rodava sozinho com o vendedor parado. Em pé, para onde
+     * ele olha é para onde aponta a traseira do telemóvel. As duas direções
+     * entram aqui com o peso da inclinação: deitado conta o topo, em pé conta
+     * a traseira, e pelo meio as duas apontam para o mesmo lado e somam-se —
+     * sem degrau na passagem de uma para a outra.
+     */
+    static double headingDegrees(float[] r) {
+        // Colunas da matriz: os eixos do telemóvel no referencial do mundo
+        // (este, norte, cima). Y é o topo do ecrã; Z sai do ecrã para a cara,
+        // por isso a traseira é -Z.
+        double topEast = r[1];
+        double topNorth = r[4];
+        double topUp = r[7];
+        // Peso do topo: o tamanho da sua projeção no chão (1 deitado, 0 em
+        // pé). Peso da traseira: quanto o topo aponta para cima (o contrário).
+        double flat = Math.hypot(topEast, topNorth);
+        double east = flat * topEast - topUp * r[2];
+        double north = flat * topNorth - topUp * r[5];
+        return (Math.toDegrees(Math.atan2(east, north)) + 360.0) % 360.0;
     }
 
     @Override
