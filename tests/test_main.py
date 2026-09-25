@@ -1489,3 +1489,18 @@ def test_products_reject_blank_name_and_invalid_price(client):
     resp = client.post(url, data={"name": "  Bola  ", "price": "1.5"}, headers=headers)
     assert resp.status_code == 200
     assert resp.json()["name"] == "Bola"
+
+
+def test_database_url_uses_the_installed_postgres_driver():
+    """O Railway pode dar o URL em vários formatos; todos usam o psycopg2."""
+    from backend.app.database import normalize_database_url
+
+    for url in (
+        "postgres://u:p@h:5432/db",
+        "postgresql://u:p@h:5432/db",
+        "postgresql+psycopg://u:p@h:5432/db",
+        "postgresql+psycopg2://u:p@h:5432/db",
+    ):
+        assert normalize_database_url(url) == "postgresql+psycopg2://u:p@h:5432/db"
+    assert normalize_database_url("sqlite:///./app.db") == "sqlite:///./app.db"
+    assert normalize_database_url(None) is None
