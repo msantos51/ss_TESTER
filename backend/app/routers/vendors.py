@@ -41,8 +41,12 @@ from ..utils import utcnow, validate_nif
 
 router = APIRouter()
 
+EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+
 @router.post("/vendors/resend-confirmation")
+@limiter.limit("3/minute")
 async def resend_confirmation_email(
+    request: Request,
     background_tasks: BackgroundTasks,
     email: str = Body(..., embed=True),
     db: Session = Depends(get_db),
@@ -89,13 +93,20 @@ async def create_vendor(
     if not terms_accepted:
         raise HTTPException(status_code=400, detail="É necessário aceitar os Termos e Condições")
 
+    name = name.strip()
+    email = email.strip()
+    if not name or len(name) > 200:
+        raise HTTPException(status_code=400, detail="Indica um nome com até 200 caracteres.")
+    if not EMAIL_RE.match(email):
+        raise HTTPException(status_code=400, detail="Introduz um email válido.")
+
     if not validate_nif(nif):
         raise HTTPException(status_code=400, detail="NIF inválido")
 
     db_vendor = db.query(models.Vendor).filter(models.Vendor.email == email).first()
     if db_vendor:
         security_logger.warning(f"Registration attempt with existing email: {email} from {request.client.host}")
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="Já existe uma conta com este email.")
 
     db_nif = db.query(models.Vendor).filter(models.Vendor.nif == nif).first()
     if db_nif:
@@ -115,7 +126,6 @@ async def create_vendor(
         hashed_password=hashed_password,
         product=product,
         profile_photo=photo_path,
-        pin_color="#7B61FF",
         email_confirmed=False,
         confirmation_token=confirmation_token,
         nif=nif,
@@ -239,15 +249,19 @@ async def update_vendor_profile(
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found")
     if current_vendor.id != vendor_id:
-        raise HTTPException(status_code=403, detail="Not authorized")
+        raise HTTPException(status_code=403, detail="Sem permissão para alterar este perfil.")
 
-    if name:
-        if len(name) > 200:
-            raise HTTPException(status_code=400, detail="Name too long")
-        vendor.name = name.strip()
+    if name is not None and name.strip() != (vendor.name or ""):
+        name = name.strip()
+        if not name or len(name) > 200:
+            raise HTTPException(status_code=400, detail="Indica um nome com até 200 caracteres.")
+        vendor.name = name
     # Alteração de email: não muda já o email; envia link de confirmação para o
     # novo endereço e só ao confirmar é que o email passa a estar ativo.
+    email = email.strip() if email else email
     if email and email != vendor.email:
+        if not EMAIL_RE.match(email):
+            raise HTTPException(status_code=400, detail="Introduz um email válido.")
         existing = (
             db.query(models.Vendor)
             .filter(models.Vendor.email == email, models.Vendor.id != vendor_id)
@@ -259,7 +273,7 @@ async def update_vendor_profile(
             .first()
         )
         if existing or pending:
-            raise HTTPException(status_code=400, detail="Email already in use")
+            raise HTTPException(status_code=400, detail="Este email já está a ser usado por outra conta.")
         vendor.pending_email = email
         vendor.email_change_token = uuid4().hex
         background_tasks.add_task(
@@ -269,9 +283,9 @@ async def update_vendor_profile(
     if new_password or password:
         new_pass = new_password if new_password is not None else password
         if not old_password:
-            raise HTTPException(status_code=400, detail="Old password required")
+            raise HTTPException(status_code=400, detail="Indica a palavra-passe atual para a alterares.")
         if not pwd_context.verify(old_password, vendor.hashed_password):
-            raise HTTPException(status_code=400, detail="Old password incorrect")
+            raise HTTPException(status_code=400, detail="A palavra-passe atual está incorreta.")
         validate_password(new_pass)
         vendor.hashed_password = pwd_context.hash(new_pass)
     if product:
@@ -284,7 +298,7 @@ async def update_vendor_profile(
             delete_file(old_photo_path)
     if pin_color:
         if not re.match(r"^#[0-9A-Fa-f]{6}$", pin_color):
-            raise HTTPException(status_code=400, detail="Invalid color format. Use hex: #RRGGBB")
+            raise HTTPException(status_code=400, detail="Cor inválida. Usa o formato #RRGGBB.")
         vendor.pin_color = pin_color
     if payment_methods is not None:
         vendor.payment_methods = payment_methods
@@ -312,7 +326,7 @@ async def update_vendor_profile(
     if iban is not None:
         if iban:
             if len(iban) > 34 or not re.match(r"^[A-Z]{2}[A-Z0-9]+$", iban):
-                raise HTTPException(status_code=400, detail="Invalid IBAN format")
+                raise HTTPException(status_code=400, detail="IBAN inválido.")
             vendor.iban = iban
         else:
             vendor.iban = None

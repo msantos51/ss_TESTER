@@ -74,7 +74,7 @@ export default function InvoicesScreen({ auth, onClose }) {
       <div className="invoices-sheet">
         <div className="invoices-header">
           <h2>Faturas</h2>
-          <button className="btn-icon" onClick={onClose} title="Fechar">
+          <button type="button" className="btn-icon" onClick={onClose} title="Fechar" aria-label="Fechar faturas">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -110,7 +110,9 @@ export default function InvoicesScreen({ auth, onClose }) {
                 </div>
                 {week.receipt_url && (
                   <button
+                    type="button"
                     className="btn-icon invoice-download-btn"
+                    aria-label="Ver recibo"
                     onClick={() => openReceipt(week.receipt_url)}
                     title="Ver recibo"
                   >

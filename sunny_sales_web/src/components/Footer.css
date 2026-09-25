@@ -158,12 +158,12 @@
     grid-column: 1;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px;
+    gap: 0 16px;
     font-size: 0.75rem;
   }
 
   .footer-link-divider {
-    font-size: 0.5rem;
+    display: none;
   }
 }
 
@@ -178,7 +178,7 @@
   }
 
   .footer-links {
-    gap: 7px;
+    gap: 0 14px;
     font-size: 0.72rem;
   }
 }

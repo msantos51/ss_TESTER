@@ -201,7 +201,7 @@ def test_login_requires_confirmation(client):
     register_vendor(client, email="new@example.com")
     resp = client.post("/login", json={"email": "new@example.com", "password": "Secret123"})
     assert resp.status_code == 403
-    assert "Email not confirmed" in resp.json()["detail"]
+    assert "Confirma o teu email" in resp.json()["detail"]
 
     confirm_latest_email(client)
     resp = client.post("/login", json={"email": "new@example.com", "password": "Secret123"})
@@ -409,7 +409,7 @@ def test_email_change_rejects_duplicate(client):
         headers={"Authorization": f"Bearer {token}"},
     )
     assert resp.status_code == 400
-    assert resp.json()["detail"] == "Email already in use"
+    assert resp.json()["detail"] == "Este email já está a ser usado por outra conta."
 
 
 def test_location_update_fields(client):
@@ -1441,3 +1441,51 @@ def test_imprecise_reading_does_not_move_existing_pin(client):
     resp = client.put(url, json={"lat": 38.702, "lng": -9.30, "accuracy": 400}, headers=headers)
     assert "precisão" in resp.json()["message"]
     assert _current_position(client, vendor_id) == (38.70, -9.30)
+
+
+def test_vendor_name_is_escaped_in_confirmation_page_and_email(client):
+    """O nome vem do próprio vendedor: nunca pode entrar como HTML."""
+    register_vendor(client, email="xss@example.com", name="<script>alert(1)</script>")
+    assert "<script>" not in client.sent_emails[-1]["html"]
+    resp = confirm_latest_email(client)
+    assert resp.status_code == 200
+    assert "<script>alert(1)</script>" not in resp.text
+    assert "&lt;script&gt;" in resp.text
+
+
+def test_registration_uses_the_default_pin_color(client):
+    resp = register_vendor(client, email="cor@example.com")
+    assert resp.json()["pin_color"] == "#1D5C3A"
+
+
+def test_registration_rejects_invalid_email(client):
+    resp = register_vendor(client, email="sem-arroba")
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Introduz um email válido."
+
+
+def test_location_update_rejects_impossible_coordinates(client):
+    vendor_id, headers = _start_sharing(client)
+    resp = client.put(
+        f"/vendors/{vendor_id}/location", json={"lat": 123, "lng": -9.3}, headers=headers
+    )
+    assert resp.status_code == 422
+
+
+def test_products_reject_blank_name_and_invalid_price(client):
+    register_vendor(client)
+    confirm_latest_email(client)
+    vendor_id = client.post(
+        "/login", json={"email": "vendor@example.com", "password": "Secret123"}
+    ).json()["id"]
+    token = activate_premium(client, vendor_id)
+    headers = {"Authorization": f"Bearer {token}"}
+    url = f"/vendors/{vendor_id}/products"
+
+    assert client.post(url, data={"name": "   ", "price": "2"}, headers=headers).status_code == 400
+    assert client.post(url, data={"name": "Bola", "price": "-1"}, headers=headers).status_code == 400
+    assert client.post(url, data={"name": "Bola", "price": "inf"}, headers=headers).status_code == 400
+
+    resp = client.post(url, data={"name": "  Bola  ", "price": "1.5"}, headers=headers)
+    assert resp.status_code == 200
+    assert resp.json()["name"] == "Bola"

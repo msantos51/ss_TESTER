@@ -13,7 +13,8 @@ import './AvaliarVendor.css';
 //   • Cada leitura do QR gera uma nova oportunidade de avaliação.
 //   • Refrescar a página antes de avaliar: usa o mesmo token (sessionStorage).
 //   • Refrescar depois de avaliar: token já consumido → "QR já utilizado".
-//   • Fechar o separador e abrir o URL de novo: novo token, pode avaliar.
+//   • Cada dispositivo avalia cada vendedor uma vez (marca em localStorage):
+//     voltar a ler o QR no mesmo telemóvel mostra "Já avaliaste".
 
 const SESSION_KEY = (vendorId) => `ss_review_token_${vendorId}`;
 const RATED_KEY = (vendorId) => `ss_rated_${vendorId}`;
@@ -23,7 +24,10 @@ export default function AvaliarVendor() {
 
   const [vendor, setVendor] = useState(null);
   const [token, setToken] = useState(null);
-  const [status, setStatus] = useState('loading'); // loading | ready | used | invalid | done
+  // loading | ready | rated | used | invalid | error | done
+  const [status, setStatus] = useState('loading');
+  // Incrementar volta a correr o carregamento (botão "Tentar de novo").
+  const [attempt, setAttempt] = useState(0);
   const [hover, setHover] = useState(0);
   const [chosen, setChosen] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -36,7 +40,7 @@ export default function AvaliarVendor() {
     const init = async () => {
       // Se este dispositivo já avaliou este vendedor, mostrar mensagem sem pedir token.
       try {
-        if (localStorage.getItem(RATED_KEY(vendorId))) { setStatus('used'); return; }
+        if (localStorage.getItem(RATED_KEY(vendorId))) { setStatus('rated'); return; }
       } catch { /* privado */ }
 
       // Tentar reutilizar o token desta sessão de browser.
@@ -64,13 +68,18 @@ export default function AvaliarVendor() {
       } catch (err) {
         if (!alive) return;
         const code = err?.response?.status;
-        setStatus(code === 410 ? 'used' : 'invalid');
+        // Só um 404 quer dizer que o vendedor não existe; sem resposta (rede
+        // da praia) ou com erro do servidor, vale a pena tentar outra vez.
+        if (code === 410) setStatus('used');
+        else if (code === 404 || code === 422) setStatus('invalid');
+        else setStatus('error');
       }
     };
 
+    setStatus('loading');
     init();
     return () => { alive = false; };
-  }, [vendorId]);
+  }, [vendorId, attempt]);
 
   const submit = async () => {
     if (!chosen || submitting) return;
@@ -112,14 +121,50 @@ export default function AvaliarVendor() {
     );
   }
 
+  if (status === 'rated') {
+    return (
+      <div className="rate-page">
+        <div className="rate-card">
+          <div className="rate-done-icon" aria-hidden="true"><FiCheck size={28} /></div>
+          <h1 className="rate-title">Já avaliaste</h1>
+          <p className="rate-lead">
+            Já deixaste a tua avaliação a este vendedor neste telemóvel.
+            Obrigado!
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="rate-page">
+        <div className="rate-card">
+          <h1 className="rate-title">Sem ligação</h1>
+          <p className="rate-lead">
+            Não foi possível carregar a avaliação. Verifica a ligação à
+            internet e tenta de novo.
+          </p>
+          <button
+            type="button"
+            className="rate-submit"
+            onClick={() => setAttempt((n) => n + 1)}
+          >
+            Tentar de novo
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (status === 'used') {
     return (
       <div className="rate-page">
         <div className="rate-card">
-          <h1 className="rate-title">Já avaliaste</h1>
+          <h1 className="rate-title">QR code já utilizado</h1>
           <p className="rate-lead">
-            Esta avaliação já foi registada. Para avaliar de novo, lê o QR code
-            do vendedor outra vez.
+            Este código de avaliação já foi usado ou expirou. Lê o QR code do
+            vendedor outra vez para avaliares.
           </p>
         </div>
       </div>

@@ -1,9 +1,14 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiHome, FiHelpCircle, FiMapPin } from 'react-icons/fi';
 import './NotFound.css';
 
 // (em português) Página apresentada quando a rota não existe.
 export default function NotFound() {
+  useEffect(() => {
+    document.title = 'Página não encontrada · Sunny Sales';
+  }, []);
+
   return (
     <div className="notfound">
       <div className="notfound-glow" aria-hidden="true" />

@@ -43,8 +43,8 @@ def _jump_is_plausible(last_point: dict, moved: float, now) -> bool:
 @router.put("/vendors/{vendor_id}/location")
 async def update_vendor_location(
     vendor_id: int,
-    lat: float = Body(...),
-    lng: float = Body(...),
+    lat: float = Body(..., ge=-90, le=90),
+    lng: float = Body(..., ge=-180, le=180),
     # Raio de incerteza da leitura, em metros, tal como o GPS do telemóvel o
     # reporta. Opcional para as versões antigas da app continuarem a funcionar.
     accuracy: float | None = Body(None),
@@ -65,7 +65,7 @@ async def update_vendor_location(
         .first()
     )
     if not active_route:
-        raise HTTPException(status_code=400, detail="Location sharing inactive")
+        raise HTTPException(status_code=400, detail="A partilha de localização não está ativa.")
 
     points = json.loads(active_route.points or "[]")
     last_point = points[-1] if points else None
@@ -159,7 +159,7 @@ async def stop_route(
         .all()
     )
     if not routes:
-        raise HTTPException(status_code=404, detail="Route not found")
+        raise HTTPException(status_code=404, detail="Não há nenhuma partilha ativa para parar.")
 
     latest = routes[0]
     for r in routes:

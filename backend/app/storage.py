@@ -59,15 +59,15 @@ def validate_upload(file: UploadFile, allowed_types: set, allowed_exts: set, lab
         )
 
 
-def upload_file(upload_file: UploadFile, folder: str) -> str:
+def upload_file(upload_file: UploadFile, folder: str, max_size: int = MAX_IMAGE_SIZE) -> str:
     ext = os.path.splitext(upload_file.filename or "")[1].lower()
     file_name = f"{uuid4().hex}{ext}"
 
     if supabase:
         bucket = BUCKET_MAP.get(folder, folder)
         try:
-            content = upload_file.file.read(MAX_IMAGE_SIZE + 1)
-            if len(content) > MAX_IMAGE_SIZE:
+            content = upload_file.file.read(max_size + 1)
+            if len(content) > max_size:
                 raise HTTPException(status_code=413, detail="Ficheiro demasiado grande")
             supabase.storage.from_(bucket).upload(
                 file_name,

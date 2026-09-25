@@ -75,6 +75,18 @@ const DISTANCE_OPTIONS = [
   { label: '5 km', value: 5000 },
 ];
 
+// Raio a que um vendedor conta como "por perto" no cabeçalho da lista: a
+// mesma distância do filtro mais curto. Com 100 m a lista dizia "0 por perto"
+// ao lado de vendedores a 120 m.
+const NEARBY_RADIUS_M = 500;
+
+// Distância para a lista: metros abaixo de 1 km, quilómetros com vírgula
+// decimal acima — "0.1 km" lia-se mal e não é a notação portuguesa.
+function formatDistance(meters) {
+  if (meters < 1000) return `${Math.max(10, Math.round(meters / 10) * 10)} m`;
+  return `${(meters / 1000).toLocaleString('pt-PT', { maximumFractionDigits: 1 })} km`;
+}
+
 function haversineDistance(lat1, lng1, lat2, lng2) {
   const R = 6371000;
   const φ1 = (lat1 * Math.PI) / 180;
@@ -746,7 +758,7 @@ export default function Home() {
 
   const nearbyVendorsCount = clientPos
     ? activeVendors.filter((v) =>
-        haversineDistance(clientPos.lat, clientPos.lng, v.current_lat, v.current_lng) <= 100
+        haversineDistance(clientPos.lat, clientPos.lng, v.current_lat, v.current_lng) <= NEARBY_RADIUS_M
       ).length
     : null;
 
@@ -809,12 +821,42 @@ export default function Home() {
 
   const distanceLabel = DISTANCE_OPTIONS.find((o) => o.value === maxDistance)?.label;
 
+  // Os produtos pertencem a um vendedor: ao trocar de vendedor limpa-se a lista
+  // já, e uma resposta que chegue atrasada (de um vendedor anterior) é
+  // ignorada. Antes o cartão do vendedor B mostrava os produtos do A até a
+  // resposta chegar — ou para sempre, se o pedido do B falhasse.
+  const selectedId = selected?.id ?? null;
   useEffect(() => {
-    if (!selected) { setVendorProducts([]); return; }
-    axios.get(`${BASE_URL}/vendors/${selected.id}/products`)
-      .then(res => setVendorProducts(res.data))
-      .catch(e => console.error('Erro ao carregar produtos do vendedor:', e));
-  }, [selected]);
+    setVendorProducts([]);
+    if (selectedId === null) return undefined;
+    let alive = true;
+    axios.get(`${BASE_URL}/vendors/${selectedId}/products`)
+      .then((res) => { if (alive) setVendorProducts(Array.isArray(res.data) ? res.data : []); })
+      .catch((e) => console.error('Erro ao carregar produtos do vendedor:', e));
+    return () => { alive = false; };
+  }, [selectedId]);
+
+  // O cartão mostra uma cópia do vendedor tirada no clique. Se ele parar a
+  // partilha (ou sair do alcance) o cartão fecha, em vez de ficar aberto para
+  // alguém que já não está no mapa; se continuar, recebe os dados novos.
+  useEffect(() => {
+    if (selectedId === null) return;
+    const fresh = activeVendors.find((v) => v.id === selectedId);
+    if (!fresh) setSelected(null);
+    else if (fresh !== selected) setSelected(fresh);
+    // `activeVendors` é derivado de `vendors`; `selected` só é comparado.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vendors, selectedId]);
+
+  // Painel de filtros (telemóvel): fecha com Escape, como qualquer diálogo.
+  useEffect(() => {
+    if (!showFilterSheet) return undefined;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setShowFilterSheet(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [showFilterSheet]);
 
   return (
     <div className="home">
@@ -975,7 +1017,7 @@ export default function Home() {
                     iconAnchor: [27, 27],
                   })}
                 >
-                  <Popup>Você está aqui</Popup>
+                  <Popup>Estás aqui</Popup>
                 </Marker>
               )}
               {filteredVendors.map((v) => {
@@ -1057,11 +1099,12 @@ export default function Home() {
             </div>
 
             {selected && (
-              <div className="vendor-card">
+              <div className="vendor-card" role="region" aria-label={`Vendedor ${selected.name}`}>
                 <button
+                  type="button"
                   className="close-btn"
                   onClick={() => setSelected(null)}
-                  aria-label="Fechar"
+                  aria-label="Fechar cartão do vendedor"
                 >
                   ×
                 </button>
@@ -1150,7 +1193,9 @@ export default function Home() {
                             </div>
                           )}
                           <span className="card-product-name">{p.name}</span>
-                          <span className="card-product-price">{p.price.toFixed(2)} €</span>
+                          <span className="card-product-price">
+                            {p.price.toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' })}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -1195,7 +1240,13 @@ export default function Home() {
 
             {showFilterSheet && (
               <div className="filter-overlay" onClick={closeFilterSheet}>
-                <div className="filter-sheet" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="filter-sheet"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Filtros"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="filter-sheet-handle" />
                   <div className="filter-sheet-header">
                     <span className="filter-sheet-label">Filtros</span>
@@ -1221,6 +1272,7 @@ export default function Home() {
                             key={p}
                             type="button"
                             className={`filter-option${active ? ' active' : ''}`}
+                            aria-pressed={active}
                             onClick={() => togglePendingProduct(p)}
                           >
                             <FiShoppingBag className="filter-option-icon" size={16} />
@@ -1243,6 +1295,7 @@ export default function Home() {
                             key={opt.label}
                             type="button"
                             className={`filter-distance-opt${pendingDistance === opt.value ? ' active' : ''}`}
+                            aria-pressed={pendingDistance === opt.value}
                             onClick={() => setPendingDistance(opt.value)}
                           >
                             {opt.label}
@@ -1340,7 +1393,7 @@ export default function Home() {
                       )}
                       {clientPos && (
                         <p className="vendor-item-distance">
-                          {(haversineDistance(clientPos.lat, clientPos.lng, v.current_lat, v.current_lng) / 1000).toFixed(1)} km
+                          {formatDistance(haversineDistance(clientPos.lat, clientPos.lng, v.current_lat, v.current_lng))}
                         </p>
                       )}
                     </div>

@@ -3,7 +3,7 @@ import {
   FiPlus, FiX, FiTrash2, FiEdit2, FiCheck, FiImage, FiCamera, FiAlertTriangle,
   FiStar,
 } from 'react-icons/fi';
-import { BASE_URL, mediaUrl } from '../config.js';
+import { BASE_URL, apiErrorMessage, mediaUrl } from '../config.js';
 import ImageCropper from '../components/ImageCropper';
 import BrandHeader from '../components/BrandHeader.jsx';
 import '../styles/ProductsScreen.css';
@@ -125,8 +125,8 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
         headers: authHeader,
         body: data,
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.detail || 'Erro ao adicionar produto');
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(apiErrorMessage(body, 'Erro ao adicionar produto'));
       setProducts((prev) => [body, ...prev]);
       closeForm();
     } catch (err) {
@@ -187,8 +187,8 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
         headers: authHeader,
         body: data,
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.detail || 'Erro ao guardar alterações');
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(apiErrorMessage(body, 'Erro ao guardar alterações'));
       setProducts((prev) => prev.map((p) => (p.id === productId ? body : p)));
       cancelEdit();
     } catch (err) {
@@ -331,6 +331,8 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
                 className="product-input"
                 type="text"
                 placeholder="Nome do produto"
+                aria-label="Nome do produto"
+                maxLength={100}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -341,6 +343,8 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
                 step="0.01"
                 min="0"
                 placeholder="Preço (€)"
+                aria-label="Preço em euros"
+                inputMode="decimal"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 required
@@ -397,6 +401,8 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
                       className="product-input"
                       type="text"
                       placeholder="Nome do produto"
+                      aria-label="Nome do produto"
+                      maxLength={100}
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       required
@@ -407,6 +413,8 @@ export default function ProductsScreen({ auth, onClose, onGoPremium }) {
                       step="0.01"
                       min="0"
                       placeholder="Preço (€)"
+                      aria-label="Preço em euros"
+                      inputMode="decimal"
                       value={editPrice}
                       onChange={(e) => setEditPrice(e.target.value)}
                       required

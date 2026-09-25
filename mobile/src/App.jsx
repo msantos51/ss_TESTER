@@ -9,6 +9,7 @@ import ProductsScreen from './pages/ProductsScreen.jsx';
 import PremiumScreen from './pages/PremiumScreen.jsx';
 import QRScreen from './pages/QRScreen.jsx';
 import TabBar from './components/TabBar.jsx';
+import { BASE_URL } from './config.js';
 
 export default function App() {
   const [auth, setAuth] = useState(null);
@@ -33,11 +34,50 @@ export default function App() {
     const user = localStorage.getItem('user');
     const vendorId = localStorage.getItem('vendorId');
     if (token && user && vendorId) {
-      setAuth({ token, user: JSON.parse(user), vendorId });
+      let savedUser = null;
+      try { savedUser = JSON.parse(user); } catch { /* estado corrompido */ }
+      if (!savedUser) {
+        clearStoredSession();
+        return;
+      }
+      setAuth({ token, user: savedUser, vendorId });
       setActiveTab('map');
       requestLocationPermissions();
+      refreshStoredSession(token);
     }
   }, []);
+
+  // A sessão guardada pode já não ser válida (foi terminada noutro
+  // dispositivo, ou a conta foi eliminada no site): sem esta verificação a
+  // app abria como se estivesse tudo bem e cada ação falhava com 401. Serve
+  // também para trazer o estado atual do Premium. Sem rede mantém-se o que
+  // está guardado — a app tem de abrir na praia mesmo com 4G fraca.
+  const refreshStoredSession = async (token) => {
+    try {
+      const res = await fetch(`${BASE_URL}/vendors/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.status === 401) {
+        clearStoredSession();
+        setAuth(null);
+        setPublicPage('login');
+        return;
+      }
+      if (res.ok) {
+        const fresh = await res.json();
+        localStorage.setItem('user', JSON.stringify(fresh));
+        setAuth((prev) => (prev && prev.token === token ? { ...prev, user: fresh } : prev));
+      }
+    } catch {
+      /* sem rede: fica o utilizador guardado */
+    }
+  };
+
+  const clearStoredSession = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('vendorId');
+  };
 
   const requestLocationPermissions = async () => {
     try {
@@ -71,9 +111,7 @@ export default function App() {
     } catch (error) {
       console.error('Erro ao parar a partilha antes de sair:', error);
     }
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('vendorId');
+    clearStoredSession();
     setAuth(null);
     setPublicPage('welcome');
     setActiveTab('map');

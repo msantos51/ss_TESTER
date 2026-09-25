@@ -37,7 +37,7 @@ export default function DashboardScreen({ auth, onChangePage, onLogout, onUserUp
   };
 
   const openWebsite = (path) => {
-    window.open(`${WEB_URL}/#${path}`, '_system');
+    window.open(`${WEB_URL.replace(/\/$/, '')}${path}`, '_system');
   };
 
   const groups = [

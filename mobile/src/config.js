@@ -1,6 +1,18 @@
 export const BASE_URL = 'https://sstester-production.up.railway.app';
 export const WEB_URL = 'https://laudable-learning-production-a293.up.railway.app';
 
+// (em português) Mensagem de erro de uma resposta da API. Os erros de
+// validação do FastAPI (422) trazem `detail` como lista de objetos; mostrado
+// tal e qual dava "[object Object]" no ecrã.
+export function apiErrorMessage(body, fallback) {
+  const detail = body?.detail;
+  if (typeof detail === 'string' && detail) return detail;
+  if (Array.isArray(detail) && detail.length) {
+    return detail.map((d) => d?.msg).filter(Boolean).join('; ') || fallback;
+  }
+  return fallback;
+}
+
 export function mediaUrl(path) {
   if (!path) return null;
   if (path.startsWith('http')) return path;

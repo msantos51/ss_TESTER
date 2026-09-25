@@ -64,7 +64,8 @@ function parseTides(data, userLat, userLon) {
     if (d < minDist) { minDist = d; nearest = s; }
   }
 
-  const today = new Date().toISOString().split('T')[0];
+  const d = new Date();
+  const today = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   // Support different field names for the predictions array
   const preds = nearest.tides ?? nearest.predictions ?? nearest.previsao ?? nearest.forecast ?? nearest.data ?? [];
 
@@ -108,28 +109,33 @@ export default function WeatherCard() {
       async ({ coords }) => {
         const { latitude: lat, longitude: lon } = coords;
 
-        // Weather + geocode
-        try {
-          const [wRes, gRes] = await Promise.all([
-            fetch(
-              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
-              `&current=temperature_2m,weathercode` +
-              `&daily=temperature_2m_max,temperature_2m_min` +
-              `&timezone=auto&forecast_days=1`
-            ),
-            fetch(
-              `https://nominatim.base.org/reverse?format=json&lat=${lat}&lon=${lon}`,
-              { headers: { 'Accept-Language': 'pt' } }
-            ),
-          ]);
-          const wData = await wRes.json();
-          const gData = await gRes.json();
-          setWeather(wData);
-          const addr = gData.address || {};
-          setCity(addr.city || addr.town || addr.village || addr.county || '');
+        // Meteorologia e nome da localidade em paralelo, mas independentes: o
+        // nome é só um extra, e uma falha do geocoding não pode esconder o
+        // cartão inteiro (era o que acontecia com o Promise.all).
+        const [wResult, gResult] = await Promise.allSettled([
+          fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+            `&current=temperature_2m,weathercode` +
+            `&daily=temperature_2m_max,temperature_2m_min` +
+            `&timezone=auto&forecast_days=1`
+          ).then((res) => {
+            if (!res.ok) throw new Error(`open-meteo ${res.status}`);
+            return res.json();
+          }),
+          fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&zoom=12&lat=${lat}&lon=${lon}`,
+            { headers: { 'Accept-Language': 'pt' } }
+          ).then((res) => (res.ok ? res.json() : null)),
+        ]);
+        if (wResult.status === 'fulfilled' && wResult.value?.current) {
+          setWeather(wResult.value);
           setStatus('ok');
-        } catch {
+        } else {
           setStatus('error');
+        }
+        if (gResult.status === 'fulfilled' && gResult.value) {
+          const addr = gResult.value.address || {};
+          setCity(addr.city || addr.town || addr.village || addr.county || '');
         }
 
         // Tides — fetched independently so a failure never blocks weather

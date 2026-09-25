@@ -30,9 +30,9 @@ export default function LocateButton({ currentPos = null, onLocationFound, onCli
         setLocating(false);
         // code 1 = PERMISSION_DENIED (bloqueado pelo utilizador ou pelo navegador)
         if (e && e.code === 1) {
-          alert('O acesso à localização está bloqueado. Permita a localização nas definições do navegador e tente novamente.');
+          alert('O acesso à localização está bloqueado. Permite a localização nas definições do navegador e tenta novamente.');
         } else {
-          alert('Não foi possível obter a sua localização. Tente novamente.');
+          alert('Não foi possível obter a tua localização. Tenta novamente.');
         }
       };
 
@@ -44,6 +44,7 @@ export default function LocateButton({ currentPos = null, onLocationFound, onCli
 
   return (
     <button
+      type="button"
       className="locate-btn"
       onClick={handleLocate}
       aria-label="Localizar-me"

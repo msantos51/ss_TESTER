@@ -559,6 +559,10 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
     setLoading(true);
     setError(null);
     setNotice(null);
+    // Depois de o servidor abrir o trajeto, qualquer falha (sem GPS, envio da
+    // primeira posição, arranque do serviço nativo) tem de o voltar a fechar:
+    // senão o pin ficava visível aos banhistas com a app a dizer "Offline".
+    let routeStarted = false;
     try {
       if (!(await ensureLocationPermission())) {
         setError('Permissão de localização negada.');
@@ -571,9 +575,9 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
         headers: authHeader,
       });
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || 'Erro ao iniciar partilha');
+        throw new Error(await readApiError(res, 'Erro ao iniciar partilha'));
       }
+      routeStarted = true;
       // O primeiro ponto é o que os banhistas veem logo: só se reaproveita o
       // pin se ele já tiver uma leitura precisa e fresca; senão pede-se um fix
       // novo, sem cache, e fica o pin como recurso se o GPS não responder.
@@ -646,7 +650,21 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
       });
       setSharing(true);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Não foi possível iniciar a partilha.');
+      sharingRef.current = false;
+      if (routeStarted) {
+        listenerRef.current?.remove();
+        listenerRef.current = null;
+        stoppedListenerRef.current?.remove();
+        stoppedListenerRef.current = null;
+        try { await LocationTracker.stopTracking(); } catch { /* não tinha arrancado */ }
+        try {
+          await fetch(`${BASE_URL}/vendors/${vendorId}/routes/stop`, {
+            method: 'POST',
+            headers: authHeader,
+          });
+        } catch { /* sem rede: o próximo início fecha o trajeto pendente */ }
+      }
     } finally {
       setLoading(false);
     }
@@ -868,7 +886,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
             )}
 
             {mapError && (
-              <div className="map-alert">
+              <div className="map-alert" role="alert">
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                   <line x1="12" y1="9" x2="12" y2="13" />
@@ -890,7 +908,7 @@ export default function MapTab({ auth, onChangePage, onLogout, onUserUpdate, reg
             )}
 
             {error && (
-              <div className="map-alert">
+              <div className="map-alert" role="alert">
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10" />
                   <line x1="12" y1="8" x2="12" y2="12" />

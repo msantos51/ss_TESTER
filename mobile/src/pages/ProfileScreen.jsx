@@ -3,12 +3,12 @@ import {
   FiLock, FiCamera, FiChevronDown, FiChevronUp,
   FiAlertTriangle, FiDownload, FiTrash2,
 } from 'react-icons/fi';
-import { BASE_URL, WEB_URL, mediaUrl } from '../config.js';
+import { BASE_URL, WEB_URL, apiErrorMessage, mediaUrl } from '../config.js';
 import ImageCropper from '../components/ImageCropper';
 import PinColorPicker from '../components/PinColorPicker';
 
 const PAYMENT_METHODS = ['MB Way', 'Numerário', 'Cartão'];
-const DEFAULT_PIN = '#F9B10B';
+const DEFAULT_PIN = '#1D5C3A';
 
 export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDeleted }) {
   const { token, user, vendorId } = auth;
@@ -48,6 +48,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) setCropSrc(URL.createObjectURL(file));
+    e.target.value = '';
   };
 
   const handleCropCancel = () => {
@@ -79,6 +80,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
       const newPaymentMethods = paymentMethods.join(',');
       if (newPaymentMethods !== (user.payment_methods || '')) data.append('payment_methods', newPaymentMethods);
       if (newPassword) {
+        if (!oldPassword) throw new Error('Indica a palavra-passe atual para a alterares.');
         data.append('new_password', newPassword);
         data.append('old_password', oldPassword);
       }
@@ -90,8 +92,8 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
         headers: { Authorization: `Bearer ${token}` },
         body: data,
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.detail || 'Erro ao atualizar perfil.');
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(apiErrorMessage(body, 'Erro ao atualizar perfil.'));
       onUserUpdate(body);
       if (body.pending_email) {
         setEmail(body.email || '');
@@ -184,7 +186,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
         </div>
 
         <form onSubmit={save} className="ss-sheet-body">
-          {error && <div className="ss-error">{error}</div>}
+          {error && <div className="ss-error" role="alert">{error}</div>}
           {info && <div className="info-msg">{info}</div>}
 
           {/* Identidade */}
@@ -376,7 +378,7 @@ export default function ProfileScreen({ auth, onClose, onUserUpdate, onAccountDe
 
             {showDanger && (
               <div className="ss-row-body">
-                {dangerError && <div className="ss-error">{dangerError}</div>}
+                {dangerError && <div className="ss-error" role="alert">{dangerError}</div>}
                 {dangerInfo && <div className="info-msg">{dangerInfo}</div>}
 
                 <p className="ss-row-text">
