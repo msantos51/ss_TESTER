@@ -7,8 +7,26 @@ import os
 
 load_dotenv()  # carrega o .env
 
+
+def normalize_database_url(url: str | None) -> str | None:
+    """Faz o URL do Postgres usar o driver instalado (psycopg2-binary).
+
+    O Railway (e outros fornecedores) podem entregar o URL como `postgres://`,
+    `postgresql://` ou `postgresql+psycopg://`. O último pede o psycopg 3, que
+    não está em requirements.txt, e o arranque falhava com
+    `ModuleNotFoundError: No module named 'psycopg'`; o primeiro nem sequer é
+    reconhecido pelo SQLAlchemy.
+    """
+    if not url:
+        return url
+    for prefix in ("postgres://", "postgresql://", "postgresql+psycopg://"):
+        if url.startswith(prefix):
+            return "postgresql+psycopg2://" + url[len(prefix):]
+    return url
+
+
 # URL da base de dados
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = normalize_database_url(os.getenv("DATABASE_URL"))
 
 # Se não houver DATABASE_URL, cai para SQLite local
 if not DATABASE_URL:
