@@ -2,6 +2,7 @@
 
 import re
 from datetime import timedelta
+from html import escape
 from uuid import uuid4
 
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Request
@@ -37,7 +38,7 @@ def login(request: Request, credentials: schemas.UserLogin, db: Session = Depend
     identifier = credentials.email or credentials.username
     if not identifier or not credentials.password:
         security_logger.warning(f"Login attempt with missing credentials from {request.client.host}")
-        raise HTTPException(status_code=400, detail="Email and password required")
+        raise HTTPException(status_code=400, detail="Indica o email e a palavra-passe.")
 
     vendor = (
         db.query(models.Vendor)
@@ -52,9 +53,9 @@ def login(request: Request, credentials: schemas.UserLogin, db: Session = Depend
     )
     if not vendor or not pwd_context.verify(credentials.password, vendor.hashed_password):
         security_logger.warning(f"Failed login attempt for {identifier} from {request.client.host}")
-        raise HTTPException(status_code=401, detail="Incorrect email or password")
+        raise HTTPException(status_code=401, detail="Email ou palavra-passe incorretos.")
     if not vendor.email_confirmed:
-        raise HTTPException(status_code=403, detail="Email not confirmed")
+        raise HTTPException(status_code=403, detail="Confirma o teu email antes de iniciar sessão.")
     security_logger.info(f"Successful login for vendor {vendor.id}")
     return vendor
 
@@ -90,7 +91,7 @@ async def generate_token(
 
     if not email or not password:
         security_logger.warning(f"Token request with missing credentials from {request.client.host}")
-        raise HTTPException(status_code=400, detail="Email and password required")
+        raise HTTPException(status_code=400, detail="Indica o email e a palavra-passe.")
 
     vendor = (
         db.query(models.Vendor)
@@ -99,9 +100,9 @@ async def generate_token(
     )
     if not vendor or not pwd_context.verify(password, vendor.hashed_password):
         security_logger.warning(f"Failed token request for {email} from {request.client.host}")
-        raise HTTPException(status_code=401, detail="Incorrect email or password")
+        raise HTTPException(status_code=401, detail="Email ou palavra-passe incorretos.")
     if not vendor.email_confirmed:
-        raise HTTPException(status_code=403, detail="Email not confirmed")
+        raise HTTPException(status_code=403, detail="Confirma o teu email antes de iniciar sessão.")
 
     existing_sessions = (
         db.query(models.VendorSession)
@@ -162,7 +163,7 @@ def delete_session(
         .first()
     )
     if not session_obj:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise HTTPException(status_code=404, detail="Sessão não encontrada.")
     db.delete(session_obj)
     db.commit()
     return {"status": "ok"}
@@ -191,7 +192,7 @@ def confirm_email(token: str, db: Session = Depends(get_db)):
         icon="&#9989;",
         heading="Email confirmado com sucesso!",
         heading_color="#2e7d32",
-        message=f"Olá <strong>{vendor.name}</strong>, a tua conta Sunny Sales está agora ativa. Já podes iniciar sessão.",
+        message=f"Olá <strong>{escape(vendor.name or '')}</strong>, a tua conta Sunny Sales está agora ativa. Já podes iniciar sessão.",
         button_label="Fazer Login",
     ))
 
@@ -248,7 +249,7 @@ def confirm_email_change(token: str, db: Session = Depends(get_db)):
         icon="&#9989;",
         heading="Email alterado com sucesso!",
         heading_color="#2e7d32",
-        message=f"Olá <strong>{vendor.name}</strong>, o teu email foi atualizado. Usa o novo email para iniciar sessão.",
+        message=f"Olá <strong>{escape(vendor.name or '')}</strong>, o teu email foi atualizado. Usa o novo email para iniciar sessão.",
         button_label="Fazer Login",
     ))
 
@@ -303,7 +304,7 @@ async def reset_password(token: str, request: Request, db: Session = Depends(get
     )
     if not vendor:
         security_logger.warning(f"Invalid password reset token attempt from {request.client.host}")
-        raise HTTPException(status_code=400, detail="Invalid or expired token")
+        raise HTTPException(status_code=400, detail="Este link já não é válido ou expirou. Pede um novo email de recuperação.")
 
     validate_password(new_password)
 

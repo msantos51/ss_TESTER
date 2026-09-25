@@ -1,5 +1,7 @@
 # emails.py - envio de email transacional (via Resend) e respetivos modelos.
 
+from html import escape
+
 import httpx
 
 from .config import BASE_APP_URL, RESEND_API_KEY, RESEND_FROM
@@ -45,7 +47,7 @@ def send_confirmation_email(name: str, email: str, confirmation_token: str) -> b
           <h1 style="margin:0;color:#ffffff;font-size:24px;">&#9728;&#65039; Sunny Sales</h1>
         </td></tr>
         <tr><td style="padding:30px;">
-          <h2 style="color:#333;margin-top:0;">Olá {name}!</h2>
+          <h2 style="color:#333;margin-top:0;">Olá {escape(name or '')}!</h2>
           <p style="color:#555;font-size:16px;line-height:1.6;">Obrigado por te registares na <strong>Sunny Sales</strong>. Para ativares a tua conta, confirma o teu email clicando no botão abaixo:</p>
           <div style="text-align:center;margin:30px 0;">
             <a href="{confirm_link}" style="background:#FCB454;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Confirmar Email</a>
@@ -85,7 +87,7 @@ def send_email_change_confirmation(name: str, new_email: str, change_token: str)
           <h1 style="margin:0;color:#ffffff;font-size:24px;">&#9728;&#65039; Sunny Sales</h1>
         </td></tr>
         <tr><td style="padding:30px;">
-          <h2 style="color:#333;margin-top:0;">Olá {name}!</h2>
+          <h2 style="color:#333;margin-top:0;">Olá {escape(name or '')}!</h2>
           <p style="color:#555;font-size:16px;line-height:1.6;">Pediste para alterar o email da tua conta <strong>Sunny Sales</strong> para este endereço. Para confirmares a alteração, clica no botão abaixo:</p>
           <div style="text-align:center;margin:30px 0;">
             <a href="{confirm_link}" style="background:#FCB454;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Confirmar Novo Email</a>
@@ -124,7 +126,7 @@ def send_password_reset_email(name: str, email: str, reset_token: str) -> bool:
           <h1 style="margin:0;color:#ffffff;font-size:24px;">&#9728;&#65039; Sunny Sales</h1>
         </td></tr>
         <tr><td style="padding:30px;">
-          <h2 style="color:#333;margin-top:0;">Olá {name}!</h2>
+          <h2 style="color:#333;margin-top:0;">Olá {escape(name or '')}!</h2>
           <p style="color:#555;font-size:16px;line-height:1.6;">Recebemos um pedido para redefinir a palavra-passe da tua conta <strong>Sunny Sales</strong>. Clica no botão abaixo para definires uma nova palavra-passe:</p>
           <div style="text-align:center;margin:30px 0;">
             <a href="{reset_link}" style="background:#FCB454;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;display:inline-block;">Redefinir Palavra-passe</a>

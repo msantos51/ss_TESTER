@@ -76,15 +76,15 @@ def decode_token(token: str) -> dict:
         signing_input = f"{header_b64}.{payload_b64}"
         expected = hmac.new(SECRET_KEY.encode(), signing_input.encode(), hashlib.sha256).digest()
         if not hmac.compare_digest(expected, _b64decode(sig_b64)):
-            raise HTTPException(status_code=401, detail="Invalid token signature")
+            raise HTTPException(status_code=401, detail="Sessão inválida. Inicia sessão novamente.")
         payload = json.loads(_b64decode(payload_b64))
         if payload.get("exp", 0) < int(time.time()):
-            raise HTTPException(status_code=401, detail="Token expired")
+            raise HTTPException(status_code=401, detail="A sessão expirou. Inicia sessão novamente.")
         return payload
     except HTTPException:
         raise
     except Exception:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise HTTPException(status_code=401, detail="Sessão inválida. Inicia sessão novamente.")
 
 
 def get_current_vendor(
@@ -92,7 +92,7 @@ def get_current_vendor(
     db: Session = Depends(get_db),
 ):
     if not credentials:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+        raise HTTPException(status_code=401, detail="Sessão não iniciada.")
     token = credentials.credentials
     payload = decode_token(token)
     vendor_id = payload.get("sub")
@@ -102,14 +102,14 @@ def get_current_vendor(
         .first()
     )
     if not vendor:
-        raise HTTPException(status_code=401, detail="Vendor not found")
+        raise HTTPException(status_code=401, detail="Conta não encontrada. Inicia sessão novamente.")
     session = (
         db.query(models.VendorSession)
         .filter(models.VendorSession.vendor_id == vendor.id, models.VendorSession.token == token)
         .first()
     )
     if not session:
-        raise HTTPException(status_code=401, detail="Session invalidated")
+        raise HTTPException(status_code=401, detail="A sessão foi terminada noutro dispositivo. Inicia sessão novamente.")
     return vendor
 
 

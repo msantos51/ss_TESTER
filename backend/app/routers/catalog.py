@@ -1,6 +1,7 @@
 # catalog.py - produtos e stories dos vendedores.
 
 from datetime import timedelta
+from math import isfinite
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
@@ -30,6 +31,29 @@ from ..utils import utcnow
 
 router = APIRouter()
 
+MAX_PRODUCT_NAME = 100
+MAX_PRODUCT_PRICE = 10000
+
+
+def _clean_product(name: str, price: float) -> tuple[str, float]:
+    """Valida o nome e o preço de um produto antes de o gravar.
+
+    Sem isto aceitava-se um nome só com espaços e qualquer preço — negativo,
+    infinito ou NaN — que depois aparecia assim no cartão do mapa.
+    """
+    name = name.strip()
+    if not name or len(name) > MAX_PRODUCT_NAME:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Indica um nome de produto com até {MAX_PRODUCT_NAME} caracteres.",
+        )
+    if not isfinite(price) or price < 0 or price > MAX_PRODUCT_PRICE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Indica um preço entre 0 e {MAX_PRODUCT_PRICE} €.",
+        )
+    return name, round(price, 2)
+
 @router.post("/vendors/{vendor_id}/stories", response_model=schemas.StoryOut)
 async def create_story(
     vendor_id: int,
@@ -42,7 +66,7 @@ async def create_story(
 
     max_size = MAX_VIDEO_SIZE if file.content_type and "video" in file.content_type else MAX_IMAGE_SIZE
     validate_upload(file, ALLOWED_STORY_TYPES, ALLOWED_STORY_EXTENSIONS, "story", max_size)
-    media_url = upload_file(file, STORY_DIR)
+    media_url = upload_file(file, STORY_DIR, max_size)
     created = utcnow()
     story = models.Story(
         vendor_id=vendor_id,
@@ -108,6 +132,7 @@ async def create_product(
     # Os produtos são uma vantagem Premium: sem ele não aparecem no mapa, por
     # isso nem se criam.
     verify_premium(current_vendor, db, PREMIUM_PRODUCTS_DETAIL)
+    name, price = _clean_product(name, price)
 
     existing_count = db.query(models.Product).filter(models.Product.vendor_id == vendor_id).count()
     if existing_count >= MAX_PRODUCTS_PER_VENDOR:
@@ -183,6 +208,7 @@ async def update_product(
     if not product:
         raise HTTPException(status_code=404, detail="Produto não encontrado")
     verify_premium(current_vendor, db, PREMIUM_PRODUCTS_DETAIL)
+    name, price = _clean_product(name, price)
 
     if photo:
         validate_upload(photo, ALLOWED_IMAGE_TYPES, ALLOWED_IMAGE_EXTENSIONS, "foto do produto")

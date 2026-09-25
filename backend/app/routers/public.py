@@ -8,7 +8,7 @@ from fastapi import APIRouter, Body, HTTPException, Request, WebSocket, WebSocke
 from fastapi.responses import JSONResponse
 
 from .. import emails
-from ..config import CONTACT_EMAIL_TO, limiter
+from ..config import CONTACT_EMAIL_TO, limiter, security_logger
 from ..realtime import manager
 
 router = APIRouter()
@@ -30,7 +30,8 @@ async def get_tides():
             )
             resp.raise_for_status()
         except httpx.HTTPError as exc:
-            raise HTTPException(status_code=502, detail=f"Tides upstream error: {exc}")
+            security_logger.warning(f"IPMA tides error: {exc}")
+            raise HTTPException(status_code=502, detail="Marés indisponíveis de momento.")
     return JSONResponse(content=resp.json())
 
 
@@ -115,7 +116,11 @@ async def contact_form(
         )
     except httpx.HTTPError as exc:
         # Devolver erro claro quando o fornecedor de email rejeita ou falha o envio.
-        raise HTTPException(status_code=502, detail=f"Erro ao enviar email: {exc}")
+        security_logger.error(f"Contact email error: {exc}")
+        raise HTTPException(
+            status_code=502,
+            detail="Não foi possível enviar a mensagem. Tenta novamente mais tarde.",
+        )
 
     if not email_sent:
         raise HTTPException(
