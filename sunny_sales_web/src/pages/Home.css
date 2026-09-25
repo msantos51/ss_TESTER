@@ -2185,10 +2185,34 @@
 }
 
 .vendor-item-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin: 0;
   font-size: var(--fs-body-sm);
   font-weight: 600;
   color: var(--text);
+}
+
+.vendor-item-name-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Estrela Premium ao lado do nome: o mesmo destaque do pin no mapa.
+   O dourado vai como fundo com --gold-ink por cima (regra do token). */
+.vendor-item-premium {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  background: var(--gold);
+  color: var(--gold-ink);
 }
 
 .vendor-item-product {
