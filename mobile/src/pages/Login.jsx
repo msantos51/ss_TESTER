@@ -29,7 +29,8 @@ export default function Login({ onLogin, onBack, onRegister, initialEmail = '' }
       body: JSON.stringify({ email, password, ...(force && { force: true }) }),
     });
     if (!tokenRes.ok) {
-      const err = await tokenRes.json();
+      // Um erro do proxy (502 em HTML) não traz JSON: não pode rebentar aqui.
+      const err = await tokenRes.json().catch(() => ({}));
       const status = tokenRes.status;
       if (status === 409) {
         setForceConfirm(true);
@@ -111,7 +112,7 @@ export default function Login({ onLogin, onBack, onRegister, initialEmail = '' }
     <div className="screen login-screen">
       {onBack && (
         <div className="auth-topbar auth-topbar-floating">
-          <button type="button" className="btn-icon auth-back" onClick={onBack} title="Voltar">
+          <button type="button" className="btn-icon auth-back" onClick={onBack} title="Voltar" aria-label="Voltar">
             <FiArrowLeft />
           </button>
         </div>
@@ -128,8 +129,9 @@ export default function Login({ onLogin, onBack, onRegister, initialEmail = '' }
 
       <form className="login-form" onSubmit={handleSubmit}>
         <div className="input-group">
-          <label>Email</label>
+          <label htmlFor="login-email">Email</label>
           <input
+            id="login-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -139,8 +141,9 @@ export default function Login({ onLogin, onBack, onRegister, initialEmail = '' }
           />
         </div>
         <div className="input-group">
-          <label>Palavra-passe</label>
+          <label htmlFor="login-password">Palavra-passe</label>
           <input
+            id="login-password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -150,8 +153,8 @@ export default function Login({ onLogin, onBack, onRegister, initialEmail = '' }
           />
         </div>
 
-        {error && <div className="error-msg">{error}</div>}
-        {info && <div className="info-msg">{info}</div>}
+        {error && <div className="error-msg" role="alert">{error}</div>}
+        {info && <div className="info-msg" role="status">{info}</div>}
 
         {needsEmailConfirm && (
           <button
