@@ -1387,7 +1387,15 @@ export default function Home() {
                       />
                     )}
                     <div className="vendor-item-info">
-                      <h4 className="vendor-item-name">{v.name}</h4>
+                      <h4 className="vendor-item-name">
+                        <span className="vendor-item-name-text">{v.name}</span>
+                        {v.is_premium && (
+                          <span className="vendor-item-premium" title="Vendedor Premium">
+                            <FiStar size={10} fill="currentColor" aria-hidden="true" />
+                            <span className="sr-only">Premium</span>
+                          </span>
+                        )}
+                      </h4>
                       {v.product && (
                         <p className="vendor-item-product">{v.product}</p>
                       )}
