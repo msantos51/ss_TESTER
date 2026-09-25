@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { FiUserX, FiUsers } from 'react-icons/fi';
 import { BASE_URL } from '../config';
 
@@ -198,8 +199,8 @@ export default function AccountDeletion() {
             </section>
 
             <section>
-              {error && <p className="account-msg account-msg-error">{error}</p>}
-              {info && <p className="account-msg account-msg-info">{info}</p>}
+              {error && <p className="account-msg account-msg-error" role="alert">{error}</p>}
+              {info && <p className="account-msg account-msg-info" role="status">{info}</p>}
 
               {!token ? (
                 <form
@@ -313,7 +314,7 @@ export default function AccountDeletion() {
           <h2>Precisas de ajuda?</h2>
           <p>
             Se não conseguires aceder à conta, escreve-nos pela página de{' '}
-            <a href="/contacto">contacto</a> a partir do email registado.
+            <Link to="/contacto">contacto</Link> a partir do email registado.
             Respondemos a qualquer pedido de acesso, correção ou apagamento no
             prazo de 30 dias, como exige o RGPD.
           </p>

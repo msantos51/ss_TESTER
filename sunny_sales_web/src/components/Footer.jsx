@@ -159,17 +159,17 @@ export default function Footer({ minimal = false }) {
           </span>
         </div>
         {!minimal && (
-          <div className="footer-links">
+          <nav className="footer-links" aria-label="Informação legal">
             <Link to="/privacy-policy" className="footer-link">Privacidade</Link>
-            <span className="footer-link-divider">•</span>
+            <span className="footer-link-divider" aria-hidden="true">•</span>
             <Link to="/terms-and-conditions" className="footer-link">Termos</Link>
-            <span className="footer-link-divider">•</span>
+            <span className="footer-link-divider" aria-hidden="true">•</span>
             <Link to="/legal-notice" className="footer-link">Aviso Legal</Link>
-            <span className="footer-link-divider">•</span>
+            <span className="footer-link-divider" aria-hidden="true">•</span>
             <Link to="/cookies-policy" className="footer-link">Cookies</Link>
-            <span className="footer-link-divider">•</span>
+            <span className="footer-link-divider" aria-hidden="true">•</span>
             <Link to="/eliminar-conta" className="footer-link">Eliminar conta</Link>
-          </div>
+          </nav>
         )}
       </div>
     </footer>

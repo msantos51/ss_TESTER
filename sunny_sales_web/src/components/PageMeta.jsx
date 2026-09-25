@@ -58,6 +58,10 @@ const META = {
     title: 'Política de Cookies · Sunny Sales',
     description: 'Como o Sunny Sales utiliza cookies e tecnologias semelhantes.',
   },
+  '/avaliar': {
+    title: 'Avaliar vendedor · Sunny Sales',
+    description: 'Dá uma avaliação de 1 a 5 estrelas ao vendedor de praia que te atendeu.',
+  },
   '/eliminar-conta': {
     title: 'Eliminar conta · Sunny Sales',
     description: 'Descarrega os teus dados ou elimina em definitivo a tua conta de vendedor Sunny Sales.',
@@ -85,7 +89,8 @@ export default function PageMeta() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const meta = META[pathname];
+    const meta = META[pathname]
+      || (pathname.startsWith('/avaliar/') ? META['/avaliar'] : undefined);
     const title = meta?.title || BASE_TITLE;
     const description = meta?.description || META['/'].description;
 
